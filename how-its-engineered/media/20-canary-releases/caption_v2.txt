@@ -1,0 +1,17 @@
+One update blue-screened 8.5 million computers. All at the same time 💥
+
+Airports, banks, hospitals. Down.
+
+Coal miners had a fix: send a canary down first 🐤 If the bird stops singing, everyone gets out.
+
+A canary release does the same for code:
+🐤 Ship the new version to 1% first
+👀 Watch for crashes, errors, reboots
+↩️ Something spikes? Roll back automatically
+📈 All good? 5%, then 25%, then everyone
+
+That's Argo Rollouts and AWS CodeDeploy.
+
+Does your team ship to everyone at once? 👇
+
+#systemdesign #softwareengineering #devops #crowdstrike #canaryrelease
