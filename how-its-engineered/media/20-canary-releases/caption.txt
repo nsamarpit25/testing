@@ -1,0 +1,11 @@
+One bad update. 8.5 million computers. All at once 💥
+
+Coal miners had a fix: send a canary down first 🐤
+
+Canary release: ship to 1%, watch, roll back if it breaks. Then 5%, 25%, everyone.
+
+That's Argo Rollouts and AWS CodeDeploy.
+
+Does your team ship to everyone at once? 👇
+
+#systemdesign #softwareengineering #devops #crowdstrike #canaryrelease

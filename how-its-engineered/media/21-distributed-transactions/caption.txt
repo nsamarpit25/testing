@@ -1,0 +1,11 @@
+You booked a flight and a hotel. The flight went through. The hotel failed 😬
+
+Think of a vault with two keys 🔐 It only opens when both keys turn.
+
+Two-phase commit works the same way: a coordinator asks every service "can you?" All yes, everyone commits. One no, everyone cancels.
+
+That's Google Spanner, and it's built into PostgreSQL.
+
+Ever been charged for half a booking? 👇
+
+#systemdesign #softwareengineering #backend #distributedsystems #databases
