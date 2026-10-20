@@ -1,0 +1,272 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- Opening variant A: the house "diorama" style (09 Kubernetes look). Hook C, first 10 s. -->
+<link rel="stylesheet" href="fonts.css">
+<link rel="stylesheet" href="diorama.css">
+</head>
+<body>
+<div id="stage">
+  <div id="world">
+    <canvas id="cv" width="1080" height="1920"></canvas>
+    <svg id="fx" width="540" height="960" viewBox="0 0 540 960"></svg>
+    <div class="layer" id="lbls"></div>
+  </div>
+  <div id="vig"></div>
+  <div id="dim"></div>
+  <div class="layer" id="cards"></div>
+  <div class="layer" id="kin"></div>
+  <div id="sec"><div class="tag"><span>SYSTEM DESIGN · 10</span></div><div class="tt"></div></div>
+  <div id="handle"><svg width="11" height="11" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="6" fill="none" stroke="#8A9BC4" stroke-width="2.4"/><circle cx="12" cy="12" r="4.6" fill="none" stroke="#8A9BC4" stroke-width="2.4"/></svg>HOW.ITS.ENGINEERED</div>
+  <div id="hud">
+    <div class="env">CALLS</div>
+    <div class="chips">
+      <div class="chip" id="c0"><b></b><span>CART</span><em></em></div>
+      <div class="chip" id="c1"><b></b><span>ORDERS</span><em></em></div>
+      <div class="chip" id="c2"><b></b><span>LOGIN</span><em></em></div>
+    </div>
+    <div class="prod"><span>PAYMENTS UP</span><i></i></div>
+  </div>
+  <div id="cap"></div>
+  <div id="flash"></div>
+  <div id="grain"></div>
+</div>
+<script src="../../../tools/lib.js"></script>
+<script src="hook.js"></script>
+<script src="engine.js"></script>
+<script>
+// world: three machines at the back, the payments service on machine 1 (then machine 3), three callers in front
+const NX = [-50, 70, 190], NY = 200, NW = 100, NDp = 64, NH = 24;
+const OLD = [NX[0] - 24, NY, NH], NEW = [NX[2] + 24, NY, NH];
+const CALLERS = [{ n: 'CART', x: -40, y: -40, c: 'cy' }, { n: 'ORDERS', x: 70, y: -60, c: 'vi' }, { n: 'LOGIN', x: 180, y: -40, c: 'pk' }];
+const SHOTS = [
+  { t: 0, d: 0, f: [-40, 180, 30], s: 2.7, a: 0.42, e: 0.56, sy: 470 },
+  { t: 0.1, d: 1.6, s: 2.45 },
+  { t: 1.75, d: 0.55, f: [200, 190, 30], s: 2.5 },
+  { t: 2.8, d: 0.35, s: 2.85 },
+  { t: 4.05, d: 0.6, f: [100, 80, 30], s: 1.22, sy: 480 },
+  { t: 5.8, d: 0.15, s: 1.32 },
+  { t: 7.0, d: 1.6, f: [100, 80, 30], s: 1.0, e: 0.72, sy: 450 },
+];
+const KICKS = [[B.crash, 0.08], [B.respawn + 0.3, 0.04], [B.newip, 0.05], [B.hits[0], 0.03], [B.hits[1], 0.03], [B.hits[2], 0.03], [B.failed, 0.07]];
+const SHAKES = [[B.crash, 7, 0.5], [B.failed, 6, 0.45]];
+
+function node(i, t, o = {}) {
+  const col = o.col || K.sl, lit = o.lit ?? 0.3;
+  box(NX[i], NY, 0, NW, NDp, NH, mixc(SLATE, col, 0.1), { edge: rgba(col, 1, 0.35 + 0.4 * lit), lw: 1.2, gl: [rgba(col, 1, 0.5 * lit), 10],
+    front: (F, w, h) => {
+      ftext(F, 9, h / 2, 'MACHINE ' + (i + 1), 5.5, rgba(col, 1.3, 0.85), 'Mono', 800, 'left');
+      for (let k = 0; k < 4; k++) { const on = rnd(i * 4 + k, Math.floor(t * 5)) > 0.35 ? 1 : 0.3; fquad(F, w - 34 + k * 7, h / 2 - 1.5, w - 30 + k * 7, h / 2 + 1.5, rgba(K.gr, 1.1, 0.85 * on)); }
+    },
+    side: (F, w, h) => { for (let k = 0; k < 6; k++) fquad(F, 8 + k * 9, 6, 12 + k * 9, h - 6, 'rgba(10,14,40,0.6)'); },
+    top: (F, w, d) => { for (const u of [w / 2 - 24, w / 2 + 24]) fquad(F, u - 21, d / 2 - 13, u + 21, d / 2 + 13, 'rgba(8,12,34,0.55)'); } });
+  pool(NX[i], NY, 120, col, 0.28);
+}
+// the payments service: a container box with a card icon
+function svc(x, y, z, o = {}) {
+  const W = 40, Dd = 24, H = 22, op = o.op ?? 1, fl = o.fl || 0, cc = o.col;
+  if (op <= 0.01) return;
+  const base = mixc(mixc(DARK, cc, o.dead ? 0.35 : 0.6), [255, 255, 255], fl * 0.45), eg = rgba(mixc(cc, [255, 255, 255], fl), 1.25, 0.95);
+  const ribs = (F, w, h) => { for (let u = 3; u < w - 2; u += 4.5) fquad(F, u, 2, u + 1.5, h - 2, rgba(cc, 0.45, 0.7)); };
+  box(x, y, z, W, Dd, H, base, { op, edge: eg, lw: 1.1, gl: [rgba(cc, 1, (o.dead ? 0.1 : 0.55 + fl) * op), 12 + fl * 16],
+    front: (F, w, h) => {
+      ribs(F, w, h);
+      fquad(F, w / 2 - 11, h / 2 - 5, w / 2 + 11, h / 2 + 5, 'rgba(8,12,34,0.85)');
+      ftext(F, w / 2, h / 2, o.dead ? '✕' : 'PAY', 5.5, rgba(mixc(cc, [255, 255, 255], 0.5), 1.15), 'Mono', 800);
+      if (!o.dead) for (let i = 0; i < 4; i++) { const on = Math.floor(t_ * 8 + i * 1.7 + x) % 3 === 0 ? 1 : 0.4; fquad(F, w / 2 - 7 + i * 4, 2.5, w / 2 - 5 + i * 4, 4.5, rgba(K.gr, 1.2, on)); }
+    },
+    side: ribs,
+    top: (F, w, d) => { for (let u = 3; u < w - 2; u += 4.5) fquad(F, u, 2, u + 1.5, d - 2, rgba(cc, 0.5, 0.55)); } });
+}
+// a caller service in the front row
+function caller(i, t, failA) {
+  const C = CALLERS[i], col = mixc(K[C.c], K.rd, failA);
+  const blink = failA > 0.5 ? (Math.sin(t * 18 + i) > 0 ? 1 : 0.5) : 1;
+  box(C.x, C.y, 0, 58, 36, 20, mixc(SLATE, col, 0.22), { edge: rgba(col, 1.2, 0.9 * blink), lw: 1.2, gl: [rgba(col, 1, 0.6 * blink), 12],
+    front: (F, w, h) => ftext(F, w / 2, h / 2, C.n, 6, rgba(col, 1.4, blink), 'Mono', 800),
+    top: (F, w, d) => { fquad(F, 6, 6, w - 6, d - 6, rgba(col, 1, 0.12)); } });
+  pool(C.x, C.y, 70, col, 0.3);
+}
+const failAt = (i, t) => ep(t, B.hits[i], B.hits[i] + 0.15);
+
+/* ---------------- HUD + titles */
+const CH = [0, 1, 2].map((i) => $('c' + i));
+function chip(i, state, t) {
+  const e = CH[i];
+  if (e._s !== state) {
+    e._s = state; e._t = t; const b = e.firstChild;
+    if (state === 'ok') { e.style.cssText = `border-color:${HX.gr}55;color:${HX.gr}`; b.innerHTML = '✓'; }
+    else if (state === 'run') { e.style.cssText = `border-color:${HX.or};color:${HX.or};background:${HX.or}1f`; b.innerHTML = '<i class="spin"></i>'; }
+    else { e.style.cssText = `border-color:${HX.rd};color:#fff;background:${HX.rd}`; b.innerHTML = '✕'; }
+  }
+  const sp = e.querySelector('.spin'); if (sp) sp.style.transform = `rotate(${t * 540}deg)`;
+  e.style.transform = `scale(${1 + 0.18 * Math.exp(-(t - e._t) * 10)})`;
+}
+const PRODI = $('hud').querySelector('.prod i'), PRODS = $('hud').querySelector('.prod span');
+function hud(t) {
+  CH.forEach((_, i) => chip(i, t > B.hits[i] ? 'fail' : t > B.calls ? 'run' : 'ok', t));
+  const st = t < B.crash ? 'up' : t < B.respawn + 0.3 ? 'down' : t < B.ipDone ? 'moving' : 'moved';
+  const col = { up: HX.gr, down: HX.rd, moving: HX.ye, moved: HX.ye }[st];
+  PRODI.style.background = col; PRODI.style.boxShadow = `0 0 8px ${col}`;
+  PRODI.style.opacity = st === 'down' || st === 'moving' ? (Math.sin(t * 16) > 0 ? 1 : 0.3) : 1;
+  const txt = { up: 'PAYMENTS UP', down: 'RESTARTING', moving: 'NEW ADDRESS…', moved: 'AT ' + NEW_IP }[st];
+  if (PRODS._v !== txt) { PRODS._v = txt; PRODS.textContent = txt; }
+  PRODS.style.color = st === 'down' ? HX.rd : st === 'up' ? '#8A9BC4' : HX.ye;
+  $('hud').style.borderColor = t > B.hits[0] && t < 7 ? 'rgba(255,59,92,0.6)' : 'rgba(255,255,255,0.12)';
+}
+const SECS = [
+  [0, 'Service <i style="color:var(--rd)">restarted</i>', 'or'],
+  [1.85, 'Same <i style="color:var(--gr)">code</i>', 'gr'],
+  [2.85, 'New <i style="color:var(--ye)">address</i>', 'ye'],
+  [4.2, 'Every call <i style="color:var(--rd)">failed</i>', 'rd'],
+  [7.1, 'So how does it get <i style="color:var(--cy)">found?</i>', 'or'],
+];
+const secT = $('sec').querySelector('.tt'), secTag = $('sec').querySelector('.tag');
+function sec(t) {
+  let i = 0; for (let k = 0; k < SECS.length; k++) if (t >= SECS[k][0]) i = k;
+  const [t0, html, c] = SECS[i];
+  if (secT._i !== i) { secT._i = i; secT.innerHTML = html; secTag.style.background = HX[c]; }
+  const p = ep(t, t0, t0 + 0.45, ease.outExpo), nxt = SECS[i + 1] ? SECS[i + 1][0] : 99, o = ep(t, nxt - 0.2, nxt, ease.in);
+  secT.style.opacity = p * (1 - o);
+  secT.style.transform = `translateY(${(1 - p) * 14 - o * 6}px)`;
+  secT.style.clipPath = `inset(0 ${(1 - p) * 100}% 0 0)`;
+}
+const caps = popCaptions($('cap'), (w, t) => ({ restarted: HX.rd, same: HX.gr, code: HX.gr, new: HX.ye, address: HX.ye, every: HX.rd, call: HX.rd, failed: HX.rd, find: HX.cy, anything: HX.cy })[w] || null);
+
+/* ---------------- kinetic type */
+const echoed = (txt, style, mStyle) => `<div style="position:relative;display:inline-block;${style}">
+<span class="e1" style="position:absolute;left:0;top:0;color:transparent;-webkit-text-stroke:1.5px var(--cy)">${txt}</span>
+<span class="e2" style="position:absolute;left:0;top:0;color:transparent;-webkit-text-stroke:1.5px var(--pk)">${txt}</span>
+<span class="m" style="position:relative;display:inline-block;${mStyle}">${txt}</span></div>`;
+function echo(elm, t, t0, d) {
+  const p = ep(t, t0, t0 + d, ease.outExpo), off = (1 - p) * 26 + 2 * Math.sin(t * 40) * (t - t0 < 0.5 ? 1 : 0.15);
+  elm.querySelector('.e1').style.transform = `translate(${-off}px, ${off * 0.3}px)`;
+  elm.querySelector('.e2').style.transform = `translate(${off}px, ${-off * 0.3}px)`;
+}
+function kinIn(elm, t, a, b, from = 1.6) {
+  const p = ep(t, a, a + 0.28, ease.outExpo), o = ep(t, b - 0.2, b, ease.in);
+  vis(elm, t < a ? 0 : Math.min(1, prog(t, a, a + 0.08)) * (1 - o), `scale(${lerp(from, 1, p) * (1 + o * 0.1)})`);
+}
+const glitch = (elm, t, on, k = 47) => { elm.querySelector('.m').style.transform = on && Math.sin(t * k) > 0.8 ? 'translateX(5px) skewX(-10deg)' : ''; };
+const RESTK = div(kin, 'kin', echoed('RESTARTED', 'font-weight:900;font-size:76px;letter-spacing:-4px;line-height:1', 'color:var(--rd);text-shadow:0 0 30px rgba(255,59,92,0.6)'), 'top:590px');
+const ADDRK = div(kin, 'kin', `<div style="font-family:Mono;font-weight:600;font-size:12px;letter-spacing:3px;color:#8A9BC4;margin-bottom:6px">NEW ADDRESS</div>${echoed('<span class="ip">10.0.0.7</span>', 'font-family:Mono;font-weight:800;font-size:58px;letter-spacing:-2px;line-height:1', 'color:var(--ye);text-shadow:0 0 30px rgba(250,204,21,0.55)')}`, 'top:572px');
+const FAILK = div(kin, 'kin', echoed('FAILED', 'font-weight:900;font-size:110px;letter-spacing:-6px;line-height:1', 'color:var(--rd);text-shadow:0 0 34px rgba(255,59,92,0.65)'), 'top:560px');
+const QK = div(kin, 'kin', `<div style="font-family:Instrument;font-style:italic;font-size:150px;line-height:1;color:var(--cy);text-shadow:0 0 40px rgba(34,211,238,0.6)">?</div>`, 'top:250px');
+
+/* ---------------- background */
+function drawBG(t) {
+  g.setTransform(2, 0, 0, 2, 0, 0);
+  const gr = g.createLinearGradient(0, 0, 0, 960);
+  gr.addColorStop(0, '#05071a'); gr.addColorStop(0.55, '#0a0f2c'); gr.addColorStop(1, '#070a1e');
+  g.fillStyle = gr; g.fillRect(0, 0, 540, 960);
+  g.save(); g.globalCompositeOperation = 'lighter';
+  const red = Math.max(window01(t, B.crash, B.respawn, 0.2) * 0.8, window01(t, B.hits[0], 7.0, 0.3) * 0.6);
+  [[120, 300, 260, K.bl, 0.16], [440, 520, 280, K.cy, 0.1], [300, 820, 300, K.vi, 0.09], [480, 200, 200, K.pk, 0.07]].forEach(([x, y, r, c, a], i) => {
+    const xx = x + Math.sin(t * 0.3 + i * 2) * 40, yy = y + Math.cos(t * 0.25 + i) * 30, col = mixc(c, K.rd, red);
+    const rg = g.createRadialGradient(xx, yy, 0, xx, yy, r); rg.addColorStop(0, rgba(col, 1, a)); rg.addColorStop(1, rgba(col, 1, 0));
+    g.fillStyle = rg; g.fillRect(0, 0, 540, 960);
+  });
+  for (let i = 0; i < 60; i++) {
+    const x = (rnd(i, 9) * 540 + t * (6 + rnd(i, 3) * 10)) % 540, y = (rnd(i, 8) * 960 - t * (4 + rnd(i, 2) * 8) + 3840) % 960;
+    g.fillStyle = `rgba(180,200,255,${0.08 + rnd(i, 7) * 0.22})`; g.fillRect(x, y, 1.4, 1.4);
+  }
+  g.restore();
+}
+function floor() {
+  add(0, 1e7, () => {
+    const X0 = -760, X1 = 760, Y0 = -640, Y1 = 700;
+    const pl = [[X0, Y1, 0], [X1, Y1, 0], [X1, Y0, 0], [X0, Y0, 0]].map((q) => P(...q));
+    const gr = g.createLinearGradient(0, 0, 0, 960); gr.addColorStop(0, '#0e1433'); gr.addColorStop(1, '#121a40');
+    poly(pl, gr);
+    g.save(); g.strokeStyle = 'rgba(110,130,255,0.075)'; g.lineWidth = 1; g.beginPath();
+    for (let x = X0 + 20; x <= X1; x += 40) { g.moveTo(...P(x, Y1, 0)); g.lineTo(...P(x, Y0, 0)); }
+    for (let y = Y0 + 20; y <= Y1; y += 40) { g.moveTo(...P(X0, y, 0)); g.lineTo(...P(X1, y, 0)); }
+    g.stroke(); g.restore();
+  });
+}
+
+/* ---------------- render */
+window.ready = () => { $('grain').style.background = `url(${grainURL(256, 0.07, 3)})`; };
+window.render = function (t) {
+  t_ = t;
+  camAt(t, SHOTS, KICKS, SHAKES);
+  drawBG(t);
+  g.setTransform(2, 0, 0, 2, 0, 0);
+  floor();
+  for (let i = 0; i < 3; i++) node(i, t, { lit: 0.3 + 0.9 * (i === 2 ? pulse(t, B.respawn + 0.3, 3) : 0) + (i === 0 ? 0.6 * pulse(t, B.crash, 3) : 0), col: i === 0 && t > B.crash && t < B.respawn ? K.rd : K.sl });
+  CALLERS.forEach((_, i) => caller(i, t, failAt(i, t)));
+
+  // old payments: runs, crashes, leaves
+  if (t < B.gone + 0.3) {
+    const crash = t > B.crash, q = ep(t, B.gone, B.gone + 0.3);
+    const col = !crash ? K.cy : t < B.crash + 0.35 ? (Math.sin(t * 50) > 0 ? K.rd : mixc(K.cy, K.rd, 0.5)) : [86, 92, 120];
+    svc(OLD[0], OLD[1], OLD[2] + ease.in(q) * 80, { col, op: 1 - q, dead: t > B.crash + 0.35, fl: pulse(t, B.crash, 6) });
+  }
+  sparks(t, B.crash, OLD[0], OLD[1], OLD[2] + 18, K.rd, 30, 11, 130, 0.75, 2.8, 220);
+  ripple(t, B.crash, OLD[0], OLD[1], NH, K.rd, 80, 0.7, 2.5);
+  // the empty old spot
+  const ghost = t > B.gone ? (0.5 + 0.4 * Math.sin(t * 9)) * (1 - 0.6 * ep(t, 7.1, 7.6)) : 0;
+  wireBox(OLD[0], OLD[1], NH, 40, 24, 22, t > B.hits[0] ? K.rd : K.sl, ghost);
+  // new payments lands on machine 3
+  if (t > B.respawn) {
+    const land = ep(t, B.respawn, B.respawn + 0.3, ease.in);
+    svc(NEW[0], NEW[1], NEW[2] + (1 - land) * 100, { col: K.cy, op: Math.min(1, prog(t, B.respawn, B.respawn + 0.08)), fl: Math.min(1, pulse(t, B.respawn + 0.3, 5) + 0.6 * pulse(t, B.newip, 4) + (t > B.find ? 0.4 * (0.5 + 0.5 * Math.sin(t * 7)) : 0)) });
+    ripple(t, B.respawn + 0.3, NEW[0], NEW[1], NH, K.cy, 60, 0.6, 2);
+    ripple(t, B.newip, NEW[0], NEW[1], NH, K.ye, 90, 0.8, 2.4);
+  }
+  // calls: before the crash they reach payments; after the move they all go to the old spot and fail
+  const target = [OLD[0], OLD[1] - 6, OLD[2] + 20];
+  for (let j = 0; j < 14; j++) {
+    const i = j % 3, C = CALLERS[i];
+    const te = j < 3 ? -0.5 + j * 0.42 : null;
+    if (te != null) { const q = (t - te) / 0.8; if (q > 0 && q < 1) orb(arc([C.x, C.y, 20], target, ease.inOut(q), 40), K[C.c], Math.min(1, q * 6, (1 - q) * 8), 3.4); }
+  }
+  B.hits.forEach((th, i) => {
+    const C = CALLERS[i], q = prog(t, th - 0.7, th);
+    if (q > 0 && q < 1) orb(arc([C.x, C.y, 20], target, ease.inOut(q), 46), K[C.c], 1, 3.8);
+    if (t > B.calls) roadLine(sub([[C.x, C.y + 18, 0], [OLD[0], OLD[1] - 12, 0]], ep(t, B.calls + i * 0.12, B.calls + i * 0.12 + 0.5)), t > th ? K.rd : K[C.c], 0.7 * (1 - 0.7 * ep(t, 7.1, 7.6)));
+    sparks(t, th, target[0], target[1], target[2], K.rd, 22, 30 + i, 110, 0.6, 2.4, 200);
+    ripple(t, th, OLD[0], OLD[1], NH, K.rd, 60, 0.6, 2);
+  });
+  // open loop: a searching request darts between machines
+  if (t > B.q) {
+    const k = (t - B.q) * 0.9, pts = [[CALLERS[1].x, CALLERS[1].y, 30], [NX[0], NY, 60], [NX[1], NY, 70], [NX[2] - 40, NY, 60], [NX[1], NY - 40, 70]];
+    const p = along(pts, (k % 1)), a = window01(t, B.q, DURATION + 1, 0.3);
+    orb(p, K.cy, a, 4);
+    for (let s = 1; s < 8; s++) orb(along(pts, Math.max(0, (k % 1) - s * 0.018)), K.cy, a * (1 - s / 8) * 0.5, 2.6);
+  }
+  flush();
+  g.setTransform(2, 0, 0, 2, 0, 0);
+
+  /* DOM */
+  hud(t); sec(t); caps(t);
+  $('dim').style.opacity = window01(t, B.failed - 0.05, 7.05, 0.15) * 0.35 + ep(t, B.q, B.q + 0.5) * 0.25;
+  let fl = 0, fc = '#fff';
+  for (const [t0, c, a] of [[B.crash, HX.rd, 0.45], [B.respawn + 0.3, HX.cy, 0.2], [B.newip, HX.ye, 0.18], [B.hits[0], HX.rd, 0.2], [B.hits[1], HX.rd, 0.2], [B.hits[2], HX.rd, 0.2], [B.failed, HX.rd, 0.4]]) {
+    const dt = t - t0; if (dt > 0 && dt < 0.5) { const v = a * Math.exp(-dt * 9); if (v > fl) { fl = v; fc = c; } }
+  }
+  $('flash').style.opacity = fl; $('flash').style.background = fc;
+
+  const TS = (c, fg = '#0a0d1f') => `background:${c};color:${fg};font-size:11px`;
+  tag('ip0', '📍 ' + OLD_IP, 'background:rgba(9,13,32,0.92);color:#fff;border:1px solid rgba(34,211,238,0.6);font-size:11px', [OLD[0], OLD[1], 74], t, 0.1, B.crash);
+  tag('rst', '💥 RESTARTING', TS(HX.rd, '#fff'), [OLD[0], OLD[1], 74], t, B.crash, B.respawn);
+  tag('same', '✓ SAME CODE', TS(HX.gr), [NEW[0], NEW[1], 74], t, B.same, 2.82);
+  {
+    const ip = ipAt(t), done = t > B.ipDone;
+    tag('ip1', '📍 ' + ip, `background:${done ? HX.ye : 'rgba(9,13,32,0.92)'};color:${done ? '#0a0d1f' : HX.ye};border:1px solid ${HX.ye};font-size:11px`, [NEW[0], NEW[1], 74], t, 2.85, DURATION + 1);
+  }
+  tag('old', OLD_IP + ' · EMPTY', 'background:rgba(9,13,32,0.85);color:#8A9BC4;border:1px dashed #56608a;font-size:10px', [OLD[0], OLD[1], 66], t, 3.75, B.hits[0]);
+  B.hits.forEach((th, i) => tag('x' + i, '✕ ECONNREFUSED', TS(HX.rd, '#fff') + ';font-size:10px', [CALLERS[i].x, CALLERS[i].y, 48], t, th, 7.0));
+  tag('qq', '? WHERE IS PAYMENTS', TS(HX.cy), [CALLERS[1].x, CALLERS[1].y, 50], t, 7.3, DURATION + 1);
+
+  kinIn(RESTK, t, B.crash - 0.02, 1.8, 2.2); echo(RESTK, t, B.crash, 0.6); glitch(RESTK, t, true, 50);
+  kinIn(ADDRK, t, B.newip - 0.05, 4.1, 1.8); echo(ADDRK, t, B.newip, 0.6);
+  { const e = ADDRK.querySelectorAll('.ip'), v = ipAt(t); e.forEach((x) => { if (x._v !== v) { x._v = v; x.textContent = v; } }); }
+  kinIn(FAILK, t, B.failed - 0.03, 7.0, 2.4); echo(FAILK, t, B.failed, 0.6); glitch(FAILK, t, true, 53);
+  kinIn(QK, t, B.find - 0.05, DURATION + 1, 1.6);
+};
+</script>
+<script src="play.js"></script>
+</body>
+</html>

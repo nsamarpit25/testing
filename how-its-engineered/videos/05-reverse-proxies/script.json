@@ -1,0 +1,29 @@
+{
+ "topic": "Reverse Proxies",
+ "lines": [
+  [{"say": "Your phone thinks it's talking to Instagram's servers.", "show": "Your phone thinks it's talking to *Instagram's servers.*"},
+   {"say": "It's not.", "show": "[It's not.]"}],
+  [{"say": "It's talking to a middleman:", "show": "It's talking to a *middleman:*"},
+   {"say": "a reverse proxy.", "show": "a [reverse proxy.]"}],
+  [{"say": "Without one, every server sits on the open internet,", "show": "Without one, every server sits on the *open internet,*"},
+   {"say": "where hackers scan for them all day.", "show": "where *hackers* scan for them *all day.*"},
+   {"say": "Find one weak server, and they're in.", "show": "Find *one weak server,* and [they're in.]"}],
+  [{"say": "With a proxy, the servers vanish behind a wall.", "show": "With a proxy, the servers *vanish behind a wall.*"},
+   {"say": "Only the proxy has a public address.", "show": "Only the proxy has a [public address.]"}],
+  [{"say": "It's like a restaurant.", "show": "It's like a *restaurant.*"},
+   {"say": "You never walk into the kitchen.", "show": "You never walk *into the kitchen.*"},
+   {"say": "The waiter takes your order and brings the food back.", "show": "The *waiter* takes your order and *brings the food back.*"}],
+  [{"say": "And this waiter does a lot more than carry plates.", "show": "And this waiter does *a lot more* than carry plates."}],
+  [{"say": "It unlocks the HTTPS encryption once, so the servers don't have to.", "show": "It unlocks the [HTTPS] encryption *once,* so the servers don't have to."}],
+  [{"say": "It keeps popular pages ready, so most requests never reach a server.", "show": "It keeps popular pages *ready,* so most requests *never reach a server.*"}],
+  [{"say": "It reads the path: slash API goes here, images go there.", "show": "It reads the path: [/api] goes here, *images* go there."}],
+  [{"say": "And a flood of bad traffic?", "show": "And a *flood* of bad traffic?"},
+   {"say": "Stopped at the door.", "show": "[Stopped at the door.]"}],
+  [{"say": "Engine X and Cloudflare do this for millions of websites.", "show": "*Nginx* and *Cloudflare* do this for *millions* of websites."}],
+  [{"say": "A normal proxy hides you from the website.", "show": "A normal proxy hides *you* from the website."},
+   {"say": "A reverse proxy hides the website from you.", "show": "A [reverse proxy] hides *the website* from you."}],
+  [{"say": "Engine X or Cloudflare: which one have you used?", "show": "*Nginx* or *Cloudflare:* which one have you used?"},
+   {"say": "Comment below,", "show": "[Comment below,]"},
+   {"say": "and follow for more!", "show": "and follow for more!"}]
+ ]
+}

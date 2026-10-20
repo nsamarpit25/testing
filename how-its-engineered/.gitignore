@@ -1,0 +1,31 @@
+# Rendered videos and covers (kept locally, never committed)
+media/
+out/
+
+# Audio (voice takes, TTS output, previews)
+*.wav
+# ...except each video's final voice track, which is kept in the repo
+!videos/*/voice/voice.wav
+*.m4a
+*.mp3
+*.mp4
+*.MP4
+*.mov
+# ...except the reference videos
+!refs/*.mp4
+
+# Built previews (inline fonts + audio, ~1 MB each)
+preview.html
+
+# Environments and dependencies
+node_modules/
+.venv/
+.venv-fish/
+__pycache__/
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+.DS_Store

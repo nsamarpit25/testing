@@ -1,0 +1,106 @@
+[
+ {
+  "li": 0,
+  "pi": 0,
+  "say": "Your friend just got the new Instagram feature.",
+  "show": "Your friend just got the *new* Instagram feature.",
+  "start": 0.0,
+  "end": 2.36
+ },
+ {
+  "li": 0,
+  "pi": 1,
+  "say": "You updated too. You don't have it.",
+  "show": "You updated too. You [don't have it.]",
+  "start": 2.8,
+  "end": 4.94
+ },
+ {
+  "li": 1,
+  "pi": 0,
+  "say": "Same app. Same version. Different screen.",
+  "show": "Same app. Same version. *Different* screen.",
+  "start": 5.24,
+  "end": 7.88
+ },
+ {
+  "li": 2,
+  "pi": 0,
+  "say": "That's not a bug. It's a feature flag.",
+  "show": "That's not a bug. It's a [feature flag.]",
+  "start": 8.24,
+  "end": 10.36
+ },
+ {
+  "li": 3,
+  "pi": 0,
+  "say": "Think of a house where every room has its own light switch.",
+  "show": "Think of a house where every room has its own *light switch.*",
+  "start": 11.14,
+  "end": 13.96
+ },
+ {
+  "li": 3,
+  "pi": 1,
+  "say": "The wiring is already in the walls. You just choose which lights are on.",
+  "show": "The wiring is already in the walls. You just choose which lights are *on.*",
+  "start": 14.4,
+  "end": 18.3
+ },
+ {
+  "li": 4,
+  "pi": 0,
+  "say": "Apps work the same way. The new code ships to every phone, but it's switched off.",
+  "show": "Apps work the same way. The new code ships to *every phone,* but it's switched [off.]",
+  "start": 19.02,
+  "end": 23.76
+ },
+ {
+  "li": 5,
+  "pi": 0,
+  "say": "Then the company flips it on. Staff first. Then one percent of users. Then everyone.",
+  "show": "Then the company flips it *on.* Staff first. Then *1%* of users. Then [everyone.]",
+  "start": 24.2,
+  "end": 29.7
+ },
+ {
+  "li": 6,
+  "pi": 0,
+  "say": "No app store update. No new release. Just a switch on a server.",
+  "show": "No app store update. No new release. Just a *switch* on a server.",
+  "start": 30.42,
+  "end": 34.5
+ },
+ {
+  "li": 7,
+  "pi": 0,
+  "say": "And if the feature breaks? Flip it off. Gone in seconds, for everyone.",
+  "show": "And if the feature *breaks?* Flip it off. Gone in [seconds,] for everyone.",
+  "start": 35.26,
+  "end": 39.48
+ },
+ {
+  "li": 8,
+  "pi": 0,
+  "say": "Meta runs thousands of these, with a system called Gatekeeper.",
+  "show": "Meta runs *thousands* of these, with a system called [Gatekeeper.]",
+  "start": 40.24,
+  "end": 43.82
+ },
+ {
+  "li": 9,
+  "pi": 0,
+  "say": "That's LaunchDarkly, Unleash, and Firebase Remote Config.",
+  "show": "That's *LaunchDarkly,* *Unleash,* and *Firebase Remote Config.*",
+  "start": 44.32,
+  "end": 47.98
+ },
+ {
+  "li": 10,
+  "pi": 0,
+  "say": "If you're a vibe coder, follow for the system design your AI skipped.",
+  "show": "If you're a vibe coder, follow for the system design your AI [skipped.]",
+  "start": 48.7,
+  "end": 52.5
+ }
+]

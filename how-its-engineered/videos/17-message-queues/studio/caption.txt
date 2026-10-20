@@ -1,0 +1,15 @@
+You hit buy on Black Friday. The order service calls payment directly, payment slows down, orders pile up, and the whole app goes down. 💥
+
+The fix: put a message queue in the middle.
+
+📨 Order drops your order in the queue and instantly says "received"
+⚙️ Payment becomes a worker, pulling orders out at its own pace
+📈 Traffic spikes? The line just grows. Nothing crashes
+➕ Still too slow? Add more workers on the same queue
+🔁 A worker dies mid-order? The queue only deletes an order once a worker says done, so it goes right back in line
+
+A message queue lets one service hand off work without waiting for the next one. RabbitMQ and Amazon SQS are the popular ones.
+
+Where would you put a queue in your app? Comment below 👇
+
+#coding #programming #softwareengineer #systemdesign #backend

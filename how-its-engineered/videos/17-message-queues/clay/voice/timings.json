@@ -1,0 +1,90 @@
+[
+ {
+  "li": 0,
+  "pi": 0,
+  "say": "Your app just went viral, and your backend immediately died.",
+  "show": "Your app just went *viral,* and your backend immediately [died.]",
+  "start": 0.0,
+  "end": 3.44
+ },
+ {
+  "li": 0,
+  "pi": 1,
+  "say": "Why?",
+  "show": "*Why?*",
+  "start": 3.88,
+  "end": 4.12
+ },
+ {
+  "li": 1,
+  "pi": 0,
+  "say": "Because your web server is handing heavy tasks directly to your worker server, and waiting for it to finish.",
+  "show": "Because your web server is handing heavy tasks *directly* to your worker server, and *waiting* for it to finish.",
+  "start": 4.58,
+  "end": 10.18
+ },
+ {
+  "li": 2,
+  "pi": 0,
+  "say": "If ten thousand users click buy at once, the worker chokes, and the whole system crashes.",
+  "show": "If *10,000 users* click buy at once, the worker *chokes,* and the whole system [crashes.]",
+  "start": 10.72,
+  "end": 15.46
+ },
+ {
+  "li": 3,
+  "pi": 0,
+  "say": "Enter the message queue, like RabbitMQ or Amazon S-Q-S.",
+  "show": "Enter the [message queue,] like *RabbitMQ* or *Amazon SQS.*",
+  "start": 16.08,
+  "end": 19.8
+ },
+ {
+  "li": 4,
+  "pi": 0,
+  "say": "Your web server just drops the task into the queue, and tells the user: we got it!",
+  "show": "Your web server just *drops* the task into the queue, and tells the user: *we got it!*",
+  "start": 20.0,
+  "end": 24.22
+ },
+ {
+  "li": 5,
+  "pi": 0,
+  "say": "Now when a traffic spike hits, nothing crashes. The queue just gets longer, while your worker pulls tasks at its own safe pace.",
+  "show": "Now when a traffic spike hits, [nothing crashes.] The queue just gets *longer,* while your worker pulls tasks at its *own pace.*",
+  "start": 24.54,
+  "end": 31.82
+ },
+ {
+  "li": 6,
+  "pi": 0,
+  "say": "Want to clear that backlog faster? Just add more workers, pulling from the same queue.",
+  "show": "Want to clear that backlog faster? Just add *more workers,* pulling from the *same queue.*",
+  "start": 32.32,
+  "end": 36.54
+ },
+ {
+  "li": 7,
+  "pi": 0,
+  "say": "And if a worker crashes mid-task? The message stays safe in the queue until another worker finishes it.",
+  "show": "And if a worker *crashes* mid-task? The message stays [safe in the queue] until another worker finishes it.",
+  "start": 37.06,
+  "end": 43.08
+ },
+ {
+  "li": 8,
+  "pi": 0,
+  "say": "Haven't seen retries? That reel's on my profile.",
+  "show": "Haven't seen *retries?* That reel's on my profile.",
+  "start": 43.58,
+  "end": 46.14
+ },
+ {
+  "li": 8,
+  "pi": 1,
+  "say": "If you're a vibe coder, follow for the system design your AI skipped.",
+  "show": "If you're a *vibe coder,* follow for the system design your *AI skipped.*",
+  "start": 46.48,
+  "end": 49.96
+ }
+]

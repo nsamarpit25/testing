@@ -1,0 +1,42 @@
+{
+ "topic": "Service Discovery",
+ "lines": [
+  [
+   {"say": "Your service restarted.", "show": "Your service *restarted.*"},
+   {"say": "Same code. New address.", "show": "Same code. *New address.*"},
+   {"say": "And every call to it just failed.", "show": "And every call to it just [failed.]"},
+   {"say": "So how does anything ever find it?", "show": "So how does anything ever *find it?*"}
+  ],
+  [
+   {"say": "The bug? The address was written into the code.", "show": "The bug? The address was *written into the code.*"},
+   {"say": "But in the cloud, servers restart and move all the time. New spot, new address.", "show": "But in the cloud, servers *restart and move* all the time. New spot, [new address.]"}
+  ],
+  [
+   {"say": "The fix? Save the name, not the number.", "show": "The fix? Save the *name,* not the *number.*"},
+   {"say": "Like your phone contacts.", "show": "Like your *phone contacts.*"},
+   {"say": "That's service discovery.", "show": "That's [service discovery.]"}
+  ],
+  [
+   {"say": "Step one: register.", "show": "Step one: [register.]"},
+   {"say": "When payments starts, it tells a registry: I'm payments, here's my address.", "show": "When payments starts, it tells a *registry:* I'm payments, *here's my address.*"}
+  ],
+  [
+   {"say": "Step two: look up.", "show": "Step two: [look up.]"},
+   {"say": "Before every call, orders asks the registry: where's payments right now?", "show": "Before every call, orders asks: *where's payments right now?*"}
+  ],
+  [
+   {"say": "Step three: check.", "show": "Step three: [check.]"},
+   {"say": "The registry keeps pinging every copy. One stops answering? It's off the list.", "show": "The registry keeps *pinging* every copy. One stops answering? It's [off the list.]"}
+  ],
+  [
+   {"say": "So that restart? Payments moved, signed in again, and the next call found it.", "show": "So that *restart?* Payments moved, signed in again, and the next call [found it.]"}
+  ],
+  [
+   {"say": "In Kubernetes, it's built in. You call payments by name, and it routes you to the right address.", "show": "In *Kubernetes,* it's built in. Call payments *by name,* and it finds the [right address.]"}
+  ],
+  [
+   {"say": "New to Kubernetes? That reel is on my profile.", "show": "New to Kubernetes? That reel is *on my profile.*"},
+   {"say": "Follow for the rest of the series.", "show": "[Follow] for the rest of the series."}
+  ]
+ ]
+}

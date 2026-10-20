@@ -1,0 +1,15 @@
+Ten million people pressed Play at the same second. Netflix didn't crash. Why? 🤔
+
+One server can only take so much. Flood it and it crashes.
+
+The fix: load balancing.
+Add more servers and put a load balancer in front.
+It sends each request to a server that can take it: round robin, or the least busy one.
+A server dies? It just gets skipped.
+Need more power? Add servers. Nobody notices.
+
+One front door. Thousands of servers behind it.
+
+Which app do you think has the biggest load balancer? Comment below 👇
+
+#systemdesign #softwareengineering #backend #loadbalancing #coding #programming #techexplained

@@ -1,0 +1,51 @@
+{
+ "topic": "Event-Driven Architecture",
+ "lines": [
+  [
+   {"say": "You tap place order.", "show": "You tap *Place Order.*"},
+   {"say": "One second later, your email, tracking page and reward points all update.", "show": "*1 second* later, your *email,* *tracking page* and *reward points* all update."},
+   {"say": "Nobody asked them to.", "show": "[Nobody asked them to.]"}
+  ],
+  [
+   {"say": "The slow way? They keep asking the order service: anything new?", "show": "The slow way? They keep asking the order service: *anything new?*"},
+   {"say": "Anything new? All day.", "show": "*Anything new?* [All day.]"}
+  ],
+  [
+   {"say": "Spot the problem?", "show": "Spot the *problem?*"}
+  ],
+  [
+   {"say": "Almost every answer is no.", "show": "Almost every answer is *no.*"},
+   {"say": "Thousands of wasted calls. The order service drowns.", "show": "[Thousands of wasted calls.] The order service *drowns.*"},
+   {"say": "Calling them directly? Then it must know everyone.", "show": "Calling them *directly?* Then it must [know everyone.]"}
+  ],
+  [
+   {"say": "The fix? Event-driven architecture.", "show": "The fix? [Event-driven architecture.]"},
+   {"say": "The order service just announces a fact: order placed.", "show": "The order service just *announces a fact:* [Order placed.]"}
+  ],
+  [
+   {"say": "That's an event. A log keeps it, in order.", "show": "That's an *event.* A *log* keeps it, *in order.*"},
+   {"say": "Email, tracking, rewards: each reacts on its own.", "show": "*Email,* *tracking,* *rewards:* each [reacts on its own.]"}
+  ],
+  [
+   {"say": "Like a doorbell. You don't keep checking the door.", "show": "Like a *doorbell.* You don't keep *checking* the door."},
+   {"say": "It rings. You answer.", "show": "It *rings.* You [answer.]"}
+  ],
+  [
+   {"say": "Rewards was down? It reads the log and catches up.", "show": "Rewards was *down?* It reads the log and [catches up.]"},
+   {"say": "New service? It replays past events.", "show": "*New* service? It [replays past events.]"}
+  ],
+  [
+   {"say": "The order service never changes. It doesn't even know who's listening.", "show": "The order service [never changes.] It doesn't even know *who's listening.*"}
+  ],
+  [
+   {"say": "Stop asking. Start reacting.", "show": "Stop *asking.* Start [reacting.]"}
+  ],
+  [
+   {"say": "That's Apache Kafka and Amazon Event Bridge.", "show": "That's *Apache Kafka* and *Amazon EventBridge.*"}
+  ],
+  [
+   {"say": "Haven't seen pub sub? That reel's on my profile.", "show": "Haven't seen *Pub/Sub?* That reel's on my profile."},
+   {"say": "If you're a vibe coder, follow for the system design your AI skipped.", "show": "If you're a *vibe coder,* follow for the system design your *AI skipped.*"}
+  ]
+ ]
+}

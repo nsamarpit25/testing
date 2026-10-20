@@ -1,0 +1,339 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>@font-face{font-family:G;font-weight:500;src:url(../themes/inter/package/files/inter-latin-500-normal.woff2)}
+@font-face{font-family:G;font-weight:600;src:url(../themes/inter/package/files/inter-latin-600-normal.woff2)}
+@font-face{font-family:G;font-weight:700;src:url(../themes/inter/package/files/inter-latin-700-normal.woff2)}
+@font-face{font-family:G;font-weight:800;src:url(../themes/inter/package/files/inter-latin-800-normal.woff2)}
+@font-face{font-family:M;font-weight:500;src:url(../v3/fontsource-jetbrains-mono-5.0.20/package/files/jetbrains-mono-latin-500-normal.woff2)}
+@font-face{font-family:M;font-weight:700;src:url(../v3/fontsource-jetbrains-mono-5.0.20/package/files/jetbrains-mono-latin-700-normal.woff2)}
+:root{--bg:#F5F5F7;--fg:#1D1D1F;--mut:#86868B;--line:#D2D2D7;--cy:#0071E3;--li:#34C759;--rd:#FF3B30;--vi:#0071E3;--am:#0071E3;--sh:0 10px 40px rgba(0,0,0,.08)}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:540px;height:960px;overflow:hidden;background:var(--bg);color:var(--fg);font-family:G,sans-serif}
+#bgglow{position:absolute;inset:-200px;background:radial-gradient(500px 500px at 50% 40%,#fff,transparent 70%)}
+#grid{display:none}
+.sc{position:absolute;inset:0;opacity:0}
+.abs{position:absolute}
+.tag{position:absolute;left:0;right:0;text-align:center;top:64px;font-weight:700;font-size:13px;letter-spacing:1.6px;white-space:nowrap;text-transform:uppercase}
+.title{position:absolute;left:0;right:0;top:100px;text-align:center;font-weight:800;font-size:40px;line-height:1.08;letter-spacing:-1.3px}
+.mono{font-family:M}
+#prog{position:absolute;left:36px;right:36px;top:30px;display:flex;gap:6px}
+#prog div{flex:1;height:3px;border-radius:2px;background:#DEDEE3;overflow:hidden}
+#prog i{display:block;height:100%;width:0;background:var(--fg)}
+#plab{display:none}
+#brand{position:absolute;left:0;right:0;bottom:30px;text-align:center;font-size:12px;font-weight:600;color:var(--mut);letter-spacing:.4px}
+#cap{position:absolute;left:24px;right:24px;top:780px;text-align:center;font-weight:800;font-size:33px;line-height:1.15;letter-spacing:-.7px}
+#cap span{display:inline-block;margin:0 5px}
+.phone{position:absolute;width:56px;height:96px;border-radius:14px;border:1.5px solid var(--line);background:#fff;box-shadow:var(--sh)}
+.phone::after{content:"";position:absolute;left:20px;right:20px;top:7px;height:4px;border-radius:2px;background:var(--line)}
+.server{position:absolute;width:76px}
+.server b{display:block;height:28px;border-radius:8px;border:1.5px solid var(--line);background:#fff;margin-bottom:6px;position:relative;box-shadow:0 4px 14px rgba(0,0,0,.05)}
+.server b::before{content:"";position:absolute;left:9px;top:9px;width:8px;height:8px;border-radius:50%;background:var(--led,var(--li))}
+.server b::after{content:"";position:absolute;left:24px;right:9px;top:12px;height:3px;border-radius:2px;background:#E5E5EA}
+.gate{position:absolute;width:3px;border-radius:2px;background:var(--cy)}
+.pk{position:absolute;width:40px;height:20px;border-radius:10px;background:var(--cy);font-family:G;font-weight:700;font-size:9px;letter-spacing:.5px;color:#fff;display:flex;align-items:center;justify-content:center;opacity:0;box-shadow:0 4px 12px rgba(0,113,227,.3)}
+.pk.red{background:var(--rd);box-shadow:0 4px 12px rgba(255,59,48,.35)}
+.lbl{font-size:11px;font-weight:700;color:var(--mut);letter-spacing:1.3px;text-transform:uppercase}
+.big{font-weight:800;letter-spacing:-2px}
+.coin{position:absolute;width:44px;height:44px;border-radius:50%;background:var(--li);box-shadow:0 6px 16px rgba(52,199,89,.35);display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-size:17px}
+.slot{position:absolute;width:52px;height:52px;border-radius:50%;border:2px dashed #D2D2D7}
+.card{position:absolute;border-radius:22px;background:#fff;box-shadow:var(--sh);border:1.5px solid transparent}
+.blk{position:absolute;font-weight:800;font-size:12px;color:var(--rd);letter-spacing:1.6px}
+</style></head><body>
+<div id="bgglow"></div><div id="grid"></div>
+
+<!-- S0 hook -->
+<div class="sc" id="s0">
+  <div class="tag" style="color:var(--mut)">Rate limiting · explained</div>
+  <div class="title" id="s0t" style="font-size:48px;top:100px"><span>One bot can</span><br><span>crash an app</span> <span style="color:var(--rd)">in seconds.</span></div>
+  <div class="abs" id="s0f" style="left:40px;top:330px;width:460px;height:330px">
+    <div class="server" id="s0srv" style="left:350px;top:80px"><b></b><b></b><b></b><b></b></div>
+    <div class="abs lbl" id="s0dn" style="left:342px;top:232px;color:var(--rd);opacity:0">503 · Down</div>
+    <div id="flood"></div>
+    <div class="card" id="s0c" style="left:0;top:262px;padding:12px 18px;display:flex;gap:14px;align-items:baseline"><span id="s0n" style="font-size:30px;font-weight:800;color:var(--rd);letter-spacing:-1px">0</span><span class="lbl">requests / sec</span></div>
+  </div>
+</div>
+
+<!-- S1 definition -->
+<div class="sc" id="s1">
+  <div class="tag" id="s1q" style="color:var(--mut)">How do apps survive?</div>
+  <div class="title" id="s1t" style="top:110px;font-size:58px;letter-spacing:-2.5px"></div>
+  <div class="abs" id="s1d" style="left:0;right:0;top:186px;text-align:center;font-size:20px;font-weight:500;color:var(--mut)">a cap on <span style="color:var(--cy);font-weight:700">requests</span> per <span style="color:var(--fg);font-weight:700">time</span></div>
+  <div class="abs" id="s1lane" style="left:40px;top:330px;width:460px;height:200px"></div>
+</div>
+
+<!-- S2 simple counter -->
+<div class="sc" id="s2">
+  <div class="tag" style="color:var(--cy)">Way 1 · Simple counter</div><div class="title" style="top:92px;font-size:34px">5 requests / minute</div>
+  <div class="card" id="s2c" style="left:110px;top:170px;width:320px;height:200px">
+    <div class="lbl" id="s2min" style="position:absolute;left:20px;top:18px">MINUTE 1</div>
+    <div class="lbl" id="s2clk" style="position:absolute;right:20px;top:18px;color:var(--fg)">0:00</div>
+    <div class="big" id="s2n" style="position:absolute;left:0;right:0;top:46px;text-align:center;font-size:72px;line-height:1">0<span style="color:var(--mut);font-size:36px">/5</span></div>
+    <div style="position:absolute;left:20px;right:20px;bottom:22px;height:6px;border-radius:3px;background:#1c2033;overflow:hidden"><i id="s2bar" style="display:block;height:100%;width:0;background:var(--cy)"></i></div>
+  </div>
+  <div class="abs" id="s2lane" style="left:40px;top:430px;width:460px;height:200px"></div>
+</div>
+
+<!-- S3 the catch -->
+<div class="sc" id="s3">
+  <div class="title" id="s3t" style="top:120px;font-size:52px;color:var(--rd)">THE LOOPHOLE</div>
+  <div class="abs" id="s3tl" style="left:30px;top:300px;width:480px;height:360px">
+    <div class="abs" style="left:0;right:0;top:250px;height:2px;background:var(--line)"></div>
+    <div class="abs" id="s3w1" style="left:0;width:238px;top:262px;height:44px;border-radius:12px;background:#fff;box-shadow:var(--sh);font-family:M;font-size:12px;color:var(--mut);display:flex;align-items:center;justify-content:center">MINUTE 1 · <span id="s3n1" style="margin-left:6px;color:var(--fg)">0/5</span></div>
+    <div class="abs" id="s3w2" style="left:242px;width:238px;top:262px;height:44px;border-radius:12px;background:#fff;box-shadow:var(--sh);font-family:M;font-size:12px;color:var(--mut);display:flex;align-items:center;justify-content:center">MINUTE 2 · <span id="s3n2" style="margin-left:6px;color:var(--fg)">0/5</span></div>
+    <div class="abs" style="left:239px;top:20px;width:2px;height:236px;background:var(--cy)"></div>
+    <div class="abs lbl" style="left:180px;top:318px;width:50px;text-align:right;color:var(--fg)">0:59</div>
+    <div class="abs lbl" style="left:250px;top:318px;color:var(--fg)">1:00</div>
+    <div class="abs" id="s3br" style="left:150px;top:0;width:180px;height:240px;border-radius:16px;border:2px solid var(--rd);background:rgba(255,59,48,.05);opacity:0"></div>
+  </div>
+  <div class="abs" id="s3msg" style="left:0;right:0;top:250px;text-align:center;font-family:M;font-weight:700;font-size:22px;color:var(--rd);opacity:0">10 requests in 2 sec</div>
+  <div class="abs" id="s3lim" style="left:0;right:0;top:680px;text-align:center;opacity:0"><span style="font-family:M;font-size:18px;position:relative;padding:4px 10px">LIMIT 5/min<i id="s3strike" style="position:absolute;left:0;top:50%;height:3px;background:var(--rd);width:0;box-shadow:0 0 8px var(--rd)"></i></span></div>
+</div>
+
+<!-- S4 token bucket -->
+<div class="sc" id="s4">
+  <div class="tag" style="color:var(--li)">Way 2 · Token bucket</div><div class="title" style="top:92px;font-size:34px">Tokens = your wallet</div>
+  <div class="card" id="s4card" style="left:60px;top:170px;width:420px;height:200px">
+    <div class="lbl" style="position:absolute;left:20px;top:18px">YOUR TOKENS</div>
+    <div class="big" id="s4n" style="position:absolute;right:20px;top:12px;font-size:22px;color:var(--li)">0</div>
+    <div id="s4tray" style="position:absolute;left:30px;top:70px;width:360px;height:60px"></div>
+    <svg id="s4ring" width="40" height="40" style="position:absolute;right:16px;bottom:14px;opacity:0"><circle cx="20" cy="20" r="16" fill="none" stroke="#E5E5EA" stroke-width="4"/><circle id="s4arc" cx="20" cy="20" r="16" fill="none" stroke="var(--li)" stroke-width="4" stroke-dasharray="100.5" stroke-dashoffset="100.5" transform="rotate(-90 20 20)" stroke-linecap="round"/></svg>
+    <div class="lbl" id="s4rl" style="position:absolute;right:62px;bottom:26px;opacity:0">+1 every 12s</div>
+  </div>
+  <div class="abs" id="s4lane" style="left:40px;top:430px;width:460px;height:200px"></div>
+</div>
+
+<!-- S5 outro -->
+<div class="sc" id="s5">
+  <div class="title" style="top:110px;font-size:36px">Which would you build?</div>
+  <div class="card" id="s5a" style="left:40px;top:200px;width:460px;height:150px">
+    <div class="mono" style="position:absolute;left:22px;top:20px;font-size:12px;letter-spacing:2px;color:var(--cy)">WAY 1 · COUNTER</div>
+    <div style="position:absolute;left:22px;top:48px;font-size:26px;font-weight:700">Simple</div>
+    <div style="position:absolute;left:22px;top:88px;font-size:17px;color:var(--rd)">but bursts sneak through</div>
+  </div>
+  <div class="card" id="s5b" style="left:40px;top:370px;width:460px;height:150px;border-color:var(--li)">
+    <div class="mono" style="position:absolute;left:22px;top:20px;font-size:12px;letter-spacing:2px;color:var(--li)">WAY 2 · TOKEN BUCKET</div>
+    <div style="position:absolute;left:22px;top:48px;font-size:26px;font-weight:700">Smarter</div>
+    <div style="position:absolute;left:22px;top:88px;font-size:17px;color:var(--li)">smooth and burst-proof</div>
+  </div>
+  <div class="abs" id="s5f" style="left:0;right:0;top:570px;text-align:center"><span style="display:inline-block;padding:12px 26px;border-radius:999px;background:var(--fg);color:#fff;font-weight:700;font-size:18px">Comment 1 or 2</span><div class="lbl" style="margin-top:14px">@how.its.engineered · Next: Caching</div></div>
+</div>
+
+<div id="prog"><div><i></i></div><div><i></i></div><div><i></i></div><div><i></i></div></div>
+<div id="plab"></div><div id="brand">@how.its.engineered</div>
+<div id="cap"></div>
+
+<script>
+const L=[{"say": "One bot can crash an app in seconds. Seriously.", "show": "One bot can crash an app in seconds. Seriously.", "start": 0.04, "end": 4.1}, {"say": "So how does Instagram survive millions of them? Two words. Rate limiting.", "show": "So how does Instagram survive millions of them? Two words. Rate limiting.", "start": 4.507, "end": 9.147}, {"say": "Here's the easy way. You get five requests per minute. That's it.", "show": "Here's the easy way. You get 5 requests per minute. That's it.", "start": 9.759, "end": 13.735}, {"say": "Try a sixth? Blocked. Wait for the next minute, and you're back.", "show": "Try a 6th? Blocked. Wait for the next minute, and you're back.", "start": 14.071, "end": 18.548}, {"say": "But wait. Can you spot the loophole?", "show": "But wait. Can you spot the loophole?", "start": 18.893, "end": 20.759}, {"say": "Send five at fifty nine seconds. Then five more at sixty.", "show": "Send 5 at 0:59. Then 5 more at 1:00.", "start": 21.081, "end": 24.833}, {"say": "Boom. Ten requests in two seconds. Your limit just got fooled.", "show": "Boom. 10 requests in 2 seconds. Your limit just got fooled.", "start": 25.07, "end": 29.671}, {"say": "So big apps use something smarter. The token bucket.", "show": "So big apps use something smarter. The token bucket.", "start": 30.015, "end": 32.976}, {"say": "Think of it like a wallet. Five tokens. Every request costs one.", "show": "Think of it like a wallet. 5 tokens. Every request costs 1.", "start": 33.291, "end": 37.089}, {"say": "Tokens trickle back in. One every twelve seconds.", "show": "Tokens trickle back in. 1 every 12 seconds.", "start": 37.37, "end": 40.283}, {"say": "Now try that loophole again. Wallet's empty. Blocked.", "show": "Now try that loophole again. Wallet's empty. Blocked.", "start": 40.551, "end": 43.735}, {"say": "Which one would you build? Comment one or two. And follow for caching next.", "show": "Which one would you build? Comment 1 or 2. Follow for caching next.", "start": 44.046, "end": 47.666}], END=49.27; window.CAPT=[{"li": 0, "show": "One bot can crash an app", "start": 0.04, "end": 1.52}, {"li": 0, "show": "in seconds.", "start": 2.0, "end": 2.96}, {"li": 0, "show": "Seriously.", "start": 3.24, "end": 4.1}, {"li": 1, "show": "So how does Instagram survive millions of them?", "start": 4.507, "end": 6.868}, {"li": 1, "show": "Two words", "start": 7.41, "end": 8.117}, {"li": 1, "show": "Rate limiting.", "start": 8.544, "end": 9.147}, {"li": 2, "show": "Here's the easy way.", "start": 9.759, "end": 10.553}, {"li": 2, "show": "You get 5 requests per minute.", "start": 10.896, "end": 12.552}, {"li": 2, "show": "That's it.", "start": 12.856, "end": 13.735}, {"li": 3, "show": "Try a 6th?", "start": 14.071, "end": 14.71}, {"li": 3, "show": "Blocked!", "start": 15.066, "end": 15.581}, {"li": 3, "show": "Wait for the next minute", "start": 16.566, "end": 17.628}, {"li": 3, "show": "and you're back.", "start": 17.91, "end": 18.548}, {"li": 4, "show": "But wait", "start": 18.893, "end": 19.362}, {"li": 4, "show": "can you spot the loophole?", "start": 19.689, "end": 20.759}, {"li": 5, "show": "Send 5 at 0:59.", "start": 21.081, "end": 23.163}, {"li": 5, "show": "Then 5 more at 1:00.", "start": 23.344, "end": 24.833}, {"li": 6, "show": "Boom!", "start": 25.07, "end": 25.58}, {"li": 6, "show": "10 requests in 2 seconds.", "start": 25.804, "end": 27.621}, {"li": 6, "show": "Your limit just got fooled.", "start": 28.131, "end": 29.671}, {"li": 7, "show": "So big apps use something smarter", "start": 30.015, "end": 31.807}, {"li": 7, "show": "the token bucket.", "start": 32.095, "end": 32.976}, {"li": 8, "show": "Think of it like a wallet.", "start": 33.291, "end": 34.307}, {"li": 8, "show": "5 tokens.", "start": 34.575, "end": 35.391}, {"li": 8, "show": "Every request costs 1.", "start": 35.608, "end": 37.089}, {"li": 9, "show": "Tokens trickle back in", "start": 37.37, "end": 38.58}, {"li": 9, "show": "1 every 12 seconds.", "start": 38.795, "end": 40.283}, {"li": 10, "show": "Now try that loophole again.", "start": 40.551, "end": 41.873}, {"li": 10, "show": "Wallet's empty.", "start": 42.172, "end": 42.872}, {"li": 10, "show": "Blocked!", "start": 43.143, "end": 43.735}, {"li": 11, "show": "Which one would you build?", "start": 44.046, "end": 44.98}, {"li": 11, "show": "Comment 1 or 2.", "start": 45.26, "end": 46.523}, {"li": 11, "show": "And follow for caching next!", "start": 46.77, "end": 47.666}];
+const $=s=>document.querySelector(s);
+const cl=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));
+const P=(t,t0,d)=>cl((t-t0)/d);
+const eo=x=>1-Math.pow(1-x,3);
+const eio=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
+const bk=x=>{const c1=1.9,c3=c1+1;return 1+c3*Math.pow(x-1,3)+c1*Math.pow(x-1,2)};
+const lerp=(a,b,u)=>a+(b-a)*u;
+const S=i=>L[i].start;
+
+// ---------- lane builder ----------
+function lane(id,{gate=true,n=10}={}){
+  const el=document.getElementById(id);
+  el.insertAdjacentHTML('beforeend',`<div class="phone" style="left:0;top:52px"></div><div class="lbl" style="position:absolute;left:8px;top:156px">YOU</div>
+  <div class="server" style="left:390px;top:58px"><b></b><b></b><b></b></div><div class="lbl" style="position:absolute;left:390px;top:156px">SERVER</div>
+  ${gate?'<div class="gate" style="left:228px;top:30px;height:140px"></div><div class="lbl" style="position:absolute;left:204px;top:178px;color:var(--vi)">LIMIT</div>':''}
+  <div class="blk" style="left:196px;top:4px;opacity:0">BLOCKED</div>`);
+  const pks=[];for(let i=0;i<n;i++){const p=document.createElement('div');p.className='pk';p.textContent='REQ';el.appendChild(p);pks.push(p)}
+  return {el,pks,blk:el.querySelector('.blk')};
+}
+// draw packet: returns 'arrived' | 'blocked' | null
+function pk(p,t,t0,{blocked=false,y=92,dur=.75}={}){
+  const lt=t-t0;
+  if(lt<0){p.style.opacity=0;return null}
+  p.classList.toggle('red',false);
+  if(!blocked){
+    const u=cl(lt/dur);const x=lerp(64,370,eio(u));
+    p.style.transform=`translate(${x}px,${y}px) scale(${1+.15*Math.sin(u*Math.PI)})`;
+    p.style.opacity=u>=1?0:(u>.85?(1-u)/.15:1);
+    return u>=1?'arrived':null;
+  }
+  // to gate, shake, bounce back
+  if(lt<.4){const x=lerp(64,186,eio(lt/.4));p.style.transform=`translate(${x}px,${y}px)`;p.style.opacity=1;return null}
+  p.classList.add('red');
+  if(lt<.75){const s=Math.sin((lt-.4)*60)*4;p.style.transform=`translate(${186+s}px,${y}px) scale(1.1)`;p.style.opacity=1;return 'blocked'}
+  const u=cl((lt-.75)/.5);p.style.transform=`translate(${lerp(186,60,eo(u))}px,${y}px)`;p.style.opacity=1-u;return 'blocked'
+}
+const lanes={s1:lane('s1lane',{n:8}),s2:lane('s2lane',{n:6}),s4:lane('s4lane',{n:9})};
+
+const FL=[];{let s=11;const R=()=>(s=(s*16807)%2147483647)/2147483647;const fe=document.getElementById('flood');for(let i=0;i<34;i++){const e=document.createElement('div');e.className='pk';e.textContent='REQ';fe.appendChild(e);FL.push({el:e,y:10+R()*220,o:R()*1.1,sp:.9+R()*.9,r:R()>.55})}}
+// S1 title letters
+$('#s1t').innerHTML=[...'RATE LIMITING'].map(c=>`<span style="display:inline-block">${c===' '?'&nbsp;':c}</span>`).join('');
+// S3 stacks
+const tl=$('#s3tl');const s3p=[];
+for(let i=0;i<10;i++){const p=document.createElement('div');p.className='pk';p.textContent='REQ';tl.appendChild(p);s3p.push(p)}
+// S4 tray
+const tray=$('#s4tray');const coins=[];
+for(let i=0;i<5;i++){tray.insertAdjacentHTML('beforeend',`<div class="slot" style="left:${i*74}px;top:4px"></div>`);const c=document.createElement('div');c.className='coin';c.textContent='1';c.style.left=(i*74+4)+'px';c.style.top='8px';tray.appendChild(c);coins.push(c)}
+
+// ---------- scenes ----------
+const SC=[
+ {id:'s0',from:0,       to:S(1)-.1, ch:0},
+ {id:'s1',from:S(1)-.1, to:S(2)-.1, ch:0},
+ {id:'s2',from:S(2)-.1, to:S(4)-.1, ch:1},
+ {id:'s3',from:S(4)-.1, to:S(7)-.1, ch:2},
+ {id:'s4',from:S(7)-.1, to:S(11)-.1,ch:3},
+ {id:'s5',from:S(11)-.1,to:END+1,   ch:3},
+];
+const CHN=['THE PROBLEM','THE SIMPLE WAY','THE CATCH','THE BETTER WAY'];
+const chStart=[0,SC[2].from,SC[3].from,SC[4].from,END];
+
+function enter(el,t,t0,{dy=30,d=.5,sc=false}={}){const u=P(t,t0,d);el.style.opacity=u;el.style.transform=sc?`scale(${lerp(.6,1,bk(u))})`:`translateY(${(1-eo(u))*dy}px)`}
+
+const draw={
+ s0(t){
+  enter(document.querySelector('#s0 .tag'),t,0);
+  [...$('#s0t').children].filter(e=>e.tagName==='SPAN').forEach((s,i)=>{const u=P(t,[.05,.55,1.95][i],.45);s.style.display='inline-block';s.style.opacity=u;s.style.transform=`translateY(${(1-eo(u))*24}px)`});
+  const fl=$('#s0f');fl.style.opacity=P(t,.3,.3);
+  // flood packets stream in, density grows
+  FL.forEach((d,i)=>{const t0=.4+d.o;const u=((t-t0)*d.sp)%1;const on=t>=t0;
+    d.el.style.opacity=on?Math.min(1,u*4)*(1-Math.max(0,(u-.85)/.15)):0;
+    d.el.style.transform=`translate(${lerp(-40,330,u)}px,${d.y}px)`;
+    d.el.classList.toggle('red',t>1.95&&d.r)});
+  const n=Math.floor(eo(P(t,.5,1.8))*50000);$('#s0n').textContent=n.toLocaleString('en-US');
+  enter($('#s0c'),t,.5,{dy:20});
+  const down=t>2.0;const srv=$('#s0srv');srv.style.setProperty('--led',down?'var(--rd)':'var(--li)');
+  srv.style.transform=down&&t<2.8?`translateX(${Math.sin(t*80)*3}px)`:'none';srv.style.opacity=down?lerp(1,.55,P(t,2.3,.4)):1;
+  $('#s0dn').style.opacity=P(t,2.05,.25);
+ },
+ s1(t){
+  const a=S(1);
+  enter($('#s1q'),t,a);
+  const ln=lanes.s1;ln.el.style.opacity=P(t,a+.2,.4);
+  let blk=false;
+  ln.pks.forEach((p,i)=>{const r=pk(p,t,a+.5+i*.38,{blocked:i>=4});if(r==='blocked')blk=true});
+  ln.blk.style.opacity=blk?1:0;
+  const ta=a+2.75;
+  [...$('#s1t').children].forEach((s,i)=>{const u=P(t,ta+i*.035,.45);s.style.opacity=u;s.style.transform=`translateY(${(1-bk(u))*30}px)`});
+  $('#s1q').style.opacity=Math.min(P(t,a,.5),1-P(t,ta-.2,.3));
+  enter($('#s1d'),t,ta+.7);
+ },
+ s2(t){
+  const a=S(2),b=S(3);
+  $('.tag',).style; enter(document.querySelector('#s2 .tag'),t,a-.05,{sc:true});
+  enter($('#s2c'),t,a+.1);
+  const ln=lanes.s2;ln.el.style.opacity=P(t,a+.2,.4);
+  let n=0,blk=false;
+  const fire=[a+1.4,a+1.75,a+2.1,a+2.45,a+2.8];
+  fire.forEach((f,i)=>{if(pk(ln.pks[i],t,f)==='arrived')n++});
+  if(pk(ln.pks[5],t,b+.05,{blocked:true})==='blocked')blk=true;
+  ln.blk.style.opacity=blk?1:0;
+  // minute clock: 0:00 at a+.8 -> 1:00 at b+2.0
+  const t0=a+.8,t1=b+2.0;const reset=t>=t1;
+  const sec=reset?Math.floor((t-t1)*20):Math.floor(P(t,t0,t1-t0)*59);
+  $('#s2clk').textContent=(reset?'1:':'0:')+String(Math.min(59,sec)).padStart(2,'0');
+  $('#s2bar').style.width=(reset?P(t,t1,6)*100:P(t,t0,t1-t0)*100)+'%';
+  $('#s2min').textContent=reset?'MINUTE 2':'MINUTE 1';
+  const shown=reset?0:n;
+  const nEl=$('#s2n');nEl.innerHTML=`<span style="color:${shown>=5?'var(--rd)':'var(--fg)'}">${shown}</span><span style="color:var(--mut);font-size:36px;letter-spacing:0">/5</span>`;
+  const fl=reset?1-P(t,t1,.5):0;$('#s2c').style.boxShadow=`var(--sh), 0 0 0 ${4*fl}px rgba(0,113,227,${.35*fl})`;
+  
+ },
+ s3(t){
+  const a=S(4),b=S(5),c=S(6);
+  const tt=$('#s3t');const u=P(t,a,.4);tt.style.opacity=u;
+  const g=t<a+.6?Math.sin(t*120)*6*(1-u*.5):0;tt.style.transform=`translateX(${g}px) scale(${lerp(1.3,1,eo(u))})`;
+  
+  // shrink title when timeline shows
+  const sh=P(t,b-.1,.5);tt.style.top=lerp(120,110,sh)+'px';tt.style.fontSize=lerp(56,40,eo(sh))+'px';
+  const tlu=P(t,b-.1,.5);tl.style.opacity=tlu;
+  // left stack at 0:59 drop
+  let n1=0,n2=0;
+  s3p.forEach((p,i)=>{
+    const left=i<5;const j=left?i:i-5;
+    const t0=left?b+.5+j*.12:b+2.0+j*.12;
+    const x=left?175:265,y=210-j*36;
+    const v=P(t,t0,.35);
+    p.style.opacity=v>0?1:0;p.style.transform=`translate(${x}px,${lerp(-60,y,eo(v))}px)`;
+    if(v>=1){left?n1++:n2++}
+    p.classList.toggle('red',t>=c+.2);
+  });
+  $('#s3n1').textContent=n1+'/5';$('#s3n2').textContent=n2+'/5';
+  $('#s3n1').style.color=n1>=5?'var(--li)':'var(--fg)';$('#s3n2').style.color=n2>=5?'var(--li)':'var(--fg)';
+  const br=P(t,c+.1,.4);$('#s3br').style.opacity=br;$('#s3br').style.transform=`scale(${lerp(1.15,1,eo(br))})`;
+  const m=$('#s3msg');m.style.opacity=br;m.style.top=lerp(270,262,br)+'px';
+  // hide title when message comes
+  if(t>c)tt.style.opacity=1-P(t,c,.3);
+  const li=$('#s3lim');li.style.opacity=P(t,c+1.2,.3);$('#s3strike').style.width=P(t,c+1.5,.35)*100+'%';
+ },
+ s4(t){
+  const a=S(7),b=S(8),c=S(9),d=S(10);
+  enter(document.querySelector('#s4 .tag'),t,a-.05,{sc:true});
+  enter($('#s4card'),t,a+.15);
+  const ln=lanes.s4;ln.el.style.opacity=P(t,a+.3,.4);
+  // token count timeline
+  // fill in at a+.6.. ; spend 2 during line 8 ; refill 2 during line 9 ; burst in line 10
+  const appear=i=>a+.7+i*.12;
+  const spends=[b+1.5,b+2.1];           // two single requests
+  const refills=[c+1.1,c+2.4];          // two refills
+  const burst=[0,1,2,3,4,5,6].map(i=>d+.2+i*.17);
+  // events ordered: compute tokens by simulation
+  let tok=0;const ev=[];
+  for(let i=0;i<5;i++)ev.push([appear(i),'add']);
+  spends.forEach(x=>ev.push([x+.38,'use']));refills.forEach(x=>ev.push([x,'add']));
+  ev.sort((x,y)=>x[0]-y[0]);
+  // burst: first 5 consume, rest blocked (tokens all present by then)
+  let st=0;ev.forEach(e=>{if(t>=e[0])st+=e[1]==='add'?1:-1});
+  let used=0;burst.forEach((x,i)=>{if(i<5&&t>=x+.38)used++});
+  tok=st-used;
+  coins.forEach((cn,i)=>{const on=i<tok;const was=cn._on;cn.style.opacity=on?1:0;
+    // pop when appearing
+    let s=1;if(on){const last=ev.filter(e=>e[1]==='add'&&e[0]<=t).pop();if(last&&i===tok-1){s=lerp(.3,1,bk(P(t,last[0],.35)))}}
+    cn.style.transform=`scale(${on?s:.3})`});
+  const nEl=$('#s4n');nEl.textContent=tok+' / 5';nEl.style.color=tok===0?'var(--rd)':'var(--li)';
+  // packets
+  let blk=false;
+  spends.forEach((x,i)=>pk(ln.pks[i],t,x));
+  burst.forEach((x,i)=>{if(pk(ln.pks[2+i],t,x,{blocked:i>=5,y:92})==='blocked')blk=true});
+  ln.blk.style.opacity=blk?1:0;
+  // refill ring
+  const ringOn=t>=c-.1&&t<d;$('#s4ring').style.opacity=ringOn?1:0;$('#s4rl').style.opacity=ringOn?1:0;
+  let ph=0;if(t<refills[0])ph=P(t,c,refills[0]-c);else ph=P(t,refills[0],refills[1]-refills[0]);
+  $('#s4arc').style.strokeDashoffset=100.5*(1-ph);
+  const card=$('#s4card');const fl=tok===0&&t>d?1:0;card.style.borderColor=fl?'var(--rd)':'';
+ },
+ s5(t){
+  const a=S(11);
+  enter(document.querySelector('#s5 .title'),t,a-.05);
+  enter($('#s5a'),t,a+.1,{dy:50});enter($('#s5b'),t,a+1.2,{dy:50});enter($('#s5f'),t,a+2.4,{sc:true});
+ }
+};
+
+// ---------- captions ----------
+function syl(w){const c=w.replace(/[^\w:]/g,'');const map={'30':2,'5':1,'6th':1,'0:59':4,'1:00':3,'10':1,'2':1,'1':1,'12':2};if(map[c]!=null)return map[c];const g=c.toLowerCase().replace(/e$/,'').match(/[aeiouy]+/g);return Math.max(1,g?g.length:1)}
+const W=[];(window.CAPT||L).forEach((s,si)=>{const w=s.show.split(/\s+/);const wt=w.map(x=>syl(x)+(/[.,?:]$/.test(x)&&!/\d:\d/.test(x)?0.8:0)+.35);const tot=wt.reduce((a,b)=>a+b,0);let t=s.start;w.forEach((x,i)=>{const d=(s.end-s.start)*wt[i]/tot;W.push({w:x,s:t,e:t+d,si});t+=d})});
+const CH=[];let cur=[];W.forEach((w,i)=>{cur.push(i);const nx=W[i+1];if(cur.length>=3||!nx||nx.si!==w.si||/[.,?]$/.test(w.w)||/:$/.test(w.w)){CH.push(cur);cur=[]}});
+const KEY=/^(rate|limiting|requests?|blocked|loophole|token|bucket|tokens|smarter|wallet|boom|fooled|limit|bot|seconds|crash|comment|seriously)/i;
+
+window.render=function(t){
+  SC.forEach(s=>{const el=document.getElementById(s.id);const on=t>=s.from&&t<s.to;
+    const fin=P(t,s.from,.25),fout=1-P(t,s.to-.2,.2);el.style.opacity=on?Math.min(fin,fout):0;el.style.visibility=on?'visible':'hidden';
+    el.style.transform=on?`scale(${lerp(1.04,1,eo(fin))})`:'none';
+    if(on)draw[s.id](t)});
+  // bg glow color by chapter
+  const ci=SC.find(s=>t>=s.from&&t<s.to)?.ch??3;
+  
+  
+  // progress
+  document.querySelectorAll('#prog i').forEach((b,i)=>{b.style.width=P(t,chStart[i],chStart[i+1]-chStart[i])*100+'%'});
+  $('#plab').textContent=CHN[ci];
+  // captions
+  let wi=-1;for(let i=0;i<W.length;i++)if(t>=W[i].s-.03)wi=i;
+  const cap=$('#cap');
+  if(wi<0||t>L[L.length-1].end+.5){cap.innerHTML='';return}
+  const ch=CH.find(c=>c.includes(wi));
+  cap.innerHTML=ch.map(j=>{const w=W[j].w.replace(/[.,]$/,'');const isK=KEY.test(w)||/\d/.test(w);
+    if(j>wi)return "";
+    const u=P(t,W[j].s,.18);const sc=j===wi?lerp(.7,1,bk(u)):1;
+    const col=isK?'var(--cy)':'var(--fg)';
+    return `<span style="color:${col};transform:scale(${sc}) translateY(${(1-eo(u))*10}px)">${w}</span>`}).join('');
+};
+render(0);
+</script>
+</body></html>

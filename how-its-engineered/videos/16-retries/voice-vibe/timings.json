@@ -1,0 +1,138 @@
+[
+ {
+  "li": 0,
+  "pi": 0,
+  "say": "The weather server hiccups for one second.",
+  "show": "The weather server *hiccups* for one second.",
+  "start": 0.0,
+  "end": 2.08
+ },
+ {
+  "li": 0,
+  "pi": 1,
+  "say": "Every app hits retry at the same moment.",
+  "show": "Every app hits *retry* at the same moment.",
+  "start": 2.4,
+  "end": 4.52
+ },
+ {
+  "li": 0,
+  "pi": 2,
+  "say": "And now it's down for real.",
+  "show": "And now it's [down for real.]",
+  "start": 4.52,
+  "end": 6.36
+ },
+ {
+  "li": 1,
+  "pi": 0,
+  "say": "Retrying is smart. Most failures are brief: a network blip, a server restarting.",
+  "show": "Retrying is *smart.* Most failures are *brief:* a network blip, a server restarting.",
+  "start": 7.36,
+  "end": 12.3
+ },
+ {
+  "li": 1,
+  "pi": 1,
+  "say": "Try again, and it often just works.",
+  "show": "Try again, and it often just *works.*",
+  "start": 12.6,
+  "end": 14.3
+ },
+ {
+  "li": 2,
+  "pi": 0,
+  "say": "But retry instantly, again and again, and each failure turns into more calls.",
+  "show": "But retry *instantly,* again and again, and each failure turns into *more calls.*",
+  "start": 14.66,
+  "end": 19.2
+ },
+ {
+  "li": 2,
+  "pi": 1,
+  "say": "That's a retry storm.",
+  "show": "That's a [retry storm.]",
+  "start": 19.48,
+  "end": 20.78
+ },
+ {
+  "li": 3,
+  "pi": 0,
+  "say": "Fix one: cap it. Three attempts, then stop and show an error.",
+  "show": "Fix one: [cap it.] *3 attempts,* then stop and show an error.",
+  "start": 21.66,
+  "end": 25.04
+ },
+ {
+  "li": 4,
+  "pi": 0,
+  "say": "Fix two: back off. Wait one second, then two, then four.",
+  "show": "Fix two: [back off.] Wait *1 second,* then *2,* then *4.*",
+  "start": 25.62,
+  "end": 29.14
+ },
+ {
+  "li": 4,
+  "pi": 1,
+  "say": "Each wait gives the server more room to recover.",
+  "show": "Each wait gives the server more room to *recover.*",
+  "start": 29.14,
+  "end": 31.82
+ },
+ {
+  "li": 5,
+  "pi": 0,
+  "say": "But if every app waits exactly one second, they all come back together.",
+  "show": "But if every app waits *exactly* one second, they all come back *together.*",
+  "start": 32.48,
+  "end": 36.38
+ },
+ {
+  "li": 5,
+  "pi": 1,
+  "say": "Fix three: jitter. Add a little randomness, and the crowd spreads out.",
+  "show": "Fix three: [jitter.] Add a little *randomness,* and the crowd *spreads out.*",
+  "start": 37.0,
+  "end": 40.76
+ },
+ {
+  "li": 6,
+  "pi": 0,
+  "say": "Only retry what might fix itself, like a timeout or a five-oh-three. Not a four-oh-four.",
+  "show": "Only retry what might fix itself, like a *timeout* or a *503.* Not a *404.*",
+  "start": 41.46,
+  "end": 47.2
+ },
+ {
+  "li": 6,
+  "pi": 1,
+  "say": "And retrying a payment can charge twice, unless it's idempotent.",
+  "show": "And retrying a payment can *charge twice,* unless it's *idempotent.*",
+  "start": 47.78,
+  "end": 52.12
+ },
+ {
+  "li": 7,
+  "pi": 0,
+  "say": "AWS SDKs already retry with backoff by default.",
+  "show": "*AWS* SDKs already retry with *backoff* by default.",
+  "start": 53.66,
+  "end": 56.94
+ },
+ {
+  "li": 8,
+  "pi": 0,
+  "say": "Haven't seen idempotency? That reel's on my profile.",
+  "show": "Haven't seen *idempotency?* That reel's on my profile.",
+  "start": 57.5,
+  "end": 59.94
+ },
+ {
+  "li": 8,
+  "pi": 1,
+  "say": "If you're a vibe coder, follow for the system design your AI skipped.",
+  "show": "If you're a *vibe coder,* [follow] for the system design your AI *skipped.*",
+  "start": 60.48,
+  "end": 64.1
+ }
+]

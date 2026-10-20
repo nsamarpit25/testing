@@ -1,0 +1,98 @@
+[
+ {
+  "li": 0,
+  "pi": 0,
+  "say": "The reviews on a shopping app got slow. Not broken. Just slow. And the whole app went down.",
+  "show": "The *reviews* on a shopping app got slow. Not broken. Just slow. And [the whole app went down.]",
+  "start": 0.0,
+  "end": 6.34
+ },
+ {
+  "li": 1,
+  "pi": 0,
+  "say": "This product page calls four services: product, price, reviews, recommendations.",
+  "show": "This product page calls four services: product, price, *reviews,* recommendations.",
+  "start": 6.84,
+  "end": 11.08
+ },
+ {
+  "li": 1,
+  "pi": 1,
+  "say": "Every request now waits on reviews. Each waiting request holds a thread.",
+  "show": "Every request now *waits* on reviews. Each waiting request holds a *thread.*",
+  "start": 11.68,
+  "end": 15.58
+ },
+ {
+  "li": 1,
+  "pi": 2,
+  "say": "Threads run out, and the server stops answering everyone, even for the parts that work.",
+  "show": "Threads run out, and the server [stops answering everyone,] even for the parts that work.",
+  "start": 16.04,
+  "end": 19.8
+ },
+ {
+  "li": 1,
+  "pi": 3,
+  "say": "That's a cascading failure. And retrying just piles on more calls.",
+  "show": "That's a [cascading failure.] And *retrying* just piles on more calls.",
+  "start": 20.28,
+  "end": 23.98
+ },
+ {
+  "li": 2,
+  "pi": 0,
+  "say": "The fix is borrowed from your house: a circuit breaker. Too much current? It trips and cuts the circuit before the wires burn.",
+  "show": "The fix is borrowed from your house: a [circuit breaker.] Too much current? It *trips* and cuts the circuit before the wires burn.",
+  "start": 24.88,
+  "end": 30.62
+ },
+ {
+  "li": 3,
+  "pi": 0,
+  "say": "In software, it wraps every call to reviews. Closed: calls go through, and it counts the failures. A timeout turns slow into failed.",
+  "show": "In software, it wraps every call to reviews. [Closed:] calls go through, and it counts the *failures.* A *timeout* turns slow into failed.",
+  "start": 31.22,
+  "end": 38.04
+ },
+ {
+  "li": 3,
+  "pi": 1,
+  "say": "Too many failures? It trips. Open.",
+  "show": "Too many failures? It trips. [Open.]",
+  "start": 38.5,
+  "end": 40.38
+ },
+ {
+  "li": 3,
+  "pi": 2,
+  "say": "Now calls to reviews fail instantly, with no waiting. The page hides the reviews and loads everything else. And reviews gets room to recover.",
+  "show": "Now calls to reviews *fail instantly,* with no waiting. The page [hides the reviews] and loads everything else. And reviews gets room to *recover.*",
+  "start": 40.92,
+  "end": 47.48
+ },
+ {
+  "li": 4,
+  "pi": 0,
+  "say": "After a cooldown, it goes half-open and lets a few test calls through. They work? Closed again. They fail? Back to open.",
+  "show": "After a cooldown, it goes [half-open] and lets a few *test calls* through. They work? *Closed* again. They fail? Back to *open.*",
+  "start": 48.16,
+  "end": 54.46
+ },
+ {
+  "li": 5,
+  "pi": 0,
+  "say": "Netflix built Hystrix for this. Today, Resilience4j does it in a few lines.",
+  "show": "*Netflix* built Hystrix for this. Today, [Resilience4j] does it in a few lines.",
+  "start": 55.16,
+  "end": 59.06
+ },
+ {
+  "li": 6,
+  "pi": 0,
+  "say": "Haven't seen how health checks work? That reel's on my profile. Follow for the rest of the series.",
+  "show": "Haven't seen how *health checks* work? That reel's on my profile. [Follow] for the rest of the series.",
+  "start": 59.52,
+  "end": 63.38
+ }
+]

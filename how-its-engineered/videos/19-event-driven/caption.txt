@@ -1,0 +1,20 @@
+You tap Place Order. One second later your email, tracking page and reward points all update. But nobody told them to 🛒
+
+The slow way: every service keeps asking the order service, "anything new?" All day. Almost every answer is no, so thousands of wasted calls drown it. Calling them directly instead? Then the order service has to know everyone.
+
+Event-driven architecture fixes it:
+📢 The order service just announces a fact: "Order placed." That's an event
+📜 A log keeps every event, in order
+⚡ Email, tracking and rewards each react on their own
+
+🔔 Like a doorbell: you don't keep checking the door. It rings, you answer.
+
+⏪ A service was down? It reads the log and catches up
+🆕 A new service? It replays past events
+🙈 And the order service never changes. It doesn't even know who's listening
+
+That's Apache Kafka and Amazon EventBridge.
+
+Which of your services is still asking "anything new?" Comment below 👇
+
+#systemdesign #softwareengineering #backend #eventdriven #kafka #coding #programming #techexplained

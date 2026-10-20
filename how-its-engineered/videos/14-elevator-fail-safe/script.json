@@ -1,0 +1,85 @@
+{
+ "topic": "What stops a falling elevator (remake)",
+ "lines": [
+  [
+   {
+    "say": "If the elevator ropes snap, what stops you falling?",
+    "show": "If the elevator *ropes snap*, what stops you falling?"
+   },
+   {
+    "say": "The car grabs the rails.",
+    "show": "The car grabs [the rails.]"
+   }
+  ],
+  [
+   {
+    "say": "In eighteen fifty-four, Elisha Otis made that automatic.",
+    "show": "In *1854*, *Elisha Otis* made that automatic."
+   },
+   {
+    "say": "The lifting rope kept a spring bent, holding two catches back.",
+    "show": "The lifting rope kept a *spring* bent, holding two *catches* back."
+   },
+   {
+    "say": "If the rope broke, the spring straightened, pushing the catches into teeth on the rails.",
+    "show": "If the rope broke, the spring *straightened*, pushing the catches into *teeth* on the rails."
+   },
+   {
+    "say": "The failure itself fired the brake. That's fail-safe.",
+    "show": "The failure itself *fired the brake*. That's [fail-safe.]"
+   }
+  ],
+  [
+   {
+    "say": "Now follow this thin rope. It moves with the car, turning a wheel called the governor.",
+    "show": "Now follow this *thin rope*. It moves with the car, turning a wheel called the *governor*."
+   },
+   {
+    "say": "If the car goes too fast, weights swing outward and lock that rope.",
+    "show": "If the car goes *too fast*, weights swing outward and *lock* that rope."
+   }
+  ],
+  [
+   {
+    "say": "The car keeps moving, so the stopped rope pulls a lever.",
+    "show": "The car keeps moving, so the stopped rope pulls a *lever*."
+   },
+   {
+    "say": "That pulls wedges between the car and rails, like pushing a doorstop under a door.",
+    "show": "That pulls *wedges* between the car and rails, like pushing a *doorstop* under a door."
+   },
+   {
+    "say": "They squeeze against the rails, and friction slows the car.",
+    "show": "They squeeze against the rails, and [friction] slows the car."
+   }
+  ],
+  [
+   {
+    "say": "But cut that thin rope?",
+    "show": "But *cut* that thin rope?"
+   },
+   {
+    "say": "In nineteen forty-five, a bomber hit the Empire State Building. Falling debris cut car six's lifting ropes, and its governor rope.",
+    "show": "In *1945*, a *bomber* hit the *Empire State Building*. Falling debris cut car 6's lifting ropes, and its *governor rope*."
+   },
+   {
+    "say": "Its wedges worked. Nothing triggered them.",
+    "show": "Its wedges worked. [Nothing triggered them.]"
+   },
+   {
+    "say": "It fell seventy-five floors. Operator Betty Lou Oliver survived.",
+    "show": "It fell *75 floors*. Operator *Betty Lou Oliver* survived."
+   }
+  ],
+  [
+   {
+    "say": "Newer systems remove that rope: a speed sensor and electronics trigger the wedges directly.",
+    "show": "Newer systems remove that rope: a *speed sensor* and *electronics* trigger the wedges directly."
+   },
+   {
+    "say": "Follow for more of how things are engineered.",
+    "show": "[Follow] for more of how things are engineered."
+   }
+  ]
+ ]
+}

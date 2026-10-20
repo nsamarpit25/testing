@@ -1,0 +1,166 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1080
+PlayResY: 1920
+WrapStyle: 0
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Cap,Liberation Sans,72,&H00FFFFFF,&H00FFFFFF,&H00303030,&H80000000,1,0,0,0,100,100,0,0,1,2.2,0,2,110,110,330,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:01.00,0:00:02.86,Cap,,0,0,0,,{\alpha&H00&\c&H0066D9FF&}Claude… {\alpha&HFF&}did {\alpha&HFF&}I {\alpha&HFF&}just {\alpha&HFF&}push {\alpha&HFF&}my
+Dialogue: 0,0:00:02.86,0:00:02.98,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Claude… {\alpha&H00&\c&H0066D9FF&}did {\alpha&HFF&}I {\alpha&HFF&}just {\alpha&HFF&}push {\alpha&HFF&}my
+Dialogue: 0,0:00:02.98,0:00:03.28,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Claude… {\alpha&H00&\c&HFFFFFF&}did {\alpha&H00&\c&H0066D9FF&}I {\alpha&HFF&}just {\alpha&HFF&}push {\alpha&HFF&}my
+Dialogue: 0,0:00:03.28,0:00:03.76,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Claude… {\alpha&H00&\c&HFFFFFF&}did {\alpha&H00&\c&HFFFFFF&}I {\alpha&H00&\c&H0066D9FF&}just {\alpha&HFF&}push {\alpha&HFF&}my
+Dialogue: 0,0:00:03.76,0:00:04.12,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Claude… {\alpha&H00&\c&HFFFFFF&}did {\alpha&H00&\c&HFFFFFF&}I {\alpha&H00&\c&HFFFFFF&}just {\alpha&H00&\c&H0066D9FF&}push {\alpha&HFF&}my
+Dialogue: 0,0:00:04.12,0:00:04.38,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Claude… {\alpha&H00&\c&HFFFFFF&}did {\alpha&H00&\c&HFFFFFF&}I {\alpha&H00&\c&HFFFFFF&}just {\alpha&H00&\c&HFFFFFF&}push {\alpha&H00&\c&H0066D9FF&}my
+Dialogue: 0,0:00:04.38,0:00:04.80,Cap,,0,0,0,,{\alpha&H00&\c&H0066D9FF&}API {\alpha&HFF&}key {\alpha&HFF&}to {\alpha&HFF&}the {\alpha&HFF&}repo?
+Dialogue: 0,0:00:04.80,0:00:05.10,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}API {\alpha&H00&\c&H0066D9FF&}key {\alpha&HFF&}to {\alpha&HFF&}the {\alpha&HFF&}repo?
+Dialogue: 0,0:00:05.10,0:00:05.30,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}API {\alpha&H00&\c&HFFFFFF&}key {\alpha&H00&\c&H0066D9FF&}to {\alpha&HFF&}the {\alpha&HFF&}repo?
+Dialogue: 0,0:00:05.30,0:00:05.42,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}API {\alpha&H00&\c&HFFFFFF&}key {\alpha&H00&\c&HFFFFFF&}to {\alpha&H00&\c&H0066D9FF&}the {\alpha&HFF&}repo?
+Dialogue: 0,0:00:05.42,0:00:05.68,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}API {\alpha&H00&\c&HFFFFFF&}key {\alpha&H00&\c&HFFFFFF&}to {\alpha&H00&\c&HFFFFFF&}the {\alpha&H00&\c&H0066D9FF&}repo?
+Dialogue: 0,0:00:05.68,0:00:06.41,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}API {\alpha&H00&\c&HFFFFFF&}key {\alpha&H00&\c&HFFFFFF&}to {\alpha&H00&\c&HFFFFFF&}the {\alpha&H00&\c&HFFFFFF&}repo?
+Dialogue: 0,0:00:06.41,0:00:07.09,Cap,,0,0,0,,{\alpha&H00&\c&H005A9AFF&}Yeah. {\alpha&HFF&}You {\alpha&HFF&}did.
+Dialogue: 0,0:00:07.09,0:00:07.25,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Yeah. {\alpha&H00&\c&H005A9AFF&}You {\alpha&HFF&}did.
+Dialogue: 0,0:00:07.25,0:00:07.43,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Yeah. {\alpha&H00&\c&HFFFFFF&}You {\alpha&H00&\c&H005A9AFF&}did.
+Dialogue: 0,0:00:07.43,0:00:08.16,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Yeah. {\alpha&H00&\c&HFFFFFF&}You {\alpha&H00&\c&HFFFFFF&}did.
+Dialogue: 0,0:00:08.16,0:00:08.58,Cap,,0,0,0,,{\alpha&H00&\c&H0066D9FF&}Please {\alpha&HFF&}tell {\alpha&HFF&}me {\alpha&HFF&}the {\alpha&HFF&}repo {\alpha&HFF&}is {\alpha&HFF&}private.
+Dialogue: 0,0:00:08.58,0:00:08.86,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Please {\alpha&H00&\c&H0066D9FF&}tell {\alpha&HFF&}me {\alpha&HFF&}the {\alpha&HFF&}repo {\alpha&HFF&}is {\alpha&HFF&}private.
+Dialogue: 0,0:00:08.86,0:00:09.02,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Please {\alpha&H00&\c&HFFFFFF&}tell {\alpha&H00&\c&H0066D9FF&}me {\alpha&HFF&}the {\alpha&HFF&}repo {\alpha&HFF&}is {\alpha&HFF&}private.
+Dialogue: 0,0:00:09.02,0:00:09.14,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Please {\alpha&H00&\c&HFFFFFF&}tell {\alpha&H00&\c&HFFFFFF&}me {\alpha&H00&\c&H0066D9FF&}the {\alpha&HFF&}repo {\alpha&HFF&}is {\alpha&HFF&}private.
+Dialogue: 0,0:00:09.14,0:00:09.38,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Please {\alpha&H00&\c&HFFFFFF&}tell {\alpha&H00&\c&HFFFFFF&}me {\alpha&H00&\c&HFFFFFF&}the {\alpha&H00&\c&H0066D9FF&}repo {\alpha&HFF&}is {\alpha&HFF&}private.
+Dialogue: 0,0:00:09.38,0:00:09.62,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Please {\alpha&H00&\c&HFFFFFF&}tell {\alpha&H00&\c&HFFFFFF&}me {\alpha&H00&\c&HFFFFFF&}the {\alpha&H00&\c&HFFFFFF&}repo {\alpha&H00&\c&H0066D9FF&}is {\alpha&HFF&}private.
+Dialogue: 0,0:00:09.62,0:00:09.94,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Please {\alpha&H00&\c&HFFFFFF&}tell {\alpha&H00&\c&HFFFFFF&}me {\alpha&H00&\c&HFFFFFF&}the {\alpha&H00&\c&HFFFFFF&}repo {\alpha&H00&\c&HFFFFFF&}is {\alpha&H00&\c&H0066D9FF&}private.
+Dialogue: 0,0:00:09.94,0:00:10.63,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Please {\alpha&H00&\c&HFFFFFF&}tell {\alpha&H00&\c&HFFFFFF&}me {\alpha&H00&\c&HFFFFFF&}the {\alpha&H00&\c&HFFFFFF&}repo {\alpha&H00&\c&HFFFFFF&}is {\alpha&H00&\c&HFFFFFF&}private.
+Dialogue: 0,0:00:10.63,0:00:11.17,Cap,,0,0,0,,{\alpha&H00&\c&H005A9AFF&}It's {\alpha&HFF&}public.
+Dialogue: 0,0:00:11.17,0:00:11.51,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}It's {\alpha&H00&\c&H005A9AFF&}public.
+Dialogue: 0,0:00:11.51,0:00:12.03,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}It's {\alpha&H00&\c&HFFFFFF&}public.
+Dialogue: 0,0:00:12.03,0:00:12.31,Cap,,0,0,0,,{\alpha&H00&\c&H005A9AFF&}Very {\alpha&HFF&}public.
+Dialogue: 0,0:00:12.31,0:00:12.71,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Very {\alpha&H00&\c&H005A9AFF&}public.
+Dialogue: 0,0:00:12.71,0:00:13.42,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Very {\alpha&H00&\c&HFFFFFF&}public.
+Dialogue: 0,0:00:13.42,0:00:13.84,Cap,,0,0,0,,{\alpha&H00&\c&H0066D9FF&}How {\alpha&HFF&}public?
+Dialogue: 0,0:00:13.84,0:00:14.28,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}How {\alpha&H00&\c&H0066D9FF&}public?
+Dialogue: 0,0:00:14.28,0:00:15.02,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}How {\alpha&H00&\c&HFFFFFF&}public?
+Dialogue: 0,0:00:15.02,0:00:15.78,Cap,,0,0,0,,{\alpha&H00&\c&H005A9AFF&}Ninety {\alpha&HFF&}stars.
+Dialogue: 0,0:00:15.78,0:00:16.16,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Ninety {\alpha&H00&\c&H005A9AFF&}stars.
+Dialogue: 0,0:00:16.16,0:00:16.51,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Ninety {\alpha&H00&\c&HFFFFFF&}stars.
+Dialogue: 0,0:00:17.34,0:00:18.74,Cap,,0,0,0,,{\alpha&H00&\c&H0066D9FF&}Ninety? {\alpha&HFF&}I {\alpha&HFF&}don't {\alpha&HFF&}even {\alpha&HFF&}have {\alpha&HFF&}friends.
+Dialogue: 0,0:00:18.74,0:00:18.96,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Ninety? {\alpha&H00&\c&H0066D9FF&}I {\alpha&HFF&}don't {\alpha&HFF&}even {\alpha&HFF&}have {\alpha&HFF&}friends.
+Dialogue: 0,0:00:18.96,0:00:19.14,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Ninety? {\alpha&H00&\c&HFFFFFF&}I {\alpha&H00&\c&H0066D9FF&}don't {\alpha&HFF&}even {\alpha&HFF&}have {\alpha&HFF&}friends.
+Dialogue: 0,0:00:19.14,0:00:19.30,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Ninety? {\alpha&H00&\c&HFFFFFF&}I {\alpha&H00&\c&HFFFFFF&}don't {\alpha&H00&\c&H0066D9FF&}even {\alpha&HFF&}have {\alpha&HFF&}friends.
+Dialogue: 0,0:00:19.30,0:00:19.54,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Ninety? {\alpha&H00&\c&HFFFFFF&}I {\alpha&H00&\c&HFFFFFF&}don't {\alpha&H00&\c&HFFFFFF&}even {\alpha&H00&\c&H0066D9FF&}have {\alpha&HFF&}friends.
+Dialogue: 0,0:00:19.54,0:00:20.06,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Ninety? {\alpha&H00&\c&HFFFFFF&}I {\alpha&H00&\c&HFFFFFF&}don't {\alpha&H00&\c&HFFFFFF&}even {\alpha&H00&\c&HFFFFFF&}have {\alpha&H00&\c&H0066D9FF&}friends.
+Dialogue: 0,0:00:20.06,0:00:20.72,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Ninety? {\alpha&H00&\c&HFFFFFF&}I {\alpha&H00&\c&HFFFFFF&}don't {\alpha&H00&\c&HFFFFFF&}even {\alpha&H00&\c&HFFFFFF&}have {\alpha&H00&\c&HFFFFFF&}friends.
+Dialogue: 0,0:00:20.72,0:00:20.84,Cap,,0,0,0,,{\alpha&H00&\c&H0066D9FF&}Who {\alpha&HFF&}is {\alpha&HFF&}starring {\alpha&HFF&}my {\alpha&HFF&}repo?
+Dialogue: 0,0:00:20.84,0:00:21.04,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Who {\alpha&H00&\c&H0066D9FF&}is {\alpha&HFF&}starring {\alpha&HFF&}my {\alpha&HFF&}repo?
+Dialogue: 0,0:00:21.04,0:00:21.60,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Who {\alpha&H00&\c&HFFFFFF&}is {\alpha&H00&\c&H0066D9FF&}starring {\alpha&HFF&}my {\alpha&HFF&}repo?
+Dialogue: 0,0:00:21.60,0:00:21.88,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Who {\alpha&H00&\c&HFFFFFF&}is {\alpha&H00&\c&HFFFFFF&}starring {\alpha&H00&\c&H0066D9FF&}my {\alpha&HFF&}repo?
+Dialogue: 0,0:00:21.88,0:00:22.26,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Who {\alpha&H00&\c&HFFFFFF&}is {\alpha&H00&\c&HFFFFFF&}starring {\alpha&H00&\c&HFFFFFF&}my {\alpha&H00&\c&H0066D9FF&}repo?
+Dialogue: 0,0:00:22.26,0:00:23.02,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Who {\alpha&H00&\c&HFFFFFF&}is {\alpha&H00&\c&HFFFFFF&}starring {\alpha&H00&\c&HFFFFFF&}my {\alpha&H00&\c&HFFFFFF&}repo?
+Dialogue: 0,0:00:23.02,0:00:24.32,Cap,,0,0,0,,{\alpha&H00&\c&H005A9AFF&}Bots. {\alpha&HFF&}Very {\alpha&HFF&}fast {\alpha&HFF&}bots.
+Dialogue: 0,0:00:24.32,0:00:24.54,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Bots. {\alpha&H00&\c&H005A9AFF&}Very {\alpha&HFF&}fast {\alpha&HFF&}bots.
+Dialogue: 0,0:00:24.54,0:00:24.84,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Bots. {\alpha&H00&\c&HFFFFFF&}Very {\alpha&H00&\c&H005A9AFF&}fast {\alpha&HFF&}bots.
+Dialogue: 0,0:00:24.84,0:00:25.10,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Bots. {\alpha&H00&\c&HFFFFFF&}Very {\alpha&H00&\c&HFFFFFF&}fast {\alpha&H00&\c&H005A9AFF&}bots.
+Dialogue: 0,0:00:25.10,0:00:25.45,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Bots. {\alpha&H00&\c&HFFFFFF&}Very {\alpha&H00&\c&HFFFFFF&}fast {\alpha&H00&\c&HFFFFFF&}bots.
+Dialogue: 0,0:00:27.77,0:00:28.43,Cap,,0,0,0,,{\alpha&H00&\c&H0066D9FF&}Claude. {\alpha&HFF&}I {\alpha&HFF&}just {\alpha&HFF&}got {\alpha&HFF&}a {\alpha&HFF&}bill
+Dialogue: 0,0:00:28.43,0:00:28.53,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Claude. {\alpha&H00&\c&H0066D9FF&}I {\alpha&HFF&}just {\alpha&HFF&}got {\alpha&HFF&}a {\alpha&HFF&}bill
+Dialogue: 0,0:00:28.53,0:00:28.69,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Claude. {\alpha&H00&\c&HFFFFFF&}I {\alpha&H00&\c&H0066D9FF&}just {\alpha&HFF&}got {\alpha&HFF&}a {\alpha&HFF&}bill
+Dialogue: 0,0:00:28.69,0:00:28.85,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Claude. {\alpha&H00&\c&HFFFFFF&}I {\alpha&H00&\c&HFFFFFF&}just {\alpha&H00&\c&H0066D9FF&}got {\alpha&HFF&}a {\alpha&HFF&}bill
+Dialogue: 0,0:00:28.85,0:00:28.99,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Claude. {\alpha&H00&\c&HFFFFFF&}I {\alpha&H00&\c&HFFFFFF&}just {\alpha&H00&\c&HFFFFFF&}got {\alpha&H00&\c&H0066D9FF&}a {\alpha&HFF&}bill
+Dialogue: 0,0:00:28.99,0:00:29.11,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Claude. {\alpha&H00&\c&HFFFFFF&}I {\alpha&H00&\c&HFFFFFF&}just {\alpha&H00&\c&HFFFFFF&}got {\alpha&H00&\c&HFFFFFF&}a {\alpha&H00&\c&H0066D9FF&}bill
+Dialogue: 0,0:00:29.11,0:00:29.37,Cap,,0,0,0,,{\alpha&H00&\c&H0066D9FF&}for {\alpha&HFF&}two {\alpha&HFF&}thousand {\alpha&HFF&}dollars.
+Dialogue: 0,0:00:29.37,0:00:29.55,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}for {\alpha&H00&\c&H0066D9FF&}two {\alpha&HFF&}thousand {\alpha&HFF&}dollars.
+Dialogue: 0,0:00:29.55,0:00:29.95,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}for {\alpha&H00&\c&HFFFFFF&}two {\alpha&H00&\c&H0066D9FF&}thousand {\alpha&HFF&}dollars.
+Dialogue: 0,0:00:29.95,0:00:30.41,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}for {\alpha&H00&\c&HFFFFFF&}two {\alpha&H00&\c&HFFFFFF&}thousand {\alpha&H00&\c&H0066D9FF&}dollars.
+Dialogue: 0,0:00:30.41,0:00:30.83,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}for {\alpha&H00&\c&HFFFFFF&}two {\alpha&H00&\c&HFFFFFF&}thousand {\alpha&H00&\c&HFFFFFF&}dollars.
+Dialogue: 0,0:00:30.83,0:00:30.93,Cap,,0,0,0,,{\alpha&H00&\c&H0066D9FF&}What {\alpha&HFF&}do {\alpha&HFF&}I {\alpha&HFF&}do?
+Dialogue: 0,0:00:30.93,0:00:31.03,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}What {\alpha&H00&\c&H0066D9FF&}do {\alpha&HFF&}I {\alpha&HFF&}do?
+Dialogue: 0,0:00:31.03,0:00:31.15,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}What {\alpha&H00&\c&HFFFFFF&}do {\alpha&H00&\c&H0066D9FF&}I {\alpha&HFF&}do?
+Dialogue: 0,0:00:31.15,0:00:31.39,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}What {\alpha&H00&\c&HFFFFFF&}do {\alpha&H00&\c&HFFFFFF&}I {\alpha&H00&\c&H0066D9FF&}do?
+Dialogue: 0,0:00:31.39,0:00:32.11,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}What {\alpha&H00&\c&HFFFFFF&}do {\alpha&H00&\c&HFFFFFF&}I {\alpha&H00&\c&HFFFFFF&}do?
+Dialogue: 0,0:00:32.11,0:00:32.55,Cap,,0,0,0,,{\alpha&H00&\c&H005A9AFF&}Revoke {\alpha&HFF&}the {\alpha&HFF&}key.
+Dialogue: 0,0:00:32.55,0:00:32.65,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Revoke {\alpha&H00&\c&H005A9AFF&}the {\alpha&HFF&}key.
+Dialogue: 0,0:00:32.65,0:00:32.91,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Revoke {\alpha&H00&\c&HFFFFFF&}the {\alpha&H00&\c&H005A9AFF&}key.
+Dialogue: 0,0:00:32.91,0:00:33.25,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Revoke {\alpha&H00&\c&HFFFFFF&}the {\alpha&H00&\c&HFFFFFF&}key.
+Dialogue: 0,0:00:33.25,0:00:33.33,Cap,,0,0,0,,{\alpha&H00&\c&H005A9AFF&}Right {\alpha&HFF&}now. {\alpha&HFF&}Fast.
+Dialogue: 0,0:00:33.33,0:00:33.89,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Right {\alpha&H00&\c&H005A9AFF&}now. {\alpha&HFF&}Fast.
+Dialogue: 0,0:00:33.89,0:00:34.01,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Right {\alpha&H00&\c&HFFFFFF&}now. {\alpha&H00&\c&H005A9AFF&}Fast.
+Dialogue: 0,0:00:34.01,0:00:34.36,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Right {\alpha&H00&\c&HFFFFFF&}now. {\alpha&H00&\c&HFFFFFF&}Fast.
+Dialogue: 0,0:00:38.20,0:00:39.00,Cap,,0,0,0,,{\alpha&H00&\c&H0066D9FF&}Done. {\alpha&HFF&}Revoked {\alpha&HFF&}it,
+Dialogue: 0,0:00:39.00,0:00:39.30,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Done. {\alpha&H00&\c&H0066D9FF&}Revoked {\alpha&HFF&}it,
+Dialogue: 0,0:00:39.30,0:00:39.52,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Done. {\alpha&H00&\c&HFFFFFF&}Revoked {\alpha&H00&\c&H0066D9FF&}it,
+Dialogue: 0,0:00:39.52,0:00:39.80,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Done. {\alpha&H00&\c&HFFFFFF&}Revoked {\alpha&H00&\c&HFFFFFF&}it,
+Dialogue: 0,0:00:39.80,0:00:39.90,Cap,,0,0,0,,{\alpha&H00&\c&H0066D9FF&}made {\alpha&HFF&}a {\alpha&HFF&}new {\alpha&HFF&}one,
+Dialogue: 0,0:00:39.90,0:00:40.04,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}made {\alpha&H00&\c&H0066D9FF&}a {\alpha&HFF&}new {\alpha&HFF&}one,
+Dialogue: 0,0:00:40.04,0:00:40.18,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}made {\alpha&H00&\c&HFFFFFF&}a {\alpha&H00&\c&H0066D9FF&}new {\alpha&HFF&}one,
+Dialogue: 0,0:00:40.18,0:00:40.38,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}made {\alpha&H00&\c&HFFFFFF&}a {\alpha&H00&\c&HFFFFFF&}new {\alpha&H00&\c&H0066D9FF&}one,
+Dialogue: 0,0:00:40.38,0:00:40.64,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}made {\alpha&H00&\c&HFFFFFF&}a {\alpha&H00&\c&HFFFFFF&}new {\alpha&H00&\c&HFFFFFF&}one,
+Dialogue: 0,0:00:40.64,0:00:40.78,Cap,,0,0,0,,{\alpha&H00&\c&H0066D9FF&}pushed {\alpha&HFF&}again.
+Dialogue: 0,0:00:40.78,0:00:41.08,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}pushed {\alpha&H00&\c&H0066D9FF&}again.
+Dialogue: 0,0:00:41.08,0:00:41.46,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}pushed {\alpha&H00&\c&HFFFFFF&}again.
+Dialogue: 0,0:00:41.46,0:00:41.64,Cap,,0,0,0,,{\alpha&H00&\c&H0066D9FF&}We're {\alpha&HFF&}okay {\alpha&HFF&}now, {\alpha&HFF&}right?
+Dialogue: 0,0:00:41.64,0:00:41.78,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}We're {\alpha&H00&\c&H0066D9FF&}okay {\alpha&HFF&}now, {\alpha&HFF&}right?
+Dialogue: 0,0:00:41.78,0:00:42.08,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}We're {\alpha&H00&\c&HFFFFFF&}okay {\alpha&H00&\c&H0066D9FF&}now, {\alpha&HFF&}right?
+Dialogue: 0,0:00:42.08,0:00:42.20,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}We're {\alpha&H00&\c&HFFFFFF&}okay {\alpha&H00&\c&HFFFFFF&}now, {\alpha&H00&\c&H0066D9FF&}right?
+Dialogue: 0,0:00:42.20,0:00:42.55,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}We're {\alpha&H00&\c&HFFFFFF&}okay {\alpha&H00&\c&HFFFFFF&}now, {\alpha&H00&\c&HFFFFFF&}right?
+Dialogue: 0,0:00:45.42,0:00:45.84,Cap,,0,0,0,,{\alpha&H00&\c&H0066D9FF&}Why {\alpha&HFF&}are {\alpha&HFF&}the {\alpha&HFF&}stars {\alpha&HFF&}going {\alpha&HFF&}up {\alpha&HFF&}again?
+Dialogue: 0,0:00:45.84,0:00:46.08,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Why {\alpha&H00&\c&H0066D9FF&}are {\alpha&HFF&}the {\alpha&HFF&}stars {\alpha&HFF&}going {\alpha&HFF&}up {\alpha&HFF&}again?
+Dialogue: 0,0:00:46.08,0:00:46.24,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Why {\alpha&H00&\c&HFFFFFF&}are {\alpha&H00&\c&H0066D9FF&}the {\alpha&HFF&}stars {\alpha&HFF&}going {\alpha&HFF&}up {\alpha&HFF&}again?
+Dialogue: 0,0:00:46.24,0:00:46.82,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Why {\alpha&H00&\c&HFFFFFF&}are {\alpha&H00&\c&HFFFFFF&}the {\alpha&H00&\c&H0066D9FF&}stars {\alpha&HFF&}going {\alpha&HFF&}up {\alpha&HFF&}again?
+Dialogue: 0,0:00:46.82,0:00:47.18,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Why {\alpha&H00&\c&HFFFFFF&}are {\alpha&H00&\c&HFFFFFF&}the {\alpha&H00&\c&HFFFFFF&}stars {\alpha&H00&\c&H0066D9FF&}going {\alpha&HFF&}up {\alpha&HFF&}again?
+Dialogue: 0,0:00:47.18,0:00:47.48,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Why {\alpha&H00&\c&HFFFFFF&}are {\alpha&H00&\c&HFFFFFF&}the {\alpha&H00&\c&HFFFFFF&}stars {\alpha&H00&\c&HFFFFFF&}going {\alpha&H00&\c&H0066D9FF&}up {\alpha&HFF&}again?
+Dialogue: 0,0:00:47.48,0:00:47.84,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Why {\alpha&H00&\c&HFFFFFF&}are {\alpha&H00&\c&HFFFFFF&}the {\alpha&H00&\c&HFFFFFF&}stars {\alpha&H00&\c&HFFFFFF&}going {\alpha&H00&\c&HFFFFFF&}up {\alpha&H00&\c&H0066D9FF&}again?
+Dialogue: 0,0:00:47.84,0:00:48.19,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Why {\alpha&H00&\c&HFFFFFF&}are {\alpha&H00&\c&HFFFFFF&}the {\alpha&H00&\c&HFFFFFF&}stars {\alpha&H00&\c&HFFFFFF&}going {\alpha&H00&\c&HFFFFFF&}up {\alpha&H00&\c&HFFFFFF&}again?
+Dialogue: 0,0:00:48.80,0:00:49.12,Cap,,0,0,0,,{\alpha&H00&\c&H005A9AFF&}You {\alpha&HFF&}pushed {\alpha&HFF&}the {\alpha&HFF&}new {\alpha&HFF&}key {\alpha&HFF&}too.
+Dialogue: 0,0:00:49.12,0:00:49.62,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}You {\alpha&H00&\c&H005A9AFF&}pushed {\alpha&HFF&}the {\alpha&HFF&}new {\alpha&HFF&}key {\alpha&HFF&}too.
+Dialogue: 0,0:00:49.62,0:00:49.96,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}You {\alpha&H00&\c&HFFFFFF&}pushed {\alpha&H00&\c&H005A9AFF&}the {\alpha&HFF&}new {\alpha&HFF&}key {\alpha&HFF&}too.
+Dialogue: 0,0:00:49.96,0:00:50.22,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}You {\alpha&H00&\c&HFFFFFF&}pushed {\alpha&H00&\c&HFFFFFF&}the {\alpha&H00&\c&H005A9AFF&}new {\alpha&HFF&}key {\alpha&HFF&}too.
+Dialogue: 0,0:00:50.22,0:00:50.52,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}You {\alpha&H00&\c&HFFFFFF&}pushed {\alpha&H00&\c&HFFFFFF&}the {\alpha&H00&\c&HFFFFFF&}new {\alpha&H00&\c&H005A9AFF&}key {\alpha&HFF&}too.
+Dialogue: 0,0:00:50.52,0:00:50.90,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}You {\alpha&H00&\c&HFFFFFF&}pushed {\alpha&H00&\c&HFFFFFF&}the {\alpha&H00&\c&HFFFFFF&}new {\alpha&H00&\c&HFFFFFF&}key {\alpha&H00&\c&H005A9AFF&}too.
+Dialogue: 0,0:00:50.90,0:00:51.25,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}You {\alpha&H00&\c&HFFFFFF&}pushed {\alpha&H00&\c&HFFFFFF&}the {\alpha&H00&\c&HFFFFFF&}new {\alpha&H00&\c&HFFFFFF&}key {\alpha&H00&\c&HFFFFFF&}too.
+Dialogue: 0,0:00:52.40,0:00:52.70,Cap,,0,0,0,,{\alpha&H00&\c&H005A9AFF&}Don't {\alpha&HFF&}worry.
+Dialogue: 0,0:00:52.70,0:00:52.92,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Don't {\alpha&H00&\c&H005A9AFF&}worry.
+Dialogue: 0,0:00:52.92,0:00:53.40,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Don't {\alpha&H00&\c&HFFFFFF&}worry.
+Dialogue: 0,0:00:53.40,0:00:53.64,Cap,,0,0,0,,{\alpha&H00&\c&H005A9AFF&}I've {\alpha&HFF&}got {\alpha&HFF&}this {\alpha&HFF&}from {\alpha&HFF&}here.
+Dialogue: 0,0:00:53.64,0:00:53.76,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}I've {\alpha&H00&\c&H005A9AFF&}got {\alpha&HFF&}this {\alpha&HFF&}from {\alpha&HFF&}here.
+Dialogue: 0,0:00:53.76,0:00:53.90,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}I've {\alpha&H00&\c&HFFFFFF&}got {\alpha&H00&\c&H005A9AFF&}this {\alpha&HFF&}from {\alpha&HFF&}here.
+Dialogue: 0,0:00:53.90,0:00:54.06,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}I've {\alpha&H00&\c&HFFFFFF&}got {\alpha&H00&\c&HFFFFFF&}this {\alpha&H00&\c&H005A9AFF&}from {\alpha&HFF&}here.
+Dialogue: 0,0:00:54.06,0:00:54.26,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}I've {\alpha&H00&\c&HFFFFFF&}got {\alpha&H00&\c&HFFFFFF&}this {\alpha&H00&\c&HFFFFFF&}from {\alpha&H00&\c&H005A9AFF&}here.
+Dialogue: 0,0:00:54.26,0:00:54.61,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}I've {\alpha&H00&\c&HFFFFFF&}got {\alpha&H00&\c&HFFFFFF&}this {\alpha&H00&\c&HFFFFFF&}from {\alpha&H00&\c&HFFFFFF&}here.
+Dialogue: 0,0:00:57.48,0:00:57.86,Cap,,0,0,0,,{\alpha&H00&\c&H005A9AFF&}I've {\alpha&HFF&}revoked {\alpha&HFF&}both {\alpha&HFF&}keys,
+Dialogue: 0,0:00:57.86,0:00:58.20,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}I've {\alpha&H00&\c&H005A9AFF&}revoked {\alpha&HFF&}both {\alpha&HFF&}keys,
+Dialogue: 0,0:00:58.20,0:00:58.48,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}I've {\alpha&H00&\c&HFFFFFF&}revoked {\alpha&H00&\c&H005A9AFF&}both {\alpha&HFF&}keys,
+Dialogue: 0,0:00:58.48,0:00:58.96,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}I've {\alpha&H00&\c&HFFFFFF&}revoked {\alpha&H00&\c&HFFFFFF&}both {\alpha&H00&\c&H005A9AFF&}keys,
+Dialogue: 0,0:00:58.96,0:00:59.18,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}I've {\alpha&H00&\c&HFFFFFF&}revoked {\alpha&H00&\c&HFFFFFF&}both {\alpha&H00&\c&HFFFFFF&}keys,
+Dialogue: 0,0:00:59.18,0:00:59.28,Cap,,0,0,0,,{\alpha&H00&\c&H005A9AFF&}made {\alpha&HFF&}the {\alpha&HFF&}repo {\alpha&HFF&}private,
+Dialogue: 0,0:00:59.28,0:00:59.42,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}made {\alpha&H00&\c&H005A9AFF&}the {\alpha&HFF&}repo {\alpha&HFF&}private,
+Dialogue: 0,0:00:59.42,0:00:59.60,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}made {\alpha&H00&\c&HFFFFFF&}the {\alpha&H00&\c&H005A9AFF&}repo {\alpha&HFF&}private,
+Dialogue: 0,0:00:59.60,0:01:00.02,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}made {\alpha&H00&\c&HFFFFFF&}the {\alpha&H00&\c&HFFFFFF&}repo {\alpha&H00&\c&H005A9AFF&}private,
+Dialogue: 0,0:01:00.02,0:01:00.42,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}made {\alpha&H00&\c&HFFFFFF&}the {\alpha&H00&\c&HFFFFFF&}repo {\alpha&H00&\c&HFFFFFF&}private,
+Dialogue: 0,0:01:00.42,0:01:00.70,Cap,,0,0,0,,{\alpha&H00&\c&H005A9AFF&}and {\alpha&HFF&}opened {\alpha&HFF&}a {\alpha&HFF&}support {\alpha&HFF&}ticket {\alpha&HFF&}about
+Dialogue: 0,0:01:00.70,0:01:01.04,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}and {\alpha&H00&\c&H005A9AFF&}opened {\alpha&HFF&}a {\alpha&HFF&}support {\alpha&HFF&}ticket {\alpha&HFF&}about
+Dialogue: 0,0:01:01.04,0:01:01.22,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}and {\alpha&H00&\c&HFFFFFF&}opened {\alpha&H00&\c&H005A9AFF&}a {\alpha&HFF&}support {\alpha&HFF&}ticket {\alpha&HFF&}about
+Dialogue: 0,0:01:01.22,0:01:01.48,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}and {\alpha&H00&\c&HFFFFFF&}opened {\alpha&H00&\c&HFFFFFF&}a {\alpha&H00&\c&H005A9AFF&}support {\alpha&HFF&}ticket {\alpha&HFF&}about
+Dialogue: 0,0:01:01.48,0:01:01.76,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}and {\alpha&H00&\c&HFFFFFF&}opened {\alpha&H00&\c&HFFFFFF&}a {\alpha&H00&\c&HFFFFFF&}support {\alpha&H00&\c&H005A9AFF&}ticket {\alpha&HFF&}about
+Dialogue: 0,0:01:01.76,0:01:01.98,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}and {\alpha&H00&\c&HFFFFFF&}opened {\alpha&H00&\c&HFFFFFF&}a {\alpha&H00&\c&HFFFFFF&}support {\alpha&H00&\c&HFFFFFF&}ticket {\alpha&H00&\c&H005A9AFF&}about
+Dialogue: 0,0:01:01.98,0:01:02.12,Cap,,0,0,0,,{\alpha&H00&\c&H005A9AFF&}the {\alpha&HFF&}bill.
+Dialogue: 0,0:01:02.12,0:01:02.26,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}the {\alpha&H00&\c&H005A9AFF&}bill.
+Dialogue: 0,0:01:02.26,0:01:02.61,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}the {\alpha&H00&\c&HFFFFFF&}bill.
+Dialogue: 0,0:01:03.35,0:01:03.55,Cap,,0,0,0,,{\alpha&H00&\c&H0066D9FF&}Can {\alpha&HFF&}you {\alpha&HFF&}also {\alpha&HFF&}take {\alpha&HFF&}my {\alpha&HFF&}keyboard
+Dialogue: 0,0:01:03.55,0:01:03.79,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Can {\alpha&H00&\c&H0066D9FF&}you {\alpha&HFF&}also {\alpha&HFF&}take {\alpha&HFF&}my {\alpha&HFF&}keyboard
+Dialogue: 0,0:01:03.79,0:01:04.17,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Can {\alpha&H00&\c&HFFFFFF&}you {\alpha&H00&\c&H0066D9FF&}also {\alpha&HFF&}take {\alpha&HFF&}my {\alpha&HFF&}keyboard
+Dialogue: 0,0:01:04.17,0:01:04.49,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Can {\alpha&H00&\c&HFFFFFF&}you {\alpha&H00&\c&HFFFFFF&}also {\alpha&H00&\c&H0066D9FF&}take {\alpha&HFF&}my {\alpha&HFF&}keyboard
+Dialogue: 0,0:01:04.49,0:01:04.69,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Can {\alpha&H00&\c&HFFFFFF&}you {\alpha&H00&\c&HFFFFFF&}also {\alpha&H00&\c&HFFFFFF&}take {\alpha&H00&\c&H0066D9FF&}my {\alpha&HFF&}keyboard
+Dialogue: 0,0:01:04.69,0:01:05.17,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Can {\alpha&H00&\c&HFFFFFF&}you {\alpha&H00&\c&HFFFFFF&}also {\alpha&H00&\c&HFFFFFF&}take {\alpha&H00&\c&HFFFFFF&}my {\alpha&H00&\c&H0066D9FF&}keyboard
+Dialogue: 0,0:01:05.17,0:01:05.55,Cap,,0,0,0,,{\alpha&H00&\c&H0066D9FF&}away {\alpha&HFF&}from {\alpha&HFF&}me?
+Dialogue: 0,0:01:05.55,0:01:05.77,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}away {\alpha&H00&\c&H0066D9FF&}from {\alpha&HFF&}me?
+Dialogue: 0,0:01:05.77,0:01:05.99,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}away {\alpha&H00&\c&HFFFFFF&}from {\alpha&H00&\c&H0066D9FF&}me?
+Dialogue: 0,0:01:05.99,0:01:06.34,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}away {\alpha&H00&\c&HFFFFFF&}from {\alpha&H00&\c&HFFFFFF&}me?
+Dialogue: 0,0:01:06.91,0:01:07.07,Cap,,0,0,0,,{\alpha&H00&\c&H005A9AFF&}I {\alpha&HFF&}don't {\alpha&HFF&}have {\alpha&HFF&}arms, {\alpha&HFF&}Cleo.
+Dialogue: 0,0:01:07.07,0:01:07.43,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}I {\alpha&H00&\c&H005A9AFF&}don't {\alpha&HFF&}have {\alpha&HFF&}arms, {\alpha&HFF&}Cleo.
+Dialogue: 0,0:01:07.43,0:01:07.57,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}I {\alpha&H00&\c&HFFFFFF&}don't {\alpha&H00&\c&H005A9AFF&}have {\alpha&HFF&}arms, {\alpha&HFF&}Cleo.
+Dialogue: 0,0:01:07.57,0:01:08.51,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}I {\alpha&H00&\c&HFFFFFF&}don't {\alpha&H00&\c&HFFFFFF&}have {\alpha&H00&\c&H005A9AFF&}arms, {\alpha&HFF&}Cleo.
+Dialogue: 0,0:01:08.51,0:01:08.93,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}I {\alpha&H00&\c&HFFFFFF&}don't {\alpha&H00&\c&HFFFFFF&}have {\alpha&H00&\c&HFFFFFF&}arms, {\alpha&H00&\c&H005A9AFF&}Cleo.
+Dialogue: 0,0:01:08.93,0:01:09.28,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}I {\alpha&H00&\c&HFFFFFF&}don't {\alpha&H00&\c&HFFFFFF&}have {\alpha&H00&\c&HFFFFFF&}arms, {\alpha&H00&\c&HFFFFFF&}Cleo.

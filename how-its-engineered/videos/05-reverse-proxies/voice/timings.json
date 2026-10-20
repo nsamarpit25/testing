@@ -1,0 +1,194 @@
+[
+ {
+  "li": 0,
+  "pi": 0,
+  "say": "Your phone thinks it's talking to Instagram's servers.",
+  "show": "Your phone thinks it's talking to *Instagram's servers.*",
+  "start": 0.0,
+  "end": 2.32
+ },
+ {
+  "li": 0,
+  "pi": 1,
+  "say": "It's not.",
+  "show": "[It's not.]",
+  "start": 2.82,
+  "end": 3.32
+ },
+ {
+  "li": 1,
+  "pi": 0,
+  "say": "It's talking to a middleman:",
+  "show": "It's talking to a *middleman:*",
+  "start": 3.8,
+  "end": 5.1
+ },
+ {
+  "li": 1,
+  "pi": 1,
+  "say": "a reverse proxy.",
+  "show": "a [reverse proxy.]",
+  "start": 5.54,
+  "end": 6.6
+ },
+ {
+  "li": 2,
+  "pi": 0,
+  "say": "Without one, every server sits on the open internet,",
+  "show": "Without one, every server sits on the *open internet,*",
+  "start": 7.3,
+  "end": 9.92
+ },
+ {
+  "li": 2,
+  "pi": 1,
+  "say": "where hackers scan for them all day.",
+  "show": "where *hackers* scan for them *all day.*",
+  "start": 10.18,
+  "end": 11.88
+ },
+ {
+  "li": 2,
+  "pi": 2,
+  "say": "Find one weak server, and they're in.",
+  "show": "Find *one weak server,* and [they're in.]",
+  "start": 12.32,
+  "end": 13.96
+ },
+ {
+  "li": 3,
+  "pi": 0,
+  "say": "With a proxy, the servers vanish behind a wall.",
+  "show": "With a proxy, the servers *vanish behind a wall.*",
+  "start": 14.54,
+  "end": 17.24
+ },
+ {
+  "li": 3,
+  "pi": 1,
+  "say": "Only the proxy has a public address.",
+  "show": "Only the proxy has a [public address.]",
+  "start": 17.6,
+  "end": 19.34
+ },
+ {
+  "li": 4,
+  "pi": 0,
+  "say": "It's like a restaurant.",
+  "show": "It's like a *restaurant.*",
+  "start": 19.86,
+  "end": 20.7
+ },
+ {
+  "li": 4,
+  "pi": 1,
+  "say": "You never walk into the kitchen.",
+  "show": "You never walk *into the kitchen.*",
+  "start": 20.98,
+  "end": 22.38
+ },
+ {
+  "li": 4,
+  "pi": 2,
+  "say": "The waiter takes your order and brings the food back.",
+  "show": "The *waiter* takes your order and *brings the food back.*",
+  "start": 22.66,
+  "end": 24.84
+ },
+ {
+  "li": 5,
+  "pi": 0,
+  "say": "And this waiter does a lot more than carry plates.",
+  "show": "And this waiter does *a lot more* than carry plates.",
+  "start": 25.2,
+  "end": 27.34
+ },
+ {
+  "li": 6,
+  "pi": 0,
+  "say": "It unlocks the HTTPS encryption once, so the servers don't have to.",
+  "show": "It unlocks the [HTTPS] encryption *once,* so the servers don't have to.",
+  "start": 27.34,
+  "end": 31.66
+ },
+ {
+  "li": 7,
+  "pi": 0,
+  "say": "It keeps popular pages ready, so most requests never reach a server.",
+  "show": "It keeps popular pages *ready,* so most requests *never reach a server.*",
+  "start": 31.94,
+  "end": 35.42
+ },
+ {
+  "li": 8,
+  "pi": 0,
+  "say": "It reads the path: slash API goes here, images go there.",
+  "show": "It reads the path: [/api] goes here, *images* go there.",
+  "start": 35.78,
+  "end": 39.04
+ },
+ {
+  "li": 9,
+  "pi": 0,
+  "say": "And a flood of bad traffic?",
+  "show": "And a *flood* of bad traffic?",
+  "start": 39.4,
+  "end": 40.92
+ },
+ {
+  "li": 9,
+  "pi": 1,
+  "say": "Stopped at the door.",
+  "show": "[Stopped at the door.]",
+  "start": 40.92,
+  "end": 41.96
+ },
+ {
+  "li": 10,
+  "pi": 0,
+  "say": "Engine X and Cloudflare do this for millions of websites.",
+  "show": "*Nginx* and *Cloudflare* do this for *millions* of websites.",
+  "start": 42.62,
+  "end": 45.24
+ },
+ {
+  "li": 11,
+  "pi": 0,
+  "say": "A normal proxy hides you from the website.",
+  "show": "A normal proxy hides *you* from the website.",
+  "start": 45.76,
+  "end": 47.52
+ },
+ {
+  "li": 11,
+  "pi": 1,
+  "say": "A reverse proxy hides the website from you.",
+  "show": "A [reverse proxy] hides *the website* from you.",
+  "start": 47.9,
+  "end": 50.22
+ },
+ {
+  "li": 12,
+  "pi": 0,
+  "say": "Engine X or Cloudflare: which one have you used?",
+  "show": "*Nginx* or *Cloudflare:* which one have you used?",
+  "start": 50.94,
+  "end": 52.98
+ },
+ {
+  "li": 12,
+  "pi": 1,
+  "say": "Comment below,",
+  "show": "[Comment below,]",
+  "start": 52.98,
+  "end": 53.8
+ },
+ {
+  "li": 12,
+  "pi": 2,
+  "say": "and follow for more!",
+  "show": "and follow for more!",
+  "start": 53.8,
+  "end": 54.62
+ }
+]

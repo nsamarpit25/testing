@@ -1,0 +1,16 @@
+You hit post, and 2 million followers need a notification. So why is your post button still spinning? 📮
+
+If your post service notifies followers, sends emails and updates feeds itself, one after another, one slow job freezes everything. And every new feature means rewriting it. Again.
+
+Pub/Sub fixes it:
+📣 The post service publishes ONE message to a topic, and it's done
+📬 Every feature subscribes, and each gets its own copy at the same time
+➕ New feature? Just subscribe it. The publisher never changes
+
+📻 Like a radio station: it broadcasts once, and every radio tuned in hears it.
+
+That's Google Cloud Pub/Sub and Amazon SNS.
+
+What would you subscribe to a "new post" topic first? Comment below 👇
+
+#systemdesign #softwareengineering #backend #pubsub #coding #programming #techexplained

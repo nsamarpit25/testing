@@ -1,0 +1,15 @@
+If the ropes snap, what stops an elevator falling? 🛗
+
+The car grabs the rails.
+
+🪝 1854: Elisha Otis used the lifting rope to keep a spring bent. When the rope broke, the spring pushed catches into teeth on the rails. The failure itself fired the brake.
+⚙️ Today: a thin governor rope turns a wheel. If the car goes too fast, weights swing out and lock that rope.
+🔧 The car keeps moving, so the stopped rope pulls a lever, and wedges squeeze the rails.
+💥 1945: debris cut an Empire State Building elevator's ropes, and its governor rope too. Car 6 fell 75 floors. Betty Lou Oliver survived.
+📡 Newer systems drop that rope: a speed sensor fires the wedges directly.
+
+Fail-safe: when something breaks, the system ends up safe.
+
+Which part clicked for you: the spring, the stopped rope, or the doorstop wedges? Comment below 👇
+
+#engineering #howthingswork #mechanicalengineering #elevator #engineeringexplained

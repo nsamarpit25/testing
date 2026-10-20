@@ -1,0 +1,115 @@
+{
+ "topic": "Pub/Sub",
+ "lines": [
+  [
+   {
+    "say": "Your checkout froze for eight seconds.",
+    "show": "Your *checkout* froze for [8 seconds.]"
+   },
+   {
+    "say": "Not on the payment.",
+    "show": "Not on the *payment.*"
+   },
+   {
+    "say": "On the receipt email.",
+    "show": "On the *receipt email.*"
+   }
+  ],
+  [
+   {
+    "say": "After every order, checkout calls email, then the warehouse, then rewards. One by one.",
+    "show": "After every order, checkout calls *email,* then the *warehouse,* then *rewards.* [One by one.]"
+   },
+   {
+    "say": "Email slow? Checkout waits.",
+    "show": "Email *slow?* Checkout [waits.]"
+   },
+   {
+    "say": "Email down? The order fails.",
+    "show": "Email *down?* The order [fails.]"
+   }
+  ],
+  [
+   {
+    "say": "The fix? Don't call them. Announce it.",
+    "show": "The fix? Don't *call* them. [Announce it.]"
+   },
+   {
+    "say": "That's pub sub.",
+    "show": "That's [Pub/Sub.]"
+   }
+  ],
+  [
+   {
+    "say": "Like subscribing to a channel: the creator uploads once, and every subscriber gets it.",
+    "show": "Like *subscribing* to a channel: the creator uploads [once,] and *every subscriber* gets it."
+   }
+  ],
+  [
+   {
+    "say": "Step one: publish.",
+    "show": "Step one: [publish.]"
+   },
+   {
+    "say": "Checkout sends one message, order placed, to a topic. And it's done.",
+    "show": "Checkout sends *one message,* order placed, to a *topic.* And it's [done.]"
+   }
+  ],
+  [
+   {
+    "say": "Step two: subscribe.",
+    "show": "Step two: [subscribe.]"
+   },
+   {
+    "say": "Email, warehouse and rewards each subscribe to that topic.",
+    "show": "*Email,* *warehouse* and *rewards* each subscribe to that *topic.*"
+   }
+  ],
+  [
+   {
+    "say": "Step three: deliver.",
+    "show": "Step three: [deliver.]"
+   },
+   {
+    "say": "Each one gets its own copy.",
+    "show": "Each one gets its *own copy.*"
+   },
+   {
+    "say": "Email slow? Only email waits.",
+    "show": "Email slow? [Only email] waits."
+   }
+  ],
+  [
+   {
+    "say": "Need text messages too? Add a subscriber.",
+    "show": "Need *text messages* too? [Add a subscriber.]"
+   },
+   {
+    "say": "Checkout never changes. It doesn't even know who's listening.",
+    "show": "Checkout *never changes.* It doesn't even know [who's listening.]"
+   }
+  ],
+  [
+   {
+    "say": "So that frozen checkout? Done the moment the order is saved.",
+    "show": "So that *frozen checkout?* Done the moment the order is [saved.]"
+   }
+  ],
+  [
+   {
+    "say": "Google Cloud Pub Sub and Kafka both work like this.",
+    "show": "*Google Cloud Pub/Sub* and *Kafka* both work like this."
+   }
+  ],
+  [
+   {
+    "say": "Seen one slow service take down a whole app? That reel's on my profile.",
+    "show": "Seen one slow service take down a *whole app?* That reel's on my profile."
+   },
+   {
+    "say": "Follow for the rest of the series.",
+    "show": "[Follow] for the rest of the series."
+   }
+  ]
+ ]
+}

@@ -1,0 +1,16 @@
+Your app crashed at 3 AM. By the time you woke up, it was already back. Nobody touched it. 😴
+
+With Docker alone, a crashed container stays dead until you restart it by hand. Kubernetes is the robot that does it for you: you say what you want, it keeps it that way. Like a thermostat.
+
+🩹 Heal: one copy crashes, a new one starts in seconds
+📈 Scale: traffic spikes, it adds copies. Traffic drops, it removes them
+🔄 Update: new version rolls out one copy at a time, zero downtime
+
+Docker packs the box. Kubernetes runs the fleet.
+Built by Google, offered by every big cloud (AWS, Google Cloud, Azure).
+
+New to containers? The Docker reel is on my profile 🐳
+
+What's the worst time your app ever went down? Comment below 👇
+
+#coding #programming #softwareengineer #devops #kubernetes

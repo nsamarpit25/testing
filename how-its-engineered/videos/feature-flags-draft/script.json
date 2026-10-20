@@ -1,0 +1,40 @@
+{
+ "topic": "Feature Flags",
+ "lines": [
+  [
+   {"say": "Your friend just got the new Instagram feature.", "show": "Your friend just got the *new* Instagram feature."},
+   {"say": "You updated too. You don't have it.", "show": "You updated too. You [don't have it.]"}
+  ],
+  [
+   {"say": "Same app. Same version. Different screen.", "show": "Same app. Same version. *Different* screen."}
+  ],
+  [
+   {"say": "That's not a bug. It's a feature flag.", "show": "That's not a bug. It's a [feature flag.]"}
+  ],
+  [
+   {"say": "Think of a house where every room has its own light switch.", "show": "Think of a house where every room has its own *light switch.*"},
+   {"say": "The wiring is already in the walls. You just choose which lights are on.", "show": "The wiring is already in the walls. You just choose which lights are *on.*"}
+  ],
+  [
+   {"say": "Apps work the same way. The new code ships to every phone, but it's switched off.", "show": "Apps work the same way. The new code ships to *every phone,* but it's switched [off.]"}
+  ],
+  [
+   {"say": "Then the company flips it on. Staff first. Then one percent of users. Then everyone.", "show": "Then the company flips it *on.* Staff first. Then *1%* of users. Then [everyone.]"}
+  ],
+  [
+   {"say": "No app store update. No new release. Just a switch on a server.", "show": "No app store update. No new release. Just a *switch* on a server."}
+  ],
+  [
+   {"say": "And if the feature breaks? Flip it off. Gone in seconds, for everyone.", "show": "And if the feature *breaks?* Flip it off. Gone in [seconds,] for everyone."}
+  ],
+  [
+   {"say": "Meta runs thousands of these, with a system called Gatekeeper.", "show": "Meta runs *thousands* of these, with a system called [Gatekeeper.]"}
+  ],
+  [
+   {"say": "That's LaunchDarkly, Unleash, and Firebase Remote Config.", "show": "That's *LaunchDarkly,* *Unleash,* and *Firebase Remote Config.*"}
+  ],
+  [
+   {"say": "If you're a vibe coder, follow for the system design your AI skipped.", "show": "If you're a vibe coder, follow for the system design your AI [skipped.]"}
+  ]
+ ]
+}

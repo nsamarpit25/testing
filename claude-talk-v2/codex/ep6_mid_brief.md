@@ -1,0 +1,3 @@
+We make "Cleo & Claude", a series of short 3D animated Instagram Reels (9:16, about a minute). Cleo is a young developer who builds apps with AI. Claude is a small orange AI mascot who stands on her desk and helps her code; he has no arms, so he can only talk, hop and look. Everything happens at her desk in her room. So far every episode has been funny: a real moment from coding with AI (leaking an API key, breaking working code, fixing the wrong folder), with the two of them bickering.
+
+For the next episode I want something emotional, the kind of reel people watch twice and send to a friend. Give me 10 ideas.

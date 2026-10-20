@@ -1,0 +1,15 @@
+One typo shouldn't be able to take your whole app down. 💥
+
+Big teams push code all day and their apps stay up. The difference? Nobody ships by hand.
+
+Every change rides an assembly line:
+🏗️ Build: a robot builds your app from scratch on a clean server, not your laptop
+🧪 Test: every test runs automatically. One fails, the line stops
+🚀 Ship: everything passed? It deploys on its own, often to a few users first, then everyone
+
+That's CI/CD. CI is the checking. CD is the shipping.
+GitHub Actions sets it all up with one file in your repo.
+
+What's the smallest change that ever broke your app? Comment below 👇
+
+#coding #programming #softwareengineer #devops #cicd

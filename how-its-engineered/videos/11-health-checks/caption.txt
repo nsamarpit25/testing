@@ -1,0 +1,16 @@
+Your app froze at 3 AM. Still running, not answering anyone. And something restarted it before anyone woke up. 🥶
+
+The trap: running isn't the same as working. A frozen app still looks alive, nothing crashed, so nothing restarts it.
+
+The fix: keep asking it "are you okay?" Like a nurse checking your pulse. That's a health check.
+
+💓 Alive? Every few seconds it calls your app's health page. Three misses in a row? Restart
+🚦 Ready? A copy that's still starting up says "not yet", and traffic skips it until it is
+
+In Kubernetes these are liveness and readiness probes: a few lines in your config.
+
+New to Kubernetes? That reel is on my profile ☸️
+
+Has your app ever been "up" but not actually working? Comment below 👇
+
+#coding #programming #softwareengineer #systemdesign #kubernetes

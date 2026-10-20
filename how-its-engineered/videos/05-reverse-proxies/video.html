@@ -1,0 +1,1039 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- 05 Reverse Proxies. Neon line-art style (variant B of opening.html). Voice: voice/voice.wav, timings: voice/timings.js -->
+<style>
+@font-face { font-family: Inter; src: url(../../node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2) format('woff2'); font-weight: 100 900; }
+@font-face { font-family: Mono; src: url(../../node_modules/@fontsource/jetbrains-mono/files/jetbrains-mono-latin-400-normal.woff2) format('woff2'); font-weight: 400; }
+@font-face { font-family: Mono; src: url(../../node_modules/@fontsource/jetbrains-mono/files/jetbrains-mono-latin-500-normal.woff2) format('woff2'); font-weight: 500; }
+:root { --acc: #2EE6D6; --warn: #FF375F; }
+html, body { margin: 0; background: #000; }
+#stage { position: relative; width: 540px; height: 960px; overflow: hidden; background: #000; font-family: Inter, sans-serif; color: #fff; }
+#world { position: absolute; inset: 0; transform-origin: 50% 55%; -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,0.12) 70px, rgba(0,0,0,0.5) 190px, #000 270px); mask-image: linear-gradient(to bottom, rgba(0,0,0,0.12) 70px, rgba(0,0,0,0.5) 190px, #000 270px); }
+#vignette { position: absolute; inset: 0; background: radial-gradient(110% 75% at 50% 52%, rgba(46,230,214,0.07), rgba(0,0,0,0) 62%); }
+#bg { position: absolute; inset: 0; width: 540px; height: 960px; }
+svg.full { position: absolute; inset: 0; overflow: visible; }
+#flash { position: absolute; inset: 0; pointer-events: none; opacity: 0; }
+#grain { position: absolute; inset: -40px; pointer-events: none; opacity: 0.55; mix-blend-mode: screen; }
+#bar { position: absolute; top: 26px; left: 32px; right: 32px; display: flex; gap: 6px; }
+#bar div { flex: 1; height: 2.5px; border-radius: 2px; background: rgba(255,255,255,0.16); overflow: hidden; }
+#bar i { display: block; height: 100%; background: rgba(255,255,255,0.85); width: 0; }
+#caps { position: absolute; left: 0; right: 0; top: 150px; text-align: center; }
+.cap { position: absolute; left: 0; right: 0; padding: 0 30px; }
+.cap-line { font-size: 24px; line-height: 33px; font-weight: 400; color: #a3a3a3; letter-spacing: -0.2px; }
+.w { display: inline-block; margin: 0 3px; }
+.key { color: #fff; font-weight: 700; }
+.pill { background: rgba(46,230,214,0.16); color: var(--acc); border-radius: 9px; padding: 0 9px; }
+#chapter { position: absolute; left: 32px; top: 236px; font-family: Mono; font-size: 10px; letter-spacing: 2px; color: #8a8a8a; display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+#chapter b { display: inline-block; width: 6px; height: 6px; background: var(--acc); border-radius: 1px; }
+#handle { position: absolute; right: 32px; top: 232px; display: flex; flex-direction: column; align-items: flex-end; gap: 6px; font-weight: 700; font-size: 8.5px; letter-spacing: 0.6px; }
+.lbl { position: absolute; transform: translate(-50%, -50%); font-family: Mono; font-size: 10px; letter-spacing: 1.5px; color: #c4c4c4; white-space: nowrap; }
+.lbl.big { font-size: 12.5px; letter-spacing: 0.3px; color: #fff; font-weight: 500; }
+.lbl.tag { font-size: 11px; letter-spacing: 0.5px; color: #000; background: #fff; border-radius: 6px; padding: 3px 7px; font-weight: 500; }
+.lbl.acc { font-size: 11px; letter-spacing: 0.5px; color: #000; background: var(--acc); border-radius: 6px; padding: 3px 7px; font-weight: 500; }
+.lbl.warn { font-size: 11px; letter-spacing: 0.5px; color: #fff; background: var(--warn); border-radius: 6px; padding: 3px 7px; font-weight: 500; }
+.lbl.out { background: rgba(0,0,0,0.85); border: 1px solid rgba(255,255,255,0.45); border-radius: 6px; padding: 3px 7px; color: #fff; font-size: 10.5px; letter-spacing: 0.6px; }
+.lbl.ip { background: rgba(0,0,0,0.85); border: 1px solid rgba(255,255,255,0.35); border-radius: 5px; padding: 2px 5px; color: #ddd; font-size: 8.5px; letter-spacing: 0.4px; }
+.card { position: absolute; border: 1px solid rgba(46,230,214,0.55); border-radius: 12px; background: rgba(0,0,0,0.92); font-family: Mono; box-sizing: border-box; font-size: 12.5px; }
+.card .hd { font-size: 9.5px; letter-spacing: 1.6px; color: #8a8a8a; display: flex; justify-content: space-between; }
+.row { display: flex; justify-content: space-between; align-items: center; padding: 7px 9px; border-radius: 7px; margin-top: 6px; }
+.term { font-size: 11.5px; line-height: 18px; white-space: pre; }
+.dim { color: #8a8a8a; }
+.a { color: var(--acc); }
+.r { color: var(--warn); }
+.btn { display: inline-flex; align-items: center; justify-content: center; border-radius: 9px; font-weight: 700; font-size: 13px; }
+#title { position: absolute; left: 0; right: 0; top: 700px; text-align: center; }
+#title .t { font-size: 54px; font-weight: 800; letter-spacing: -2px; }
+#title .ph { font-family: Mono; font-size: 13px; letter-spacing: 3px; color: #a3a3a3; margin-top: 8px; }
+#cursor { position: absolute; left: 0; top: 0; width: 18px; height: 24px; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="world">
+    <div id="vignette"></div>
+    <canvas id="bg" width="1080" height="1920"></canvas>
+    <svg class="full" id="scene" width="540" height="960" viewBox="0 0 540 960">
+      <defs><filter id="bloom" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+      <g id="sceneG" filter="url(#bloom)"></g>
+    </svg>
+    <svg class="full" id="fx" width="540" height="960" viewBox="0 0 540 960"></svg>
+    <div id="labels"></div>
+  </div>
+  <div id="ui"></div>
+  <div id="title"></div>
+  <div id="flash"></div>
+  <div id="chapter"><b></b><span></span></div>
+  <div id="handle">
+    <svg width="17" height="17" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="6" fill="none" stroke="#fff" stroke-width="2"/><circle cx="12" cy="12" r="4.6" fill="none" stroke="#fff" stroke-width="2"/><circle cx="17.6" cy="6.4" r="1.3" fill="#fff"/></svg>
+    <div>@HOW.ITS.ENGINEERED</div>
+  </div>
+  <div id="bar"><div><i></i></div><div><i></i></div><div><i></i></div><div><i></i></div><div><i></i></div></div>
+  <div id="caps"></div>
+  <div id="grain"></div>
+  <svg id="cursor" viewBox="0 0 18 24"><path d="M2 2 L2 19 L6.5 15 L9.5 22 L12.5 20.7 L9.6 14 L15.5 14 Z" fill="#fff" stroke="#000" stroke-width="1.4" stroke-linejoin="round"/></svg>
+</div>
+<script src="../../tools/lib.js"></script>
+<script src="../../tools/iso.js"></script>
+<script src="voice/timings.js"></script>
+<script>
+const $ = (id) => document.getElementById(id);
+const ACC = '#2EE6D6', WARN = '#FF375F';
+const mk = (line, text = line, dot = line) => ({ line, top: '#000', s1: '#000', s2: '#000', text, dot });
+const ROLES = { def: mk('#fff'), server: mk('#fff'), proxy: mk(ACC), wall: mk(ACC), warn: mk(WARN) };
+
+ISO.layer = $('sceneG');
+const FX = $('fx');
+const BG = $('bg').getContext('2d');
+const TM = window.TIMINGS, WD = window.WORDS || [];
+const ph = (li, pi = 0) => TM.find((e) => e.li === li && e.pi === pi);
+const S = (li, pi = 0) => ph(li, pi).start, E = (li, pi = 0) => ph(li, pi).end;
+const nrm = (s) => s.toLowerCase().replace(/[^a-z0-9]/g, '');
+// start time of the first spoken word `w` at/after `after` (falls back to fb)
+const W = (w, after, fb) => { const x = WD.find((e) => e[1] >= after - 0.05 && nrm(e[0]).startsWith(w)); return x && x[1] < after + 4 ? x[1] : (fb ?? after); };
+const END = E(12, 2) + 1.6;
+window.DURATION = Math.ceil(END * 30) / 30;
+
+const caps = makeCaptions($('caps'), TM.map((e, i) => ({
+  t: e.start, dur: Math.max(0.35, e.end - e.start), text: e.show,
+  end: i + 1 < TM.length ? TM[i + 1].start - 0.02 : END - 0.3,
+})));
+$('grain').style.backgroundImage = `url(${grainURL(256, 0.07, 11)})`;
+
+// ---------- key times ----------
+const TAP = 0.62, LAUNCH = 0.78, BELIEF = 1.55;
+const NOT = S(0, 1), IMPACT = NOT - 0.04;
+const MID = S(1, 0), RP = S(1, 1);
+const L2 = S(2, 0), SCAN = W('hackers', S(2, 1), S(2, 1) + 0.15), WEAK = W('weak', S(2, 2), S(2, 2) + 0.4), IN = W('theyre', S(2, 2) + 0.5, E(2, 2) - 0.4);
+const L3 = S(3, 0), PROXY3 = W('proxy', L3, L3 + 0.35), VANISH = W('vanish', L3, L3 + 1.4), WALL3 = W('wall', VANISH, VANISH + 1);
+const PUB = S(3, 1), PUBA = W('public', PUB, PUB + 1.1);
+const L4 = S(4, 0), KITCH = S(4, 1), WAITER = S(4, 2), ORDER = W('order', WAITER, WAITER + 0.9), BACK = W('brings', ORDER, ORDER + 0.45);
+const L5 = S(5, 0), MORE = W('lot', L5, L5 + 1);
+const L6 = S(6, 0), UNLOCK = W('unlocks', L6, L6 + 0.5), ONCE = W('once', UNLOCK, L6 + 2.5), DONT = W('servers', ONCE, ONCE + 1);
+const L7 = S(7, 0), READY = W('ready', L7, L7 + 1.1), MOST = W('most', READY, READY + 0.8);
+const L8 = S(8, 0), PATH = W('path', L8, L8 + 0.5), API = W('slash', PATH, PATH + 0.7), IMG = W('images', API, API + 1.3);
+const L9 = S(9, 0), FLOOD = W('flood', L9, L9 + 0.45), STOP = S(9, 1);
+const L10 = S(10, 0), CF = W('cloudflare', L10, L10 + 0.65), MILL = W('millions', CF, CF + 0.9);
+const L11 = S(11, 0), FWD_HIDE = W('hides', L11, L11 + 0.7), L11B = S(11, 1), REV_HIDE = W('hides', L11B, L11B + 0.9);
+const L12 = S(12, 0), QQ = W('which', L12, L12 + 1.4);
+
+// ---------- helpers ----------
+const life = (t, a, b, fi = 0.35, fo = 0.25) => Math.max(0, Math.min(ep(t, a, a + fi), 1 - ep(t, b - fo, b)));
+const hash = (n) => { const x = Math.sin(n * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
+const flipV = (F) => ({ o: add3(F.o, F.v), u: F.u, v: mul3(F.v, -1) });
+const circ = (p, r) => `M${p[0] - r} ${p[1]}a${r} ${r} 0 1 0 ${2 * r} 0a${r} ${r} 0 1 0 ${-2 * r} 0`;
+const fx = (tag, attrs, parent = FX) => el(tag, attrs, parent);
+const fmt = (n) => Math.round(n).toLocaleString('en-US');
+function fcircle(o, F, a, b, r, opt = {}) {
+  const lu = len3(F.u), lv = len3(F.v), pts = [];
+  for (let i = 0; i < 28; i++) { const q = (i / 28) * Math.PI * 2; pts.push(fp(F, a + (r * Math.cos(q)) / lu, b + (r * Math.sin(q)) / lv)); }
+  push(o, path2(pts), { w: 0.9, ...opt });
+}
+function box3(o, x, y, z, w, d, h, opt = {}) {
+  const c = Math.cos(CAM.yaw), s = Math.sin(CAM.yaw);
+  const vis = (nx, ny) => (nx * c - ny * s) + (nx * s + ny * c) > 0.001;
+  const F = {};
+  for (const [k, oo, u, v, nx, ny] of [
+    ['px', [x + w, y, z], [0, d, 0], [0, 0, h], 1, 0], ['nx', [x, y, z], [0, d, 0], [0, 0, h], -1, 0],
+    ['py', [x, y + d, z], [w, 0, 0], [0, 0, h], 0, 1], ['ny', [x, y, z], [w, 0, 0], [0, 0, h], 0, -1]]) {
+    if (!vis(nx, ny)) continue;
+    F[k] = { o: oo, u, v };
+    fpoly(o, F[k], 0, 0, 1, 1, { w: 1, face: k, ...opt });
+  }
+  F.top = { o: [x, y, z + h], u: [w, 0, 0], v: [0, d, 0] };
+  fpoly(o, F.top, 0, 0, 1, 1, { w: 1, face: 'top', ...opt });
+  return F;
+}
+// emit with a role's colours (def / server / proxy / wall / warn)
+function emitT(o, D, op = 1, role = 'def') {
+  const R = ROLES[role] || ROLES.def;
+  for (const it of o.items) {
+    if (it.face) it.fill = it.fill ?? R.top;
+    else if (it.fill === undefined || it.fill === '#000') it.fill = R.top;
+    else if (it.fill === '#fff' && it.stroke === 'none') it.fill = R.dot;
+    if (it.stroke === undefined) it.stroke = R.line;
+  }
+  for (const tx of o.texts) if (tx.fill === undefined) tx.fill = R.text;
+  emit(o, D, op);
+}
+function rack3(o, x, y, z, w, d, h) {
+  const F = box3(o, x, y, z, w, d, h);
+  if (F.py) {
+    const R = F.py;
+    fpoly(o, R, 0.07, 0.03, 0.86, 0.94, { fill: 'none', w: 0.6 });
+    for (let k = 0; k < 10; k++) {
+      const b = 0.07 + k * 0.088;
+      fline(o, R, 0.1, b, 0.9, b, { w: 0.55, op: 0.8 });
+      fpoly(o, R, 0.15, b + 0.02, 0.32, 0.045, { fill: 'none', w: 0.55 });
+    }
+  }
+  if (F.px) for (let k = 0; k < 8; k++) fline(o, F.px, 0.15 + k * 0.095, 0.1, 0.15 + k * 0.095, 0.9, { w: 0.5, op: 0.6 });
+  fpoly(o, F.top, 0.12, 0.14, 0.76, 0.72, { fill: 'none', w: 0.6 });
+  return F;
+}
+function person(o, x, y, t = 0, walk = 0, hat = false) {
+  const bob = walk * Math.abs(Math.sin(t * 13)) * 3;
+  cylinder(o, x, y, 4 + bob, 7, 22, 0);
+  push(o, circ(P(x, y, 36 + bob), 6 * CAM.scale), { fill: '#000', w: 1 });
+  if (hat) cylinder(o, x, y, 41 + bob, 5, 8, 0);
+}
+const labels = $('labels');
+function label(text, x, y, op, cls = '', extra = '') {
+  if (op <= 0.01) return;
+  const d = document.createElement('div');
+  d.className = 'lbl ' + cls; d.innerHTML = text;
+  d.style.left = x + 'px'; d.style.top = y + 'px'; d.style.opacity = Math.min(1, op);
+  if (extra) d.style.cssText += extra;
+  labels.appendChild(d);
+}
+const lblW = (text, w, op, cls = '', extra = '') => { const p = P(...w); label(text, p[0], p[1], op, cls, extra); };
+function card(a, style, inner) {
+  if (a <= 0.001) return '';
+  const e = ease.back(clamp(a)), o = clamp(a * 1.5);
+  return `<div class="card" style="${style};opacity:${o};transform:translateY(${(1 - e) * 18}px) scale(${lerp(0.92, 1, e)});filter:blur(${(1 - clamp(a * 1.3)) * 6}px)">${inner}</div>`;
+}
+function ripple(t, t0, p, col, R = 34) {
+  const k = prog(t, t0, t0 + 0.55);
+  if (k <= 0 || k >= 1) return;
+  fx('circle', { cx: p[0], cy: p[1], r: 4 + ease.out(k) * R, fill: 'none', stroke: col, 'stroke-width': 1.6 * (1 - k) + 0.3, 'stroke-opacity': 1 - k });
+}
+function isoRing(t, t0, w, col, R = 90, dur = 0.8) {
+  const k = prog(t, t0, t0 + dur);
+  if (k <= 0 || k >= 1) return;
+  const r = 10 + ease.out(k) * R, pts = [];
+  for (let i = 0; i <= 40; i++) { const q = (i / 40) * Math.PI * 2; pts.push(P(w[0] + r * Math.cos(q), w[1] + r * Math.sin(q), w[2] || 0)); }
+  fx('path', { d: path2(pts), fill: 'none', stroke: col, 'stroke-width': 1.4, 'stroke-opacity': (1 - k) * 0.9 });
+}
+function shards(t, t0, p, col, n = 12, R = 1) {
+  const k = prog(t, t0, t0 + 0.7);
+  if (k <= 0 || k >= 1) return;
+  for (let i = 0; i < n; i++) {
+    const a = (i / n) * Math.PI * 2 + hash(i) * 0.6, d = 6 + ease.out(k) * (26 + hash(i + 3) * 30) * R, L = 7 * (1 - k) + 2;
+    const x = p[0] + Math.cos(a) * d, y = p[1] + Math.sin(a) * d + k * k * 14;
+    fx('line', { x1: x, y1: y, x2: x + Math.cos(a + 1) * L, y2: y + Math.sin(a + 1) * L, stroke: col, 'stroke-width': 1.5, 'stroke-opacity': 1 - k });
+  }
+}
+function pop(t, t0, p, text, cls = 'big', dur = 1.1) {
+  const k = prog(t, t0, t0 + dur);
+  if (k <= 0 || k >= 1) return;
+  label(text, p[0], p[1] - ease.out(k) * 30, Math.min(ep(t, t0, t0 + 0.12), 1 - prog(k, 0.6, 1)), cls, `transform:translate(-50%,-50%) scale(${lerp(1.35, 1, ease.out(clamp(k * 4)))})`);
+}
+
+// ---------- 2D glyphs (drawn in the fx layer) ----------
+function gLock(p, s, open, col, op = 1, parent = FX) {
+  const g = fx('g', { transform: `translate(${p[0]} ${p[1]})`, opacity: op }, parent);
+  el('rect', { x: -s * 0.55, y: -s * 0.1, width: s * 1.1, height: s * 0.85, rx: s * 0.15, fill: '#000', stroke: col, 'stroke-width': 1.5 }, g);
+  el('circle', { cx: 0, cy: s * 0.3, r: s * 0.1, fill: col }, g);
+  el('path', { d: `M${-s * 0.33} ${-s * 0.1}V${-s * 0.38}A${s * 0.33} ${s * 0.33} 0 0 1 ${s * 0.33} ${-s * 0.38}V${-s * 0.1 - open * s * 0.25}`, fill: 'none', stroke: col, 'stroke-width': 1.6, transform: `translate(0 ${-open * s * 0.3})`, 'stroke-linecap': 'round' }, g);
+}
+function gStack(p, s, col, parent = FX) {
+  const g = fx('g', { transform: `translate(${p[0]} ${p[1]})` }, parent);
+  for (let k = 2; k >= 0; k--) el('path', { d: `M${-s * 0.6} ${k * s * 0.22 - s * 0.1}L0 ${k * s * 0.22 - s * 0.38}L${s * 0.6} ${k * s * 0.22 - s * 0.1}L0 ${k * s * 0.22 + s * 0.18}Z`, fill: '#000', stroke: col, 'stroke-width': 1.4, 'stroke-linejoin': 'round' }, g);
+}
+function gFork(p, s, col, parent = FX) {
+  const g = fx('g', { transform: `translate(${p[0]} ${p[1]})`, fill: 'none', stroke: col, 'stroke-width': 1.6, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, parent);
+  el('path', { d: `M0 ${s * 0.6}V0L${-s * 0.45} ${-s * 0.45}M0 0L${s * 0.45} ${-s * 0.45}M${-s * 0.45} ${-s * 0.15}V${-s * 0.45}H${-s * 0.15}M${s * 0.45} ${-s * 0.15}V${-s * 0.45}H${s * 0.15}` }, g);
+}
+function gShield(p, s, col, parent = FX) {
+  const g = fx('g', { transform: `translate(${p[0]} ${p[1]})`, fill: 'none', stroke: col, 'stroke-width': 1.6, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' }, parent);
+  el('path', { d: `M0 ${-s * 0.6}L${s * 0.5} ${-s * 0.4}V${s * 0.05}Q${s * 0.5} ${s * 0.45} 0 ${s * 0.65}Q${-s * 0.5} ${s * 0.45} ${-s * 0.5} ${s * 0.05}V${-s * 0.4}Z` }, g);
+  el('path', { d: `M${-s * 0.2} ${s * 0.02}L${-s * 0.04} ${s * 0.2}L${s * 0.24} ${-s * 0.18}` }, g);
+}
+function gTicket(p, s, col, parent = FX) {
+  const g = fx('g', { transform: `translate(${p[0]} ${p[1]})`, fill: 'none', stroke: col, 'stroke-width': 1.3 }, parent);
+  el('path', { d: `M${-s * 0.4} ${-s * 0.55}H${s * 0.4}V${s * 0.55}L${s * 0.2} ${s * 0.42}L0 ${s * 0.55}L${-s * 0.2} ${s * 0.42}L${-s * 0.4} ${s * 0.55}Z`, fill: '#000' }, g);
+  for (let k = 0; k < 3; k++) el('path', { d: `M${-s * 0.22} ${-s * 0.3 + k * s * 0.22}H${s * (k === 2 ? 0.05 : 0.22)}` }, g);
+}
+const lockSVG = (col, open = 0) => `<svg width="12" height="13" viewBox="-7 -9 14 15" style="vertical-align:-2px;margin-left:5px"><rect x="-5.5" y="-1" width="11" height="8.5" rx="1.5" fill="none" stroke="${col}" stroke-width="1.5"/><path d="M-3.3 -1V-3.8A3.3 3.3 0 0 1 3.3 -3.8V${open ? -6 : -1}" fill="none" stroke="${col}" stroke-width="1.5" transform="translate(0 ${open ? -2 : 0})"/></svg>`;
+
+// ---------- world layout ----------
+const PH = [0, 270];                        // your phone
+const PX = [0, -60];                        // the reverse proxy, set in the wall
+const WALL_Y = -76;
+const SVX = [-225, -135, -45, 45, 135, 225], SVY = -285;
+const IMPACT_PT = [0, PX[1] + 40, 34];      // the proxy's front door
+const DOOR = [0, PX[1] + 40, 30];
+const ROOF = [PX[0], PX[1], 64];
+const HEART = [PH[0] - 30 + 0.2 * 60, PH[1] - 58 + 0.66 * 116, 12];
+const RS = [1500, -40];                     // the restaurant
+const CMP = [-1500, 0];                     // forward vs reverse
+const HK = [[-310, 150], [320, 110], [205, 450]];   // hackers
+const WEAKI = 4;
+
+const CROWD = [];
+for (let i = 0; CROWD.length < 300; i++) {
+  const x = (hash(i * 1.7 + 0.3) * 2 - 1) * 460, y = 60 + hash(i * 2.3 + 0.9) * 470;
+  if (Math.abs(x) < 85 && Math.abs(y - PH[1]) < 115) continue;
+  if (Math.abs(x) < 90 && y < 40) continue;
+  if (HK.some((h) => Math.hypot(x - h[0], y - h[1]) < 40)) continue;
+  CROWD.push({ x, y, s: hash(i + 9.9) });
+}
+// a field of other websites, each with its own reverse proxy in front
+const FIELD = [];
+for (let r = -5; r <= 4; r++) for (let c = -5; c <= 5; c++) {
+  const x = c * 300 + (r % 2) * 150, y = r * 290;
+  if (Math.abs(x) < 560 && y > -560 && y < 620) continue;
+  FIELD.push({ x, y, d: Math.hypot(x, y) });
+}
+
+// ---------- objects ----------
+function heartPts(F, a, b, r) {
+  const lu = len3(F.u), lv = len3(F.v), pts = [];
+  for (let i = 0; i < 32; i++) {
+    const q = (i / 32) * Math.PI * 2;
+    const hx = Math.pow(Math.sin(q), 3), hy = -(13 * Math.cos(q) - 5 * Math.cos(2 * q) - 2 * Math.cos(3 * q) - Math.cos(4 * q)) / 16;
+    pts.push(fp(F, a + (r * hx) / lu, b + (r * hy) / lv));
+  }
+  return pts;
+}
+function phoneObj(t, like, c = PH) {
+  const [cx, cy] = c, o = Obj();
+  const T = box3(o, cx - 55, cy - 85, 0, 110, 170, 5);
+  tileDots(o, T.top, 6, 9);
+  const F = box3(o, cx - 30, cy - 58, 5, 60, 116, 7), Sc = F.top;
+  fpoly(o, Sc, 0.08, 0.05, 0.84, 0.9, { fill: 'none' });
+  fline(o, Sc, 0.38, 0.09, 0.62, 0.09, { w: 1.2 });
+  ftext(o, Sc, 0.15, 0.165, 'Instagram', 6.2, { weight: 800, anchor: 'start' });
+  fcircle(o, Sc, 0.8, 0.165, 2.6, { fill: 'none', w: 0.8 });
+  fpoly(o, Sc, 0.14, 0.23, 0.72, 0.37, { fill: 'none', w: 0.9 });
+  push(o, path2([fp(Sc, 0.16, 0.56), fp(Sc, 0.36, 0.38), fp(Sc, 0.48, 0.48), fp(Sc, 0.62, 0.33), fp(Sc, 0.84, 0.56)], false), { fill: 'none', w: 0.8 });
+  fcircle(o, Sc, 0.7, 0.3, 3.4, { fill: 'none', w: 0.8 });
+  const pp = like > 0 && c === PH ? 1 + 0.45 * Math.sin(Math.PI * clamp(prog(t, TAP, TAP + 0.35))) : 1;
+  push(o, path2(heartPts(Sc, 0.2, 0.66, 4.2 * pp)), like > 0 ? { fill: WARN, fillOp: like, stroke: WARN, w: 1.1 } : { fill: 'none', w: 1 });
+  fcircle(o, Sc, 0.36, 0.66, 3.6, { fill: 'none', w: 0.9 });
+  push(o, path2([fp(Sc, 0.47, 0.63), fp(Sc, 0.57, 0.66), fp(Sc, 0.47, 0.69)]), { fill: 'none', w: 0.9 });
+  ftext(o, Sc, 0.15, 0.755, like > 0.5 ? '1,205 likes' : '1,204 likes', 4.6, { weight: 700, anchor: 'start' });
+  fline(o, Sc, 0.15, 0.82, 0.78, 0.82, { w: 0.7, op: 0.5 });
+  fline(o, Sc, 0.15, 0.87, 0.6, 0.87, { w: 0.7, op: 0.5 });
+  return o;
+}
+function serverObj(i, t, x = SVX[i], y = SVY) {
+  const o = Obj();
+  const F = rack3(o, x - 24, y - 20, 4, 48, 40, 104);
+  if (F.py) for (let k = 0; k < 10; k++) if (Math.sin(t * (5 + i) + k * 1.9) > -0.1) fdot(o, F.py, 0.8, 0.07 + k * 0.088 + 0.04, 1.4, { fillOp: 0.9 });
+  return o;
+}
+function floorObj() {
+  const o = Obj();
+  const T = box3(o, -300, -380, 0, 600, 200, 4);
+  tileDots(o, T.top, 14, 5);
+  return o;
+}
+function wallObj(h) {
+  const o = Obj();
+  for (const [x0, x1] of [[-430, -78], [78, 430]]) {
+    const F = box3(o, x0, WALL_Y - 7, 0, x1 - x0, 14, h);
+    if (F.py && h > 12) for (let k = 1; k < 3; k++) fline(o, F.py, 0, k / 3, 1, k / 3, { w: 0.5, op: 0.5 });
+    if (F.py && h > 12) for (let k = 1; k < 14; k++) fline(o, F.py, k / 14, (k % 2) / 3, k / 14, (k % 2) / 3 + 1 / 3, { w: 0.5, op: 0.45 });
+  }
+  return o;
+}
+function proxyObj(t, glow, c = PX) {
+  const [cx, cy] = c, o = Obj();
+  const T = box3(o, cx - 78, cy - 52, 0, 156, 104, 4);
+  tileDots(o, T.top, 7, 4);
+  const B = box3(o, cx - 52, cy - 36, 4, 104, 72, 56);
+  if (B.py) {
+    const D = B.py;
+    fpoly(o, D, 0.05, 0.1, 0.9, 0.8, { fill: 'none', w: 0.6, op: 0.7 });
+    fpoly(o, D, 0.38, 0.0, 0.24, 0.66, { fill: 'none', w: 1.1 });
+    for (let k = 1; k < 5; k++) fline(o, D, 0.38 + k * 0.048, 0.0, 0.38 + k * 0.048, 0.66, { w: 0.7 });
+    for (let k = 0; k < 4; k++) fdot(o, D, 0.1 + k * 0.055, 0.78, 1.3, { fillOp: Math.sin(t * 7 + k * 2) > 0 ? 1 : 0.3 });
+    ftext(o, flipV(D), 0.81, 0.25, 'PROXY', 7, { font: 'Mono', weight: 500 });
+  }
+  if (B.px) for (let k = 0; k < 5; k++) fpoly(o, B.px, 0.12 + k * 0.16, 0.3, 0.1, 0.3, { fill: 'none', w: 0.6 });
+  const Tp = B.top, sh = [[0.5, 0.18], [0.66, 0.27], [0.64, 0.58], [0.5, 0.8], [0.36, 0.58], [0.34, 0.27]];
+  push(o, path2(sh.map(([a, b]) => fp(Tp, a, b))), { fill: glow > 0.02 ? ACC : 'none', fillOp: 0.25 * glow, w: 1.3 });
+  push(o, path2([fp(Tp, 0.43, 0.48), fp(Tp, 0.49, 0.58), fp(Tp, 0.59, 0.36)], false), { fill: 'none', w: 1.6 });
+  return o;
+}
+// cached pages hovering over the proxy roof
+function cacheObj(t, n) {
+  const o = Obj();
+  for (let k = 0; k < 5; k++) {
+    const a = clamp(n - k); if (a <= 0) continue;
+    const z = 76 + k * 10 + (1 - ease.back(a)) * 30 + Math.sin(t * 2 + k) * 1.5;
+    const F = box3(o, PX[0] - 30, PX[1] - 22, z, 60, 44, 3);
+    fline(o, F.top, 0.15, 0.3, 0.7, 0.3, { w: 0.7 });
+    fline(o, F.top, 0.15, 0.5, 0.85, 0.5, { w: 0.5, op: 0.6 });
+    fline(o, F.top, 0.15, 0.68, 0.6, 0.68, { w: 0.5, op: 0.6 });
+  }
+  return o;
+}
+function siteObj(f, t) {
+  const o = Obj(), [x, y] = [f.x, f.y];
+  box3(o, x - 70, y - 50, 0, 140, 100, 3);
+  for (let k = 0; k < 3; k++) box3(o, x - 48 + k * 34, y - 40, 3, 22, 20, 40 + (k % 2) * 8);
+  return o;
+}
+function siteProxy(f) { const o = Obj(); box3(o, f.x - 18, f.y + 18, 3, 36, 22, 16); return o; }
+
+// restaurant pieces
+const RX = (x, y) => [RS[0] + x, RS[1] + y];
+function tableObj(x, y) { const o = Obj(); box3(o, x - 3, y - 3, 0, 6, 6, 24); box3(o, x - 38, y - 26, 24, 76, 52, 3); return o; }
+function plateObj(x, y, z) { const o = Obj(); cylinder(o, x, y, z, 11, 2, 0); cylinder(o, x, y, z + 2, 7, 6, 0); return o; }
+
+// ---------- packets ----------
+const FL = [];
+const fly = (t0, dur, A, B, opt = {}) => FL.push({ t0, dur, A, B, text: '', col: ACC, arc: 40, ...opt });
+fly(LAUNCH, IMPACT - LAUNCH, [HEART[0], HEART[1], HEART[2] + 4], IMPACT_PT, { text: 'POST /like', arc: 120 });
+fly(MID + 0.15, 0.45, [PX[0], PX[1] - 20, 62], [SVX[3], SVY + 20, 112]);
+fly(MID + 0.65, 0.45, [SVX[3], SVY + 20, 112], [PX[0], PX[1] - 20, 62]);
+fly(MID + 1.15, 0.7, [PX[0], PX[1] + 30, 40], [PH[0], PH[1], 16], { text: '200 OK ♥', arc: 70 });
+// L2: no wall, requests hit a server directly
+fly(L2 + 0.35, 0.7, [PH[0], PH[1], 16], [SVX[2], SVY + 20, 60], { col: '#fff', arc: 90, text: '→ 31.13.64.12' });
+// L6: HTTPS gets unlocked at the proxy
+fly(L6 - 0.2, UNLOCK - L6 + 0.18, [PH[0], PH[1], 16], DOOR, { lock: true, text: 'HTTPS', arc: 80 });
+fly(UNLOCK + 0.4, 0.55, [PX[0], PX[1] - 20, 62], [SVX[2], SVY + 20, 112], { col: '#fff', plain: true });
+fly(ONCE - 0.75, 0.75, [-280, 210, 10], DOOR, { lock: true, arc: 60 });
+fly(ONCE - 0.45, 0.75, [260, 170, 10], DOOR, { lock: true, arc: 60 });
+fly(ONCE + 0.35, 0.55, [PX[0], PX[1] - 20, 62], [SVX[0], SVY + 20, 112], { col: '#fff', plain: true });
+fly(ONCE + 0.6, 0.55, [PX[0], PX[1] - 20, 62], [SVX[4], SVY + 20, 112], { col: '#fff', plain: true });
+// L8: routing by path
+fly(L8 - 0.1, PATH - L8 + 0.02, [PH[0], PH[1], 16], DOOR, { text: 'GET /api/like', arc: 70 });
+fly(API + 0.05, 0.6, [PX[0], PX[1] - 20, 62], [SVX[1], SVY + 20, 112], { text: '/api' });
+fly(API + 0.5, IMG - API - 0.5, [PH[0], PH[1], 16], DOOR, { text: 'GET /img/cat.jpg', arc: 70 });
+fly(IMG + 0.05, 0.6, [PX[0], PX[1] - 20, 62], [SVX[4], SVY + 20, 112], { text: '/img' });
+// unlock pops at the proxy door
+const UNLOCKS = [UNLOCK, ONCE, ONCE + 0.3];
+function drawPackets(t) {
+  for (const f of FL) {
+    const k = prog(t, f.t0, f.t0 + f.dur);
+    if (k <= 0 || k >= 1) continue;
+    const kk = ease.inOut(k);
+    const pos = (q) => [lerp(f.A[0], f.B[0], q), lerp(f.A[1], f.B[1], q), lerp(f.A[2], f.B[2], q) + Math.sin(q * Math.PI) * f.arc];
+    for (let g = 3; g >= 1; g--) {
+      const kg = clamp(kk - g * 0.035); if (kg <= 0) continue;
+      const q = pos(kg), o = Obj();
+      box3(o, q[0] - 5, q[1] - 5, q[2], 10, 10, 10, { stroke: f.col, fill: '#000' });
+      emit(o, 1, 0.32 - g * 0.09);
+    }
+    const q = pos(kk), o = Obj();
+    const Fb = box3(o, q[0] - 5, q[1] - 5, q[2], 10, 10, 10, { stroke: f.col, fill: '#000', dash: f.plain ? '2 2' : undefined });
+    if (!f.plain) fpoly(o, Fb.top, 0.25, 0.25, 0.5, 0.5, { fill: f.col, stroke: 'none' });
+    emit(o, 1, 1);
+    if (f.lock) gLock(P(q[0], q[1], q[2] + 24), 9, 0, ACC);
+    if (f.text) { const lp = P(q[0], q[1], q[2] + (f.lock ? 44 : 28)); label(f.text, lp[0], lp[1], ep(t, f.t0, f.t0 + 0.15), 'out'); }
+  }
+  for (const u of UNLOCKS) {
+    const k = prog(t, u, u + 0.9);
+    if (k <= 0 || k >= 1) continue;
+    const p = P(DOOR[0], DOOR[1], DOOR[2] + 30 + ease.out(k) * 26);
+    gLock(p, 13, ep(t, u, u + 0.25, ease.back), ACC, 1 - prog(k, 0.6, 1));
+    ripple(t, u, p, ACC, 30);
+  }
+}
+
+// ---------- camera ----------
+const V = (f, s, y, p, sy = 540, r = 0, sx = 270) => ({ f, s, y, p, sy, r, sx });
+const SH = [];
+const shot = (t, a, b, kick = false, fn = ease.inOut) => SH.push({ t, a, b, kick, fn });
+const [RX0, RY0] = RS, [CX0, CY0] = CMP;
+shot(0, V([0, 262, 12], 2.55, -0.42, 56, 560), V([0, 262, 12], 2.7, -0.3, 52, 560));
+shot(LAUNCH - 0.06, null, V([0, 20, 50], 0.72, -0.5, 40, 470));
+shot(1.6, null, V([0, -170, 60], 0.98, -0.62, 24, 520));
+shot(IMPACT, V([0, -70, 40], 0.6, -0.62, 52, 540), V([0, -70, 40], 0.64, -0.72, 56, 540), true, ease.outExpo);
+shot(MID - 0.05, V([0, -10, 40], 0.6, 0.62, 20, 590), V([0, -10, 40], 0.63, 0.5, 22, 590), true);
+shot(RP - 0.05, V([0, -60, 46], 1.45, 0.34, 18, 520, -2), V([0, -60, 46], 1.6, 0.18, 22, 520, -3), true);
+// no proxy: servers on the open internet
+shot(L2 - 0.05, V([0, -20, 40], 0.52, -0.62, 46, 560), V([0, -60, 40], 0.58, -0.5, 42, 560), true, ease.outExpo);
+shot(SCAN - 0.05, V([60, -60, 40], 0.6, -0.85, 40, 560), V([0, -60, 40], 0.64, -0.7, 38, 560), true);
+shot(WEAK - 0.08, V([SVX[WEAKI], SVY, 70], 1.7, -0.3, 16, 500, -2), V([SVX[WEAKI], SVY, 70], 1.85, -0.2, 16, 500, -3), true);
+shot(IN - 0.03, V([SVX[WEAKI], SVY, 70], 1.15, -0.4, 24, 510), V([90, -260, 60], 0.95, -0.5, 28, 510), true);
+// the wall
+shot(L3 - 0.05, V([0, -40, 40], 0.56, -0.62, 46, 560), V([0, -60, 40], 0.6, -0.72, 50, 560), true, ease.outExpo);
+shot(VANISH - 0.05, V([0, -150, 40], 0.92, 0.5, 20, 580), V([0, -150, 40], 0.98, 0.38, 22, 580), true);
+shot(PUB - 0.05, V([0, -60, 50], 1.25, -0.45, 24, 600), V([0, -60, 50], 1.35, -0.3, 26, 600), true);
+// the restaurant
+shot(L4 - 0.05, V([RX0, RY0 + 20, 30], 0.74, -0.55, 44, 560), V([RX0, RY0, 30], 0.8, -0.42, 40, 560), true, ease.outExpo);
+shot(KITCH - 0.05, V([RX0 + 60, RY0 + 10, 30], 1.0, -0.3, 30, 560), V([RX0 + 80, RY0, 30], 1.05, -0.2, 30, 560), true);
+shot(WAITER - 0.05, V([RX0 - 40, RY0 + 40, 30], 1.05, -0.7, 36, 560), V([RX0 - 30, RY0 + 30, 30], 0.86, -0.6, 38, 560), true);
+// four jobs
+shot(L5 - 0.05, V([0, -60, 60], 1.1, 0.4, 22, 540, -2), V([0, -60, 60], 0.95, -0.35, 26, 540, 1), true, ease.outExpo);
+shot(L6 - 0.05, V([0, 0, 40], 0.62, 0.62, 22, 590), V([0, -20, 40], 0.66, 0.5, 22, 590), true);
+shot(DONT - 0.35, V([0, -240, 70], 1.05, 0.45, 22, 600), V([0, -250, 70], 1.12, 0.32, 24, 600), true);
+shot(L7 - 0.05, V([0, -60, 90], 1.5, -0.45, 24, 600), V([0, -60, 90], 1.6, -0.3, 26, 600), true);
+shot(MOST - 0.1, V([0, 40, 40], 0.55, -0.62, 44, 560), V([0, 40, 40], 0.6, -0.72, 46, 560), true);
+shot(L8 - 0.05, V([0, -110, 40], 0.78, -0.9, 52, 560), V([0, -140, 40], 0.82, -0.82, 52, 560), true);
+shot(API - 0.05, null, V([-70, -170, 40], 0.9, -0.74, 50, 560));
+shot(IMG - 0.05, null, V([70, -170, 40], 0.9, -0.86, 50, 560));
+shot(L9 - 0.05, V([0, 120, 30], 0.46, -0.55, 36, 560), V([0, 60, 30], 0.5, -0.6, 34, 560), true, ease.outExpo);
+shot(STOP - 0.03, V([0, -30, 60], 0.92, -0.45, 24, 600), V([0, -30, 60], 0.98, -0.6, 26, 600), true);
+// everywhere
+shot(L10 - 0.05, V([0, -40, 30], 0.62, -0.6, 40, 560), V([0, -40, 0], 0.2, -0.45, 50, 540), true, ease.inOut);
+// forward vs reverse
+shot(L11 - 0.05, V([CX0 - 20, CY0, 30], 0.62, -0.76, 26, 590), V([CX0 - 10, CY0, 30], 0.58, -0.72, 28, 590), true, ease.outExpo);
+shot(L11B - 0.2, null, V([CX0 + 20, CY0, 30], 0.58, -0.82, 28, 590));
+shot(L12 - 0.1, null, V([CX0, CY0, 30], 0.5, -0.7, 30, 860));
+shot(END + 1, null, V([CX0, CY0, 30], 0.5, -0.66, 30, 860));
+SH.forEach((s, i) => { if (!s.a) s.a = SH[i - 1].b; });
+const CUTS = SH.filter((s) => s.kick).map((s) => s.t);
+function camera(t) {
+  let i = 0; while (i < SH.length - 2 && t >= SH[i + 1].t) i++;
+  const s = SH[i], k = s.fn(prog(t, s.t, SH[i + 1].t)), a = s.a, b = s.b;
+  CAM.scale = lerp(a.s, b.s, k);
+  CAM.yaw = lerp(a.y, b.y, k) + 0.025 * Math.sin(t * 0.55);
+  CAM.pitch = (lerp(a.p, b.p, k) + 1.2 * Math.sin(t * 0.37)) * Math.PI / 180;
+  aim([lerp(a.f[0], b.f[0], k), lerp(a.f[1], b.f[1], k), lerp(a.f[2], b.f[2], k)], lerp(a.sx, b.sx, k), lerp(a.sy, b.sy, k));
+  return lerp(a.r, b.r, k);
+}
+function groundAt(sx, sy) {
+  const a = raw(1, 0, 0), b = raw(0, 1, 0), dx = (sx - CAM.ox) / CAM.scale, dy = (sy - CAM.oy) / CAM.scale;
+  const det = a[0] * b[1] - a[1] * b[0];
+  return [(dx * b[1] - dy * b[0]) / det, (a[0] * dy - a[1] * dx) / det];
+}
+
+// ---------- cursor ----------
+const COMMENT_POS = [195, 745], FOLLOW_POS = [345, 745];
+const tapComment = S(12, 1) + 0.1, tapFollow = W('follow', S(12, 2), S(12, 2) + 0.35) + 0.05;
+const TAPS = [TAP, tapComment, tapFollow];
+function cursorAt(t) {
+  const heart = () => P(...HEART);
+  const tracks = [
+    [[0.05, () => [600, 1000]], [TAP - 0.12, heart], [TAP + 0.25, heart], [TAP + 0.8, () => [640, 1050]]],
+    [[L12 + 1.4, () => [560, 1000]], [tapComment - 0.12, () => COMMENT_POS], [tapComment + 0.3, () => COMMENT_POS], [tapFollow - 0.12, () => FOLLOW_POS], [END, () => FOLLOW_POS]],
+  ];
+  for (const Tk of tracks) {
+    if (t < Tk[0][0] || t > Tk[Tk.length - 1][0]) continue;
+    for (let i = 0; i < Tk.length - 1; i++) if (t >= Tk[i][0] && t <= Tk[i + 1][0]) {
+      const k = ease.inOut(prog(t, Tk[i][0], Tk[i + 1][0])), a = Tk[i][1](), b = Tk[i + 1][1]();
+      return [lerp(a[0], b[0], k), lerp(a[1], b[1], k)];
+    }
+  }
+  return null;
+}
+
+// ---------- canvas: grid, crowd, request streams, dust ----------
+const DUST = Array.from({ length: 90 }, (_, i) => [hash(i + 1.3) * 1900 - 900, hash(i + 7.7) * 1500 - 1000, 20 + hash(i + 3.9) * 360, hash(i + 5.5)]);
+const DOMEC = [PX[0], PX[1] + 10], DOMER = 130;
+function dot(p, r, col, a) { const g = BG; g.fillStyle = col; g.globalAlpha = clamp(a); g.beginPath(); g.arc(p[0], p[1], r, 0, 7); g.fill(); g.globalAlpha = 1; }
+// calls fn(k, q) for every request k alive at t (one every 1/rate s from t0 to t1, each living dur s)
+function stream(t, t0, t1, rate, dur, fn) {
+  if (t < t0 || t > t1 + dur) return;
+  const k0 = Math.max(0, Math.floor((t - dur - t0) * rate)), k1 = Math.floor((Math.min(t, t1) - t0) * rate);
+  for (let k = k0; k <= k1; k++) { const q = (t - (t0 + k / rate)) / dur; if (q >= 0 && q <= 1) fn(k, q); }
+}
+const pick = (k) => CROWD[Math.floor(hash(k * 3.31 + 0.7) * CROWD.length)];
+const arcP = (A, B, q, h) => P(lerp(A[0], B[0], q), lerp(A[1], B[1], q), lerp(A[2], B[2], q) + Math.sin(q * Math.PI) * h);
+function drawBG(t, crowdOp) {
+  const g = BG; g.setTransform(2, 0, 0, 2, 0, 0); g.clearRect(0, 0, 540, 960);
+  const focus = groundAt(270, 560);
+  const gx = Math.round(focus[0] / 60) * 60, gy = Math.round(focus[1] / 60) * 60, N = CAM.scale < 0.4 ? 26 : 14, sp = CAM.scale < 0.4 ? 120 : 60;
+  for (let i = -N; i <= N; i++) for (let j = -N; j <= N; j++) {
+    const x = gx + i * sp, y = gy + j * sp, p = P(x, y, 0);
+    if (p[0] < -10 || p[0] > 550 || p[1] < -10 || p[1] > 970) continue;
+    const fade = 1 - clamp((Math.hypot(x - focus[0], y - focus[1]) - 320 / Math.min(1, CAM.scale * 1.6)) / 560);
+    if (fade <= 0) continue;
+    g.fillStyle = `rgba(255,255,255,${0.16 * fade})`;
+    const r = Math.min(1.6, 0.5 + CAM.scale * 0.45);
+    g.fillRect(p[0] - r / 2, p[1] - r / 2, r, r);
+  }
+  const sc = Math.max(0.7, Math.min(1.6, CAM.scale));
+  if (crowdOp > 0.01) {
+    const s2 = Math.min(2.2, CAM.scale);
+    for (const c of CROWD) {
+      const p0 = P(c.x, c.y, 0), p1 = P(c.x, c.y, 10 + c.s * 4);
+      if (p0[0] < -20 || p0[0] > 560 || p0[1] < -40 || p0[1] > 1000) continue;
+      const al = crowdOp * (0.3 + 0.1 * Math.sin(t * 2 + c.s * 20));
+      g.strokeStyle = g.fillStyle = `rgba(255,255,255,${al})`; g.lineWidth = 1.1 * Math.max(0.6, s2 * 0.7);
+      g.beginPath(); g.moveTo(p0[0], p0[1]); g.lineTo(p1[0], p1[1]); g.stroke();
+      g.beginPath(); g.arc(p1[0], p1[1] - 1.5 * s2, 1.6 * Math.max(0.6, s2 * 0.7), 0, 7); g.fill();
+    }
+    // everyone's requests go into the proxy's front door
+    const toDoor = (k, q) => { const c = pick(k); dot(arcP([c.x, c.y, 4], DOOR, ease.inOut(q), 50), 1.5 * sc, ACC, crowdOp * 0.85 * Math.sin(q * Math.PI)); };
+    stream(t, IMPACT + 0.3, L2 - 0.3, 26, 1.1, toDoor);
+    stream(t, WALL3, L4 - 0.3, 22, 1.1, toDoor);
+    stream(t, L5, L7 - 0.3, 18, 1.1, toDoor);
+    stream(t, L8, L9 - 0.3, 18, 1.1, toDoor);
+    // no proxy: they go straight to the servers
+    stream(t, L2 + 0.3, L3 - 0.2, 20, 1.3, (k, q) => {
+      const c = pick(k), i = Math.floor(hash(k + 0.42) * 6);
+      dot(arcP([c.x, c.y, 4], [SVX[i], SVY + 20, 60], ease.inOut(q), 90), 1.4 * sc, '#fff', crowdOp * 0.7 * Math.sin(q * Math.PI));
+    });
+    // cache: most come straight back from the proxy; a few go on to a server
+    stream(t, READY - 0.3, L8 - 0.3, 30, 1.5, (k, q) => {
+      const c = pick(k), hit = hash(k * 1.91 + 0.3) > 0.12, A = [c.x, c.y, 4];
+      if (q < 0.45) { dot(arcP(A, DOOR, ease.inOut(q / 0.45), 50), 1.5 * sc, '#fff', crowdOp * 0.8); return; }
+      const r = (q - 0.45) / 0.55;
+      if (hit) dot(arcP(DOOR, A, ease.inOut(r), 50), 1.7 * sc, ACC, crowdOp * Math.sin(Math.min(1, r * 1.2) * Math.PI * 0.5 + Math.PI * 0.5) + 0.2);
+      else { const i = Math.floor(hash(k + 0.77) * 6); dot(arcP([PX[0], PX[1] - 20, 62], [SVX[i], SVY + 20, 112], ease.inOut(r), 40), 1.6 * sc, '#fff', crowdOp * (1 - r * 0.6)); }
+    });
+  }
+  // the flood: bots pour in from everywhere and burst on the shield
+  stream(t, FLOOD, L10 - 0.3, 120, 1.05, (k, q) => {
+    const th = (0.08 + hash(k * 2.17) * 0.84) * Math.PI, R0 = 520 + hash(k * 5.3) * 260, e = hash(k * 0.73) * 0.7;
+    const A = [DOMEC[0] + Math.cos(th) * R0, DOMEC[1] + Math.sin(th) * R0, 6];
+    const B = [DOMEC[0] + Math.cos(th) * DOMER * Math.cos(e), DOMEC[1] + Math.sin(th) * DOMER * Math.cos(e), DOMER * 0.8 * Math.sin(e)];
+    if (q < 0.82) { const qq = q / 0.82; dot(arcP(A, B, qq, 20), 2.3 * sc, WARN, 0.95); return; }
+    const r = (q - 0.82) / 0.18, p = P(...B);
+    g.strokeStyle = WARN; g.globalAlpha = 1 - r; g.lineWidth = 1.1;
+    g.beginPath(); g.arc(p[0], p[1], 2 + r * 9 * sc, 0, 7); g.stroke(); g.globalAlpha = 1;
+  });
+  // other websites' traffic
+  if (t > CF - 0.2 && t < L11 + 0.3) stream(t, CF, L11, 120, 0.9, (k, q) => {
+    const f = FIELD[Math.floor(hash(k * 1.3) * FIELD.length)], a = hash(k * 4.1) * Math.PI * 2, R0 = 160 + hash(k * 2.9) * 120;
+    dot(arcP([f.x + Math.cos(a) * R0, f.y + Math.sin(a) * R0, 0], [f.x, f.y + 29, 10], ease.inOut(q), 40), 1.4, ACC, 0.8 * Math.sin(q * Math.PI));
+  });
+  for (const [x, y, z, s] of DUST) {
+    const p = P(focus[0] + x + Math.sin(t * 0.3 + s * 9) * 20, focus[1] + y + Math.cos(t * 0.25 + s * 7) * 20, z + Math.sin(t * 0.5 + s * 5) * 10);
+    if (p[0] < -5 || p[0] > 545 || p[1] < -5 || p[1] > 965) continue;
+    g.fillStyle = `rgba(255,255,255,${0.1 + s * 0.25})`;
+    g.beginPath(); g.arc(p[0], p[1], 0.6 + s * 1.2 * Math.min(1.6, CAM.scale), 0, 7); g.fill();
+  }
+}
+
+// ---------- scene parts ----------
+function serverOp(t) {
+  if (t < L2) return 1 - 0.62 * ep(t, IMPACT + 0.1, IMPACT + 0.7);
+  if (t < L3) return lerp(0.38, 1, ep(t, L2, L2 + 0.4));
+  if (t < L5) return 1 - 0.62 * ep(t, VANISH, VANISH + 0.6);
+  return lerp(0.38, 0.7, ep(t, L5, L5 + 0.6));
+}
+function wallH(t) {
+  if (t < L2) return 46 * ease.back(prog(t, IMPACT + 0.08, IMPACT + 0.6));
+  if (t < L3) return 46 * (1 - ep(t, L2, L2 + 0.4, ease.in));
+  return 46 * ease.back(prog(t, VANISH - 0.1, WALL3 + 0.1));
+}
+function proxyD(t) {
+  if (t < L2) return ep(t, IMPACT - 0.02, IMPACT + 0.45);
+  if (t < L3) return 1 - ep(t, L2, L2 + 0.4);
+  return ep(t, PROXY3 - 0.1, PROXY3 + 0.45);
+}
+const isRed = (i, t) => {
+  if (t < IN || t >= L3) return false;
+  const dly = [0.95, 0.65, 0.4, 0.2, 0, 0.2][i];
+  return t >= IN + dly && (t - IN - dly > 0.15 || Math.floor(t * 30) % 2 === 0);
+};
+// hacker beams: where each hacker is pointing at time t
+function beamTarget(j, t) {
+  if (t < VANISH) {
+    const u = ((t - SCAN) * 0.55 + j * 0.37) % 1, tri = u < 0.5 ? u * 2 : 2 - u * 2;
+    const sweep = [lerp(SVX[0], SVX[5], tri), SVY + 20, 70];
+    const lock = ep(t, WEAK - 0.15, WEAK + 0.35);
+    return [lerp(sweep[0], SVX[WEAKI], lock), SVY + 20, lerp(70, 80, lock)];
+  }
+  if (t < PUBA) { const u = ((t - VANISH) * 0.45 + j * 0.31) % 1, tri = u < 0.5 ? u * 2 : 2 - u * 2; return [lerp(-380, 380, tri), WALL_Y + 7, 26]; }
+  return [DOOR[0], DOOR[1], DOOR[2] + 10];
+}
+function drawHackers(t, D) {
+  if (D <= 0) return;
+  for (let j = 0; j < 3; j++) {
+    const [x, y] = HK[j], o = Obj();
+    person(o, x, y, t);
+    emitT(o, D, 1, 'warn');
+    const lp = P(x, y, 22);
+    fx('rect', { x: lp[0] - 6, y: lp[1] - 4, width: 12, height: 7, rx: 1, fill: '#000', stroke: WARN, 'stroke-width': 1, opacity: D });
+  }
+}
+function drawBeams(t, op) {
+  if (op <= 0.01) return;
+  for (let j = 0; j < 3; j++) {
+    const [x, y] = HK[j], A = P(x, y, 24), tg = beamTarget(j, t), B = P(...tg);
+    const dx = B[0] - A[0], dy = B[1] - A[1], L = Math.hypot(dx, dy), nx = -dy / L * 9, ny = dx / L * 9;
+    fx('path', { d: `M${A[0]} ${A[1]}L${B[0] + nx} ${B[1] + ny}L${B[0] - nx} ${B[1] - ny}Z`, fill: WARN, 'fill-opacity': 0.08 * op });
+    fx('line', { x1: A[0], y1: A[1], x2: B[0], y2: B[1], stroke: WARN, 'stroke-width': 1.1, 'stroke-dasharray': '3 4', 'stroke-dashoffset': -t * 40, 'stroke-opacity': 0.75 * op });
+    fx('circle', { cx: B[0], cy: B[1], r: 3 + 1.5 * Math.sin(t * 20 + j), fill: 'none', stroke: WARN, 'stroke-width': 1.2, 'stroke-opacity': op });
+    if (t > VANISH && t < PUBA) shards(t, VANISH + Math.floor((t - VANISH) / 0.32) * 0.32 + j * 0.1, B, WARN, 5, 0.4);
+  }
+}
+function dome(t, a) {
+  if (a <= 0.01) return;
+  const R = DOMER * ease.back(clamp(a)), [cx, cy] = DOMEC, pulse = 0.5 + 0.25 * Math.sin(t * 9);
+  const base = []; for (let i = 0; i <= 48; i++) { const q = (i / 48) * Math.PI * 2; base.push(P(cx + R * Math.cos(q), cy + R * Math.sin(q), 0)); }
+  fx('path', { d: path2(base), fill: ACC, 'fill-opacity': 0.06 * a, stroke: ACC, 'stroke-width': 1.4, 'stroke-opacity': 0.8 * a });
+  for (let k = 1; k < 5; k++) {
+    const e = (k / 5) * Math.PI / 2, r = R * Math.cos(e), z = R * 0.8 * Math.sin(e), pts = [];
+    for (let i = 0; i <= 40; i++) { const q = (i / 40) * Math.PI * 2; pts.push(P(cx + r * Math.cos(q), cy + r * Math.sin(q), z)); }
+    fx('path', { d: path2(pts), fill: 'none', stroke: ACC, 'stroke-width': 0.9, 'stroke-opacity': pulse * a * 0.8 });
+  }
+  for (let m = 0; m < 12; m++) {
+    const q = (m / 12) * Math.PI * 2, pts = [];
+    for (let i = 0; i <= 12; i++) { const e = (i / 12) * Math.PI / 2; pts.push(P(cx + R * Math.cos(e) * Math.cos(q), cy + R * Math.cos(e) * Math.sin(q), R * 0.8 * Math.sin(e))); }
+    fx('path', { d: path2(pts, false), fill: 'none', stroke: ACC, 'stroke-width': 0.8, 'stroke-opacity': pulse * a * 0.6 });
+  }
+}
+// orbiting job badges around the proxy (L5)
+const JOBS = [['HTTPS', gLock], ['CACHE', gStack], ['ROUTING', gFork], ['SHIELD', gShield]];
+function badges(t) {
+  for (let k = 0; k < 4; k++) {
+    const t0 = MORE - 0.1 + k * 0.2, a = ep(t, t0, t0 + 0.4, ease.back) * (1 - ep(t, L6 - 0.1, L6 + 0.25));
+    if (a <= 0.01) continue;
+    const ang = k * Math.PI / 2 + Math.PI / 4 + (t - L5) * 0.25, w = [PX[0] + 112 * Math.cos(ang), PX[1] + 112 * Math.sin(ang), 85];
+    const p = P(...w), r = P(...ROOF);
+    fx('line', { x1: r[0], y1: r[1], x2: p[0], y2: p[1], stroke: ACC, 'stroke-width': 1, 'stroke-dasharray': '2 4', 'stroke-dashoffset': -t * 20, 'stroke-opacity': 0.6 * a });
+    const g = fx('g', { transform: `translate(${p[0]} ${p[1]}) scale(${a})` });
+    el('circle', { cx: 0, cy: 0, r: 21, fill: '#000', stroke: ACC, 'stroke-width': 1.5 }, g);
+    JOBS[k][1]([0, 1], 20, ACC, g);
+    el('text', { x: 0, y: 36, fill: '#fff', 'font-family': 'Mono', 'font-size': 9, 'letter-spacing': 1.2, 'text-anchor': 'middle' }, g).textContent = JOBS[k][0];
+  }
+}
+
+function drawMain(t) {
+  const svOp = serverOp(t);
+  const routeOp = life(t, PATH, L9, 0.3, 0.3);
+  emitT(floorObj(), ep(t, 0.4, 1.4), svOp, 'server');
+  // routes behind the wall (L8)
+  if (routeOp > 0) for (const [gi, t0] of [[1, API], [4, IMG]]) {
+    const hot = window01(t, t0 - 0.05, t0 + 0.9, 0.15);
+    el('path', { d: path2([P(PX[0], PX[1] - 36, 4), P(PX[0], PX[1] - 110, 4), P(SVX[gi], PX[1] - 110, 4), P(SVX[gi], SVY + 30, 4)], false), fill: 'none', stroke: hot > 0.05 ? ACC : '#fff', 'stroke-width': 1 + hot * 1.4, 'stroke-dasharray': '4 5', 'stroke-dashoffset': -t * 30, 'stroke-opacity': routeOp * (0.35 + 0.6 * hot) }, ISO.layer);
+  }
+  [...SVX.keys()].sort((a, b) => depth(SVX[a], SVY) - depth(SVX[b], SVY)).forEach((i) => {
+    const hl = routeOp > 0 && ((i < 3 && window01(t, API + 0.5, API + 1.3, 0.15) > 0) || (i >= 3 && window01(t, IMG + 0.5, IMG + 1.3, 0.15) > 0));
+    emitT(serverObj(i, t), ep(t, 0.45 + i * 0.06, 1.3 + i * 0.06), hl ? 1 : svOp, isRed(i, t) ? 'warn' : hl ? 'proxy' : 'server');
+  });
+  const h = wallH(t);
+  if (h > 0.5) emitT(wallObj(h), 1, 1, 'wall');
+  const pD = proxyD(t);
+  const glow = Math.max(window01(t, IMPACT, IMPACT + 0.9, 0.1), ep(t, RP, RP + 0.4) * (t < L2 ? 1 : 0), window01(t, PROXY3, PROXY3 + 1, 0.15), window01(t, STOP, STOP + 1.2, 0.1));
+  if (pD > 0) emitT(proxyObj(t, glow), pD, 1, 'proxy');
+  const cn = t >= READY - 0.9 && t < L8 + 0.4 ? prog(t, READY - 0.9, READY + 0.2) * 5 * (1 - ep(t, L8 - 0.1, L8 + 0.35)) : 0;
+  if (cn > 0) emitT(cacheObj(t, cn), 1, 1, 'proxy');
+  // near things, sorted by depth: hackers and the phone
+  const hkD = ep(t, SCAN - 0.25, SCAN + 0.35) * (1 - ep(t, L4 - 0.5, L4 - 0.1));
+  const like = ep(t, TAP + 0.02, TAP + 0.12);
+  emitT(phoneObj(t, like), 1, 1, 'def');
+  drawHackers(t, hkD);
+  drawPackets(t);
+}
+function drawRestaurant(t) {
+  const D = ep(t, L4 - 0.1, L4 + 0.9);
+  const [X, Y] = RS;
+  { const o = Obj(); const T = box3(o, X - 280, Y - 240, 0, 560, 480, 4); tileDots(o, T.top, 16, 13); emitT(o, D, 1, 'def'); }
+  // kitchen
+  { const o = Obj(); box3(o, X - 260, Y - 232, 4, 150, 22, 64); box3(o, X - 80, Y - 190, 4, 160, 46, 30); emitT(o, D, 1, 'server'); }
+  { const o = Obj(); cylinder(o, X - 38, Y - 167, 34, 13, 12, 1); cylinder(o, X + 38, Y - 167, 34, 13, 12, 1); emitT(o, D, 1, 'server'); }
+  const chef2 = [lerp(X + 120, X + 20, window01(t, ORDER + 0.05, BACK + 0.4, 0.3)), Y - 110];
+  { const o = Obj(); person(o, X - 140, Y - 140, t, 0.3, true); person(o, chef2[0], chef2[1], t, window01(t, ORDER, BACK + 0.4, 0.3), true); emitT(o, D, 1, 'server'); }
+  // kitchen wall with the pass window and the staff door
+  const doorRed = window01(t, KITCH + 0.5, KITCH + 1.4, 0.1);
+  { const o = Obj();
+    box3(o, X - 280, Y - 66, 0, 240, 12, 70);
+    const R = box3(o, X + 40, Y - 66, 0, 240, 12, 70);
+    if (R.py) { const F = flipV(R.py); fpoly(o, F, 0.55, 0.2, 0.22, 0.8, { fill: 'none', w: 1.1, stroke: doorRed > 0.05 ? WARN : undefined }); ftext(o, F, 0.66, 0.1, 'STAFF ONLY', 7, { font: 'Mono', weight: 500, fill: doorRed > 0.05 ? WARN : undefined }); }
+    const Lt = box3(o, X - 40, Y - 66, 46, 80, 12, 24);
+    if (Lt.py) ftext(o, flipV(Lt.py), 0.5, 0.5, 'KITCHEN', 8, { font: 'Mono', weight: 500, fill: ACC });
+    box3(o, X - 46, Y - 76, 0, 92, 24, 26);
+    emitT(o, D, 1, 'def'); }
+  // dining room, near things sorted by depth
+  const W0 = [X - 50, Y + 112], W1 = [X, Y - 30];
+  const out = ep(t, ORDER + 0.1, BACK, ease.inOut), back = ep(t, BACK + 0.08, BACK + 0.65, ease.inOut);
+  const wp = [lerp(lerp(W0[0], W1[0], out), W0[0], back), lerp(lerp(W0[1], W1[1], out), W0[1], back)];
+  const walking = (out > 0 && out < 1) || (back > 0 && back < 1) ? 1 : 0;
+  const C0 = [X - 110, Y + 170], CD = [X + 188, Y - 44];
+  const go = window01(t, KITCH + 0.05, KITCH + 1.2, 0.45) * 0.32, cp = [lerp(C0[0], CD[0], go), lerp(C0[1], CD[1], go)];
+  const items = [
+    { y: Y + 100, f: () => emitT(tableObj(X - 110, Y + 100), D, 1, 'def') },
+    { y: Y + 130, f: () => emitT(tableObj(X + 130, Y + 130), D, 1, 'def') },
+    { y: Y + 190, f: () => { const o = Obj(); person(o, X + 130, Y + 190, t); emitT(o, D, 0.55, 'def'); } },
+    { y: cp[1], f: () => { const o = Obj(); person(o, cp[0], cp[1], t, go > 0.01 && go < 0.31 ? 1 : 0); emitT(o, D, 1, 'def'); } },
+    { y: wp[1], f: () => { const o = Obj(); person(o, wp[0], wp[1], t, walking); emitT(o, D, 1, 'proxy'); } },
+  ];
+  items.sort((a, b) => depth(0, a.y) - depth(0, b.y)).forEach((it) => it.f());
+  // the plate: on the pass, then carried, then on your table
+  const plateIn = ep(t, ORDER + 0.3, ORDER + 0.5);
+  if (plateIn > 0) {
+    let pp = t < BACK ? [X, Y - 64, 26] : t < BACK + 0.65 ? [wp[0] + 10, wp[1] - 8, 30] : [X - 100, Y + 95, 27];
+    emitT(plateObj(...pp), 1, plateIn, 'proxy');
+  }
+  emitT(plateObj(X + 140, Y + 125, 27), D, 1, 'def');
+  // steam
+  for (const sx of [-38, 38]) for (let s = 0; s < 3; s++) {
+    const pts = []; for (let k = 0; k < 8; k++) pts.push(P(X + sx + Math.sin(t * 3 + k * 0.8 + s * 2) * 4 + (s - 1) * 6, Y - 167, 50 + k * 6));
+    fx('path', { d: path2(pts, false), fill: 'none', stroke: '#fff', 'stroke-width': 0.9, 'stroke-opacity': 0.35 * D });
+  }
+  // "you never walk into the kitchen"
+  const tryOp = window01(t, KITCH + 0.05, KITCH + 1.5, 0.2);
+  if (tryOp > 0.01) {
+    const a = P(C0[0], C0[1], 2), b = P(CD[0], CD[1], 2);
+    fx('path', { d: `M${a[0]} ${a[1]}L${b[0]} ${b[1]}`, stroke: WARN, 'stroke-width': 1.3, 'stroke-dasharray': '3 5', 'stroke-dashoffset': -t * 30, 'stroke-opacity': tryOp * 0.8, fill: 'none' });
+    const xk = ep(t, KITCH + 0.45, KITCH + 0.7, ease.back), xp = P(CD[0], CD[1] - 10, 30), s = 10 * xk;
+    if (xk > 0) fx('path', { d: `M${xp[0] - s} ${xp[1] - s}L${xp[0] + s} ${xp[1] + s}M${xp[0] + s} ${xp[1] - s}L${xp[0] - s} ${xp[1] + s}`, stroke: WARN, 'stroke-width': 3, 'stroke-linecap': 'round', opacity: tryOp });
+  }
+  // the order ticket
+  const tk = prog(t, ORDER - 0.05, BACK + 0.1);
+  if (tk > 0 && tk < 1) gTicket(P(wp[0], wp[1], 62 + ease.out(clamp(tk * 3)) * 10), 13 * ep(t, ORDER - 0.05, ORDER + 0.2, ease.back), ACC);
+  // who is who
+  const tagEnd = L5 - 0.05;
+  lblW('YOU', [cp[0], cp[1], 72], life(t, L4 + 0.5, tagEnd), 'tag');
+  lblW('SERVERS', [X, Y - 160, 105], life(t, KITCH + 0.2, tagEnd), 'tag');
+  lblW('PROXY', [wp[0], wp[1], t > ORDER - 0.1 && tk < 1 ? 98 : 72], life(t, WAITER, tagEnd), 'acc');
+  ripple(t, WAITER, P(wp[0], wp[1], 30), ACC, 40);
+}
+function drawField(t) {
+  const fs = FIELD.filter((f) => { const p = P(f.x, f.y, 0); return p[0] > -80 && p[0] < 620 && p[1] > -60 && p[1] < 1040; })
+    .sort((a, b) => depth(a.x, a.y) - depth(b.x, b.y));
+  for (const f of fs) {
+    const D = ep(t, L10 + 0.15 + f.d * 0.0009, L10 + 0.75 + f.d * 0.0009);
+    if (D <= 0) continue;
+    emitT(siteObj(f, t), D, 0.75, 'server');
+    emitT(siteProxy(f), D, 1, 'proxy');
+  }
+}
+function drawCompare(t) {
+  const [X, Y] = CMP, D = ep(t, L11 - 0.2, L11 + 0.6);
+  const sl = ep(t, L11B - 0.3, L11B + 0.35, ease.inOut), pxX = lerp(X - 105, X + 105, sl);
+  const youHide = ep(t, FWD_HIDE, FWD_HIDE + 0.4) * (1 - sl), siteHide = ep(t, REV_HIDE, REV_HIDE + 0.4);
+  { const o = Obj(); const T = box3(o, X - 350, Y - 110, 0, 700, 220, 3); tileDots(o, T.top, 22, 5); emitT(o, D, 0.8, 'def'); }
+  const line = (a, b) => el('path', { d: path2([P(a, Y, 4), P(b, Y, 4)], false), fill: 'none', stroke: '#fff', 'stroke-width': 1, 'stroke-dasharray': '3 6', 'stroke-dashoffset': -t * 26, 'stroke-opacity': 0.5 * D }, ISO.layer);
+  line(X - 180, X + 180);
+  const parts = [
+    { x: X - 250, f: () => emitT(phoneObj(t, 1, [X - 250, Y]), D, 1 - 0.75 * youHide, 'def') },
+    { x: pxX, f: () => emitT(proxyObj(t, 0.6, [pxX, Y]), D, 1, 'proxy') },
+    { x: X + 250, f: () => { const o = Obj(); box3(o, X + 170, Y - 60, 0, 160, 120, 4); emitT(o, D, 1 - 0.75 * siteHide, 'server');
+      for (const dx of [-28, 28]) emitT(serverObj(dx > 0 ? 1 : 2, t, X + 250 + dx, Y - 10), D, 1 - 0.75 * siteHide, 'server'); } },
+  ];
+  parts.sort((a, b) => depth(a.x, Y) - depth(b.x, Y)).forEach((p) => p.f());
+  // little requests flowing through
+  for (let k = 0; k < 6; k++) {
+    const q = ((t * 0.6 + k / 6) % 1), x = lerp(X - 200, X + 200, q), p = P(x, Y, 10);
+    fx('circle', { cx: p[0], cy: p[1], r: 2.2 * CAM.scale, fill: ACC, opacity: D * Math.sin(q * Math.PI) });
+  }
+  const tA = life(t, L11 + 0.3, L11B - 0.15, 0.3, 0.2), tB = ep(t, L11B + 0.2, L11B + 0.5) * (1 - ep(t, L12 - 0.2, L12 + 0.2));
+  lblW(youHide > 0.3 ? 'HIDDEN' : 'YOU', [X - 250, Y, 70], D * (t < L12 ? 1 : 0), youHide > 0.3 ? 'warn' : 'tag');
+  lblW(siteHide > 0.3 ? 'HIDDEN' : 'WEBSITE', [X + 250, Y - 10, 150], D * (t < L12 ? 1 : 0), siteHide > 0.3 ? 'warn' : 'tag');
+  lblW('FORWARD PROXY', [pxX, Y, 110], tA, 'tag');
+  lblW('REVERSE PROXY', [pxX, Y, 110], tB, 'acc');
+  lblW('sees: proxy', [X + 250, Y + 70, 20], tA * youHide, 'out');
+  lblW('sees: proxy', [X - 250, Y + 100, 20], tB * siteHide, 'out');
+}
+
+// ---------- 2D overlays ----------
+function connCard(t) {
+  const a = life(t, LAUNCH + 0.1, MID + 0.05);
+  if (a <= 0) return '';
+  const revealed = t >= IMPACT, ok = t >= BELIEF;
+  const spin = [0, 1, 2].map((k) => `<i style="display:inline-block;width:5px;height:5px;border-radius:50%;background:#fff;margin:0 2px;opacity:${0.25 + 0.75 * (Math.sin(t * 10 - k * 1.3) > 0 ? 1 : 0)}"></i>`).join('');
+  const glitch = revealed ? (1 - ep(t, IMPACT, IMPACT + 0.25)) : 0;
+  const shake = glitch * Math.sin(t * 90) * 6;
+  const strike = ep(t, IMPACT + 0.05, IMPACT + 0.3), real = ep(t, IMPACT + 0.2, IMPACT + 0.5);
+  const row1 = `<div class="row" style="background:rgba(255,255,255,0.06);opacity:${1 - 0.55 * strike}"><span style="position:relative">instagram.com servers<i style="position:absolute;left:0;top:50%;height:1.5px;background:${WARN};width:${strike * 100}%"></i></span><span>${revealed ? `<span class="r">✕</span>` : ok ? `<span class="a">✓</span>` : spin}</span></div>`;
+  const row2 = revealed ? `<div class="row a" style="background:rgba(255,255,255,0.1);opacity:${real};transform:translateX(${(1 - real) * 24}px)"><span>reverse proxy</span><span>157.240.22.35</span></div>` : '';
+  const hd = revealed ? `<span class="r">ACTUALLY CONNECTED TO</span>` : ok ? `<span>CONNECTED TO</span>` : '<span>CONNECTING…</span>';
+  return card(a, `left:50px;top:700px;width:440px;padding:12px 14px;margin-left:${shake}px;border-color:${revealed ? WARN : ''}`, `<div class="hd">${hd}<span>YOUR PHONE</span></div>${row1}${row2}`);
+}
+function titleHTML(t) {
+  const a = ep(t, RP + 0.05, RP + 0.5, ease.outExpo) * (1 - ep(t, L2 - 0.3, L2 + 0.05));
+  if (a <= 0) return '';
+  return `<div style="opacity:${a};transform:translateY(${(1 - a) * 20}px) scale(${lerp(0.94, 1, a)});filter:blur(${(1 - a) * 8}px)"><div class="t">Reverse <span class="a">Proxy</span></div><div class="ph">THE MIDDLEMAN</div></div>`;
+}
+// typed terminal lines: [time, html]
+function termLines(t, lines) {
+  return lines.filter(([t0]) => t >= t0).map(([t0, s]) => {
+    const n = Math.floor((t - t0) * 60), plain = s.replace(/<[^>]+>/g, '');
+    if (n >= plain.length) return `<div>${s}</div>`;
+    return `<div>${plain.slice(0, n)}<span style="opacity:${Math.floor(t * 6) % 2}">▍</span></div>`;
+  }).join('');
+}
+function scanCard(t) {
+  const a1 = life(t, SCAN - 0.35, L3 - 0.05, 0.3, 0.2), a2 = life(t, PUB - 0.2, L4 - 0.05, 0.3, 0.2);
+  if (a1 > 0) {
+    const L = [[SCAN - 0.25, '<span class="r">$</span> scan 31.13.64.0/24']];
+    for (let i = 0; i < 4; i++) L.push([SCAN + 0.3 + i * 0.28, `<span class="dim">31.13.64.${10 + i}</span>  :443  open`]);
+    L.push([WEAK, `<span class="r">31.13.64.14  :22   ssh-2016  ⚠ weak</span>`]);
+    L.push([IN, `<span class="r" style="opacity:${0.5 + 0.5 * (Math.floor(t * 8) % 2)}">&gt; ACCESS GRANTED</span>`]);
+    return card(a1, `left:50px;top:690px;width:440px;padding:12px 14px;border-color:${t > WEAK ? WARN : 'rgba(255,255,255,0.35)'}`, `<div class="hd"><span class="r">HACKER · PORT SCAN</span><span>OPEN INTERNET</span></div><div class="term" style="margin-top:8px">${termLines(t, L)}</div>`);
+  }
+  if (a2 > 0) {
+    const L = [[PUB - 0.1, '<span class="r">$</span> scan instagram.com'], [PUBA - 0.1, '<span class="a">157.240.22.35   proxy  · only door</span>'], [PUBA + 0.35, '<span class="dim">servers         not reachable</span> <span class="a">✓</span>']];
+    return card(a2, 'left:50px;top:690px;width:440px;padding:12px 14px', `<div class="hd"><span class="r">HACKER · PORT SCAN</span><span>BEHIND THE WALL</span></div><div class="term" style="margin-top:8px">${termLines(t, L)}</div>`);
+  }
+  return '';
+}
+function jobsBar(t) {
+  const a = life(t, MORE - 0.1, L10 - 0.1, 0.3, 0.3);
+  if (a <= 0) return '';
+  const act = t < L6 ? -1 : t < L7 ? 0 : t < L8 ? 1 : t < L9 ? 2 : 3;
+  const pills = JOBS.map(([n], k) => {
+    const on = ep(t, MORE - 0.1 + k * 0.2, MORE + 0.2 + k * 0.2), A = act === k, done = act > k;
+    return `<div style="font-family:Mono;font-size:10px;letter-spacing:1.4px;padding:6px 10px;border-radius:8px;opacity:${on};transform:scale(${A ? 1.08 : 1});${A ? `background:${ACC};color:#000;font-weight:500` : `border:1px solid ${done ? 'rgba(46,230,214,0.6)' : 'rgba(255,255,255,0.25)'};color:${done ? ACC : '#9a9a9a'}`}">0${k + 1} ${n}${done ? ' ✓' : ''}</div>`;
+  }).join('');
+  return `<div style="position:absolute;left:0;right:0;top:878px;display:flex;justify-content:center;gap:8px;opacity:${a}">${pills}</div>`;
+}
+function tlsCard(t) {
+  const a = life(t, L6 + 0.2, L7 - 0.05, 0.3, 0.2);
+  if (a <= 0) return '';
+  const r2 = ep(t, UNLOCK + 0.35, UNLOCK + 0.6), r3 = ep(t, DONT - 0.1, DONT + 0.2);
+  const n = t < UNLOCK ? 0 : t < ONCE ? 1 : t < ONCE + 0.3 ? 2 : 3;
+  return card(a, 'left:50px;top:690px;width:440px;padding:12px 14px', `<div class="hd"><span>HTTPS · ENCRYPTION</span><span class="a">UNLOCKED AT PROXY: ${n}</span></div>
+    <div class="row" style="background:rgba(46,230,214,0.1)"><span>internet → proxy</span><span class="a">encrypted${lockSVG(ACC)}</span></div>
+    <div class="row" style="background:rgba(255,255,255,0.06);opacity:${r2}"><span>proxy → servers</span><span>private network</span></div>
+    <div class="row" style="background:rgba(255,255,255,0.06);opacity:${r3}"><span>decrypting on servers</span><span class="a">0 · none</span></div>`);
+}
+function cacheCard(t) {
+  const a = life(t, READY - 0.4, L8 - 0.05, 0.3, 0.2);
+  if (a <= 0) return '';
+  const hr = Math.round(lerp(0, 90, ep(t, MOST - 0.2, L8 - 0.6, ease.inOut)));
+  const n = Math.floor(clamp(prog(t, READY, L8 - 0.5)) * 24);
+  const cells = Array.from({ length: 24 }, (_, i) => i >= n ? `<i style="width:11px;height:11px;border-radius:2px;border:1px solid rgba(255,255,255,0.15)"></i>` : hash(i * 1.91 + 0.3) > 0.12 ? `<i style="width:11px;height:11px;border-radius:2px;background:${ACC}"></i>` : `<i style="width:11px;height:11px;border-radius:2px;border:1px solid #fff;box-sizing:border-box"></i>`).join('');
+  return card(a, 'left:50px;top:690px;width:440px;padding:12px 14px', `<div class="hd"><span>CACHE · /feed /explore /reels</span><span>HIT RATE</span></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px"><div style="display:flex;flex-wrap:wrap;gap:4px;width:300px">${cells}</div><div style="font-family:Inter;font-size:34px;font-weight:800" class="a">${hr}%</div></div>
+    <div class="dim" style="font-size:10px;margin-top:6px"><span class="a">■</span> answered by the proxy  &nbsp; □ went to a server</div>`);
+}
+function routeCard(t) {
+  const a = life(t, PATH - 0.1, L9 - 0.05, 0.3, 0.2);
+  if (a <= 0) return '';
+  const h1 = window01(t, API - 0.1, API + 1.1, 0.15), h2 = window01(t, IMG - 0.1, L9, 0.15);
+  const row = (h, p, d) => `<div class="row" style="background:${h > 0.05 ? `rgba(46,230,214,${0.2 * h})` : 'rgba(255,255,255,0.06)'};${h > 0.5 ? `color:${ACC}` : ''}"><span>${p}</span><span>→ ${d}</span></div>`;
+  return card(a, 'left:50px;top:690px;width:440px;padding:12px 14px', `<div class="hd"><span>ROUTING RULES</span><span>READS THE PATH</span></div>${row(h1, '/api/*', 'API servers')}${row(h2, '/img/*', 'image servers')}`);
+}
+function floodCard(t) {
+  const a = life(t, FLOOD + 0.1, L10 - 0.05, 0.3, 0.2);
+  if (a <= 0) return '';
+  const n = lerp(0, 1240000, ep(t, STOP - 0.1, L10 - 0.3, (k) => k));
+  const blocked = t >= STOP;
+  return card(a, `left:50px;top:690px;width:440px;padding:12px 14px;border-color:${blocked ? ACC : WARN}`, `<div class="hd"><span class="r">BAD TRAFFIC · FLOOD</span><span>${blocked ? '<span class="a">SHIELD ON</span>' : 'INCOMING'}</span></div>
+    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:8px"><span class="dim">blocked at the door</span><span style="font-family:Inter;font-size:28px;font-weight:800" class="${blocked ? 'a' : 'r'}">${fmt(n)}</span></div>
+    <div class="row" style="background:rgba(255,255,255,0.06);opacity:${ep(t, STOP + 0.3, STOP + 0.6)}"><span>servers</span><span class="a">calm ✓</span></div>`);
+}
+function brandCard(t) {
+  const a = life(t, L10 + 0.1, L11 - 0.05, 0.3, 0.2);
+  if (a <= 0) return '';
+  const b = ep(t, CF - 0.05, CF + 0.3, ease.back), c = ep(t, MILL - 0.1, MILL + 0.3);
+  return card(a, 'left:50px;top:690px;width:440px;padding:14px;text-align:center', `<div style="display:flex;justify-content:center;align-items:center;gap:22px">
+    <div style="font-family:Inter;font-size:30px;font-weight:800;letter-spacing:1px;color:#fff">NGINX</div>
+    <div style="font-family:Mono;color:#8a8a8a">&amp;</div>
+    <div style="font-family:Inter;font-size:30px;font-weight:800;letter-spacing:-0.5px;opacity:${b};transform:scale(${lerp(0.7, 1, b)})">Cloudflare</div></div>
+    <div class="a" style="font-size:11px;letter-spacing:2px;margin-top:8px;opacity:${c}">REVERSE PROXIES FOR MILLIONS OF WEBSITES</div>`);
+}
+function compareCard(t) {
+  const a = life(t, L11 + 0.2, L12 - 0.05, 0.3, 0.2);
+  if (a <= 0) return '';
+  const r1 = ep(t, FWD_HIDE, FWD_HIDE + 0.3), r2 = ep(t, REV_HIDE, REV_HIDE + 0.3), B = t > L11B;
+  return card(a, 'left:50px;top:700px;width:440px;padding:12px 14px', `<div class="hd"><span>WHO GETS HIDDEN?</span><span>PROXY</span></div>
+    <div class="row" style="background:rgba(255,255,255,0.06);opacity:${B ? 0.5 : 1}"><span>forward proxy</span><span style="opacity:${r1}">hides <b style="color:#fff">you</b></span></div>
+    <div class="row" style="background:${B ? 'rgba(46,230,214,0.14)' : 'rgba(255,255,255,0.03)'};opacity:${B ? 1 : 0.35}"><span class="${B ? 'a' : ''}">reverse proxy</span><span class="a" style="opacity:${r2}">hides <b>the website</b></span></div>`);
+}
+function pollCard(t) {
+  const a = life(t, L12 + 0.1, END, 0.35, 0.3);
+  if (a <= 0) return '';
+  const opt = (name, k) => { const hl = Math.sin(t * 4 + k * Math.PI) > 0.3 && t < S(12, 1); return `<div class="btn" style="flex:1;height:40px;border:1px solid ${hl ? ACC : 'rgba(255,255,255,0.3)'};color:${hl ? ACC : '#fff'};font-size:15px">${name}</div>`; };
+  return card(a, 'left:80px;top:500px;width:380px;padding:14px;text-align:center', `<div class="hd" style="justify-content:center"><span>WHICH ONE HAVE YOU USED?</span></div><div style="display:flex;gap:10px;margin-top:10px;font-family:Inter">${opt('Nginx', 0)}${opt('Cloudflare', 1)}</div>`);
+}
+function ctaSheet(t) {
+  const up = ep(t, S(12, 1) - 0.3, S(12, 1) + 0.2, ease.outExpo);
+  if (up <= 0) return '';
+  const cm = t >= tapComment + 0.05, followed = t >= tapFollow + 0.05;
+  const cs = cm ? 1 + 0.18 * (1 - ep(t, tapComment, tapComment + 0.35)) : 1;
+  const fol = followed ? 1 + 0.2 * (1 - ep(t, tapFollow, tapFollow + 0.35)) : 1;
+  const bubble = `<svg width="16" height="16" viewBox="0 0 24 24" style="vertical-align:-3px;margin-right:6px"><path d="M20.5 11.5a8.5 8.5 0 0 1-12.6 7.4L3.5 20.5l1.6-4.2A8.5 8.5 0 1 1 20.5 11.5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>`;
+  return `<div style="position:absolute;left:110px;top:640px;width:320px;padding:16px;box-sizing:border-box;border-radius:20px;background:rgba(13,13,13,0.94);border:1px solid rgba(46,230,214,0.45);font-family:Inter;opacity:${up};transform:translateY(${(1 - up) * 40}px) scale(${lerp(0.9, 1, up)})">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div style="width:46px;height:46px;border-radius:50%;border:1.5px solid ${ACC};display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="6" fill="none" stroke="#fff" stroke-width="2"/><circle cx="12" cy="12" r="4.6" fill="none" stroke="#fff" stroke-width="2"/><circle cx="17.6" cy="6.4" r="1.3" fill="#fff"/></svg></div>
+      <div style="flex:1"><div style="font-weight:700;font-size:14px">how.its.engineered</div><div style="color:#8a8a8a;font-size:11px">System design, explained</div></div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:14px">
+      <div class="btn" style="flex:1;height:38px;transform:scale(${cs});${cm ? `background:#262626;color:#fff;box-shadow:0 0 0 1px ${ACC}` : 'border:1px solid rgba(255,255,255,0.35);color:#fff'}">${bubble}Comment</div>
+      <div class="btn" style="flex:1;height:38px;transform:scale(${fol});${followed ? 'background:#262626;color:#fff' : `background:${ACC};color:#000`}">${followed ? 'Following ✓' : 'Follow'}</div>
+    </div></div>`;
+}
+
+// ---------- chapters + progress ----------
+const CH = [[0, IMPACT, '01  THE ILLUSION'], [IMPACT, L2, '02  THE MIDDLEMAN'], [L2, L3, '03  NO PROXY'], [L3, L4, '04  THE WALL'], [L4, L5, '05  THE WAITER'],
+  [L5, L10, '06  FOUR JOBS'], [L10, L11, '07  IN THE WILD'], [L11, L12, '08  FORWARD VS REVERSE']];
+const BK = [0, L2, L4, L5, L10, END];
+
+window.render = function (t) {
+  ISO.layer.textContent = ''; FX.textContent = ''; labels.textContent = '';
+  const roll = camera(t);
+  const cp = cursorAt(t);
+  if (cp) CAM.yaw += clamp((cp[0] - 270) / 270, -1, 1) * 0.03;
+
+  const mainOn = !(t > L4 + 0.3 && t < L5 - 0.2) && t < L11 + 0.3;
+  const reveal = ep(t, IMPACT, IMPACT + 0.55);
+  const crowdOp = mainOn ? ep(t, LAUNCH, LAUNCH + 0.8) * (0.55 + 0.45 * reveal) * (1 - 0.6 * ep(t, L10, L10 + 1)) : 0;
+  drawBG(t, crowdOp);
+
+  if (t > L10 - 0.2 && t < L11 + 0.3) drawField(t);
+  if (mainOn) drawMain(t);
+  if (t > L4 - 0.3 && t < L5 + 0.3) drawRestaurant(t);
+  if (t > L11 - 0.4) drawCompare(t);
+
+  // effects
+  if (mainOn) {
+    ripple(t, TAP, P(...HEART), WARN, 26);
+    shards(t, IMPACT, P(...IMPACT_PT), ACC, 14, 1.2);
+    isoRing(t, IMPACT, [PX[0], PX[1], 4], ACC, 160, 0.9);
+    isoRing(t, RP + 0.05, [PX[0], PX[1], 4], ACC, 120, 0.9);
+    isoRing(t, PROXY3, [PX[0], PX[1], 4], ACC, 140, 0.9);
+    isoRing(t, IN, [SVX[WEAKI], SVY, 4], WARN, 200, 1.1);
+    shards(t, IN, P(SVX[WEAKI], SVY, 110), WARN, 16, 1.4);
+    isoRing(t, STOP, [DOMEC[0], DOMEC[1], 2], ACC, 220, 1);
+    drawBeams(t, life(t, SCAN, L4 - 0.3, 0.3, 0.3));
+    dome(t, ep(t, STOP - 0.15, STOP + 0.35) * (1 - ep(t, L10 - 0.2, L10 + 0.3)));
+    badges(t);
+    // world labels
+    lblW(t < IMPACT + 0.3 ? 'INSTAGRAM SERVERS' : 'HIDDEN · PRIVATE NETWORK', [0, SVY, 165], life(t, 0.9, MID + 0.1) * (t < IMPACT ? 1 : ep(t, IMPACT + 0.3, IMPACT + 0.6)), t < IMPACT ? 'big' : '');
+    const tagOp = life(t, MID + 0.1, RP + 0.05, 0.25, 0.2);
+    lblW('YOU', [PH[0], PH[1], 60], tagOp, 'tag');
+    lblW('MIDDLEMAN', [PX[0], PX[1], 120], tagOp, 'acc');
+    lblW('SERVERS', [0, SVY, 170], tagOp, 'tag');
+    // public addresses (L2) → private (L3)
+    for (let i = 0; i < 6; i++) {
+      const op = life(t, L2 + 0.4 + i * 0.1, PUB + 0.4, 0.3, 0.3);
+      if (op <= 0) continue;
+      const weak = i === WEAKI && t >= WEAK && t < L3, priv = t >= VANISH + 0.2;
+      lblW(priv ? `10.0.0.${i + 2}` : weak ? `⚠ WEAK` : `31.13.64.${10 + i}`, [SVX[i], SVY, 128 + (i % 2) * 14], op * (priv ? 0.55 : 1), weak || isRed(i, t) ? 'warn' : 'ip');
+    }
+    lblW('PUBLIC INTERNET', [-290, 420, 0], life(t, L2 + 0.3, L3 - 0.1), '');
+    lblW('PRIVATE NETWORK', [0, SVY - 60, 0], life(t, VANISH + 0.4, L4 - 0.05), '');
+    lblW('157.240.22.35 · PUBLIC', [PX[0], PX[1], 118], life(t, PUB + 0.1, L4 - 0.05), 'acc');
+    pop(t, IN + 0.05, P(SVX[WEAKI], SVY, 150), 'BREACHED', 'warn', 1.4);
+    // L6 servers relax
+    for (let i = 0; i < 6; i++) lblW('no decrypt ✓', [SVX[i], SVY, 128 + (i % 2) * 14], life(t, DONT + i * 0.08, L7 - 0.1, 0.25, 0.2), 'ip', 'color:' + ACC);
+    // L7 cache hits
+    lblW('CACHED PAGES', [PX[0], PX[1], 140], life(t, READY - 0.4, MOST - 0.1), 'acc');
+    for (let k = 0; k < 6; k++) pop(t, MOST + 0.1 + k * 0.32, P(DOOR[0] + (k % 2 ? 40 : -40), DOOR[1], 70), 'HIT', 'acc', 0.8);
+    // L8 path reading
+    const mg = window01(t, PATH, API + 0.2, 0.15);
+    if (mg > 0) { const p = P(...DOOR); fx('circle', { cx: p[0], cy: p[1] - 30, r: 15, fill: 'none', stroke: ACC, 'stroke-width': 2, opacity: mg }); fx('line', { x1: p[0] + 11, y1: p[1] - 19, x2: p[0] + 20, y2: p[1] - 10, stroke: ACC, 'stroke-width': 3, 'stroke-linecap': 'round', opacity: mg }); }
+    lblW('API SERVERS', [SVX[1], SVY, 150], life(t, PATH + 0.2, L9 - 0.05), 'tag');
+    lblW('IMAGE SERVERS', [SVX[4], SVY, 150], life(t, PATH + 0.35, L9 - 0.05), 'tag');
+    // L9
+    lblW('BOTS', [-260, 330, 20], life(t, FLOOD, STOP + 0.4), 'warn');
+    pop(t, STOP, P(DOMEC[0], DOMEC[1], 150), 'BLOCKED', 'acc', 1.2);
+  }
+  if (t > L10 && t < L11) lblW('instagram.com', [0, -60, 150], life(t, L10 + 0.6, L11 - 0.05) * 0.9, 'acc');
+
+  // UI
+  $('ui').innerHTML = connCard(t) + scanCard(t) + tlsCard(t) + cacheCard(t) + routeCard(t) + floodCard(t) + brandCard(t) + compareCard(t) + jobsBar(t) + pollCard(t) + ctaSheet(t);
+  $('title').innerHTML = titleHTML(t);
+
+  // flashes, shake, whip blur
+  const red = window01(t, IN, IN + 0.6, 0.05);
+  const acc = Math.max(window01(t, IMPACT, IMPACT + 0.4, 0.04), window01(t, STOP, STOP + 0.5, 0.04) * 0.8, window01(t, PROXY3, PROXY3 + 0.35, 0.04) * 0.5);
+  const white = Math.max(...CH.slice(2).map((c) => window01(t, c[0] - 0.04, c[0] + 0.14, 0.04) * 0.2));
+  const fl = $('flash');
+  if (red > 0.01) { fl.style.background = 'radial-gradient(circle at 50% 50%, rgba(255,55,95,0.35), rgba(255,55,95,0.06) 70%)'; fl.style.opacity = red; }
+  else if (acc > white) { fl.style.background = 'radial-gradient(circle at 50% 50%, rgba(46,230,214,0.35), rgba(46,230,214,0.05) 70%)'; fl.style.opacity = acc; }
+  else { fl.style.background = 'radial-gradient(circle at 50% 40%, rgba(255,255,255,0.5), rgba(255,255,255,0.08) 70%)'; fl.style.opacity = white; }
+  const shk = (t0, a, d) => (t >= t0 ? a * (1 - prog(t, t0, t0 + d)) : 0);
+  const sh = Math.max(shk(IMPACT, 0.9, 0.45), shk(IN, 1.2, 0.6), shk(STOP, 1.0, 0.5), t > FLOOD && t < STOP ? 0.3 : 0);
+  const whip = Math.max(...[L4, L5, L11].map((c) => window01(t, c - 0.06, c + 0.26, 0.12)));
+  $('world').style.transform = `translate(${Math.sin(t * 63) * 7 * sh}px, ${Math.cos(t * 51) * 5 * sh}px) rotate(${Math.sin(t * 47) * 0.6 * sh + roll}deg) scale(${1 + Math.abs(roll) * 0.012})`;
+  $('world').style.filter = whip > 0.01 ? `blur(${whip * 7}px)` : 'none';
+  $('world').style.opacity = 1 - 0.55 * ep(t, L12, L12 + 0.5);
+
+  // chrome
+  const ch = CH.find((c) => t >= c[0] && t < c[1]);
+  $('chapter').style.opacity = ch ? life(t, ch[0], ch[1], 0.3, 0.2) : 0;
+  if (ch) $('chapter').querySelector('span').textContent = ch[2];
+  $('handle').style.opacity = ep(t, 0.4, 1.0) * (1 - ep(t, L12, L12 + 0.3));
+  document.querySelectorAll('#bar i').forEach((n, i) => { n.style.width = prog(t, BK[i], BK[i + 1]) * 100 + '%'; });
+  $('grain').style.transform = `translate(${Math.floor(hash(Math.floor(t * 24)) * 40) - 20}px, ${Math.floor(hash(Math.floor(t * 24) + 5) * 40) - 20}px)`;
+
+  const cur = $('cursor');
+  if (cp) {
+    const pr = Math.max(0, ...TAPS.map((x) => window01(t, x, x + 0.18, 0.05)));
+    cur.style.display = ''; cur.style.transform = `translate(${cp[0] - 3}px, ${cp[1] - 2}px) scale(${1 - 0.18 * pr})`;
+  } else cur.style.display = 'none';
+  ripple(t, tapComment, COMMENT_POS, ACC);
+  ripple(t, tapFollow, FOLLOW_POS, ACC);
+
+  caps.render(t);
+  $('stage').style.opacity = 1 - ep(t, END - 0.35, END);
+};
+window.render(0);
+</script>
+</body>
+</html>

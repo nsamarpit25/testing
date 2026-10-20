@@ -1,0 +1,1183 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- 11 Health Checks cover: the video's world frozen on one shot, with a title overlay. From video.html, in the 10 Service Discovery style: ember line-art world + a live status card on top,
+     a checker tower that keeps asking the app "are you okay?". Times come from voice/words.json. Open with #play to watch live, #play-safe for Instagram's UI zones. -->
+<link rel="stylesheet" href="openings/fonts.css">
+<style>
+:root { --o: #FF6A1F; --o2: #FFB070; --w: #F2EEE8; --g: #77706A; --ok: #7CF29A; --ice: #9FD3FF; }
+html, body { margin: 0; background: #000; }
+#stage { position: relative; width: 540px; height: 960px; overflow: hidden; background: #0b0a09; font-family: Inter, sans-serif; color: var(--w); }
+#world, .layer { position: absolute; inset: 0; }
+#cv { position: absolute; inset: 0; width: 540px; height: 960px; }
+#fx { position: absolute; inset: 0; overflow: visible; }
+#grain { position: absolute; inset: -40px; opacity: 0.55; mix-blend-mode: screen; pointer-events: none; }
+#vig { position: absolute; inset: 0; background: radial-gradient(110% 75% at 50% 45%, rgba(0,0,0,0) 50%, rgba(0,0,0,0.7) 100%); pointer-events: none; }
+#dim { position: absolute; inset: 0; background: #0b0a09; opacity: 0; pointer-events: none; }
+#flash { position: absolute; inset: 0; opacity: 0; background: var(--o); mix-blend-mode: screen; pointer-events: none; }
+#frame { position: absolute; left: 14px; right: 14px; top: 112px; bottom: 46px; border: 1px solid rgba(255,255,255,0.07); border-radius: 14px; pointer-events: none; }
+#frame i { position: absolute; width: 10px; height: 10px; border-color: rgba(255,255,255,0.45); border-style: solid; }
+#frame i:nth-child(1) { left: 8px; top: 8px; border-width: 1px 0 0 1px; } #frame i:nth-child(2) { right: 8px; top: 8px; border-width: 1px 1px 0 0; }
+#frame i:nth-child(3) { left: 8px; bottom: 8px; border-width: 0 0 1px 1px; } #frame i:nth-child(4) { right: 8px; bottom: 8px; border-width: 0 1px 1px 0; }
+.meta { position: absolute; font-family: Mono; font-size: 9px; letter-spacing: 1.4px; color: var(--g); }
+.meta b { color: var(--o); font-weight: 600; }
+.co { position: absolute; font-family: Mono; font-size: 9.5px; white-space: nowrap; color: #d9d2ca; display: flex; align-items: center; gap: 5px; letter-spacing: 0.4px; }
+.co:before { content: ''; width: 4px; height: 4px; border-radius: 50%; background: var(--o); }
+/* captions: one plain line at the bottom, a few key words coloured */
+#cap { position: absolute; left: 24px; right: 24px; top: 742px; height: 40px; pointer-events: none; }
+#cap .box { display: none; position: absolute; inset: 0; justify-content: center; align-items: center; white-space: nowrap; font-weight: 800; font-size: 23px; line-height: 1; letter-spacing: -0.4px; }
+#cap .w { display: inline-block; margin: 0 4px; color: #fff; -webkit-text-stroke: 4px #0b0a09; paint-order: stroke fill; text-shadow: 0 2px 10px rgba(0,0,0,0.8); }
+/* status card (top) */
+#ed { position: absolute; left: 26px; right: 26px; top: 148px; background: rgba(12,11,10,0.94); border: 1px solid rgba(255,106,31,0.32); border-radius: 10px; box-shadow: 0 14px 34px rgba(0,0,0,0.6); overflow: hidden; }
+#ed .tb { height: 26px; display: flex; align-items: center; gap: 5px; padding: 0 10px; border-bottom: 1px solid rgba(255,255,255,0.06); font: 600 10px/1 Mono; color: #9c948c; letter-spacing: 0.5px; }
+#ed .tb i { width: 7px; height: 7px; border-radius: 50%; background: #2c2925; display: inline-block; }
+#ed .tb .fn { margin-left: 8px; color: #d9d2ca; } #ed .tb .fn b { color: var(--o); font-weight: 600; }
+#ed .tb .st { margin-left: auto; letter-spacing: 1.2px; }
+#code { padding: 6px 0 8px; font: 600 13.5px/26px Mono; color: #d9d2ca; }
+.ln { position: relative; height: 26px; padding-left: 36px; padding-right: 12px; white-space: pre; display: flex; align-items: center; }
+.ln .n { position: absolute; left: 0; width: 22px; text-align: right; color: #3d3833; font-weight: 400; }
+.ln .r { margin-left: auto; font-weight: 800; font-size: 12px; }
+.ln.run { background: rgba(255,176,112,0.06); } .ln.bad { background: rgba(255,106,31,0.13); } .ln.good { background: rgba(124,242,154,0.07); } .ln.ice { background: rgba(159,211,255,0.08); }
+#l4 { display: none; }
+.c { color: #6b645e; font-weight: 400; } .k { color: #9c948c; } .s { color: var(--o2); } .okc { color: var(--ok); } .oc { color: var(--o); } .ic { color: var(--ice); }
+.icur { display: inline-block; width: 8px; height: 16px; background: var(--o); vertical-align: -3px; }
+.mx { display: inline-block; width: 16px; text-align: center; }
+/* pulse monitor (nurse) */
+#pulse { position: absolute; left: 110px; top: 330px; width: 320px; display: none; background: #121110; border: 1px solid rgba(124,242,154,0.45); border-radius: 18px; padding: 14px 16px 14px; box-sizing: border-box; box-shadow: 0 20px 50px rgba(0,0,0,0.7), 0 0 30px rgba(124,242,154,0.08); font-family: Mono; }
+#pulse .hd { display: flex; align-items: center; font: 800 10px/1 Mono; letter-spacing: 1.6px; color: var(--g); }
+#pulse .hd .bpm { margin-left: auto; font: 800 30px/1 Mono; color: var(--ok); letter-spacing: -1px; text-shadow: 0 0 14px rgba(124,242,154,0.5); }
+#pulse .hd .bpm small { font-size: 10px; letter-spacing: 1px; color: var(--g); margin-left: 4px; }
+#pulse svg { display: block; margin-top: 8px; }
+#pulse .ft { display: flex; justify-content: space-between; margin-top: 8px; font: 800 10px/1 Mono; letter-spacing: 1.4px; }
+#heart { color: var(--ok); display: inline-block; margin-right: 6px; font-size: 13px; }
+/* closed / open sign */
+#sign { position: absolute; left: 0; top: 0; display: none; transform-origin: 50% 0; }
+#sign .str { position: absolute; left: 50%; top: -14px; width: 26px; height: 14px; margin-left: -13px; border: 1px solid rgba(255,255,255,0.4); border-bottom: 0; border-radius: 14px 14px 0 0; }
+#sign .bd { font: 900 13px/1 Inter; letter-spacing: 2px; padding: 7px 10px; border-radius: 5px; border: 1.5px solid currentColor; background: rgba(12,11,10,0.92); box-shadow: 0 0 16px currentColor; white-space: nowrap; }
+/* wires from the cards down into the world */
+#wires { position: absolute; inset: 0; overflow: visible; pointer-events: none; }
+/* hover tooltip on the app (trap scene) */
+#tip { position: absolute; left: 0; top: 0; display: none; width: 148px; padding: 8px 10px; border-radius: 9px; background: rgba(14,13,12,0.96); border: 1px solid rgba(255,255,255,0.14); box-shadow: 0 10px 28px rgba(0,0,0,0.7); font: 700 9.5px/1 Mono; color: #9c948c; }
+#tip .r { display: flex; justify-content: space-between; align-items: center; height: 17px; }
+#tip .r b { font-weight: 800; }
+#tip .hd { font: 800 8px/1 Mono; letter-spacing: 1.4px; color: var(--g); margin-bottom: 5px; }
+#tip .btn { margin-top: 6px; height: 22px; border-radius: 6px; background: #2a2521; color: #F2EEE8; display: flex; align-items: center; justify-content: center; font: 800 10px/1 Inter; letter-spacing: 0.4px; }
+/* strike counter over the app */
+#strk { position: absolute; left: 0; top: 0; display: none; padding: 6px 8px 7px; border-radius: 9px; background: rgba(12,11,10,0.92); border: 1px solid rgba(255,106,31,0.4); box-shadow: 0 8px 24px rgba(0,0,0,0.6); text-align: center; }
+#strk .lb { font: 800 7.5px/1 Mono; letter-spacing: 1.4px; color: var(--g); margin-bottom: 5px; }
+#strk .row { display: flex; gap: 5px; justify-content: center; }
+#strk i { font-style: normal; width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid #3a342e; display: flex; align-items: center; justify-content: center; font: 900 12px/1 Inter; color: #3a342e; }
+#strk i.ok { border-color: var(--ok); color: var(--ok); box-shadow: 0 0 10px rgba(124,242,154,0.35); }
+#strk i.x { border-color: var(--o); color: #0b0a09; background: var(--o); box-shadow: 0 0 12px rgba(255,106,31,0.6); }
+#strk .rs { font: 900 13px/22px Inter; letter-spacing: 1.5px; color: var(--o); }
+/* 3 AM timeline (replay) */
+#tl { position: absolute; left: 26px; right: 26px; top: 148px; display: none; background: rgba(12,11,10,0.94); border: 1px solid rgba(159,211,255,0.4); border-radius: 10px; box-shadow: 0 14px 34px rgba(0,0,0,0.6); overflow: hidden; }
+#tl .tb { height: 26px; display: flex; align-items: center; gap: 5px; padding: 0 10px; border-bottom: 1px solid rgba(255,255,255,0.06); font: 600 10px/1 Mono; color: #9c948c; letter-spacing: 0.5px; }
+#tl .tb i { width: 7px; height: 7px; border-radius: 50%; background: #2c2925; display: inline-block; }
+#tl .tb .fn { margin-left: 8px; color: #d9d2ca; } #tl .tb .fn b { color: var(--ice); font-weight: 600; }
+#tl .tb .st { margin-left: auto; letter-spacing: 1.2px; color: var(--ok); }
+#tl .ax { position: relative; height: 92px; margin: 0 18px; }
+#tl .tr { position: absolute; left: 0; right: 0; top: 44px; height: 2px; background: #2a2622; }
+#tl .fi { position: absolute; left: 0; top: 44px; height: 2px; background: linear-gradient(90deg, #9FD3FF, #FF6A1F 60%, #7CF29A); box-shadow: 0 0 8px rgba(255,106,31,0.6); }
+#tl .ph { position: absolute; top: 38px; width: 2px; height: 14px; margin-left: -1px; background: #fff; box-shadow: 0 0 8px #fff; }
+#tl .mk { position: absolute; top: 0; width: 60px; margin-left: -30px; text-align: center; font: 700 8.5px/1 Mono; color: #4a443e; transition: none; }
+#tl .mk .tm { height: 14px; letter-spacing: 0.5px; }
+#tl .mk .dt { width: 20px; height: 20px; margin: 10px auto 0; border-radius: 50%; border: 1.5px solid #3a342e; background: #0f0e0d; display: flex; align-items: center; justify-content: center; font: 900 10px/1 Inter; }
+#tl .mk .nm { margin-top: 8px; letter-spacing: 0.8px; }
+/* on-call dev (asleep) */
+#oncall { position: absolute; left: 30px; top: 598px; width: 150px; display: none; padding: 10px 12px; border-radius: 12px; background: rgba(16,14,12,0.94); border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 12px 30px rgba(0,0,0,0.6); font-family: Mono; }
+#oncall .hd { font: 800 8px/1 Mono; letter-spacing: 1.5px; color: var(--g); }
+#oncall .rw { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+#oncall .fc { width: 30px; height: 30px; border-radius: 50%; background: #1f1c19; border: 1.5px solid #3a342e; display: flex; align-items: center; justify-content: center; font: 900 11px/1 Inter; color: #9c948c; flex: none; }
+#oncall .st { font: 800 12px/1.2 Inter; color: #d9d2ca; }
+#oncall .al { margin-top: 3px; font: 700 9px/1 Mono; color: var(--g); letter-spacing: 0.6px; }
+#zz { position: absolute; left: 40px; top: 26px; font: 900 11px/1 Inter; color: var(--ice); white-space: nowrap; }
+/* profile card */
+#prof { position: absolute; left: 44px; top: 270px; width: 452px; display: none; background: rgba(16,14,12,0.97); border: 1px solid rgba(255,176,112,0.4); border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,0.7); font-family: Inter; overflow: hidden; }
+#prof .top { display: flex; align-items: center; gap: 12px; padding: 16px 16px 12px; }
+#prof .ring { width: 56px; height: 56px; border-radius: 50%; padding: 3px; box-sizing: border-box; flex: none; background: conic-gradient(#FF6A1F, #FFB070, #FF6A1F); }
+#prof .ring div { width: 100%; height: 100%; border-radius: 50%; background: #0b0a09; display: flex; align-items: center; justify-content: center; font: 800 16px/1 Mono; color: #fff; }
+#fb { width: 104px; height: 38px; border-radius: 10px; background: var(--o); color: #0b0a09; display: flex; align-items: center; justify-content: center; font: 900 14px/1 Inter; flex: none; }
+#prof .tiles { display: flex; gap: 8px; padding: 0 16px 16px; }
+#prof .tile { position: relative; flex: 1; height: 150px; border-radius: 10px; background: #1c1916; border: 2px solid transparent; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; }
+#prof .tile .n { font: 800 34px/1 Mono; color: #3a342e; }
+#prof .tile .t { font: 800 11px/1 Mono; letter-spacing: 1px; color: #d9d2ca; text-align: center; line-height: 1.3; }
+#watch { position: absolute; display: none; font: 800 11px/1 Mono; letter-spacing: 1px; padding: 6px 10px; border-radius: 6px; background: var(--o); color: #0b0a09; white-space: nowrap; }
+#cursor { position: absolute; left: 0; top: 0; width: 22px; height: 28px; display: none; pointer-events: none; filter: drop-shadow(0 3px 6px rgba(0,0,0,0.6)); }
+#ed, #sign, #pulse, #tip, #strk, #tl, #oncall, #prof, #watch, #cap, #cursor, #flash, #wires, #kin, #lbls, #fx, #dim, .meta { display: none !important; }
+#ct { position: absolute; inset: 0; text-align: center; }
+#world { transform: translateY(112px) scale(0.9); transform-origin: 50% 50%; }
+#ct .k { position: absolute; top: 160px; left: 0; right: 0; font-family: Mono; font-weight: 800; font-size: 13px; letter-spacing: 3.5px; color: var(--o2); }
+#ct .t { position: absolute; top: 186px; left: 0; right: 0; font-weight: 900; font-size: 82px; letter-spacing: -4px; line-height: 0.9; background: linear-gradient(180deg,#FFB070,#FF6A1F 70%); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 0 22px rgba(255,106,31,0.45)); }
+#ct .s { position: absolute; top: 352px; left: 30px; right: 30px; font-family: Instrument; font-size: 34px; line-height: 38px; color: #F2EEE8; }
+#ct .s i { color: var(--o); }
+#ct .h { position: absolute; bottom: 82px; left: 0; right: 0; font-family: Mono; font-size: 11px; letter-spacing: 2px; color: #9c948c; }
+</style>
+<script>document.fonts.load('34px Instrument'); document.fonts.load('italic 34px Instrument');</script>
+</head>
+<body>
+<div id="stage">
+  <div id="world">
+    <canvas id="cv" width="1080" height="1920"></canvas>
+    <svg id="fx" width="540" height="960" viewBox="0 0 540 960"></svg>
+    <div class="layer" id="lbls"></div>
+  </div>
+  <div id="vig"></div>
+  <div id="dim"></div>
+  <svg id="wires" width="540" height="960" viewBox="0 0 540 960"></svg>
+  <div class="layer" id="cards"></div>
+  <div class="layer" id="kin"></div>
+  <div id="frame"><i></i><i></i><i></i><i></i></div>
+  <div class="meta" style="left:30px;top:126px">// 11 — <b>health checks</b></div>
+  <div class="meta" style="right:30px;top:126px">HOW.ITS.ENGINEERED</div>
+  <div class="meta" id="tc" style="left:30px;bottom:60px">T+00.00s</div>
+  <div class="meta" style="right:30px;bottom:60px">SYSTEM DESIGN · <b>11</b></div>
+  <div id="sign"><div class="str"></div><div class="bd" id="signT">CLOSED</div></div>
+  <div id="ed">
+    <div class="tb"><i></i><i></i><i></i><span class="fn" id="edfn"><b>app</b>/status</span><span class="st" id="edst">● LIVE</span></div>
+    <div id="code">
+      <div class="ln" id="l1"><span class="n">1</span><span id="l1t"></span><span class="r" id="l1r"></span></div>
+      <div class="ln" id="l2"><span class="n">2</span><span id="l2t"></span><span class="r" id="l2r"></span></div>
+      <div class="ln" id="l3"><span class="n">3</span><span id="l3t"></span><span class="r" id="l3r"></span></div>
+      <div class="ln" id="l4"><span class="n">4</span><span id="l4t"></span><span class="r" id="l4r"></span></div>
+    </div>
+  </div>
+  <div id="pulse">
+    <div class="hd"><span><span id="heart">♥</span>PULSE CHECK</span><span class="bpm" id="bpm">72<small>BPM</small></span></div>
+    <svg width="288" height="70" viewBox="0 0 288 70"><path d="M0 35 H288" stroke="rgba(255,255,255,0.06)" stroke-width="1"/><path id="ecgG" fill="none" stroke="#7CF29A" stroke-width="6" opacity="0.25" style="filter: blur(3px)"/><path id="ecg" fill="none" stroke="#7CF29A" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><circle id="ecgDot" r="3.5" fill="#E9FFF0"/></svg>
+    <div class="ft"><span style="color:#77706A">ARE YOU OKAY?</span><span id="pok" style="color:#7CF29A">✓ YES</span></div>
+  </div>
+  <div id="tip"><div class="hd">APP · PROCESS INFO</div><div class="r"><span>process</span><b id="tipP" style="color:#7CF29A">● running</b></div><div class="r"><span>workers</span><b id="tipW" style="color:#7CF29A">busy</b></div><div class="r"><span>reply</span><b id="tipR"></b></div><div class="btn" id="tipB">Send request ▸</div></div>
+  <div id="strk"><div class="lb">MISSES IN A ROW</div><div class="row" id="strkR"><i></i><i></i><i></i></div></div>
+  <div id="tl">
+    <div class="tb"><i></i><i></i><i></i><span class="fn"><b>03:00 AM</b> · what happened</span><span class="st" id="tlSt"></span></div>
+    <div class="ax" id="tlAx"><div class="tr"></div><div class="fi" id="tlF"></div><div class="ph" id="tlP"></div></div>
+  </div>
+  <div id="oncall"><div class="hd">ON-CALL DEV</div><div class="rw"><div class="fc" id="ocF">–_–</div><div><div class="st" id="ocS">asleep</div><div class="al">alerts · <b id="ocA" style="color:#d9d2ca">0</b></div></div></div><div id="zz"></div></div>
+  <div id="prof">
+    <div class="top"><div class="ring"><div>{ }</div></div><div style="flex:1;min-width:0"><div style="font-weight:800;font-size:16px">@how.its.engineered</div><div style="color:#9c948c;font-size:11.5px;margin-top:3px">System design, one reel at a time</div></div><div id="fb">Follow</div></div>
+    <div class="tiles"><div class="tile" id="t0"><div class="n">10</div><div class="t">SERVICE<br>DISCOVERY</div></div><div class="tile" id="t1"><div class="n">09</div><div class="t">KUBERNETES</div></div><div class="tile" id="t2"><div class="n">08</div><div class="t">DOCKER</div></div></div>
+  </div>
+  <div id="watch">▶ WATCH THIS FIRST</div>
+  <div id="cap"></div>
+  <svg id="cursor" viewBox="0 0 22 28"><path d="M2 2 L2 22 L7.5 17 L11 25 L14.5 23.5 L11 15.5 L18.5 15.5 Z" fill="#fff" stroke="#0b0a09" stroke-width="1.6" stroke-linejoin="round"/></svg>
+  <div id="flash"></div>
+  <div id="ct"><div class="k">SYSTEM DESIGN · 11</div><div class="t">HEALTH<br>CHECKS</div><div class="s">How your app gets fixed<br><i>while you sleep</i></div><div class="h">@HOW.ITS.ENGINEERED</div></div>
+  <div id="grain"></div>
+</div>
+<script src="../../tools/lib.js"></script>
+<script src="voice/timings.js"></script>
+<script src="openings/engine.js"></script>
+<script>
+const DURATION = 50.6;
+window.DURATION = DURATION;
+const WORDS = window.WORDS;
+const O = hex('#FF6A1F'), O2 = hex('#FFB070'), W = [242, 238, 232], GR = [119, 112, 106], INK = [14, 13, 12], OK = hex('#7CF29A'), IC = hex('#9FD3FF');
+
+/* ---------------- beats (seconds, from voice/words.json) */
+const T = {
+  froze: 0.6, am: 1.22, still: 2.14, running: 2.34, not: 3.0, anyone: 3.6, and: 4.66, restarted: 5.14, before: 5.94, woke: 6.5, how: 7.34, know: 7.66,
+  trap: 8.66, running2: 9.42, same: 10.14, working: 10.48, frozen: 11.38, looks: 12.18, alive: 12.5, nothing: 13.32, crashed: 13.48, nothing2: 14.3, restarts: 14.74,
+  fix: 16.02, keep: 16.66, asking: 16.82, areYou: 17.64, okay: 17.94, like: 18.56, nurse: 18.86, pulse: 19.44, thats: 19.94, hc: 20.3,
+  c1: 21.28, alive2: 22.02, every: 22.86, calls: 23.8, page: 24.52, three: 25.28, misses: 25.42, row: 25.94, restartsApp: 26.44,
+  c2: 27.18, ready: 28.64, copy: 29.32, starting: 30.1, says: 30.68, notYet: 31.2, traffic: 31.86, skips: 32.06, untilIs: 32.92, shop: 33.6, closed: 33.94,
+  so: 34.9, freeze: 35.82, threeM: 36.54, pulses: 36.9, oneR: 37.62, back: 38.68, woke2: 39.58,
+  k8s: 40.66, liveness: 41.66, readiness: 42.36, probes: 42.68, few: 43.58, config: 44.14,
+  newTo: 44.94, k8s2: 45.16, profile: 46.8, follow: 47.56, series: 48.34,
+};
+// app A's life: when it is frozen, when it restarts
+const FREEZES = [
+  { a: T.froze, r: T.restarted },            // hook
+  { a: T.trap - 0.1, r: T.fix - 0.2, soft: 1 }, // the trap: frozen, nothing restarts it (cleared quietly before the fix)
+  { a: T.three - 0.15, r: T.restartsApp },   // check one: three misses -> restart
+  { a: T.freeze - 0.4, r: T.oneR + 0.1 },    // payoff replay
+];
+const READY3 = T.closed + 0.45;              // copy 3 finishes starting up
+
+/* ---------------- world layout */
+const NX = [-50, 70, 190], NY = 200, NW = 100, NDp = 64, NH = 24;
+const SLOT = (i) => [NX[i], NY, NH];
+const A = SLOT(1), C1 = SLOT(0), C3 = SLOT(2);
+const TX = 70, TY = 360, T_TOP = [TX, TY, 92];       // the checker tower, behind the machines
+const topOf = (s) => [s[0], s[1] - 4, s[2] + 24];
+
+const SHOTS = [
+  { t: 0, d: 0, f: [70, 200, 30], s: 2.7, a: 0.5, e: 0.52, sy: 470 },
+  { t: 0.1, d: 1.2, s: 2.35, a: 0.44 },
+  { t: 1.9, d: 0.6, f: [70, 110, 30], s: 1.45, a: 0.46, e: 0.6, sy: 500 },
+  { t: 4.6, d: 0.35, f: [70, 190, 30], s: 1.9 },
+  { t: 7.1, d: 0.8, f: [70, 230, 30], s: 1.02, a: 0.5, e: 0.64, sy: 530 },
+  // the trap: close on the frozen app
+  { t: 8.5, d: 0.6, f: [70, 190, 30], s: 1.75, a: 0.42, e: 0.56, sy: 480 },
+  { t: 12.0, d: 1.6, s: 1.95, a: 0.5 },
+  // the fix: tower + app
+  { t: 15.8, d: 1.0, f: [70, 260, 30], s: 1.08, a: 0.5, e: 0.64, sy: 545 },
+  // check one
+  { t: 21.1, d: 0.6, f: [70, 250, 30], s: 1.25, a: 0.46, e: 0.62, sy: 550 },
+  { t: 25.2, d: 0.3, s: 1.38 },
+  // check two: three copies + users
+  { t: 27.0, d: 0.8, f: [70, 170, 30], s: 0.98, a: 0.5, e: 0.64, sy: 540 },
+  { t: 29.1, d: 0.6, f: [140, 220, 30], s: 1.22, a: 0.46 },
+  { t: 31.7, d: 0.6, f: [70, 140, 30], s: 0.98, a: 0.5, sy: 540 },
+  // payoff replay
+  { t: 34.8, d: 0.6, f: [70, 220, 30], s: 1.3, a: 0.46, e: 0.6, sy: 545 },
+  // kubernetes
+  { t: 40.4, d: 0.8, f: [70, 200, 30], s: 0.98, a: 0.55, e: 0.68, sy: 545 },
+  { t: 44.8, d: 1.2, f: [70, 200, 30], s: 0.82, a: 0.6, e: 0.9, sy: 520 },
+];
+const KICKS = [[T.froze, 0.06], [T.restarted, 0.08], [T.trap, 0.04], [T.crashed, 0.03], [T.fix, 0.05], [T.okay, 0.03], [T.hc, 0.05],
+  [T.misses, 0.03], [T.row, 0.04], [T.restartsApp, 0.07], [T.notYet, 0.04], [READY3, 0.05], [T.pulses, 0.03], [T.oneR, 0.07], [T.back, 0.05], [T.k8s, 0.04]];
+const SHAKES = [[T.restarted, 6, 0.4], [T.restartsApp, 6, 0.4], [T.oneR, 6, 0.4]];
+
+/* ---------------- drawing (line-art boxes on near-black) */
+function wbox(x, y, z, w, d, h, edge, o = {}) {
+  box(x, y, z, w, d, h, o.fill || INK, { op: o.op, edge: rgba(edge, 1, o.ea ?? 0.9), lw: o.lw || 1, gl: o.glow ? [rgba(edge, 1, o.glow), 14] : null, front: o.front, side: o.side, top: o.top, dz: o.dz });
+}
+function machine(i, t, hot) {
+  const e = mixc(GR, O, hot);
+  wbox(NX[i], NY, 0, NW, NDp, NH, mixc([150, 144, 138], O, hot), { ea: 0.75, glow: hot * 0.8,
+    front: (F, w, h) => { ftext(F, 8, h / 2, 'machine-' + (i + 1), 5, rgba(e, 1.4, 0.95), 'Mono', 600, 'left'); for (let k = 0; k < 5; k++) fquad(F, w - 36 + k * 6, h / 2 - 1, w - 33 + k * 6, h / 2 + 1, rgba(rnd(i * 5 + k, Math.floor(t * 6)) > 0.4 ? O : GR, 1, 0.9)); },
+    side: (F, w, h) => { for (let k = 0; k < 6; k++) fquad(F, 8 + k * 9, 6, 9 + k * 9, h - 6, rgba(GR, 1, 0.6)); },
+    top: (F, w, d) => fans(F, w, d, t, 5 + hot * 25) });
+  pool(NX[i], NY, 80, O, 0.12 + 0.5 * hot);
+}
+// an app copy: o.ice = frozen amount, o.load = startup progress (0..1, undefined = up)
+function cog(F, cx, cy, R, n, ang, col, lw) {
+  const pts = [];
+  for (let k = 0; k <= n * 4; k++) { const a = ang + (k / (n * 4)) * Math.PI * 2, r = (k % 4 === 1 || k % 4 === 2) ? R : R * 0.74; pts.push([cx + Math.cos(a) * r, cy + Math.sin(a) * r]); }
+  fpath(F, pts, col, lw);
+  const hub = []; for (let k = 0; k <= 10; k++) { const a = (k / 10) * Math.PI * 2; hub.push([cx + Math.cos(a) * R * 0.26, cy + Math.sin(a) * R * 0.26]); }
+  fpath(F, hub, col, lw * 0.8);
+  fpath(F, [[cx + Math.cos(ang) * R * 0.26, cy + Math.sin(ang) * R * 0.26], [cx + Math.cos(ang) * R * 0.62, cy + Math.sin(ang) * R * 0.62]], col, lw * 0.8);
+}
+// an app copy with its worker gears visible through a glass lid. o.ice = frozen, o.rot = gear angle, o.load = startup progress
+function app(p, o = {}) {
+  const ice = o.ice || 0, op = o.op ?? 1, fl = o.fl || 0;
+  if (op <= 0.01) return;
+  const c = mixc(o.col || O, IC, ice);
+  wbox(p[0], p[1], p[2] + (o.dz || 0), 40, 24, 22, mixc(c, [255, 255, 255], fl * 0.6), { op, lw: 1.3, glow: (0.7 + fl) * (o.dim ? 0.25 : 1), fill: mixc(INK, c, (0.1 + fl * 0.3 + ice * 0.12) * (o.dim ? 0.4 : 1)),
+    front: (F, w, h) => {
+      for (let u = 4; u < w - 3; u += 5) fpath(F, [[u, 3], [u, h - 3]], rgba(c, 1, 0.3), 0.3);
+      if (o.load != null && o.load < 1) { fquad(F, 5, 4, w - 5, 6, rgba(GR, 1, 0.8)); fquad(F, 5, 4, 5 + (w - 10) * o.load, 6, rgba(O2, 1.2)); ftext(F, w / 2, h / 2 + 2, 'starting', 3.6, rgba(c, 1.4), 'Mono', 700); }
+      else ftext(F, w / 2 - 3, h / 2, o.dead ? '✕' : o.name || 'app', 4.6, rgba(c, 1.5), 'Mono', 700);
+      // the process light: it says "running" even when the app is stuck
+      if (!o.dead && o.load == null) fquad(F, w - 8, h - 7, w - 4, h - 3, rgba(OK, 1.3, Math.floor(t_ * 2.5) % 2 ? 1 : 0.55), [rgba(OK), 6]);
+    },
+    side: (F, w, h) => { for (let u = 4; u < w - 3; u += 5) fpath(F, [[u, 3], [u, h - 3]], rgba(c, 1, 0.3), 0.3); },
+    top: (F, w, d) => {
+      fpath(F, [[2.5, 2.5], [w - 2.5, 2.5], [w - 2.5, d - 2.5], [2.5, d - 2.5], [2.5, 2.5]], rgba(c, 1, 0.45), 0.35);
+      const gc = o.dead ? rgba([255, 80, 60], 1, 0.8) : ice > 0.3 ? rgba(IC, 1.3, 0.95) : o.load != null && o.load < 1 ? rgba(O2, 1.2, 0.9) : rgba(mixc(O2, [255, 255, 255], 0.25), 1.2, 0.95);
+      const a = o.rot || 0;
+      cog(F, 13, 12, 8, 8, a, gc, 0.7);
+      cog(F, 26.2, 8.2, 5.6, 6, -a * 8 / 5.6 + 0.3, gc, 0.65);
+      cog(F, 31, 17.5, 4.6, 5, a * 8 / 4.6 + 0.2, gc, 0.6);
+      if (ice > 0.3) for (let k = 0; k < 9; k++) { const u = 4 + rnd(k, 3) * (w - 8), v = 3 + rnd(k, 4) * (d - 6), r = 1.6 + rnd(k, 5) * 1.6; fpath(F, [[u - r, v], [u + r, v]], rgba(IC, 1.4, ice), 0.5); fpath(F, [[u, v - r], [u, v + r]], rgba(IC, 1.4, ice), 0.5); fpath(F, [[u - r * 0.7, v - r * 0.7], [u + r * 0.7, v + r * 0.7]], rgba(IC, 1.3, ice * 0.7), 0.4); }
+    } });
+}
+function tower(t, hot) {
+  const rise = ep(t, T.keep - 0.5, T.keep + 0.2, ease.out), h = 92 * rise;
+  // before it exists: a dashed silhouette with a question mark ("how did it know?")
+  const ghost = window01(t, T.how - 0.1, T.trap + 0.3, 0.2) * (1 - rise);
+  if (ghost > 0.01) wireBox(TX, TY, 0, 74, 50, 92, O2, ghost * (0.5 + 0.2 * Math.sin(t * 8)), 2, [3, 4]);
+  if (h < 1) return;
+  const c = mixc(O2, [255, 255, 255], hot * 0.5);
+  wbox(TX, TY, 0, 74, 50, h, c, { lw: 1.3, glow: 0.5 + hot, fill: mixc(INK, O, 0.08 + hot * 0.15),
+    front: (F, w, hh) => {
+      if (hh < 40) return;
+      ftext(F, w / 2, hh - 12, t > T.k8s ? 'kubelet' : 'health', 6, rgba(c, 1.4), 'Mono', 800);
+      // a little heartbeat trace on the face
+      const y0 = hh * 0.42, pts = [[8, y0], [22, y0], [26, y0 - 4], [30, y0 + 10], [35, y0 - 16], [40, y0 + 6], [44, y0], [w - 8, y0]];
+      fpath(F, pts, rgba(OK, 1.2, 0.5 + 0.5 * hot), 0.9);
+    },
+    side: (F, w, hh) => { for (let k = 0; k < 7; k++) fpath(F, [[8, 8 + k * 11], [w - 8, 8 + k * 11]], rgba(GR, 1, 0.45), 0.4); } });
+  if (rise >= 1) add(1, D(TX, TY, 100) - 4, () => { const p = P(TX, TY, 92), q = P(TX, TY, 108); g.save(); g.strokeStyle = rgba(c, 1, 0.9); g.lineWidth = 1.2; g.beginPath(); g.moveTo(...p); g.lineTo(...q); g.stroke(); g.fillStyle = rgba(OK, 1, 0.5 + 0.5 * Math.sin(t * 6)); g.beginPath(); g.arc(q[0], q[1], 2.4, 0, 7); g.fill(); g.restore(); });
+}
+function floorGrid(t) {
+  add(0, 1e7, () => {
+    const X0 = -400, X1 = 520, Y0 = -260, Y1 = 620;
+    g.save(); g.lineWidth = 0.6;
+    for (let x = X0; x <= X1; x += 20) { const maj = x % 100 === 0; g.strokeStyle = `rgba(255,240,225,${maj ? 0.09 : 0.035})`; g.beginPath(); g.moveTo(...P(x, Y0, 0)); g.lineTo(...P(x, Y1, 0)); g.stroke(); }
+    for (let y = Y0; y <= Y1; y += 20) { const maj = y % 100 === 0; g.strokeStyle = `rgba(255,240,225,${maj ? 0.09 : 0.035})`; g.beginPath(); g.moveTo(...P(X0, y, 0)); g.lineTo(...P(X1, y, 0)); g.stroke(); }
+    g.strokeStyle = 'rgba(255,106,31,0.35)'; g.lineWidth = 0.9;
+    g.beginPath(); g.moveTo(...P(X0, 120, 0)); g.lineTo(...P(X1, 120, 0)); g.stroke();
+    g.font = '600 7px Mono'; g.fillStyle = 'rgba(200,190,180,0.45)'; g.textAlign = 'center';
+    for (let x = -300; x <= 500; x += 100) { const p = P(x, 120, 0); g.fillText(String(x), p[0], p[1] + 10); g.fillRect(p[0] - 0.5, p[1] - 3, 1, 6); }
+    g.restore();
+  });
+}
+function bg(t, iceA) {
+  g.setTransform(2, 0, 0, 2, 0, 0);
+  g.fillStyle = '#0b0a09'; g.fillRect(0, 0, 540, 960);
+  g.save(); g.globalCompositeOperation = 'lighter';
+  const heat = 0.5 + 0.6 * pulse(t, T.restarted, 2) + 0.6 * pulse(t, T.restartsApp, 2) + 0.6 * pulse(t, T.oneR, 2);
+  const rg = g.createRadialGradient(270, 400, 0, 270, 400, 440); rg.addColorStop(0, `rgba(255,106,31,${0.07 * heat * (1 - 0.6 * iceA)})`); rg.addColorStop(1, 'rgba(255,106,31,0)');
+  g.fillStyle = rg; g.fillRect(0, 0, 540, 960);
+  if (iceA > 0.01) { const ig = g.createRadialGradient(270, 420, 0, 270, 420, 380); ig.addColorStop(0, `rgba(120,180,255,${0.06 * iceA})`); ig.addColorStop(1, 'rgba(120,180,255,0)'); g.fillStyle = ig; g.fillRect(0, 0, 540, 960); }
+  const night = window01(t, -1, T.trap, 0.5) + window01(t, T.so - 0.2, T.k8s, 0.4);
+  if (night > 0.01) {
+    for (let i = 0; i < 40; i++) { const x = rnd(i, 21) * 540, y = 120 + rnd(i, 22) * 400; g.fillStyle = `rgba(220,235,255,${night * (0.15 + 0.35 * (0.5 + 0.5 * Math.sin(t * (1 + rnd(i, 23) * 3) + i)))})`; g.fillRect(x, y, 1.4, 1.4); }
+    const mx = 470, my = 300; g.fillStyle = `rgba(200,225,255,${0.85 * night})`; glow('rgba(160,200,255,0.8)', 12); g.beginPath(); g.arc(mx, my, 12, 0, 7); g.fill(); noGlow();
+    g.globalCompositeOperation = 'source-over'; g.fillStyle = '#0b0a09'; g.beginPath(); g.arc(mx + 6, my - 4, 11, 0, 7); g.fill(); g.globalCompositeOperation = 'lighter';
+  }
+  for (let i = 0; i < 50; i++) { const x = (rnd(i, 9) * 540 + t * (4 + rnd(i, 3) * 8)) % 540, y = (rnd(i, 8) * 960 - t * (3 + rnd(i, 2) * 6) + 9600) % 960; g.fillStyle = `rgba(255,200,160,${0.05 + rnd(i, 7) * 0.12})`; g.fillRect(x, y, 1.2, 1.2); }
+  g.restore();
+}
+function shower(t, t0, x, y, z, n, seed, spd = 170, life = 0.9, col = O) {
+  const dt = t - t0; if (dt <= 0 || dt > life) return;
+  add(3, 0, () => {
+    g.save(); g.globalCompositeOperation = 'lighter'; g.lineCap = 'round';
+    for (let i = 0; i < n; i++) {
+      const th = rnd(i, seed) * Math.PI * 2, up = 0.4 + rnd(i, seed + 1) * 1.0, v = spd * (0.4 + rnd(i, seed + 2) * 0.9);
+      const pos = (d) => P(x + Math.cos(th) * v * d, y + Math.sin(th) * v * d, Math.max(0, z + up * v * d - 300 * d * d));
+      const a = pos(dt), b = pos(Math.max(0, dt - 0.03)), k = 1 - dt / life;
+      g.strokeStyle = rgba(mixc(col, [255, 240, 200], rnd(i, seed + 3)), 1.2, k); g.lineWidth = (0.8 + 1.2 * k) * Math.min(1.6, cam.s * 0.6);
+      g.beginPath(); g.moveTo(...b); g.lineTo(...a); g.stroke();
+    }
+    g.restore();
+  });
+}
+function beam(pts, col, a, lw = 1.1) {
+  if (a <= 0.01 || pts.length < 2) return;
+  add(0, 1e6 - 3, () => {
+    const q = pts.map((p) => P(p[0], p[1], 0.5));
+    g.save(); g.globalCompositeOperation = 'lighter'; g.setLineDash([3 * cam.s, 4 * cam.s]); g.lineDashOffset = -t_ * 30 * cam.s;
+    g.strokeStyle = rgba(col, 1, 0.8 * a); g.lineWidth = lw * cam.s; glow(rgba(col), 6);
+    g.beginPath(); q.forEach((p, i) => (i ? g.lineTo(...p) : g.moveTo(...p))); g.stroke(); g.restore();
+  });
+}
+function spark(p, a = 1, r = 3, col = O) {
+  if (a <= 0.01) return;
+  add(1, D(...p) - 6, () => { const c = P(...p), R = r * cam.s * 0.6; g.save(); g.globalCompositeOperation = 'lighter'; const rg = g.createRadialGradient(c[0], c[1], 0, c[0], c[1], R * 4); rg.addColorStop(0, `rgba(255,236,210,${a})`); rg.addColorStop(0.3, rgba(col, 1, 0.6 * a)); rg.addColorStop(1, rgba(col, 1, 0)); g.fillStyle = rg; g.beginPath(); g.arc(c[0], c[1], R * 4, 0, Math.PI * 2); g.fill(); g.restore(); });
+}
+// a request flying from a to b during [t0, t1]
+function fly(t, a, b, t0, t1, hgt = 40, col = O, r = 3.4) { const q = prog(t, t0, t1); if (q > 0 && q < 1) { spark(arc(a, b, ease.inOut(q), hgt), 1, r, col); for (let s = 1; s < 6; s++) spark(arc(a, b, ease.inOut(Math.max(0, q - s * 0.025)), hgt), 0.35 * (1 - s / 6), r * 0.6, col); } }
+
+/* ---------------- app A: frozen / restarting, per beat */
+function freezeAt(t) { for (const f of FREEZES) if (t >= f.a && t < f.r + 0.35) return f; return null; }
+function iceOf(t) { const f = freezeAt(t); if (!f) return 0; return ep(t, f.a, f.a + 0.35) * (1 - (f.soft ? ep(t, f.r - 0.3, f.r) : prog(t, f.r, f.r + 0.05))); }
+const RESTARTS = [T.restarted, T.restartsApp, T.oneR + 0.1];
+function frozenSoFar(t) { let s = 0; for (const f of FREEZES) if (t > f.a) s += Math.min(t, f.r) - f.a; return s; }
+const gearAng = (t) => 3.4 * (t - frozenSoFar(t));
+function drawA(t) {
+  const ice = iceOf(t);
+  const r = RESTARTS.find((x) => t >= x - 0.1 && t < x + 0.75);
+  if (r && t >= r) {
+    // the crane lifts the stuck copy out, a fresh one drops in
+    const up = ep(t, r, r + 0.5, ease.in);
+    if (up < 1) app(A, { op: 1 - ep(t, r + 0.3, r + 0.5), dz: up * 200, dead: true, col: mixc(O, [255, 60, 40], 0.5), ice: 0.6 * (1 - up), rot: gearAng(t), fl: Math.sin(t * 50) > 0 ? 0.8 : 0.2 });
+    const land = ep(t, r + 0.38, r + 0.62, ease.in);
+    if (t > r + 0.38) app(A, { op: prog(t, r + 0.38, r + 0.45), dz: (1 - land) * 90, fl: pulse(t, r + 0.62, 4), rot: gearAng(t) });
+    return;
+  }
+  const answering = ice < 0.2;
+  app(A, { ice, rot: gearAng(t), fl: (answering ? 0.25 * pulse(t, T.back + 0.2, 3) : 0) + 0.5 * pulse(t, T.okay, 4) + (t > T.k8s ? 0.3 * pulse(t, T.liveness, 4) : 0) });
+}
+// the claw that comes down from above on every restart
+function crane(t) {
+  for (const r of RESTARTS) {
+    if (t < r - 0.5 || t > r + 0.85) continue;
+    const down = ep(t, r - 0.5, r - 0.06, ease.out), up = ep(t, r, r + 0.5, ease.in);
+    const zc = lerp(300, A[2] + 27, down) + up * 200, grip = ep(t, r - 0.1, r, ease.out) * (1 - ep(t, r + 0.55, r + 0.75));
+    add(2, 0, () => {
+      const x = A[0], y = A[1], top = P(x, y, 520), c0 = P(x, y, zc + 6);
+      g.save(); g.lineCap = 'round'; g.lineJoin = 'round';
+      g.strokeStyle = 'rgba(200,190,180,0.7)'; g.lineWidth = 1.2 * cam.s; g.setLineDash([2 * cam.s, 2 * cam.s]);
+      g.beginPath(); g.moveTo(...top); g.lineTo(...c0); g.stroke(); g.setLineDash([]);
+      glow(rgba(O2), 8); g.strokeStyle = rgba(O2, 1.2); g.lineWidth = 2.4 * cam.s;
+      const L = P(x - 25, y, zc + 2), R = P(x + 25, y, zc + 2);
+      g.beginPath(); g.moveTo(...L); g.lineTo(...R); g.moveTo(...c0); g.lineTo(...P(x, y, zc + 2)); g.stroke();
+      for (const sd of [-1, 1]) { const k = 25 - grip * 4; g.beginPath(); g.moveTo(...P(x + sd * 25, y, zc + 2)); g.lineTo(...P(x + sd * k, y, zc - 10)); g.lineTo(...P(x + sd * (k - 4), y, zc - 14)); g.stroke(); }
+      g.restore();
+    });
+  }
+}
+/* ---------------- people, packets, cables, gate, watchdog */
+const CROWD = [[22, 34], [46, 24], [70, 38], [94, 24], [118, 34]];
+const head = (k) => [CROWD[k][0], CROWD[k][1], 40];
+const LBX = 70, LBY = 104, LB_TOP = [LBX, LBY, 22];        // load balancer, rises for "ready?"
+const WD = [-96, 104];                                     // the naive watchdog (trap scene)
+const usersOn = (s) => s < T.c1 - 0.6 || (s > T.c2 + 0.3 && s < T.newTo - 0.6);
+const servedAt = [-9, -9, -9, -9, -9];
+function crowd(t, a) {
+  const ice = iceOf(t), wait = usersOn(t) ? clamp((ice - 0.3) / 0.3) : 0;
+  CROWD.forEach(([x, y], k) => {
+    const sv = pulse(t, servedAt[k], 5);
+    // waiting users fidget
+    person(x + Math.sin(t * 31 + k * 2) * wait * 1.2, y, mixc([206, 196, 184], O, wait * 0.75), sv * 0.9 + wait * 0.5, { op: a, jump: 5 * sv * (1 - wait) + wait * 2 * Math.max(0, Math.sin(t * 9 + k * 1.7)) });
+    if (a < 0.05) return;
+    if (wait > 0.05 || sv > 0.15) add(3, 0, () => {
+      const p = P(x, y, 50 + 5 * sv), s = Math.min(1.5, cam.s);
+      g.save(); g.globalAlpha = a; g.textAlign = 'center'; g.textBaseline = 'middle';
+      if (wait > 0.05) {
+        g.globalAlpha = a * wait; g.fillStyle = 'rgba(12,11,10,0.9)'; g.strokeStyle = rgba(O, 1, 0.9); g.lineWidth = 1;
+        g.beginPath(); g.roundRect(p[0] - 9 * s, p[1] - 6 * s, 18 * s, 12 * s, 4 * s); g.fill(); g.stroke();
+        const n = 1 + Math.floor((t * 3 + k) % 3);
+        g.fillStyle = rgba(O2, 1.2); g.font = `900 ${8 * s}px Inter`; g.fillText('.'.repeat(n).padEnd(3, ' '), p[0], p[1] - 1.5 * s);
+      } else { g.globalAlpha = a * sv * 1.3; g.fillStyle = rgba(OK, 1.2); g.font = `900 ${10 * s}px Inter`; g.fillText('✓', p[0], p[1]); }
+      g.restore();
+    });
+  });
+}
+// a request (orange) / reply (green): a glowing dot with a short trail. path: [a, b] or [a, via, b]
+function flyPkt(t, path, t0, t1, col, label, hgt = 26) {
+  const q = prog(t, t0, t1); if (q <= 0 || q >= 1) return;
+  const at = (u) => { if (path.length === 2) return arc(path[0], path[1], ease.inOut(u), hgt); const k = 0.42; return u < k ? arc(path[0], path[1], ease.inOut(u / k), hgt * 0.4) : arc(path[1], path[2], ease.inOut((u - k) / (1 - k)), hgt); };
+  spark(at(q), 1, 3, col);
+  for (let i = 1; i < 6; i++) spark(at(Math.max(0, q - i * 0.025)), 0.35 * (1 - i / 6), 1.8, col);
+}
+function lbBox(t, a) {
+  if (a <= 0.01) return;
+  wbox(LBX, LBY, 0, 70, 24, 16 * a, O2, { op: Math.min(1, a * 2), lw: 1.2, glow: 0.4, fill: mixc(INK, O, 0.08),
+    front: (F, w, h) => { if (h > 10) ftext(F, w / 2, h / 2, 'load balancer', 4.6, rgba(O2, 1.4), 'Mono', 700); } });
+}
+const lane = (i) => [[LBX + (i - 1) * 16, LBY + 12, 0], [NX[i], NY - NDp / 2 - 2, 0]];
+// boom barrier across lane 3 (copy 3), lifts when it is ready
+function barrier(t, a, open) {
+  if (a <= 0.01) return;
+  const [p0, p1] = lane(2), b = along([p0, p1], 0.5), dx = p1[0] - p0[0], dy = p1[1] - p0[1], L = Math.hypot(dx, dy), n = [-dy / L, dx / L];
+  const post = [b[0] - n[0] * 16, b[1] - n[1] * 16];
+  wbox(post[0], post[1], 0, 5, 5, 14, O2, { op: a, lw: 1, glow: 0.4 });
+  add(1, D(b[0], b[1], 10) - 2, () => {
+    const th = open * 1.35, len = 34, pts = [];
+    for (let i = 0; i <= 6; i++) { const r = len * i / 6; pts.push(P(post[0] + n[0] * r * Math.cos(th), post[1] + n[1] * r * Math.cos(th), 13 + r * Math.sin(th))); }
+    g.save(); g.globalAlpha = a; g.lineCap = 'butt'; g.lineWidth = 3.2 * cam.s;
+    for (let i = 0; i < 6; i++) { g.strokeStyle = i % 2 ? '#F2EEE8' : (open > 0.5 ? '#7CF29A' : '#FF6A1F'); g.beginPath(); g.moveTo(...pts[i]); g.lineTo(...pts[i + 1]); g.stroke(); }
+    g.restore();
+  });
+}
+// the naive watchdog of the trap scene: it only checks that the process exists
+function watchdog(t, a) {
+  if (a <= 0.01) return;
+  const blink = Math.floor(t * 2.5) % 2;
+  wbox(WD[0], WD[1], 0, 44, 26, 20, [190, 182, 172], { op: a, lw: 1.1, glow: 0.3,
+    front: (F, w, h) => { ftext(F, w / 2, h - 6, 'watchdog', 4.2, rgba([210, 202, 192], 1.2), 'Mono', 700); ftext(F, w / 2, 7, 'pid ✓', 4.6, rgba(OK, blink ? 1.4 : 0.8), 'Mono', 800); } });
+  beam([[WD[0] + 22, WD[1] + 4, 0], [NX[1] - NW / 2, NY - 10, 0]], OK, a * 0.6, 0.9);
+}
+
+/* ---------------- the checker's arm: it reaches over and taps the app, like a nurse with a stethoscope */
+const SHO = [TX, TY - 26, 86], REST = [TX, TY - 58, 62];
+const hoverOf = (i) => [COPY[i][0], COPY[i][1] + 4, COPY[i][2] + 52];
+const touchOf = (i) => [COPY[i][0], COPY[i][1] + 1, COPY[i][2] + 25];
+let ARMK = null;
+function buildArm() {
+  const ks = [], ps = PINGS.slice().sort((a, b) => a[0] - b[0]);
+  ps.forEach((p, j) => {
+    const [s, i] = p, prev = ps[j - 1], next = ps[j + 1];
+    if (!prev || s - prev[0] > 1.3) ks.push([s - 0.1, REST]);
+    ks.push([s + 0.18, hoverOf(i)]); ks.push([s + 0.4, touchOf(i)]);
+    if (!next || next[0] + 0.18 > s + 0.62) ks.push([s + 0.62, hoverOf(i)]);
+    if (!next || next[0] - s > 1.3) ks.push([s + 1.0, REST]);
+  });
+  return ks.sort((a, b) => a[0] - b[0]);
+}
+function handAt(t) {
+  ARMK = ARMK || buildArm();
+  if (t <= ARMK[0][0]) return REST;
+  for (let i = 1; i < ARMK.length; i++) if (t < ARMK[i][0]) { const a = ARMK[i - 1], b = ARMK[i], q = ease.inOut(prog(t, a[0], b[0])); return [lerp(a[1][0], b[1][0], q), lerp(a[1][1], b[1][1], q), lerp(a[1][2], b[1][2], q)]; }
+  return REST;
+}
+function armPts(t) {
+  const H = handAt(t), S = SHO, L = 92, d = Math.hypot(H[0] - S[0], H[1] - S[1], H[2] - S[2]), h = Math.sqrt(Math.max(0, L * L - d * d / 4));
+  return [S, [(S[0] + H[0]) / 2, (S[1] + H[1]) / 2, (S[2] + H[2]) / 2 + h], H];
+}
+const armOn = (t) => ep(t, T.keep + 0.05, T.keep + 0.4) * (1 - ep(t, T.newTo - 0.2, T.newTo + 0.3));
+function drawArm(t, a, flash) {
+  if (a <= 0.01) return;
+  const [S, E, H] = armPts(t);
+  add(2, 1, () => {
+    const s = P(...S), e = P(...E), h = P(...H), col = flash.c ? mixc(O2, flash.c, flash.k) : O2;
+    g.save(); g.globalAlpha = a; g.lineCap = 'round'; g.lineJoin = 'round';
+    g.strokeStyle = 'rgba(10,9,8,0.9)'; g.lineWidth = 5.5 * cam.s; g.beginPath(); g.moveTo(...s); g.lineTo(...e); g.lineTo(...h); g.stroke();
+    glow(rgba(col), 10); g.strokeStyle = rgba(col, 1.15); g.lineWidth = 2.4 * cam.s; g.beginPath(); g.moveTo(...s); g.lineTo(...e); g.lineTo(...h); g.stroke();
+    noGlow();
+    for (const [q, r] of [[s, 3.4], [e, 3]]) { g.fillStyle = '#0b0a09'; g.strokeStyle = rgba(col, 1.2); g.lineWidth = 1.4; g.beginPath(); g.arc(q[0], q[1], r * cam.s, 0, 7); g.fill(); g.stroke(); }
+    // the stethoscope head
+    const hb = P(H[0], H[1], H[2] - 2);
+    g.fillStyle = rgba(INK, 1); g.strokeStyle = rgba(col, 1.3); g.lineWidth = 1.6; glow(rgba(col), 8);
+    ell(hb, 7 * cam.s, 7 * cam.s * se, rgba(INK, 1), rgba(col, 1.3), 1.6);
+    ell(hb, 3.2 * cam.s, 3.2 * cam.s * se, rgba(col, 1, 0.5), null);
+    g.restore();
+  });
+}
+// floating text that pops at a point and drifts up
+function popText(t, t0, p, txt, col, size = 9, life = 0.8) {
+  const k = prog(t, t0, t0 + life); if (k <= 0 || k >= 1) return;
+  add(3, 0, () => { const q = P(p[0], p[1], p[2] + 10 + k * 16), s = Math.min(1.5, cam.s); g.save(); g.globalAlpha = Math.min(1, (1 - k) * 2.2) * Math.min(1, k * 8); g.font = `900 ${size * s}px Inter`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.lineWidth = 3; g.strokeStyle = '#0b0a09'; g.strokeText(txt, q[0], q[1]); g.fillStyle = rgba(col, 1.2); glow(rgba(col), 8); g.fillText(txt, q[0], q[1]); g.restore(); });
+}
+/* ---------------- users' requests (answered while the app is healthy, piling up while it's frozen) */
+function traffic(t) {
+  const P0 = 0.42;
+  servedAt.fill(-9);
+  const k0 = Math.max(0, Math.floor((t - 2.6) / P0)), k1 = Math.floor(t / P0);
+  for (let k = k0; k <= k1; k++) {
+    const s = k * P0;
+    if (!usersOn(s)) continue;
+    let dst = A;
+    if (s > T.c2 + 0.3 && s < T.so - 0.2) { const live = s > READY3 ? [C1, A, C3] : [C1, A]; dst = live[k % live.length]; }
+    if (s > T.k8s - 0.3) dst = [C1, A, C3][k % 3];
+    const pk = k % 5, viaLB = s > T.c2 + 0.3;
+    const path = viaLB ? [head(pk), LB_TOP, topOf(dst)] : [head(pk), topOf(dst)];
+    const d1 = viaLB ? 0.6 : 0.45;
+    const frozenAtArrival = dst === A && iceOf(s + d1) > 0.3;
+    flyPkt(t, path, s, s + d1, O, 'GET');
+    if (!frozenAtArrival) { const r0 = s + d1 + 0.05, r1 = r0 + (viaLB ? 0.55 : 0.42); flyPkt(t, path.slice().reverse(), r0, r1, OK, '200'); if (t >= r1) servedAt[pk] = Math.max(servedAt[pk], r1); }
+  }
+  // the queue of stuck requests stacking up on a frozen A
+  const ice = iceOf(t);
+  if (ice > 0.3) {
+    const f = freezeAt(t), n = Math.min(9, Math.floor((t - f.a) / P0));
+    for (let i = 0; i < n; i++) spark([A[0] - 14 + (i % 3) * 14, A[1] - 2, A[2] + 34 + Math.floor(i / 3) * 9 + 1.5 * Math.sin(t * 5 + i)], ice * 0.9, 2.6, O);
+  }
+}
+
+/* ---------------- health checks: the arm taps each copy */
+// [t0, copy index, ok, kind]   kind 'ready' = readiness (200 / 503), else liveness (a heartbeat comes back)
+// the tap lands at t0 + 0.4
+const COPY = [C1, A, C3];
+const PINGS = [];
+for (let s = T.keep - 0.1; s < T.c1 - 0.3; s += 1.1) PINGS.push([s, 1, true]);
+[T.every, T.calls - 0.15, T.page - 0.05].forEach((s) => PINGS.push([s, 1, true]));
+[T.misses - 0.3, T.row - 0.4, T.restartsApp - 0.45].forEach((s) => PINGS.push([s, 1, false]));
+PINGS.push([T.restartsApp + 0.75, 1, true]);
+// readiness: the arm goes copy to copy; copy 3 says "not yet" until READY3
+for (let s = T.ready - 0.3, j = 0; s < T.so - 0.6; s += 0.55, j++) { const i = [0, 1, 2][j % 3]; PINGS.push([s, i, i !== 2 || s + 0.4 > READY3, 'ready']); }
+// payoff: three missed pulses, then back
+[T.threeM - 0.25, T.pulses - 0.1, T.pulses + 0.35].forEach((s) => PINGS.push([s, 1, false]));
+PINGS.push([T.back - 0.25, 1, true]);
+// kubernetes: the arm keeps doing rounds on every copy
+for (let s = T.k8s + 0.2, j = 0; s < T.newTo - 0.8; s += 0.5, j++) PINGS.push([s, j % 3, true, j % 2 ? 'ready' : undefined]);
+function pings(t) {
+  const [S, E, H] = armPts(t);
+  let flash = { c: null, k: 0 };
+  for (const [s, i, ok, kind] of PINGS) {
+    if (t < s || t > s + 1.6) continue;
+    const dst = COPY[i], hit = s + 0.4, top = [dst[0], dst[1], dst[2] + 24];
+    ripple(t, hit, dst[0], dst[1], dst[2] + 23, ok ? OK : kind ? O2 : O, 26, 0.45, 1.3);
+    if (ok && !kind) {
+      // the heartbeat travels back up the arm to the tower
+      const q = prog(t, hit + 0.04, hit + 0.42);
+      if (q > 0 && q < 1) { const p = along([H, E, S], ease.inOut(q)); spark(p, 1, 3.4, OK); spark(along([H, E, S], Math.max(0, ease.inOut(q) - 0.06)), 0.4, 2, OK); }
+      popText(t, hit, top, '♥', OK, 10, 0.6);
+      flash = { c: OK, k: Math.max(flash.k, window01(t, hit, hit + 0.5, 0.1)) };
+    } else if (kind) popText(t, hit, top, ok ? '200 ready' : '503 not yet', ok ? OK : O2, 8, 0.75);
+    else { popText(t, hit, top, '✕ no reply', O, 8.5, 0.8); flash = { c: [255, 70, 50], k: Math.max(flash.k, window01(t, hit, hit + 0.45, 0.08)) }; }
+  }
+  drawArm(t, armOn(t), flash);
+}
+// how many failed liveness pings have landed (for the counter)
+function misses(t, from, to) { return PINGS.filter(([s, d, ok, k]) => !ok && !k && s >= from && s < to && t > s + 0.4).length; }
+
+/* ---------------- status card */
+const setH = (id, h) => { const e = $(id); if (e._h !== h) { e._h = h; e.innerHTML = h; } };
+const typed = (s, t, a, cps = 26) => s.slice(0, Math.floor(clamp((t - a) * cps, 0, s.length)));
+const cur = (s, full, t) => (s.length < full.length && Math.floor(t * 4) % 2 ? '<span class="icur"></span>' : '');
+function clock(t) {
+  // 03:00 in the hook and the replay, ticking a minute on each restart
+  if (t < T.trap) return t > T.restarted + 0.2 ? '03:01 AM' : '03:00 AM';
+  if (t > T.so && t < T.k8s) return t > T.oneR + 0.3 ? '03:01 AM' : '03:00 AM';
+  return '';
+}
+function card(t) {
+  const ein = ep(t, 0, 0.4) * (1 - ep(t, T.newTo - 0.3, T.newTo)) * (1 - window01(t, T.so - 0.05, T.k8s - 0.15, 0.25));
+  $('ed').style.opacity = ein; $('ed').style.transform = `translateY(${(1 - ein) * -16}px)`; $('ed').style.display = ein > 0.01 ? '' : 'none';
+  const ice = iceOf(t);
+  let l1 = '', l1r = '', l2 = '', l2r = '', l3 = '', l3r = '', l4 = '', l4r = '', cls = ['', '', '', ''], st = '● LIVE', stc = '', fn = '<b>app</b>/status';
+  const fz = freezeAt(t);
+  if (t < T.trap - 0.1) {
+    // hook
+    l1 = `<span class="c">// ${clock(t)} · everyone's asleep</span>`;
+    l2 = '<span class="k">process</span>'; l2r = '<span class="okc">● RUNNING</span>';
+    l3 = '<span class="k">GET /checkout</span>';
+    if (ice > 0.3) { l3r = `<span class="oc">⟳ no reply · ${Math.floor((t - T.froze) * 7)}s</span>`; cls[2] = 'bad'; st = '● FROZEN'; stc = 'ice'; }
+    else if (t > T.restarted && t < T.restarted + 0.45) { l3r = '<span class="oc">⟳ restarting…</span>'; cls[2] = 'run'; }
+    else { l3r = '<span class="okc">✓ 200 · 40ms</span>'; cls[2] = t > T.restarted ? 'good' : ''; }
+    if (t > T.restarted + 0.45) l2r = '<span class="okc">● RUNNING</span> <span class="k">· fresh</span>';
+    if (t > T.how) { l1 = '<span class="c">// who restarted it?</span>'; }
+  } else if (t < T.fix - 0.1) {
+    // the trap: what "running" tells you
+    fn = '<b>app</b>/watchdog'; st = '● FROZEN'; stc = 'ice';
+    l1 = '<span class="c">// the only check: is the process up?</span>';
+    l2 = '<span class="k">process running?</span>'; l2r = t > T.running2 ? '<span class="okc">✓ yes</span>' : '';
+    l3 = '<span class="k">answering users?</span>'; l3r = t > T.working ? '<span class="oc">✕ no</span>' : ''; cls[2] = t > T.working ? 'bad' : '';
+    if (t > T.crashed) { l4 = '<span class="k">crashed? </span><span class="okc">no</span><span class="k">  →  restart? </span>' + (t > T.restarts ? '<span class="oc">never</span>' : ''); }
+    if (t > T.crashed) cls[3] = 'ice';
+  } else if (t < T.c2 - 0.1) {
+    // the fix + check one: alive?
+    fn = '<b>health</b>/liveness';
+    const q = t > T.every - 0.1 ? 'every few seconds' : 'are you okay?';
+    l1 = `<span class="c">// ${typed(q, t, t > T.every - 0.1 ? T.every - 0.1 : T.keep, 30)}</span>`;
+    l2 = `<span class="k">GET ${t > T.page - 0.1 ? '/healthz' : '/'}</span>`;
+    const lastPing = PINGS.filter(([s, d, ok, k]) => !k && d === 1 && s < T.c2 && t > s + 0.4).pop();
+    const nm = misses(t, T.three - 1, T.c2);
+    if (!lastPing) l2r = '';
+    else if (lastPing[2]) { l2r = '<span class="okc">♥ 200 OK</span>'; cls[1] = 'good'; }
+    else { l2r = `<span class="oc">✕ no reply ${nm}/3</span>`; cls[1] = 'bad'; }
+    if (t > T.three - 0.3) {
+      l3 = '<span class="k">misses in a row</span>';
+      l3r = [0, 1, 2].map((i) => `<span class="mx ${i < nm ? 'oc' : 'k'}">${i < nm ? '✕' : '○'}</span>`).join('');
+      cls[2] = nm ? 'bad' : '';
+      if (t > T.restartsApp) { l3r = t < T.restartsApp + 0.5 ? '<span class="oc">⟳ RESTART</span>' : '<span class="okc">✓ restarted · 0/3</span>'; cls[2] = t < T.restartsApp + 0.5 ? 'run' : 'good'; }
+    }
+    if (ice > 0.3) { st = '● FROZEN'; stc = 'ice'; }
+  } else if (t < T.so - 0.1) {
+    // check two: ready?
+    fn = '<b>health</b>/readiness';
+    l1 = `<span class="c">// ${typed('ready for traffic?', t, T.c2, 30)}</span>`;
+    const r3 = t > READY3 + 0.3;
+    const asked = PINGS.filter(([s, d, ok, k]) => k && t > s + 0.4).length > 0;
+    l2 = '<span class="k">GET /ready</span>  <span class="k">copy 3</span>';
+    l2r = !asked ? '' : r3 ? '<span class="okc">✓ 200 ready</span>' : t > T.notYet - 0.2 ? '<span class="s">503 not yet</span>' : '<span class="k">…</span>';
+    cls[1] = r3 ? 'good' : asked && t > T.notYet - 0.2 ? 'run' : '';
+    if (t > T.traffic - 0.2) { l3 = '<span class="k">traffic →</span>'; l3r = r3 ? '<span class="okc">copy 1 · 2 · 3</span>' : '<span class="s">copy 1 · 2 · <s style="color:#6b645e">3</s></span>'; cls[2] = r3 ? 'good' : ''; }
+  } else if (t < T.k8s - 0.1) {
+    // payoff replay
+    fn = '<b>health</b>/liveness';
+    l1 = `<span class="c">// ${clock(t)} · everyone's asleep</span>`;
+    l2 = '<span class="k">GET /healthz</span>';
+    const nm = misses(t, T.so, T.k8s);
+    const back = t > T.back - 0.25 + 0.4;
+    l2r = back ? '<span class="okc">♥ 200 OK</span>' : nm ? `<span class="oc">✕ no reply ${nm}/3</span>` : '<span class="k">…</span>';
+    cls[1] = back ? 'good' : nm ? 'bad' : '';
+    l3 = '<span class="k">action</span>';
+    l3r = t > T.oneR + 0.1 ? (back ? '<span class="okc">✓ back · nobody woke up</span>' : '<span class="oc">⟳ one restart</span>') : [0, 1, 2].map((i) => `<span class="mx ${i < nm ? 'oc' : 'k'}">${i < nm ? '✕' : '○'}</span>`).join('');
+    cls[2] = t > T.oneR + 0.1 ? (back ? 'good' : 'run') : '';
+    if (ice > 0.3) { st = '● FROZEN'; stc = 'ice'; }
+  } else {
+    // kubernetes: the probes are a few lines of config
+    fn = '<b>app</b>/deployment.yaml';
+    l1 = `<span class="s">${typed('livenessProbe:', t, T.k8s + 0.1, 34)}</span>`;
+    l2 = t > T.k8s + 0.5 ? `<span class="k">  httpGet: </span><span class="s">${typed('{ path: /healthz }', t, T.k8s + 0.5, 36)}</span>` : '';
+    l3 = `<span class="s">${typed('readinessProbe:', t, T.readiness - 0.15, 34)}</span>`;
+    l4 = t > T.readiness + 0.25 ? `<span class="k">  httpGet: </span><span class="s">${typed('{ path: /ready }', t, T.readiness + 0.25, 40)}</span>` : '';
+    const all = t > T.few - 0.1 ? 'good' : '';
+    cls = [t > T.liveness - 0.1 && t < T.readiness ? 'good' : all, t > T.liveness - 0.1 && t < T.readiness ? 'good' : all, t > T.readiness - 0.1 ? 'good' : '', t > T.readiness - 0.1 ? 'good' : ''];
+    if (t > T.liveness - 0.1 && t < T.readiness) l1r = '<span class="okc">alive?</span>';
+    if (t > T.readiness - 0.1 && t < T.few) l3r = '<span class="okc">ready?</span>';
+    if (t > T.few - 0.1) l4r = '<span class="okc">4 lines</span>';
+  }
+  setH('l1t', l1); setH('l1r', l1r); setH('l2t', l2); setH('l2r', l2r); setH('l3t', l3); setH('l3r', l3r); setH('l4t', l4); setH('l4r', l4r);
+  $('l4').style.display = l4 || t > T.k8s - 0.1 ? 'flex' : 'none';
+  ['l1', 'l2', 'l3', 'l4'].forEach((id, i) => { $(id).className = 'ln' + (cls[i] ? ' ' + cls[i] : ''); });
+  setH('edfn', fn);
+  if (t > T.restarted && t < T.restarted + 0.45 || t > T.restartsApp && t < T.restartsApp + 0.45 || t > T.oneR + 0.1 && t < T.oneR + 0.55) { st = '● RESTARTING'; stc = 'o'; }
+  setH('edst', st);
+  $('edst').style.color = stc === 'ice' ? '#9FD3FF' : stc === 'o' ? '#FF6A1F' : '';
+  $('ed').style.borderColor = stc === 'ice' ? 'rgba(159,211,255,0.45)' : '';
+}
+
+/* ---------------- captions: one plain line, a few key words coloured */
+function hlCol(w, t) {
+  let m;
+  if (t < 8.4) m = { froze: '#9FD3FF', restarted: '#FF6A1F', know: '#FF6A1F' };
+  else if (t < 15.8) m = { running: '#7CF29A', working: '#FF6A1F', alive: '#9FD3FF', restarts: '#FF6A1F' };
+  else if (t < 21.2) m = { fix: '#7CF29A', okay: '#7CF29A', pulse: '#7CF29A', health: '#FF6A1F', check: '#FF6A1F' };
+  else if (t < 27.1) m = { alive: '#FF6A1F', misses: '#FF6A1F', restarts: '#FF6A1F' };
+  else if (t < 34.8) m = { ready: '#FF6A1F', yet: '#FFB070', skips: '#FF6A1F', closed: '#FFB070' };
+  else if (t < 40.5) m = { freeze: '#9FD3FF', restart: '#FF6A1F', back: '#7CF29A' };
+  else if (t < 44.9) m = { kubernetes: '#FF6A1F', liveness: '#7CF29A', readiness: '#7CF29A' };
+  else m = { kubernetes: '#FF6A1F', follow: '#FF6A1F' };
+  return m[w] || null;
+}
+const CHUNKS = [];
+(() => {
+  // "3", "a", ".m." -> "3 AM"
+  const raw = WORDS.map(([w, a, b]) => ({ s: w.trim(), a, b }));
+  const ws = [];
+  for (let i = 0; i < raw.length; i++) {
+    if (raw[i].s === '3' && raw[i + 1] && raw[i + 1].s.toLowerCase() === 'a' && raw[i + 2] && /^\.m\./.test(raw[i + 2].s)) {
+      const rest = raw[i + 2].s.replace(/^\.m\./, ''), nx = raw[i + 3];
+      ws.push({ s: '3 AM' + (rest || (nx && /^[A-Z]/.test(nx.s.trim()) ? '.' : '')), a: raw[i].a, b: raw[i + 2].b }); i += 2;
+    } else ws.push(raw[i]);
+  }
+  // never end a line on a small linking word ("in a / row"): it moves down to the next line
+  const WEAK = new Set(['a', 'an', 'the', 'are', 'on', 'one', 'in', 'it', 'and', 'at', 'is', 'your', 'of', 'to', 'for', 'not', 'these', 'that', 'was']);
+  let cur = [];
+  const flushC = () => {
+    if (!cur.length) return;
+    const carry = [];
+    while (carry.length < 2 && cur.length > 2 && !/[.,?:!]$/.test(cur[cur.length - 1].s) && WEAK.has(cur[cur.length - 1].s.toLowerCase())) carry.unshift(cur.pop());
+    CHUNKS.push(cur); cur = carry;
+  };
+  ws.forEach((w) => {
+    const prev = cur[cur.length - 1];
+    const len = cur.reduce((n, x) => n + x.s.length + 1, 0);
+    if (prev && (/[.?:!]$/.test(prev.s) || (/,$/.test(prev.s) && cur.length >= 3) || cur.length >= (w.s.startsWith('3 AM') ? 5 : 4) || len + w.s.length > 24 || w.a - prev.b > 0.6)) flushC();
+    cur.push(w);
+  });
+  flushC();
+  // a short tail after a pause joins the line before it (unless that line ended a sentence)
+  for (let i = CHUNKS.length - 1; i > 0; i--) {
+    const c = CHUNKS[i], p = CHUNKS[i - 1], len = [...p, ...c].reduce((n, x) => n + x.s.length + 1, 0);
+    if (c.length <= 2 && p.length + c.length <= 5 && !/[.?!]$/.test(p[p.length - 1].s) && len <= 32) { p.push(...c); CHUNKS.splice(i, 1); }
+  }
+})();
+CHUNKS.forEach((c, ci) => {
+  const box = div($('cap'), 'box'); c.box = box;
+  c.els = c.map((w) => {
+    const s = document.createElement('span'); s.className = 'w';
+    s.textContent = w.s.replace(/[.,:;]+$/, '');
+    const col = hlCol(w.s.toLowerCase().replace(/[.,?:!]/g, ''), w.a);
+    if (col) s.style.color = col;
+    box.appendChild(s); return s;
+  });
+  c.t0 = c[0].a - 0.04; c.t1 = CHUNKS[ci + 1] ? Math.min(CHUNKS[ci + 1][0].a - 0.04, c[c.length - 1].b + 0.9) : DURATION;
+});
+function caps(t) {
+  for (const c of CHUNKS) {
+    const on = t >= c.t0 && t < c.t1;
+    c.box.style.display = on ? 'flex' : 'none';
+    if (!on) continue;
+    c.els.forEach((s, i) => { s.style.opacity = prog(t, c[i].a - 0.04, c[i].a + 0.06); });
+  }
+}
+
+/* ---------------- cards: pulse monitor, closed sign, profile */
+const CUR = $('cursor');
+function cursorAt(x, y, a, press) { CUR.style.display = a > 0.01 ? 'block' : 'none'; CUR.style.opacity = a; CUR.style.left = x + 'px'; CUR.style.top = y + 'px'; CUR.style.transform = `scale(${1 - 0.18 * press})`; }
+// one heartbeat shape, repeated
+function ecgY(x) { const u = ((x % 72) + 72) % 72; if (u < 30) return 35; if (u < 34) return 35 - (u - 30) * 1.5; if (u < 37) return 29 + (u - 34) * 11; if (u < 41) return 62 - (u - 37) * 13; if (u < 44) return 10 + (u - 41) * 10; if (u < 48) return 40 - (u - 44) * 1.25; if (u < 56) return 35 - Math.sin((u - 48) / 8 * Math.PI) * 5; return 35; }
+function pulseCard(t) {
+  const p = popIn(t, T.like - 0.1, T.c1 - 0.05), el_ = $('pulse');
+  vis(el_, p.a, `translateY(${p.y}px) scale(${p.s})`); el_.style.display = p.a > 0.001 ? 'block' : 'none';
+  if (p.a <= 0.001) return 0;
+  const head = clamp((t - T.like + 0.1) * 120, 0, 288);
+  let d = '';
+  for (let x = 0; x <= head; x += 1.5) d += (x ? ' L ' : 'M ') + x.toFixed(1) + ' ' + ecgY(x).toFixed(1);
+  $('ecg').setAttribute('d', d); $('ecgG').setAttribute('d', d);
+  $('ecgDot').setAttribute('cx', head); $('ecgDot').setAttribute('cy', ecgY(head));
+  const beat = [30, 102, 174, 246].some((b) => head > b + 6 && head < b + 20);
+  $('heart').style.transform = `scale(${beat ? 1.35 : 1})`;
+  $('bpm').firstChild.textContent = head > 40 ? '72' : '--';
+  $('pok').style.opacity = t > T.pulse ? 1 : 0.15;
+  $('pok').textContent = t > T.thats ? '✓ HEALTHY' : '✓ YES';
+  return p.a;
+}
+function sign(t) {
+  const s = $('sign'), a = window01(t, T.notYet - 0.1, T.so - 0.1, 0.2);
+  s.style.display = a > 0.01 ? 'block' : 'none';
+  if (a <= 0.01) return;
+  const open = t > READY3;
+  const p = P(C3[0], C3[1], C3[2] + 60);
+  const sw = Math.sin((t - T.notYet) * 5) * 6 * Math.exp(-(t - T.notYet) * 1.5) + (open ? Math.sin((t - READY3) * 9) * 14 * Math.exp(-(t - READY3) * 3) : 0);
+  s.style.left = (p[0] - s.offsetWidth / 2) + 'px'; s.style.top = (p[1] - 30) + 'px'; s.style.opacity = a;
+  s.style.transform = `rotate(${sw}deg) scale(${1 + 0.12 * pulse(t, T.closed, 5) + 0.15 * pulse(t, READY3, 5)})`;
+  const tx = open ? 'OPEN' : 'CLOSED';
+  if ($('signT').textContent !== tx) $('signT').textContent = tx;
+  $('signT').style.color = open ? '#7CF29A' : '#FFB070';
+}
+const TAP_T = T.profile - 0.05, TAP_F = T.follow + 0.25;
+function profile(t) {
+  const p = popIn(t, T.newTo - 0.1, DURATION + 1), pr = $('prof');
+  vis(pr, p.a, `translateY(${p.y}px) scale(${p.s})`); pr.style.display = p.a > 0.001 ? 'block' : 'none';
+  if (p.a <= 0.001) { $('watch').style.display = 'none'; return; }
+  const fb = $('fb'), done = t > TAP_F + 0.08;
+  if (fb._d !== done) { fb._d = done; fb.textContent = done ? 'Following ✓' : 'Follow'; fb.style.background = done ? '#2a2521' : ''; fb.style.color = done ? '#F2EEE8' : ''; fb.style.fontSize = done ? '12.5px' : ''; }
+  fb.style.transform = `scale(${1 - 0.06 * window01(t, TAP_F, TAP_F + 0.16, 0.06)})`;
+  const hi = ep(t, T.k8s2 - 0.1, T.k8s2 + 0.2), tk = $('t1');
+  tk.style.borderColor = hi > 0 ? `rgba(255,106,31,${hi})` : 'transparent';
+  tk.style.boxShadow = hi > 0 ? `0 0 ${24 * hi}px rgba(255,106,31,${0.6 * hi})` : '';
+  tk.style.transform = `scale(${1 + 0.05 * hi + 0.06 * pulse(t, TAP_T, 6)})`;
+  tk.querySelector('.n').style.color = hi > 0.5 ? '#FF6A1F' : '';
+  ['t0', 't2'].forEach((id) => { $(id).style.opacity = 1 - 0.45 * hi * (1 - ep(t, T.follow, T.follow + 0.3)); });
+  const w = $('watch'), wa = window01(t, T.k8s2, DURATION + 1, 0.2) * (1 - 0.6 * ep(t, T.follow, T.follow + 0.3));
+  w.style.display = wa > 0.01 ? 'block' : 'none'; w.style.opacity = wa; w.style.left = (270 - w.offsetWidth / 2) + 'px'; w.style.top = (pr.offsetTop + pr.offsetHeight + 10) + 'px';
+  // cursor: Kubernetes tile, then Follow
+  const k1 = ep(t, T.newTo + 0.6, T.profile - 0.1, ease.inOut), k2 = ep(t, T.follow - 0.25, TAP_F - 0.02, ease.inOut);
+  const tx = 270, ty = pr.offsetTop + 150, fx_ = 44 + 452 - 16 - 52, fy = pr.offsetTop + 34;
+  cursorAt(lerp(lerp(470, tx, k1), fx_, k2), lerp(lerp(780, ty, k1), fy, k2), window01(t, T.newTo + 0.5, DURATION + 1, 0.15), Math.max(window01(t, TAP_T, TAP_T + 0.16, 0.05), window01(t, TAP_F, TAP_F + 0.16, 0.06)));
+}
+
+
+/* ---------------- strike counter above the app */
+function strikes(t) {
+  const e = $('strk');
+  const win = Math.max(window01(t, T.every - 0.2, T.c2 - 0.2, 0.2), window01(t, T.so + 0.2, T.k8s - 0.2, 0.2));
+  if (win <= 0.01) { e.style.display = 'none'; return; }
+  const inCheck1 = t < T.c2, nm = inCheck1 ? misses(t, T.three - 1, T.c2) : misses(t, T.so, T.k8s);
+  const r = inCheck1 ? T.restartsApp : T.oneR + 0.1;
+  const resetting = t > r && t < r + 0.7, reset = t >= r + 0.7;
+  const html = resetting ? '<span class="rs">⟳ RESTART</span>' : [0, 1, 2].map((i) => (i < nm && !reset ? '<i class="x">✕</i>' : '<i class="ok">♥</i>')).join('');
+  setH('strkR', html);
+  const p = P(A[0], A[1], A[2] + 40);
+  e.style.display = 'block'; e.style.opacity = win;
+  e.style.left = Math.min(540 - e.offsetWidth - 20, p[0] + 34) + 'px'; e.style.top = (p[1] - e.offsetHeight / 2 - 6) + 'px';
+  const lastMiss = PINGS.filter(([s, d, ok, k]) => !ok && !k && t > s + 0.4).map(([s]) => s + 0.4).pop() || -9;
+  e.style.transform = `scale(${1 + 0.12 * pulse(t, lastMiss, 7) + 0.15 * pulse(t, r, 6)})`;
+  e.style.borderColor = nm && !reset ? 'rgba(255,106,31,0.8)' : 'rgba(124,242,154,0.45)';
+}
+
+/* ---------------- 3 AM timeline (replay) */
+const TLM = [
+  { x: 5, t: T.freeze - 0.4, tm: '03:00:00', nm: 'frozen', ic: '❄', c: '#9FD3FF' },
+  { x: 25, t: T.threeM + 0.15, tm: ':10', nm: 'miss 1', ic: '✕', c: '#FF6A1F' },
+  { x: 43, t: T.pulses + 0.3, tm: ':20', nm: 'miss 2', ic: '✕', c: '#FF6A1F' },
+  { x: 61, t: T.pulses + 0.75, tm: ':30', nm: 'miss 3', ic: '✕', c: '#FF6A1F' },
+  { x: 78, t: T.oneR + 0.1, tm: ':31', nm: 'restart', ic: '⟳', c: '#FFB070' },
+  { x: 95, t: T.back, tm: ':40', nm: 'back', ic: '✓', c: '#7CF29A' },
+];
+TLM.forEach((m) => { m.el = div($('tlAx'), 'mk', `<div class="tm">${m.tm}</div><div class="dt">${m.ic}</div><div class="nm">${m.nm}</div>`); m.el.style.left = m.x + '%'; });
+function timeline(t) {
+  const p = popIn(t, T.so - 0.05, T.k8s - 0.1), e = $('tl');
+  vis(e, p.a, `translateY(${p.y}px) scale(${p.s})`); e.style.display = p.a > 0.001 ? 'block' : 'none';
+  if (p.a <= 0.001) return;
+  let x = 0;
+  if (t < TLM[0].t) x = TLM[0].x * prog(t, T.so, TLM[0].t);
+  else { x = TLM[TLM.length - 1].x; for (let i = 0; i < TLM.length - 1; i++) if (t < TLM[i + 1].t) { x = lerp(TLM[i].x, TLM[i + 1].x, prog(t, TLM[i].t, TLM[i + 1].t)); break; } }
+  $('tlF').style.width = x + '%'; $('tlP').style.left = x + '%';
+  TLM.forEach((m) => {
+    const on = t >= m.t, k = pulse(t, m.t, 6);
+    if (m.el._on !== on) { m.el._on = on; m.el.style.color = on ? m.c : ''; const d = m.el.querySelector('.dt'); d.style.borderColor = on ? m.c : ''; d.style.background = on ? m.c : ''; d.style.color = on ? '#0b0a09' : ''; d.style.boxShadow = on ? `0 0 12px ${m.c}` : ''; }
+    m.el.querySelector('.dt').style.transform = `scale(${1 + 0.4 * k})`;
+  });
+  setH('tlSt', t > T.woke2 - 0.3 ? '✓ NOBODY WOKE UP' : t > T.back ? '✓ BACK' : '');
+}
+
+/* ---------------- the on-call dev, asleep through all of it */
+function oncall(t) {
+  const e = $('oncall'), a = Math.max(window01(t, 0.4, T.trap - 0.2, 0.25), window01(t, T.so + 0.3, T.k8s - 0.2, 0.25));
+  if (a <= 0.01) { e.style.display = 'none'; return; }
+  e.style.display = 'block'; e.style.opacity = a; e.style.transform = `translateY(${(1 - a) * 10}px)`;
+  const ok = (t > T.woke - 0.2 && t < T.trap) || t > T.woke2 - 0.3;
+  setH('ocS', ok ? '<span style="color:#7CF29A">still asleep ✓</span>' : 'asleep');
+  const zz = $('zz'), ph = (t * 0.9) % 1;
+  zz.style.opacity = Math.sin(ph * Math.PI); zz.style.transform = `translate(${ph * 10}px, ${-ph * 12}px)`; zz.textContent = 'z Z';
+}
+
+
+/* ---------------- trap: a cursor pokes the stuck app, then the watchdog */
+function trapUI(t) {
+  const tip = $('tip');
+  if (t > T.newTo - 0.5) { tip.style.display = 'none'; return; }
+  const a = window01(t, T.trap + 0.25, T.fix - 0.2, 0.25);
+  if (a <= 0.01) { tip.style.display = 'none'; cursorAt(0, 0, 0, 0); return; }
+  const pa = P(A[0] + 6, A[1], A[2] + 16), pw = P(WD[0] + 8, WD[1], 14);
+  const toApp = ep(t, T.trap + 0.25, T.running2 - 0.1, ease.inOut), toWd = ep(t, T.nothing - 0.2, T.crashed + 0.3, ease.inOut);
+  const cx = lerp(lerp(500, pa[0], toApp), pw[0], toWd), cy = lerp(lerp(720, pa[1], toApp), pw[1], toWd);
+  const click = T.working - 0.12, press = window01(t, click, click + 0.14, 0.05);
+  cursorAt(cx, cy, a, press);
+  // tooltip pinned beside the app while the cursor hovers it
+  const ta = window01(t, T.running2 - 0.15, T.nothing - 0.1, 0.15) * a;
+  tip.style.display = ta > 0.01 ? 'block' : 'none';
+  if (ta > 0.01) {
+    tip.style.opacity = ta; tip.style.left = Math.min(540 - 162, pa[0] + 18) + 'px'; tip.style.top = (pa[1] - 128) + 'px';
+    tip.style.transform = `scale(${0.92 + 0.08 * ep(t, T.running2 - 0.15, T.running2 + 0.1)})`;
+    const sent = t > click + 0.1;
+    setH('tipW', t > T.working - 0.4 ? '<span style="color:#9FD3FF">❄ stuck</span>' : '<span style="color:#9FD3FF">…</span>');
+    setH('tipR', !sent ? '<span style="color:#4a443e">—</span>' : `<span style="color:#FF6A1F">⟳ waiting ${(t - click).toFixed(1)}s</span>`);
+    $('tipB').style.background = press > 0.1 ? '#FF6A1F' : sent ? '#1f1c19' : ''; $('tipB').style.color = press > 0.1 ? '#0b0a09' : sent ? '#6b645e' : '';
+    $('tipP').style.textShadow = `0 0 ${8 * (0.5 + 0.5 * Math.sin(t * 6))}px rgba(124,242,154,0.8)`;
+  }
+}
+
+/* ---------------- wires: a card line connected to the thing it talks about */
+const WS = $('wires'), WR = {};
+function offs(e) { let x = 0, y = 0; while (e && e.id !== 'stage') { x += e.offsetLeft; y += e.offsetTop; e = e.offsetParent; } return { x, y }; }
+function wireTo(key, el, wp, a, col) {
+  if (!WR[key]) {
+    const mk = (tag, at) => { const n = document.createElementNS('http://www.w3.org/2000/svg', tag); for (const k in at) n.setAttribute(k, at[k]); WS.appendChild(n); return n; };
+    WR[key] = { gl: mk('path', { fill: 'none', 'stroke-width': 5, opacity: 0.35, style: 'filter: blur(4px)' }), p: mk('path', { fill: 'none', 'stroke-width': 1.5, 'stroke-dasharray': '5 5', 'stroke-linecap': 'round' }), c0: mk('circle', { r: 3 }), c1: mk('circle', { r: 3.5 }) };
+  }
+  const w = WR[key], on = a > 0.01 && el.offsetParent;
+  for (const n of [w.gl, w.p, w.c0, w.c1]) n.style.display = on ? '' : 'none';
+  if (!on) return;
+  const o = offs(el), p = [o.x + 150, o.y + el.offsetHeight], q = P(...wp);
+  const my = p[1] + (q[1] - p[1]) * 0.5, d = `M ${p[0]} ${p[1]} C ${p[0]} ${my}, ${q[0]} ${my - 20}, ${q[0]} ${q[1]}`;
+  const len = Math.hypot(q[0] - p[0], q[1] - p[1]) * 1.3, grow = clamp(a * 1.0);
+  for (const n of [w.gl, w.p]) { n.setAttribute('d', d); n.setAttribute('stroke', col); }
+  w.p.style.strokeDashoffset = -t_ * 24; w.p.style.opacity = a; w.gl.style.opacity = 0.35 * a;
+  w.c0.setAttribute('cx', p[0]); w.c0.setAttribute('cy', p[1]); w.c0.setAttribute('fill', col); w.c0.style.opacity = a;
+  w.c1.setAttribute('cx', q[0]); w.c1.setAttribute('cy', q[1]); w.c1.setAttribute('fill', col); w.c1.style.opacity = a;
+}
+function wires(t) {
+  const ice = iceOf(t), cardOn = $('ed').style.display !== 'none';
+  const W = (k, row, wp, a0, a1, col) => wireTo(k, $(row), wp, cardOn ? window01(t, a0, a1, 0.2) : 0, col);
+  W('req', 'l3', [A[0], A[1], A[2] + 24], 0.9, T.trap - 0.3, ice > 0.3 ? '#9FD3FF' : '#7CF29A');
+  W('hz', 'l2', handAt(t), T.page - 0.1, T.c2 - 0.3, '#7CF29A');
+  W('rd', 'l2', [C3[0], C3[1], C3[2] + 24], T.ready - 0.1, T.so - 0.3, t > READY3 + 0.3 ? '#7CF29A' : '#FFB070');
+  W('lv', 'l2', handAt(t), T.liveness - 0.1, T.readiness - 0.05, '#7CF29A');
+  W('rp', 'l4', LB_TOP, T.readiness + 0.3, T.newTo - 0.3, '#FFB070');
+  W('al', 'l2', [A[0], A[1], A[2] + 24], T.few - 0.1, T.newTo - 0.3, '#7CF29A');
+}
+
+/* ---------------- set dressing + extra interactions */
+// server racks behind the machines, LEDs blinking
+const RACKS = [[-175, 400], [-130, 400], [270, 400], [315, 400]];
+function rack(x, y, i, t, op) {
+  if (op < 0.01) return;
+  wbox(x, y, 0, 36, 30, 84, [150, 144, 138], { ea: 0.5, op,
+    front: (F, w, h) => {
+      for (let k = 0; k < 7; k++) {
+        const v = 8 + k * 10.5;
+        fpath(F, [[4, v], [w - 4, v]], rgba(GR, 1, 0.5), 0.35);
+        for (let j = 0; j < 3; j++) { const on = rnd(i * 31 + k * 3 + j, Math.floor(t * (2 + j))) > 0.45; fquad(F, 6 + j * 4, v + 2.5, 8 + j * 4, v + 4.5, rgba(on ? (j === 2 ? OK : O) : GR, on ? 1.2 : 0.6, on ? 1 : 0.5)); }
+        fquad(F, w - 14, v + 3, w - 6, v + 4, rgba(GR, 1, 0.6));
+      }
+      ftext(F, w / 2, h - 5, 'rack-0' + (i + 1), 3.8, rgba(GR, 1.6, 0.9), 'Mono', 600);
+    },
+    side: (F, w, h) => { for (let k = 0; k < 10; k++) fpath(F, [[5 + k * 2.4, 6], [5 + k * 2.4, h - 6]], rgba(GR, 1, 0.3), 0.3); } });
+}
+function racks(t) {
+  // only in the wider shots: in the close-ups they would poke out above the status card
+  const op = 1 - clamp((cam.s - 1.35) / 0.25);
+  RACKS.forEach(([x, y], i) => rack(x, y, i, t, op));
+  beam([[-130, 385, 0], [-130, 300, 0], [NX[0] - 20, NY + NDp / 2 + 1, 0]], GR, 0.45, 0.8);
+  beam([[270, 385, 0], [270, 300, 0], [NX[2] + 20, NY + NDp / 2 + 1, 0]], GR, 0.45, 0.8);
+}
+// a clock on a post: 3:00 AM; ticks to 3:01 on the restart, rewinds for the replay
+const CLK = [-60, 320];
+function clockMins(t) {
+  if (t < T.trap) return ep(t, T.restarted, T.restarted + 0.4) * 1;
+  if (t < T.so - 0.2) return 1 + (t - T.trap) * 0.35;
+  if (t < T.so + 0.6) return lerp(1 + (T.so - 0.2 - T.trap) * 0.35, 0, ease.inOut(prog(t, T.so - 0.2, T.so + 0.6)));
+  if (t < T.k8s) return ep(t, T.oneR + 0.1, T.oneR + 0.5);
+  return 1 + (t - T.k8s) * 0.35;
+}
+function wallClock(t) {
+  const [x, y] = CLK, mins = clockMins(t), rew = window01(t, T.so - 0.2, T.so + 0.6, 0.1);
+  wbox(x, y, 0, 3, 3, 56, GR, { ea: 0.6 });
+  wbox(x, y, 56, 32, 6, 32, mixc(O2, IC, rew), { ea: 0.85, glow: 0.25 + rew, fill: mixc(INK, O, 0.05),
+    front: (F, w, h) => {
+      const cx = w / 2, cy = h / 2, R = 12.5, col = rgba(mixc(O2, IC, rew), 1.2, 0.9), circ = [];
+      for (let k = 0; k <= 28; k++) { const a = (k / 28) * Math.PI * 2; circ.push([cx + Math.cos(a) * R, cy + Math.sin(a) * R]); }
+      fpath(F, circ, col, 0.6);
+      for (let k = 0; k < 12; k++) { const a = (k / 12) * Math.PI * 2, r0 = k % 3 ? 0.86 : 0.74; fpath(F, [[cx + Math.sin(a) * R * r0, cy + Math.cos(a) * R * r0], [cx + Math.sin(a) * R * 0.96, cy + Math.cos(a) * R * 0.96]], col, k % 3 ? 0.35 : 0.6); }
+      const hand = (ang, L, c, lw) => fpath(F, [[cx, cy], [cx + Math.sin(ang) * L, cy + Math.cos(ang) * L]], c, lw);
+      hand(((3 + mins / 60) / 12) * Math.PI * 2, 6.5, rgba(W, 1, 0.95), 1);
+      hand((mins / 60) * Math.PI * 2, 10, rgba(W, 1, 0.95), 0.7);
+      hand((Math.floor(t * 2) / 120) * Math.PI * 2 * (rew > 0.5 ? -8 : 1), 10.5, rgba(O, 1.3, 0.95), 0.35);
+      ftext(F, cx, cy - 6, 'AM', 2.6, col, 'Mono', 700);
+    } });
+}
+// fans on the machine tops spin; machine 2's races on a restart
+function fans(F, w, d, t, spd) {
+  for (const u of [w / 2 - 24, w / 2 + 24]) {
+    const cx = u, cy = d / 2, R = 11, ring = [];
+    for (let k = 0; k <= 20; k++) { const a = (k / 20) * Math.PI * 2; ring.push([cx + Math.cos(a) * R, cy + Math.sin(a) * R]); }
+    fpath(F, ring, rgba(GR, 1, 0.5), 0.4);
+    const a0 = t * spd + u;
+    for (let k = 0; k < 4; k++) { const a = a0 + (k * Math.PI) / 2; fpath(F, [[cx, cy], [cx + Math.cos(a) * R * 0.5, cy + Math.sin(a) * R * 0.5], [cx + Math.cos(a + 0.5) * R * 0.85, cy + Math.sin(a + 0.5) * R * 0.85]], rgba(GR, 1.3, 0.6), 0.4); }
+  }
+}
+// probe cables on the floor from the tower to each machine; blips run along them on every ping
+const CAB = (i) => [[TX + (i - 1) * 20, TY - 26, 0], [TX + (i - 1) * 20, TY - 70, 0], [NX[i], NY + NDp / 2 + 1, 0]];
+function cables(t) {
+  const a = ep(t, T.keep - 0.3, T.keep + 0.3) * (1 - ep(t, T.newTo - 0.2, T.newTo + 0.3));
+  if (a < 0.01) return;
+  const on = [1, t > T.c2 ? 1 : 0, t > T.c2 ? 1 : 0];
+  for (let i = 0; i < 3; i++) if (on[i]) roadLine(CAB(i), GR, a * 0.55);
+  for (const [s, i, ok, kind] of PINGS) {
+    if (t < s || t > s + 1.2 || !on[i]) continue;
+    const hit = s + 0.4, pts = CAB(i);
+    const q = prog(t, s, hit); if (q > 0 && q < 1) spark(along(pts, ease.inOut(q)), a, 2.4, kind ? O2 : O);
+    if (ok) { const r = prog(t, hit + 0.05, hit + 0.5); if (r > 0 && r < 1) spark(along(pts.slice().reverse(), ease.inOut(r)), a, 2.8, OK); }
+    else if (!kind) { const r = prog(t, hit, hit + 0.5); if (r > 0 && r < 1) spark(along(pts.slice().reverse(), r * 0.3), a * (1 - r), 2.4, [255, 70, 50]); }
+  }
+}
+// frost cracks creep across machine 2's top while the app is frozen
+function frost(t) {
+  const f = freezeAt(t), ice = iceOf(t);
+  if (!f || ice < 0.02) return;
+  const grow = ep(t, f.a, f.a + 1.8, ease.out);
+  pool(A[0], A[1], 120, IC, 0.7 * ice);
+  const X0 = A[0] - NW / 2 + 2, X1 = A[0] + NW / 2 - 2, Y0 = NY - NDp / 2 + 2, Y1 = NY + NDp / 2 - 2;
+  add(1, D(A[0], A[1], NH + 1), () => {
+    g.save(); g.globalCompositeOperation = 'lighter'; g.lineCap = 'round'; g.lineJoin = 'round';
+    g.strokeStyle = rgba(IC, 1.2, 0.75 * ice); g.lineWidth = 0.7 * cam.s; glow(rgba(IC), 5);
+    for (let k = 0; k < 22; k++) {
+      const th = rnd(k, 61) * Math.PI * 2, L = (16 + rnd(k, 62) * 30) * grow;
+      let px = A[0] + Math.cos(th) * 21, py = A[1] + Math.sin(th) * 13, ang = th;
+      const pts = [[px, py]];
+      for (let s = 0; s < 5; s++) { ang += (rnd(k * 7 + s, 63) - 0.5) * 1.1; px += (Math.cos(ang) * L) / 5; py += (Math.sin(ang) * L) / 5; if (px < X0 || px > X1 || py < Y0 || py > Y1) break; pts.push([px, py]); }
+      g.beginPath(); pts.forEach(([u, v], j) => (j ? g.lineTo(...P(u, v, NH + 0.3)) : g.moveTo(...P(u, v, NH + 0.3)))); g.stroke();
+      if (pts.length > 3) { const [u, v] = pts[2], b = ang + (rnd(k, 64) > 0.5 ? 0.9 : -0.9); g.beginPath(); g.moveTo(...P(u, v, NH + 0.3)); g.lineTo(...P(clamp(u + Math.cos(b) * L * 0.3, X0, X1), clamp(v + Math.sin(b) * L * 0.3, Y0, Y1), NH + 0.3)); g.stroke(); }
+    }
+    g.restore();
+  });
+  // cold vapour drifting off the stuck app
+  for (let i = 0; i < 9; i++) { const ph = (t * 0.55 + rnd(i, 81)) % 1; spark([A[0] - 15 + rnd(i, 82) * 30 + Math.sin(t * 2 + i) * 3, A[1] - 8 + rnd(i, 83) * 16, A[2] + 24 + ph * 42], ice * (1 - ph) * 0.55, 1.5, IC); }
+}
+// the claw zaps the stuck copy just before it lifts it out
+function zap(t) {
+  for (const r of RESTARTS) {
+    const k = window01(t, r - 0.24, r + 0.03, 0.02);
+    if (k < 0.01) continue;
+    add(2, 2, () => {
+      g.save(); g.globalCompositeOperation = 'lighter'; g.lineCap = 'round'; g.lineJoin = 'round'; glow('rgba(190,225,255,1)', 12);
+      for (let rep = 0; rep < 3; rep++) {
+        const sd = Math.floor(t * 40) * 3 + rep, z0 = A[2] + 14;
+        g.strokeStyle = `rgba(225,240,255,${k * (0.5 + 0.5 * rnd(sd, 91))})`; g.lineWidth = (rep ? 0.8 : 1.6) * cam.s;
+        g.beginPath();
+        for (let j = 0; j <= 8; j++) { const u = j / 8, p = P(A[0] - 21 + 42 * u, A[1] + (rnd(sd + j, 92) - 0.5) * 8, z0 + Math.sin(u * Math.PI) * 12 + (rnd(sd + j, 93) - 0.5) * 9); j ? g.lineTo(...p) : g.moveTo(...p); }
+        g.stroke();
+      }
+      g.restore();
+    });
+    spark([A[0], A[1], A[2] + 24], k * (0.6 + 0.4 * Math.sin(t * 70)), 6, [200, 230, 255]);
+  }
+}
+// red beacon on the tower while misses are adding up
+function beacon(t) {
+  const on = window01(t, T.misses + 0.1, T.restartsApp + 0.25, 0.1) + window01(t, T.threeM + 0.15, T.oneR + 0.25, 0.1);
+  if (on < 0.01 || t < T.keep + 0.2) return;
+  pool(TX, TY, 90, [255, 60, 40], 0.5 * on * (0.6 + 0.4 * Math.sin(t * 14)));
+  add(1, D(TX, TY, 112) - 8, () => {
+    const c = P(TX, TY, 108); g.save(); g.globalCompositeOperation = 'lighter';
+    const L = 70 * cam.s * 0.7, a0 = t * 7;
+    for (const off of [0, Math.PI]) {
+      const a = a0 + off, sp = 0.28, gr = g.createRadialGradient(c[0], c[1], 0, c[0], c[1], L);
+      gr.addColorStop(0, `rgba(255,70,50,${0.6 * on})`); gr.addColorStop(1, 'rgba(255,70,50,0)');
+      g.fillStyle = gr; g.beginPath(); g.moveTo(c[0], c[1]); g.lineTo(c[0] + Math.cos(a - sp) * L, c[1] + Math.sin(a - sp) * L * 0.35); g.lineTo(c[0] + Math.cos(a + sp) * L, c[1] + Math.sin(a + sp) * L * 0.35); g.closePath(); g.fill();
+    }
+    glow('rgba(255,70,50,1)', 10); g.fillStyle = `rgba(255,110,80,${on})`; g.beginPath(); g.arc(c[0], c[1], 3.4 * cam.s * 0.6, 0, 7); g.fill();
+    g.restore();
+  });
+}
+// copy 3's startup: config, db, cache drop in one by one, then it opens
+const BOOT = [['config', 0.12], ['db', 0.45], ['cache', 0.78]];
+function bootUp(t) {
+  const t3 = T.c2 + 0.6;
+  if (t < t3 || t > READY3 + 0.5) return;
+  // a spinner ring around the copy while it loads
+  const la = 1 - ep(t, READY3 - 0.1, READY3 + 0.2);
+  if (la > 0.01) add(1, D(C3[0], C3[1], NH + 1), () => {
+    g.save(); g.globalCompositeOperation = 'lighter'; g.strokeStyle = rgba(O2, 1.2, 0.8 * la); g.lineWidth = 1.4 * cam.s; g.lineCap = 'round'; glow(rgba(O2), 6);
+    const a0 = t * 4; g.beginPath();
+    for (let k = 0; k <= 16; k++) { const a = a0 + (k / 16) * 2.2, p = P(C3[0] + Math.cos(a) * 30, C3[1] + Math.sin(a) * 22, NH + 0.4); k ? g.lineTo(...p) : g.moveTo(...p); }
+    g.stroke(); g.restore();
+  });
+  BOOT.forEach(([nm, f], k) => {
+    const ta = lerp(t3 + 0.3, READY3 - 0.6, f);
+    if (t < ta) return;
+    const drop = ep(t, ta, ta + 0.35, ease.in), into = ep(t, READY3 - 0.05, READY3 + 0.3, ease.in);
+    const x = lerp(C3[0] + 34, C3[0], into), y = lerp(C3[1] - 20 + k * 20, C3[1], into), z = NH + (1 - drop) * 70 + into * 8;
+    if (into < 1) wbox(x, y, z, 12, 12, 9, O2, { op: 1 - into, lw: 0.9, glow: 0.35 + 0.8 * pulse(t, ta + 0.35, 5), fill: mixc(INK, O, 0.1),
+      front: (F, w, h) => ftext(F, w / 2, h / 2, nm, 2.4, rgba(O2, 1.4), 'Mono', 700) });
+    popText(t, ta + 0.36, [x, y, z + 8], '✓ ' + nm, OK, 6.5, 0.7);
+    if (drop >= 1 && t < ta + 0.5) ripple(t, ta + 0.35, x, y, NH, O2, 16, 0.4, 1);
+  });
+}
+// kubernetes: the helm wheel rises behind the tower and turns
+function helm(t) {
+  const a = ep(t, T.k8s - 0.1, T.k8s + 0.7, ease.back) * (1 - ep(t, T.newTo - 0.2, T.newTo + 0.3));
+  if (a < 0.01) return;
+  const cx = 70, cy = 470, cz = 30 + 50 * Math.min(1, a), R = 46, rot = t * 0.5;
+  const at = (r, th) => P(cx + Math.cos(th) * r, cy, cz + Math.sin(th) * r);
+  add(0, 1e5, () => {
+    g.save(); g.globalAlpha = Math.min(1, a); g.lineCap = 'round'; g.globalCompositeOperation = 'lighter';
+    glow(rgba(O2), 10); g.strokeStyle = rgba(O2, 1.1, 0.75); g.lineWidth = 2 * cam.s;
+    for (const r of [R, R * 0.86, R * 0.26]) { g.beginPath(); for (let k = 0; k <= 40; k++) { const p = at(r, (k / 40) * Math.PI * 2); k ? g.lineTo(...p) : g.moveTo(...p); } g.stroke(); }
+    g.lineWidth = 1.6 * cam.s;
+    for (let k = 0; k < 7; k++) {
+      const th = rot + (k / 7) * Math.PI * 2, e = at(R * 1.22, th);
+      g.beginPath(); g.moveTo(...at(R * 0.26, th)); g.lineTo(...e); g.stroke();
+      g.fillStyle = '#0b0a09'; g.beginPath(); g.arc(e[0], e[1], 3 * cam.s, 0, 7); g.fill(); g.stroke();
+    }
+    g.restore();
+  });
+}
+
+/* ---------------- render */
+window.ready = () => { $('grain').style.background = `url(${grainURL(256, 0.06, 5)})`; };
+window.render = function (t) {
+  t_ = t;
+  camAt(t, SHOTS, KICKS, SHAKES);
+  const ice = iceOf(t);
+  bg(t, ice);
+  g.setTransform(2, 0, 0, 2, 0, 0);
+  floorGrid(t);
+  racks(t);
+  wallClock(t);
+  helm(t);
+  cables(t);
+  const endDim = ep(t, T.newTo - 0.2, T.newTo + 0.5);
+  for (let i = 0; i < 3; i++) {
+    const hot = i === 1 ? Math.min(1, RESTARTS.reduce((n, r) => n + 0.8 * window01(t, r, r + 0.5, 0.1), 0)) : i === 2 ? 0.7 * pulse(t, READY3, 3) : 0;
+    machine(i, t, hot);
+  }
+  const lbA = ep(t, T.c2 + 0.2, T.c2 + 0.7) * (1 - ep(t, T.newTo - 0.2, T.newTo + 0.3));
+  lbBox(t, lbA);
+  for (let i = 0; i < 3; i++) {
+    const shut = i === 2 && t < READY3 + 0.2;
+    if (lbA > 0.01) roadLine(lane(i), shut ? O2 : O, lbA * (shut ? 0.35 : 0.8));
+  }
+  barrier(t, lbA * (1 - ep(t, T.so - 0.4, T.so)), ep(t, READY3, READY3 + 0.45, ease.back));
+  watchdog(t, window01(t, T.trap + 0.2, T.fix - 0.1, 0.3));
+  // the tower glows on every answered ping
+  tower(t, Math.min(1, PINGS.reduce((n, [s, d, ok, k]) => n + (ok && !k ? 0.6 * pulse(t, s + 0.82, 5) : 0), 0) + 0.6 * pulse(t, T.hc, 3) + 0.4 * pulse(t, T.k8s, 3)));
+
+  drawA(t);
+  frost(t);
+  zap(t);
+  RESTARTS.forEach((r, i) => { shower(t, r, A[0], A[1], A[2] + 20, 50, 11 + i * 7, 180, 0.9); ripple(t, r, A[0], A[1], NH, O, 90, 0.8, 1.6); ripple(t, r + 0.62, A[0], A[1], NH, OK, 70, 0.7, 1.4); });
+  // the freeze itself: a frost burst
+  FREEZES.forEach((f, i) => { shower(t, f.a, A[0], A[1], A[2] + 20, 30, 50 + i, 90, 0.7, IC); ripple(t, f.a, A[0], A[1], NH + 22, IC, 60, 0.7, 1.4); });
+
+  // copies for "ready?" (and kubernetes)
+  const cIn = ep(t, T.c2 + 0.1, T.c2 + 0.45), cOut = 0;
+  if (t > T.c2) {
+    app(C1, { op: Math.min(1, cIn * 3), dz: (1 - ep(t, T.c2 + 0.1, T.c2 + 0.45, ease.in)) * 60, fl: pulse(t, T.c2 + 0.45, 5), rot: 3.4 * t + 1 });
+    const in3 = ep(t, T.c2 + 0.3, T.c2 + 0.65, ease.in);
+    const load = t > READY3 ? undefined : clamp(prog(t, T.c2 + 0.6, READY3) * 0.92);
+    const t3 = T.c2 + 0.6, rot3 = t < READY3 ? 3.4 * (t - t3) ** 2 / (2 * (READY3 - t3)) : 3.4 * (READY3 - t3) / 2 + 3.4 * (t - READY3);
+    app(C3, { op: Math.min(1, prog(t, T.c2 + 0.3, T.c2 + 0.5) * 3), dz: (1 - in3) * 60, load, rot: Math.max(0, rot3), dim: t < READY3, col: t < READY3 ? O2 : O, fl: pulse(t, READY3, 4) + 0.5 * pulse(t, T.copy, 4) });
+    ripple(t, READY3, C3[0], C3[1], NH + 22, OK, 70, 0.8, 1.8);
+    bootUp(t);
+  }
+  traffic(t);
+  crowd(t, 1 - endDim);
+  pings(t);
+  beacon(t);
+  crane(t);
+  // restart: a dashed outline marks where the fresh copy will land
+  RESTARTS.forEach((r) => wireBox(A[0], A[1], A[2], 40, 24, 22, OK, window01(t, r + 0.1, r + 0.62, 0.08) * 0.9, 2, [3, 3]));
+  flush();
+  g.setTransform(2, 0, 0, 2, 0, 0);
+
+  /* world labels */
+  const L = (k, txt, wp, dx, dy, a, b, col = '#FF6A1F') => callout(k, txt, wp, dx, dy, window01(t, a, b, 0.15), col);
+  L('h1', 'process: <span style="color:#7CF29A">running</span>', [A[0], A[1], A[2] + 24], 44, -54, T.still - 0.05, T.and);
+  L('h2', 'replies: <span style="color:#FF6A1F">none</span>', [A[0], A[1], A[2] + 30], -30, 56, T.not - 0.05, T.and);
+  L('h3', '03:01 · <span style="color:#7CF29A">back</span> · nobody woke up', [A[0], A[1], A[2] + 24], 40, -54, T.before - 0.1, T.how - 0.1);
+  L('h4', 'who checked?', [TX, TY, 70], 52, 24, T.how, T.trap + 0.2, '#FFB070');
+  L('f1', 'are you okay?', [TX, TY, 80], 52, 20, T.asking - 0.1, T.like - 0.2, '#7CF29A');
+  L('f2', '<span style="color:#7CF29A">yes · 200 OK</span>', [A[0], A[1], A[2] + 24], 44, -54, T.okay, T.like - 0.2, '#7CF29A');
+  L('c1', 'GET /healthz · every few seconds', [TX, TY, 80], 52, 20, T.every - 0.1, T.three - 0.3, '#7CF29A');
+  L('c3', '<span style="color:#7CF29A">fresh copy · 200 OK</span>', [A[0], A[1], A[2] + 24], 44, -54, T.restartsApp + 0.6, T.c2 - 0.1, '#7CF29A');
+  L('r1', `starting up · <span style="color:#FFB070">${Math.round(clamp(prog(t, T.c2 + 0.6, READY3) * 92))}%</span>`, [C3[0], C3[1], C3[2] + 24], -24, 62, T.copy - 0.1, T.notYet - 0.2, '#FFB070');
+  L('w1', 'watchdog: is the process there? <span style="color:#7CF29A">yes</span>', [WD[0], WD[1], 20], 6, 46, T.running2, T.crashed - 0.1, '#7CF29A');
+  L('w2', 'crashed? no → restart? <span style="color:#FF6A1F">never</span>', [WD[0], WD[1], 20], 6, 46, T.crashed, T.fix - 0.3, '#FF6A1F');
+  L('rs', '⟳ kill it · start a fresh copy', [A[0], A[1], A[2] + 24], -50, 40, T.restartsApp, T.restartsApp + 0.9, '#FF6A1F');
+  L('lb', 'traffic only goes to <span style="color:#7CF29A">ready</span> copies', [LBX, LBY, 16], -30, 44, T.traffic - 0.1, T.so - 0.3, '#FFB070');
+  L('p2', '03:01 · <span style="color:#7CF29A">back</span> · nobody woke up', [A[0], A[1], A[2] + 24], 44, -54, T.back, T.k8s - 0.1, '#7CF29A');
+  L('k1', 'kubelet · runs the probes', [TX, TY, 80], 52, 20, T.k8s + 0.2, T.newTo - 0.3, '#7CF29A');
+
+  /* DOM */
+  card(t); caps(t); sign(t); strikes(t); timeline(t); oncall(t); wires(t);
+  const pa = pulseCard(t);
+  profile(t);
+  trapUI(t);
+  $('dim').style.opacity = 0.55 * Math.max(pa, endDim);
+  $('tc').textContent = 'T+' + t.toFixed(2).padStart(5, '0') + 's';
+  let fl = 0;
+  for (const [t0, a] of [[T.froze, 0.08], [T.restarted, 0.22], [T.restartsApp, 0.18], [T.oneR + 0.1, 0.18], [READY3, 0.08], [T.back, 0.08]]) { const dt = t - t0; if (dt > 0 && dt < 0.5) fl = Math.max(fl, a * Math.exp(-dt * 9)); }
+  $('flash').style.opacity = fl;
+  // confetti on follow
+  if (t > TAP_F + 0.08 && t < TAP_F + 1.7) {
+    g.save(); g.globalCompositeOperation = 'lighter';
+    const dt = t - TAP_F - 0.08, cols = ['#FF6A1F', '#FFB070', '#F2EEE8', '#7CF29A'];
+    const fbx = 44 + 452 - 16 - 52, fby = $('prof').offsetTop + 34;
+    for (let i = 0; i < 70; i++) {
+      const th = rnd(i, 70) * Math.PI * 2, v = 160 + rnd(i, 71) * 260;
+      const x = fbx + Math.cos(th) * v * dt, y = fby + Math.sin(th) * v * dt * 0.8 + 260 * dt * dt;
+      g.fillStyle = cols[i % 4]; g.globalAlpha = Math.max(0, 1 - dt / 1.5);
+      g.save(); g.translate(x, y); g.rotate(dt * 8 + i); g.fillRect(-3, -1.5, 6, 3); g.restore();
+    }
+    g.restore(); g.globalAlpha = 1;
+  }
+  $('stage').style.opacity = 1 - ep(t, DURATION - 0.35, DURATION) * 0.85;
+};
+</script>
+<script src="openings/play.js"></script>
+</body>
+</html>

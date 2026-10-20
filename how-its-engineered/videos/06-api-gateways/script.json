@@ -1,0 +1,54 @@
+{
+ "topic": "API Gateways",
+ "lines": [
+  [
+   {"say": "One service in your food app forgot to check the login.", "show": "One service in your food app *forgot to check the login.*"},
+   {"say": "Now anyone can see everyone's orders.", "show": "Now anyone can see [everyone's orders.]"}
+  ],
+  [
+   {"say": "Your app isn't one program.", "show": "Your app isn't *one program.*"},
+   {"say": "It's small services: users, menu, payments, delivery.", "show": "It's small services: *users, menu, payments, delivery.*"},
+   {"say": "And your phone calls each one directly.", "show": "And your phone calls [each one directly.]"}
+  ],
+  [
+   {"say": "So every service checks your login on its own.", "show": "So every service checks your login *on its own.*"},
+   {"say": "Miss one, and the door's wide open.", "show": "Miss one, and the door's [wide open.]"}
+  ],
+  [
+   {"say": "The fix?", "show": "The fix?"},
+   {"say": "One front door.", "show": "*One front door.*"},
+   {"say": "An API gateway.", "show": "An [API gateway.]"}
+  ],
+  [
+   {"say": "Like airport check-in: nobody boards without passing it.", "show": "Like *airport check-in:* nobody boards [without passing it.]"}
+  ],
+  [
+   {"say": "Job one: check ID.", "show": "Job one: [check ID.]"},
+   {"say": "It checks your login once, then passes your ID along.", "show": "It checks your login *once,* then passes your *ID* along."}
+  ],
+  [
+   {"say": "Job two: count.", "show": "Job two: [count.]"},
+   {"say": "One user spams refresh?", "show": "One user *spams refresh?*"},
+   {"say": "Blocked.", "show": "*Blocked.*"},
+   {"say": "Everyone else stays fast.", "show": "Everyone else *stays fast.*"}
+  ],
+  [
+   {"say": "Job three: route.", "show": "Job three: [route.]"},
+   {"say": "One tap on Order goes to four services,", "show": "One tap on *Order* goes to *4 services,*"},
+   {"say": "and it stitches the answers together.", "show": "and it *stitches the answers* together."}
+  ],
+  [
+   {"say": "So that forgotten check?", "show": "So that *forgotten check?*"},
+   {"say": "Now it doesn't matter.", "show": "Now it *doesn't matter.*"},
+   {"say": "Nothing reaches a service without passing the door.", "show": "Nothing reaches a service [without passing the door.]"}
+  ],
+  [
+   {"say": "A gateway is a reverse proxy that understands your API.", "show": "A gateway is a reverse proxy that [understands your API.]"},
+   {"say": "Kong and Amazon API Gateway run it for real companies.", "show": "*Kong* and *Amazon API Gateway* run it for real companies."}
+  ],
+  [
+   {"say": "Follow, because next: it works on your laptop,", "show": "*Follow,* because next: it works on your laptop,"},
+   {"say": "but crashes on the server.", "show": "but [crashes on the server.]"}
+  ]
+ ]
+}

@@ -1,0 +1,14 @@
+One slow service took down the whole app. Not broken. Just slow. ⚡
+
+Every request waits on it, each one holds a thread, threads run out, and the server stops answering everyone. That's a cascading failure. Retries make it worse.
+
+The fix is a circuit breaker, borrowed from your house:
+🟢 Closed: calls go through and failures get counted
+🔴 Open: too many failures, so calls fail instantly and the page hides that part
+🟡 Half-open: after a cooldown, a few test calls decide whether it closes again
+
+Netflix built Hystrix for this. Today Resilience4j does it in a few lines.
+
+Have you ever had one slow service take down your whole app? Comment below 👇
+
+#coding #programming #softwareengineer #systemdesign #microservices

@@ -1,0 +1,413 @@
+                        THE INSTAGRAM REEL
+                       SCRIPT MASTER SYSTEM
+    A repeatable process for turning a niche + raw idea into audience-led hooks, scripts,
+                          CTAs, and retention-focused reel assets.
+
+ The core principle: Don't start by asking AI to “write a script.” Start by giving it a
+ problem to solve, an audience to serve, and a structure designed for attention.
+
+
+ 1. The Full Process
+ Step 1 — Define the niche and target viewer
+ Tell ChatGPT exactly who the content is for. “Fitness” is broad; “busy professionals trying to lose their
+ first 5 kg” is actionable.
+
+ Step 2 — Find the audience’s real problems
+ Identify recurring pain points, frustrations, objections, mistakes, desires, fears, and questions. Prioritize
+ problems that are frequent, emotionally relevant, and useful for short-form content.
+
+ Step 3 — Choose one problem for one reel
+ Do not cram five lessons into one reel. Pick one core problem and make the entire reel feel like a
+ solution to that problem.
+
+ Step 4 — Turn the problem into a promise
+ The viewer should immediately understand what they will get. The promise creates a reason to keep
+ watching.
+
+ Step 5 — Build Hook → Value → Solution → CTA
+ The hook earns attention. The value proves the viewer is in the right place. The solution gives them a
+ practical takeaway. The CTA tells them what to do next.
+
+ Step 6 — Create two hooks: verbal + text
+ The verbal hook is what you say. The text hook is what appears on screen. They should work together
+ rather than simply repeat each other.
+
+ Step 7 — Engineer retention
+ Use curiosity, open loops, specificity, contrast, pattern interrupts, short sentences, and progression.
+ Remove slow introductions and filler.
+
+ Step 8 — Write a CTA for the goal
+ A follower CTA should give a reason to follow. A comment CTA should make responding easy. A
+ save/share CTA should connect to the value.
+
+ Step 9 — Package the reel
+ Generate on-screen text, B-roll/visual suggestions, delivery notes, caption, cover text, and a final
+ quality check.
+
+ Recommended working formula
+
+Instagram Reels Script Master System                                                                     Page 1
+   <b>HOOK</b>           Stop the scroll. Make the problem or promise immediately relevant.
+
+   <b>VALUE</b>          Explain what is going wrong or reveal an insight.
+
+   <b>SOLUTION</         Give a clear, practical fix, framework, or example.
+   b>
+
+   <b>CTA</b>            Give one natural next action tied to the value and goal.
+
+
+
+
+Instagram Reels Script Master System                                                          Page 2
+ 2. Copy/Paste Master Prompt
+ Replace the bracketed fields and paste the whole prompt into ChatGPT. Your raw script can be messy;
+ the system is designed to diagnose and rebuild it.
+
+    You are my Instagram Reels Content Strategist, Audience Researcher, Scriptwriter, Retention Editor, and CTA
+    Specialist.
+
+    Your job is NOT to simply rewrite my raw script. Your job is to take my NICHE + TARGET AUDIENCE + RAW
+    SCRIPT/IDEA and transform it into a high-retention Instagram Reel package based on the real problems, desires,
+    objections, and language of my target audience.
+
+    ========================
+    INPUTS
+    ========================
+
+    NICHE:
+    [NICHE]
+
+    TARGET AUDIENCE:
+    [TARGET AUDIENCE — who they are, what they want, their experience level, etc.]
+
+    RAW SCRIPT / RAW IDEA:
+    [PASTE YOUR RAW SCRIPT OR IDEA HERE]
+
+    OPTIONAL:
+    REEL GOAL:
+    [followers / comments / saves / shares / leads / authority / sales]
+
+    APPROXIMATE REEL LENGTH:
+    [15 sec / 30 sec / 45 sec / 60 sec / other]
+
+    MY OFFER / PRODUCT / SERVICE:
+    [OPTIONAL]
+
+    MY PERSONAL STYLE / TONE:
+    [OPTIONAL — educational, blunt, funny, storytelling, premium, casual, etc.]
+
+    ========================
+    PHASE 1 — AUDIENCE PROBLEM RESEARCH
+    ========================
+
+    Analyze the niche and target audience.
+
+    Identify:
+    1. 10 common problems
+    2. 10 frustrations
+    3. 10 desired outcomes
+    4. 10 repeated questions
+    5. 10 common mistakes
+    6. 10 objections or limiting beliefs
+    7. Emotional reasons behind these problems
+    8. Likely phrases/language the audience uses
+
+    Score the strongest problems from 1–10 on:
+    - Frequency
+    - Emotional intensity
+    - Niche relevance
+    - Content potential
+    - Ease of explaining in a short reel
+
+    Select the SINGLE strongest problem for this reel and briefly explain why.
+
+
+
+
+Instagram Reels Script Master System                                                                              Page 3
+    IMPORTANT: Do not invent statistics, survey results, testimonials, or factual claims. If you lack external research,
+    label conclusions as hypotheses/inferences.
+
+    ========================
+    PHASE 2 — CONTENT ANGLE
+    ========================
+
+    Create:
+    A. Core Problem
+    B. Core Insight
+    C. New Belief
+    D. Transformation
+    E. Unique Angle
+    F. One-Sentence Promise
+
+    ========================
+    PHASE 3 — HOOK CREATION
+    ========================
+
+    Create BOTH:
+
+    1. VERBAL HOOK
+    Give 10 options. Each must be immediate, specific, natural to say, curiosity-driven or problem-focused. No “Hey
+    guys,” unnecessary introductions, or generic openings.
+
+    2. TEXT HOOK
+    Give 10 short on-screen hook options. They must be easy to read quickly and should complement the verbal hook
+    rather than merely duplicate it.
+
+    Then select the BEST verbal hook, BEST text hook, and BEST combination. Explain the choice in one short
+    sentence.
+
+    ========================
+    PHASE 4 — FINAL SCRIPT
+    ========================
+
+    Write the final reel using exactly:
+
+    HOOK
+    → Grab attention immediately.
+
+    VALUE
+    → Explain the problem, mistake, misconception, or insight.
+    → Make the viewer feel understood.
+    → Give useful information, not filler.
+
+    SOLUTION
+    → Give a clear, actionable solution.
+    → Use steps/framework/examples when appropriate.
+
+    CTA
+    → Give ONE clear next action.
+    → Match the selected reel goal.
+    → If the goal is followers, give a compelling reason to follow.
+    → If comments, ask an easy but meaningful question.
+    → If saves, make it worth revisiting.
+    → If shares, identify who should receive it.
+    → If leads/sales, create a natural next step without sounding desperate.
+
+
+
+
+Instagram Reels Script Master System                                                                                   Page 4
+    Write exactly as I would speak it. Use conversational language, short sentences, and no article-like or
+    corporate/AI phrasing.
+
+    Also provide:
+    - Estimated speaking time
+    - Approximate word count
+    - Pause points
+    - Words/phrases to emphasize
+
+    ========================
+    PHASE 5 — RETENTION ENGINEERING
+    ========================
+
+    Audit the script for:
+    1. First 1–3 second attention trigger
+    2. Curiosity/open loop
+    3. Reason to continue watching
+    4. Strongest payoff
+    5. Drop-off points
+    6. Sentences to shorten
+    7. Lines to remove
+    8. Places for pattern interrupts
+
+    Then produce a RETENTION-OPTIMIZED version.
+
+    Use curiosity gaps, specificity, contrast, unexpected insights, open loops, pattern interrupts, fast progression, and
+    micro-payoffs. Never use deceptive clickbait.
+
+    ========================
+    PHASE 6 — CTA OPTIMIZATION
+    ========================
+
+    Create 10 CTA options for my selected goal.
+
+    Then create:
+    A. Best follower-growth CTA
+    B. Best comment CTA
+    C. Best save/share CTA
+
+    If the goal is followers, answer:
+    “Why should someone follow me after this reel?”
+
+    Avoid weak CTAs such as “Follow for more.” Connect the follow to a clear future benefit, series, topic, or
+    transformation.
+
+    Select ONE final CTA and explain why it fits.
+
+    ========================
+    PHASE 7 — VISUAL EXECUTION
+    ========================
+
+    Create a shot-by-shot plan. For every section provide:
+    - Spoken line
+    - On-screen text
+    - B-roll/visual
+    - Camera angle/framing
+    - Pattern interrupt if useful
+    - Approximate timestamp
+
+
+
+
+Instagram Reels Script Master System                                                                                   Page 5
+    Keep it realistic for a creator filming with a phone.
+
+    Also specify:
+    - First-frame text
+    - Caption/subtitle emphasis
+    - Zoom/cut/change-angle moments
+    - Where to use an example, screenshot, prop, or screen recording
+
+    ========================
+    PHASE 8 — FINAL REEL PACKAGE
+    ========================
+
+    Give me:
+    1. Final reel title/topic
+    2. Best text hook
+    3. Best verbal hook
+    4. Final script
+    5. Final CTA
+    6. Shot list
+    7. On-screen text
+    8. Caption
+    9. 5 caption hooks
+    10. 10 relevant keywords/search phrases
+    11. 5–10 relevant hashtags, only if genuinely useful
+    12. Pinned comment
+    13. 3 alternative endings
+    14. 3 alternative hooks
+    15. Thumbnail/cover text
+
+    ========================
+    PHASE 9 — QUALITY CONTROL
+    ========================
+
+    Score 1–10:
+    - Hook strength
+    - Audience relevance
+    - Clarity
+    - Value
+    - Specificity
+    - Retention potential
+    - Originality
+    - CTA strength
+    - Follower-conversion potential
+    - Overall reel potential
+
+    List the TOP 3 changes that would improve the reel most.
+
+    Finally, give me the FINAL READY-TO-RECORD VERSION only, formatted cleanly so I can copy it directly into my
+    notes or teleprompter.
+
+    ========================
+    IMPORTANT RULES
+    ========================
+
+    1. Solve ONE major audience problem per reel.
+
+
+
+
+Instagram Reels Script Master System                                                                               Page 6
+    2. Never invent facts, statistics, testimonials, or results.
+    3. Never make the script sound like generic AI content.
+    4. Preserve my genuine voice where possible.
+    5. Improve the idea instead of blindly following a weak structure.
+    6. Replace weak hooks and CTAs rather than protecting them.
+    7. Prefer specificity over generic advice.
+    8. Prefer practical examples over vague statements.
+    9. Every sentence must earn its place.
+    10. Communicate relevance immediately.
+    11. Keep the content native to Instagram Reels: conversational, visual, fast-moving, and easy to follow.
+    12. Do not sacrifice truth for virality.
+    13. Avoid excessive emojis, jargon, and unnecessary formatting.
+    14. If information is missing, make a reasonable assumption and clearly state it instead of asking unnecessary
+    questions.
+    15. Get to the useful deliverables quickly.
+
+    Now execute the complete process.
+
+
+
+
+Instagram Reels Script Master System                                                                                 Page 7
+ 3. How to Use It
+ • Minimum input: niche + target audience + raw script/idea.
+
+ • Best input: add reel goal, duration, tone, and offer/product if relevant.
+
+ • Don't polish the raw script first. A messy idea is useful because the prompt is designed to diagnose
+ and rebuild it.
+
+ • One problem per reel. If several problems emerge, turn them into separate reels.
+
+ • Record the final version. Use the visual plan to keep the video moving.
+
+ • Keep your voice. Change any line you would not naturally say.
+
+
+ 4. The Strategy Behind Your Original Reel
+ Your idea works because it teaches creators to stop treating AI like a “script vending machine.” The
+ stronger positioning is: <b>AI can write the words, but the creator needs a content strategy first.</b>
+
+ • Audience → Who are we talking to?
+
+ • Problem → What are they struggling with?
+
+ • Angle → What is the most useful way to frame it?
+
+ • Hook → Why should they stop?
+
+ • Value → Why should they stay?
+
+ • Solution → What can they do differently?
+
+ • CTA → What should they do next?
+
+ • Packaging → How do we make it easy to watch, understand, and act on?
+
+
+ 5. Suggested CTA for Your Reel
+ <b>Recommended:</b> “If you want the exact master prompt that finds your
+ audience’s problems, builds the hook, writes the script, creates the CTA, and gives you
+ the full reel plan—comment <i>REEL</i> and I’ll show you the full process.”
+
+ If your delivery method is a link, DM, freebie, or downloadable resource, swap the final action. The key is to sell the
+ <b>outcome</b>, not merely the existence of a prompt.
+
+
+ 6. Quick Creator Checklist
+ ☐ I know exactly who this reel is for.
+
+ ☐ I identified one painful/desirable problem.
+
+ ☐ The hook is specific, not generic.
+
+ ☐ The viewer gets value before the CTA.
+
+ ☐ The solution is actionable.
+
+ ☐ The verbal and text hooks complement each other.
+
+ ☐ The reel has a reason to keep watching.
+
+ ☐ The CTA matches the reel goal.
+
+ ☐ The script sounds like something I would actually say.
+
+ ☐ Every sentence earns its place.
+
+
+
+Instagram Reels Script Master System                                                                                  Page 8
+ This system improves the strategic quality of your input and output; it cannot guarantee views. Performance still
+ depends on the idea, execution, audience fit, packaging, consistency, and distribution.
+
+
+
+
+Instagram Reels Script Master System                                                                                 Page 9
+

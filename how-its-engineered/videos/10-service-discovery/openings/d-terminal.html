@@ -1,0 +1,188 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- Opening variant D: phosphor terminal, giant rolling address digits, typed-prompt captions (from the prompt + big-number frames in the reference). Hook C, first 10 s. -->
+<link rel="stylesheet" href="fonts.css">
+<style>
+:root { --o: #FF7A1A; --o2: #FFC08A; --dim: #6b3a1c; }
+html, body { margin: 0; background: #000; }
+#stage { position: relative; width: 540px; height: 960px; overflow: hidden; background: #070504; font-family: Mono; color: var(--o); }
+#scr { position: absolute; inset: 0; transform-origin: 50% 50%; }
+#scan { position: absolute; inset: 0; background: repeating-linear-gradient(0deg, rgba(0,0,0,0.28) 0 1px, transparent 1px 3px); pointer-events: none; mix-blend-mode: multiply; }
+#glow { position: absolute; inset: 0; background: radial-gradient(90% 60% at 50% 42%, rgba(255,122,26,0.10), rgba(0,0,0,0) 70%); pointer-events: none; }
+#vig { position: absolute; inset: 0; background: radial-gradient(100% 75% at 50% 50%, rgba(0,0,0,0) 55%, rgba(0,0,0,0.85) 100%); pointer-events: none; }
+#grain { position: absolute; inset: -40px; opacity: 0.5; mix-blend-mode: screen; pointer-events: none; }
+.bar { position: absolute; left: 22px; right: 22px; top: 52px; display: flex; justify-content: space-between; font-size: 9px; letter-spacing: 1.6px; color: var(--dim); }
+.bar b { color: var(--o); font-weight: 600; }
+#log { position: absolute; left: 22px; right: 22px; top: 80px; height: 600px; overflow: hidden; font-size: 10px; line-height: 15px; white-space: pre; color: rgba(255,122,26,0.42); }
+#log .e { color: var(--o); text-shadow: 0 0 6px rgba(255,122,26,0.7); }
+#log .ok { color: rgba(255,192,138,0.55); }
+#big { position: absolute; left: 0; right: 0; top: 330px; text-align: center; }
+#big .lab { font-size: 11px; letter-spacing: 3px; color: var(--o2); margin-bottom: 8px; }
+#digits { display: inline-flex; font-weight: 800; font-size: 86px; line-height: 100px; height: 100px; overflow: hidden; color: var(--o); text-shadow: 0 0 18px rgba(255,122,26,0.8), 0 0 50px rgba(255,122,26,0.35); background: rgba(7,5,4,0.75); padding: 0 6px; }
+.col { position: relative; width: 0.62em; height: 100px; overflow: hidden; }
+.col .st { position: absolute; left: 0; right: 0; top: 0; }
+.col .st div { height: 100px; text-align: center; }
+.col.dot { width: 0.4em; }
+#stat { margin: 10px auto 0; font-size: 11px; letter-spacing: 2px; display: table; background: rgba(7,5,4,0.9); padding: 3px 9px; }
+#big .lab { display: table; margin: 0 auto 8px !important; background: rgba(7,5,4,0.9); padding: 2px 8px; }
+#stat i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--o); margin-right: 7px; vertical-align: 0; box-shadow: 0 0 8px var(--o); }
+#prog { display: inline-block; margin-left: 10px; letter-spacing: 0; }
+/* prompt bar = captions */
+#pb { position: absolute; left: 22px; right: 22px; top: 712px; height: 92px; border: 1px solid rgba(255,122,26,0.45); background: rgba(12,7,4,0.9); box-sizing: border-box; padding: 10px 14px; }
+#pb .h { font-size: 8.5px; letter-spacing: 1.6px; color: var(--dim); display: flex; justify-content: space-between; }
+#pb .tx { margin-top: 9px; font-size: 27px; font-weight: 600; letter-spacing: -0.5px; color: #f3e3d4; white-space: nowrap; }
+#pb .tx .k { color: var(--o); text-shadow: 0 0 12px rgba(255,122,26,0.7); font-weight: 800; }
+#pb .cur { display: inline-block; width: 13px; height: 26px; background: var(--o); vertical-align: -4px; margin-left: 3px; box-shadow: 0 0 10px var(--o); }
+/* full-frame interrupt */
+#slam { position: absolute; inset: 0; background: var(--o); display: none; align-items: center; justify-content: center; flex-direction: column; color: #070504; }
+#slam .w { font-family: Inter; font-weight: 900; font-size: 150px; letter-spacing: -9px; line-height: 0.9; }
+#slam .s { font-family: Mono; font-weight: 800; font-size: 14px; letter-spacing: 3px; margin-top: 14px; }
+#tear { position: absolute; inset: 0; pointer-events: none; }
+#q { position: absolute; left: 0; right: 0; top: 280px; text-align: center; display: none; }
+#q .m { font-family: Mono; font-weight: 800; font-size: 210px; line-height: 1; color: var(--o); text-shadow: 0 0 30px rgba(255,122,26,0.8), 0 0 90px rgba(255,122,26,0.4); }
+#q .s { font-size: 12px; letter-spacing: 3px; color: var(--o2); margin-top: 6px; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="scr">
+    <div id="glow"></div>
+    <div class="bar"><span>payments@cluster — <b>watch</b></span><span id="clk">00:00:00.00</span></div>
+    <div id="log"></div>
+    <div id="big"><div class="lab" id="blab">PAYMENTS · ADDRESS</div><div id="digits"></div><div id="stat"><i></i><span id="stt">LIVE</span><span id="prog"></span></div></div>
+    <div id="q"><div class="m">?</div><div class="s">LOOKUP: payments → <span id="qq">???</span></div></div>
+    <div id="pb"><div class="h"><span>PROMPT 01</span><span>SYSTEM DESIGN · 10 · HOW.ITS.ENGINEERED</span></div><div class="tx" id="tx"></div></div>
+  </div>
+  <canvas id="tear" width="540" height="960"></canvas>
+  <div id="slam"><div class="w">FAILED</div><div class="s">3 / 3 CALLS · ECONNREFUSED</div></div>
+  <div id="scan"></div>
+  <div id="vig"></div>
+  <div id="grain"></div>
+</div>
+<script src="../../../tools/lib.js"></script>
+<script src="hook.js"></script>
+<script>
+const $ = (id) => document.getElementById(id);
+const rnd = rndH;
+// ---- giant digits as odometer columns
+const OLDC = ['1', '0', '.', '0', '.', '0', '.', '7', ' '], NEWC = ['1', '0', '.', '0', '.', '4', '.', '2', '3'];
+const DIG = $('digits');
+const COLS = OLDC.map((c, i) => {
+  const col = document.createElement('div'); col.className = 'col' + (c === '.' ? ' dot' : '');
+  const st = document.createElement('div'); st.className = 'st';
+  const glyphs = c === '.' ? ['.'] : ' 0123456789012345678901234567890123456789'.split('');
+  glyphs.forEach((g) => { const d = document.createElement('div'); d.textContent = g; st.appendChild(d); });
+  col.appendChild(st); DIG.appendChild(col);
+  const idx = (ch, lap) => (ch === ' ' ? 0 : 1 + Number(ch) + lap * 10);
+  return { col, st, from: c === '.' ? 0 : idx(c, 0), to: c === '.' ? 0 : idx(NEWC[i], c === NEWC[i] ? 0 : 2), dot: c === '.', blankOld: c === ' ' };
+});
+function digits(t) {
+  COLS.forEach((c, i) => {
+    if (c.dot) return;
+    const a = B.newip + i * 0.05, p = ep(t, a, a + 0.5, ease.inOut);
+    let pos = lerp(c.from, c.to, p);
+    if (t > B.crash && t < B.respawn + 0.2) pos = 1 + ((Math.floor(t * 24) + i * 3) % 10); // scrambled while down
+    c.st.style.transform = `translateY(${-pos * 100}px)`;
+    c.col.style.width = c.blankOld ? (lerp(0, 0.62, ep(t, B.newip, B.newip + 0.4)) + 'em') : '';
+  });
+}
+// ---- log
+const LOG = $('log'), NL = 40;
+LOG.style.display = 'flex'; LOG.style.flexDirection = 'column'; LOG.style.justifyContent = 'flex-end';
+const lines = [];
+for (let i = 0; i < 200; i++) {
+  const c = ['cart', 'orders', 'login'][i % 3], ms = 1 + Math.floor(rnd(i, 3) * 6);
+  lines.push({ ok: `200 OK   ${c.padEnd(6)} → ${OLD_IP}:8080   ${ms}ms`, err: `✕ ECONNREFUSED  ${c.padEnd(6)} → ${OLD_IP}:8080` });
+}
+const LE = []; for (let i = 0; i < NL; i++) { const d = document.createElement('div'); LOG.appendChild(d); LE.push(d); }
+// print time of every line: calm, then a flood
+const LT = []; { const rate = (x) => (x < B.calls ? 5 : 5 + 45 * ep(x, B.calls, B.failed)); let acc = 0; for (let x = 0; x < DURATION; x += 1 / 240) { acc += rate(x) / 240; while (LT.length < acc) LT.push(x); } }
+function log(t) {
+  let N = 0; while (N < LT.length && LT[N] <= t) N++;
+  for (let k = 0; k < NL; k++) {
+    const i = N - NL + k, e = LE[k];
+    if (i < 0) { if (e._v !== '') { e._v = ''; e.textContent = ''; } continue; }
+    const tl = LT[i], L = lines[i % lines.length];
+    let html, cls;
+    if (tl < B.crash) { html = L.ok; cls = 'ok'; }
+    else if (tl < B.respawn) { html = '… payments restarting'; cls = 'e'; }
+    else if (tl < B.calls) { html = `● payments up · machine-3 · ${tl > B.newip ? NEW_IP : 'new address…'}`; cls = ''; }
+    else { html = L.err; cls = 'e'; }
+    if (e._v !== html + cls) { e._v = html + cls; e.textContent = html; e.className = cls; }
+  }
+  LOG.style.height = lerp(225, 600, ep(t, B.calls, B.calls + 0.8)) + 'px';
+  LOG.style.opacity = t > B.q ? 1 - ep(t, B.q, B.q + 0.3) : 1;
+}
+// ---- prompt captions
+const PH = [
+  { w: [0, 1, 2], k: [2], t1: 1.82 },
+  { w: [3, 4], k: [4], t1: 2.82 },
+  { w: [5, 6], k: [6], t1: 4.15 },
+  { w: [7, 8, 9, 10, 11], k: [], t1: 5.5 },
+  { w: [12, 13], k: [13], t1: 7.05 },
+  { w: [14, 15, 16, 17], k: [17], t1: 8.42 },
+  { w: [18, 19, 20], k: [19, 20], t1: 99 },
+];
+function prompt(t) {
+  let ph = PH.find((p) => t >= WORDS[p.w[0]][1] - 0.08 && t < p.t1);
+  let html = '<span style="color:#6b3a1c">› </span>';
+  if (ph) {
+    ph.w.forEach((i) => {
+      const [w, a, b] = WORDS[i]; if (t < a - 0.02) return;
+      const n = Math.min(w.length, Math.ceil(prog(t, a - 0.02, Math.min(b, a + 0.22)) * w.length));
+      const s = w.slice(0, n);
+      html += ph.k.includes(i) ? `<span class="k">${s}</span> ` : s + ' ';
+    });
+  }
+  html += `<span class="cur" style="opacity:${Math.sin(t * 10) > -0.2 ? 1 : 0}"></span>`;
+  const tx = $('tx'); if (tx._v !== html) { tx._v = html; tx.innerHTML = html; }
+}
+// ---- glitch tear
+const tc = $('tear'), tg = tc.getContext('2d');
+function tear(t) {
+  tg.clearRect(0, 0, 540, 960);
+  const k = Math.max(window01(t, B.crash, B.crash + 0.35, 0.05), window01(t, B.failed - 0.06, B.failed + 0.05, 0.02), window01(t, B.q - 0.05, B.q + 0.15, 0.04));
+  if (k <= 0.01) return;
+  tg.globalCompositeOperation = 'lighter';
+  for (let i = 0; i < 14; i++) {
+    const y = rnd(i, Math.floor(t * 30)) * 960, h = 2 + rnd(i, 7 + Math.floor(t * 30)) * 18;
+    tg.fillStyle = `rgba(255,122,26,${0.25 * k})`; tg.fillRect(0, y, 540, h);
+  }
+}
+window.ready = () => { $('grain').style.background = `url(${grainURL(256, 0.07, 11)})`; };
+window.render = function (t) {
+  log(t); digits(t); prompt(t); tear(t);
+  $('clk').textContent = '03:14:' + String(Math.floor(t)).padStart(2, '0') + '.' + String(Math.floor((t % 1) * 100)).padStart(2, '0');
+  // status line
+  const down = t > B.crash && t < B.respawn + 0.2, moving = t > B.newip - 0.1 && t < B.ipDone + 0.2;
+  const stt = down ? 'RESTARTING' : t > B.calls ? 'LIVE · BUT NOBODY CAN FIND IT' : moving ? 'NEW ADDRESS' : t > B.respawn ? 'LIVE · SAME CODE ✓' : 'LIVE';
+  if ($('stt')._v !== stt) { $('stt')._v = stt; $('stt').textContent = stt; }
+  const pr = down ? '▮'.repeat(1 + Math.floor(prog(t, B.crash, B.respawn) * 8)).padEnd(9, '░') : '';
+  if ($('prog')._v !== pr) { $('prog')._v = pr; $('prog').textContent = pr; }
+  $('stat').querySelector('i').style.opacity = down || moving ? (Math.sin(t * 18) > 0 ? 1 : 0.2) : 1;
+  $('blab').textContent = t > B.ipDone ? 'PAYMENTS · NEW ADDRESS' : 'PAYMENTS · ADDRESS';
+  // big block: punch on events, glitch shift while down
+  const kick = 0.08 * Math.exp(-Math.max(0, t - B.newip) * 7) * (t > B.newip ? 1 : 0) + 0.06 * Math.exp(-Math.max(0, t - B.crash) * 7) * (t > B.crash ? 1 : 0);
+  const gx = down && Math.sin(t * 61) > 0.6 ? 8 : 0;
+  $('big').style.transform = `translateX(${gx}px) scale(${1 + kick})`;
+  $('big').style.opacity = t > B.q ? 1 - ep(t, B.q, B.q + 0.25) : 1;
+  // the FAILED full-frame interrupt
+  const sl = $('slam'), on = t > B.failed && t < B.failed + 0.55;
+  sl.style.display = on ? 'flex' : 'none';
+  if (on) { const p = ep(t, B.failed, B.failed + 0.12, ease.outExpo); sl.querySelector('.w').style.transform = `scale(${lerp(1.6, 1, p)}) translateX(${Math.sin(t * 80) * 4}px)`; }
+  // CRT collapse into the question
+  const col = window01(t, B.q - 0.12, B.q + 0.2, 0.12);
+  $('scr').style.transform = `scaleY(${1 - 0.97 * col}) scaleX(${1 + 0.1 * col})`;
+  $('scr').style.filter = col > 0.01 ? `brightness(${1 + col * 2})` : '';
+  const q = $('q'); q.style.display = t > B.q + 0.1 ? 'block' : 'none';
+  if (t > B.q) { const p = ep(t, B.find - 0.05, B.find + 0.3, ease.back); q.querySelector('.m').style.transform = `scale(${0.2 + 0.8 * p})`; q.querySelector('.m').style.opacity = prog(t, B.find - 0.05, B.find + 0.05); const qq = Math.floor(t * 8) % 2 ? '???' : '_  '; if ($('qq')._v !== qq) { $('qq')._v = qq; $('qq').textContent = qq; } }
+  // whole-screen shake
+  const sh = (t > B.crash && t < B.crash + 0.3 ? 6 * (1 - (t - B.crash) / 0.3) : 0) + (t > B.failed + 0.55 && t < B.failed + 0.85 ? 5 : 0);
+  $('stage').style.transform = sh ? `translate(${sh * Math.sin(t * 93)}px, ${sh * Math.cos(t * 71)}px)` : '';
+};
+</script>
+<script src="play.js"></script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+The weather server hiccupped for one second. Then every app hit retry at once, and it went down for real. 🌩️
+
+Retrying is smart. Most failures are brief: a network blip, a server restarting. But retry instantly, again and again, and every failure turns into more calls. That's a retry storm.
+
+Three fixes:
+🛑 Cap it: 3 attempts, then stop and show an error
+⏳ Back off: wait 1 s, then 2, then 4, so the server can recover
+🎲 Add jitter: a little randomness so every app doesn't come back at the same moment
+
+✅ Only retry what might fix itself: a timeout or a 503. Never a 404.
+💳 Retrying a payment can charge twice, unless the request is idempotent (send an Idempotency-Key).
+
+AWS SDKs already retry with backoff by default.
+
+Have you ever caused a retry storm, or been hit by one? Comment below 👇
+
+#coding #programming #softwareengineer #systemdesign #backend

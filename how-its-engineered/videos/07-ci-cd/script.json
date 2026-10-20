@@ -1,0 +1,109 @@
+{
+ "topic": "CI/CD",
+ "lines": [
+  [
+   {
+    "say": "You fixed one typo, hit deploy, and your whole app went down.",
+    "show": "You fixed *one typo,* hit deploy, and your [whole app went down.]"
+   }
+  ],
+  [
+   {
+    "say": "Big teams push code all day, and their apps stay up.",
+    "show": "Big teams push code *all day,* and their apps *stay up.*"
+   },
+   {
+    "say": "The difference?",
+    "show": "The difference?"
+   },
+   {
+    "say": "Nobody ships by hand.",
+    "show": "Nobody ships [by hand.]"
+   }
+  ],
+  [
+   {
+    "say": "Every change rides an assembly line called C-I-C-D.",
+    "show": "Every change rides an *assembly line* called [CI/CD.]"
+   }
+  ],
+  [
+   {
+    "say": "Station one: build.",
+    "show": "Station one: [build.]"
+   },
+   {
+    "say": "A robot builds your app from scratch on a clean server, not your laptop.",
+    "show": "A robot builds your app *from scratch* on a *clean server,* not your laptop."
+   }
+  ],
+  [
+   {
+    "say": "Station two: test.",
+    "show": "Station two: [test.]"
+   },
+   {
+    "say": "Every test runs automatically.",
+    "show": "Every test runs *automatically.*"
+   },
+   {
+    "say": "One fails, the line stops, and your change goes nowhere.",
+    "show": "One fails, *the line stops,* and your change *goes nowhere.*"
+   }
+  ],
+  [
+   {
+    "say": "Station three: ship.",
+    "show": "Station three: [ship.]"
+   },
+   {
+    "say": "Everything passed?",
+    "show": "Everything passed?"
+   },
+   {
+    "say": "It deploys on its own.",
+    "show": "It deploys *on its own.*"
+   },
+   {
+    "say": "Often to a few users first, then everyone.",
+    "show": "Often to *a few users* first, then *everyone.*"
+   }
+  ],
+  [
+   {
+    "say": "C-I is the checking.",
+    "show": "*CI* is the [checking.]"
+   },
+   {
+    "say": "C-D is the shipping.",
+    "show": "*CD* is the [shipping.]"
+   }
+  ],
+  [
+   {
+    "say": "So that typo?",
+    "show": "So that *typo?*"
+   },
+   {
+    "say": "If it breaks the build or a test, no user ever sees it.",
+    "show": "If it breaks the build or a test, [no user ever sees it.]"
+   }
+  ],
+  [
+   {
+    "say": "GitHub Actions sets this up with one file in your repo.",
+    "show": "*GitHub Actions* sets this up with *one file* in your repo."
+   }
+  ],
+  [
+   {
+    "say": "Follow, because next I'll fix the bug every beginner hits:",
+    "show": "Follow, because next I'll fix the bug *every beginner hits:*"
+   },
+   {
+    "say": "it works on my machine, but not on the server.",
+    "show": "it [works on my machine,] but not on the server."
+   }
+  ]
+ ]
+}

@@ -1,0 +1,35 @@
+{
+ "topic": "Message Queues",
+ "lines": [
+  [
+   {"say": "You click buy. The order service calls payment directly.", "show": "You click *buy.* The order service calls *payment* directly."},
+   {"say": "And you wait until it's done.", "show": "And you *wait* until it's done."}
+  ],
+  [
+   {"say": "Then Black Friday hits.", "show": "Then *Black Friday* hits."},
+   {"say": "Payment slows down, orders pile up, and the whole app goes down.", "show": "Payment *slows down,* orders *pile up,* and the [whole app goes down.]"}
+  ],
+  [
+   {"say": "The fix? Don't call payment directly. Put a message queue in the middle.", "show": "The fix? Don't call payment *directly.* Put a [message queue] in the middle."}
+  ],
+  [
+   {"say": "Now the order service just drops your order in the queue, and tells you: order received.", "show": "Now the order service just *drops* your order in the queue, and tells you: *order received.*"}
+  ],
+  [
+   {"say": "On the other side, payment is the worker. It pulls orders out one at a time, at its own pace.", "show": "On the other side, payment is the *worker.* It *pulls* orders out one at a time, at its *own pace.*"},
+   {"say": "Traffic spikes? The line just gets longer. Nothing crashes.", "show": "Traffic spikes? The line just gets *longer.* [Nothing crashes.]"}
+  ],
+  [
+   {"say": "Still too slow? Add more payment workers. They all pull from the same queue.", "show": "Still too slow? Add more *payment workers.* They all pull from the *same queue.*"}
+  ],
+  [
+   {"say": "And if a worker dies halfway? The queue only deletes an order once a worker says done.", "show": "And if a worker *dies* halfway? The queue only deletes an order once a worker says *done.*"},
+   {"say": "Otherwise, it goes right back in line.", "show": "Otherwise, it goes [right back in line.]"}
+  ],
+  [
+   {"say": "That's what RabbitMQ and Amazon S-Q-S do.", "show": "That's what *RabbitMQ* and *Amazon SQS* do."},
+   {"say": "Haven't seen retries? That reel's on my profile.", "show": "Haven't seen *retries?* That reel's on my profile."},
+   {"say": "If you're a vibe coder, follow for the system design your AI skipped.", "show": "If you're a *vibe coder,* follow for the system design your *AI skipped.*"}
+  ]
+ ]
+}

@@ -1,0 +1,52 @@
+{
+ "topic": "Docker",
+ "lines": [
+  [
+   {"say": "Your app works perfectly on your laptop.", "show": "Your app works *perfectly* on your laptop."},
+   {"say": "You put it on a server, and it crashes.", "show": "You put it on a server, and it [crashes.]"},
+   {"say": "Same code.", "show": "*Same code.*"}
+  ],
+  [
+   {"say": "The code isn't the problem.", "show": "The code isn't the problem."},
+   {"say": "Everything around it is.", "show": "[Everything around it] is."}
+  ],
+  [
+   {"say": "Your laptop runs Node eighteen. The server runs Node sixteen.", "show": "Your laptop runs *Node 18.* The server runs *Node 16.*"},
+   {"say": "You installed a library months ago, and forgot.", "show": "You installed a library months ago, and *forgot.*"},
+   {"say": "The server never got it.", "show": "The server *never got it.*"}
+  ],
+  [
+   {"say": "The fix? Don't send just the code.", "show": "The fix? Don't send *just the code.*"},
+   {"say": "Send the whole machine.", "show": "Send [the whole machine.]"},
+   {"say": "That's Docker.", "show": "That's *Docker.*"}
+  ],
+  [
+   {"say": "Think of a shipping container. Same box on a truck, a ship, a train.", "show": "Think of a *shipping container.* Same box on a truck, a ship, a train."},
+   {"say": "What's inside never changes.", "show": "What's inside [never changes.]"}
+  ],
+  [
+   {"say": "Step one: recipe.", "show": "Step one: [recipe.]"},
+   {"say": "You write a Docker file: which Node, which libraries, which files.", "show": "You write a *Dockerfile:* which Node, which libraries, which files."}
+  ],
+  [
+   {"say": "Step two: build.", "show": "Step two: [build.]"},
+   {"say": "Docker freezes it into an image, a snapshot of everything your app needs.", "show": "Docker freezes it into an *image,* a snapshot of everything your app needs."}
+  ],
+  [
+   {"say": "Step three: run.", "show": "Step three: [run.]"},
+   {"say": "That image runs anywhere as a container.", "show": "That image runs anywhere as a *container.*"},
+   {"say": "Laptop, server, your teammate's P-C. Identical.", "show": "Laptop, server, your teammate's PC. *Identical.*"}
+  ],
+  [
+   {"say": "So that crash?", "show": "So that *crash?*"},
+   {"say": "The server now runs the exact box you tested. Node eighteen included.", "show": "The server now runs the *exact box* you tested. [Node 18 included.]"}
+  ],
+  [
+   {"say": "The image is the box. The container is the box, running.", "show": "The *image* is the box. The *container* is the box, [running.]"}
+  ],
+  [
+   {"say": "Follow, because next: your container crashes at three A-M.", "show": "Follow, because next: your container *crashes at 3 AM.*"},
+   {"say": "Who restarts it while you sleep?", "show": "Who [restarts it] while you sleep?"}
+  ]
+ ]
+}

@@ -1,0 +1,218 @@
+[
+ {
+  "li": 0,
+  "pi": 0,
+  "say": "One service in your food app forgot to check the login.",
+  "show": "One service in your food app *forgot to check the login.*",
+  "start": 0.0,
+  "end": 2.88
+ },
+ {
+  "li": 0,
+  "pi": 1,
+  "say": "Now anyone can see everyone's orders.",
+  "show": "Now anyone can see [everyone's orders.]",
+  "start": 3.26,
+  "end": 5.16
+ },
+ {
+  "li": 1,
+  "pi": 0,
+  "say": "Your app isn't one program.",
+  "show": "Your app isn't *one program.*",
+  "start": 5.68,
+  "end": 7.04
+ },
+ {
+  "li": 1,
+  "pi": 1,
+  "say": "It's small services: users, menu, payments, delivery.",
+  "show": "It's small services: *users, menu, payments, delivery.*",
+  "start": 7.16,
+  "end": 10.48
+ },
+ {
+  "li": 1,
+  "pi": 2,
+  "say": "And your phone calls each one directly.",
+  "show": "And your phone calls [each one directly.]",
+  "start": 10.82,
+  "end": 12.62
+ },
+ {
+  "li": 2,
+  "pi": 0,
+  "say": "So every service checks your login on its own.",
+  "show": "So every service checks your login *on its own.*",
+  "start": 12.9,
+  "end": 15.42
+ },
+ {
+  "li": 2,
+  "pi": 1,
+  "say": "Miss one, and the door's wide open.",
+  "show": "Miss one, and the door's [wide open.]",
+  "start": 15.92,
+  "end": 18.08
+ },
+ {
+  "li": 3,
+  "pi": 0,
+  "say": "The fix?",
+  "show": "The fix?",
+  "start": 18.78,
+  "end": 19.16
+ },
+ {
+  "li": 3,
+  "pi": 1,
+  "say": "One front door.",
+  "show": "*One front door.*",
+  "start": 19.58,
+  "end": 20.54
+ },
+ {
+  "li": 3,
+  "pi": 2,
+  "say": "An API gateway.",
+  "show": "An [API gateway.]",
+  "start": 20.84,
+  "end": 21.86
+ },
+ {
+  "li": 4,
+  "pi": 0,
+  "say": "Like airport check-in: nobody boards without passing it.",
+  "show": "Like *airport check-in:* nobody boards [without passing it.]",
+  "start": 22.42,
+  "end": 25.14
+ },
+ {
+  "li": 5,
+  "pi": 0,
+  "say": "Job one: check ID.",
+  "show": "Job one: [check ID.]",
+  "start": 25.56,
+  "end": 26.64
+ },
+ {
+  "li": 5,
+  "pi": 1,
+  "say": "It checks your login once, then passes your ID along.",
+  "show": "It checks your login *once,* then passes your *ID* along.",
+  "start": 27.06,
+  "end": 29.62
+ },
+ {
+  "li": 6,
+  "pi": 0,
+  "say": "Job two: count.",
+  "show": "Job two: [count.]",
+  "start": 29.62,
+  "end": 31.22
+ },
+ {
+  "li": 6,
+  "pi": 1,
+  "say": "One user spams refresh?",
+  "show": "One user *spams refresh?*",
+  "start": 31.82,
+  "end": 32.86
+ },
+ {
+  "li": 6,
+  "pi": 2,
+  "say": "Blocked.",
+  "show": "*Blocked.*",
+  "start": 33.5,
+  "end": 33.76
+ },
+ {
+  "li": 6,
+  "pi": 3,
+  "say": "Everyone else stays fast.",
+  "show": "Everyone else *stays fast.*",
+  "start": 34.16,
+  "end": 35.22
+ },
+ {
+  "li": 7,
+  "pi": 0,
+  "say": "Job three: route.",
+  "show": "Job three: [route.]",
+  "start": 35.86,
+  "end": 36.84
+ },
+ {
+  "li": 7,
+  "pi": 1,
+  "say": "One tap on Order goes to four services,",
+  "show": "One tap on *Order* goes to *4 services,*",
+  "start": 37.5,
+  "end": 39.86
+ },
+ {
+  "li": 7,
+  "pi": 2,
+  "say": "and it stitches the answers together.",
+  "show": "and it *stitches the answers* together.",
+  "start": 40.1,
+  "end": 41.38
+ },
+ {
+  "li": 8,
+  "pi": 0,
+  "say": "So that forgotten check?",
+  "show": "So that *forgotten check?*",
+  "start": 41.86,
+  "end": 43.02
+ },
+ {
+  "li": 8,
+  "pi": 1,
+  "say": "Now it doesn't matter.",
+  "show": "Now it *doesn't matter.*",
+  "start": 43.52,
+  "end": 44.26
+ },
+ {
+  "li": 8,
+  "pi": 2,
+  "say": "Nothing reaches a service without passing the door.",
+  "show": "Nothing reaches a service [without passing the door.]",
+  "start": 44.74,
+  "end": 46.96
+ },
+ {
+  "li": 9,
+  "pi": 0,
+  "say": "A gateway is a reverse proxy that understands your API.",
+  "show": "A gateway is a reverse proxy that [understands your API.]",
+  "start": 47.72,
+  "end": 50.56
+ },
+ {
+  "li": 9,
+  "pi": 1,
+  "say": "Kong and Amazon API Gateway run it for real companies.",
+  "show": "*Kong* and *Amazon API Gateway* run it for real companies.",
+  "start": 51.18,
+  "end": 54.0
+ },
+ {
+  "li": 10,
+  "pi": 0,
+  "say": "Follow, because next: it works on your laptop,",
+  "show": "*Follow,* because next: it works on your laptop,",
+  "start": 54.48,
+  "end": 56.4
+ },
+ {
+  "li": 10,
+  "pi": 1,
+  "say": "but crashes on the server.",
+  "show": "but [crashes on the server.]",
+  "start": 56.4,
+  "end": 57.82
+ }
+]

@@ -1,0 +1,999 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+@font-face { font-family: Inter; src: url(../../node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2) format('woff2'); font-weight: 100 900; }
+@font-face { font-family: Mono; src: url(../../node_modules/@fontsource/jetbrains-mono/files/jetbrains-mono-latin-400-normal.woff2) format('woff2'); font-weight: 400; }
+@font-face { font-family: Mono; src: url(../../node_modules/@fontsource/jetbrains-mono/files/jetbrains-mono-latin-500-normal.woff2) format('woff2'); font-weight: 500; }
+html, body { margin: 0; background: #000; }
+#stage { position: relative; width: 540px; height: 960px; overflow: hidden; background: #000; font-family: Inter, sans-serif; color: #fff; }
+#world { position: absolute; inset: 0; transform-origin: 50% 55%; -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,0.12) 70px, rgba(0,0,0,0.5) 190px, #000 270px); mask-image: linear-gradient(to bottom, rgba(0,0,0,0.12) 70px, rgba(0,0,0,0.5) 190px, #000 270px); }
+#vignette { position: absolute; inset: 0; background: radial-gradient(110% 75% at 50% 52%, rgba(255,255,255,0.05), rgba(0,0,0,0) 62%); }
+#bg { position: absolute; inset: 0; width: 540px; height: 960px; }
+svg.full { position: absolute; inset: 0; overflow: visible; }
+#dim { position: absolute; inset: 0; pointer-events: none; }
+#flash { position: absolute; inset: 0; pointer-events: none; opacity: 0; }
+#lb { position: absolute; inset: 0; pointer-events: none; }
+#lb i { position: absolute; left: 0; right: 0; height: 0; background: #000; }
+#grain { position: absolute; inset: -40px; pointer-events: none; opacity: 0.55; mix-blend-mode: screen; }
+#bar { position: absolute; top: 26px; left: 32px; right: 32px; display: flex; gap: 6px; }
+#bar div { flex: 1; height: 2.5px; border-radius: 2px; background: rgba(255,255,255,0.16); overflow: hidden; }
+#bar i { display: block; height: 100%; background: rgba(255,255,255,0.85); width: 0; }
+#caps { position: absolute; left: 0; right: 0; top: 150px; text-align: center; }
+.cap { position: absolute; left: 0; right: 0; padding: 0 30px; }
+.cap-line { font-size: 24px; line-height: 33px; font-weight: 400; color: #a3a3a3; letter-spacing: -0.2px; }
+.w { display: inline-block; margin: 0 3px; }
+.key { color: #fff; font-weight: 700; }
+.pill { background: rgba(255,255,255,0.14); border-radius: 9px; padding: 0 9px; }
+#chapter { position: absolute; left: 32px; top: 236px; font-family: Mono; font-size: 10px; letter-spacing: 2px; color: #8a8a8a; display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+#chapter b { display: inline-block; width: 6px; height: 6px; background: #fff; border-radius: 1px; }
+#handle { position: absolute; right: 32px; top: 232px; display: flex; flex-direction: column; align-items: flex-end; gap: 6px; font-weight: 700; font-size: 8.5px; letter-spacing: 0.6px; }
+.lbl { position: absolute; transform: translate(-50%, -50%); font-family: Mono; font-size: 10px; letter-spacing: 1.5px; color: #c4c4c4; white-space: nowrap; }
+.lbl.big { font-size: 12.5px; letter-spacing: 0.3px; color: #fff; font-weight: 500; }
+.lbl.huge { font-family: Inter; font-size: 30px; font-weight: 800; letter-spacing: -0.5px; color: #fff; }
+.lbl.red { color: #FF453A; } .lbl.green { color: #32D74B; }
+.lbl.tag { font-size: 11px; letter-spacing: 0.5px; color: #000; background: #fff; border-radius: 6px; padding: 3px 7px; font-weight: 500; }
+.lbl.tag.green { background: #32D74B; color: #000; }
+.lbl.tag.red { background: #FF453A; color: #000; }
+.lbl.out { background: rgba(0,0,0,0.85); border: 1px solid rgba(255,255,255,0.45); border-radius: 6px; padding: 3px 7px; color: #fff; font-size: 10.5px; letter-spacing: 0.6px; }
+.card { position: absolute; border: 1px solid rgba(255,255,255,0.5); border-radius: 12px; background: rgba(0,0,0,0.92); font-family: Mono; box-sizing: border-box; font-size: 12.5px; }
+.card .hd { font-size: 9.5px; letter-spacing: 1.6px; color: #8a8a8a; display: flex; justify-content: space-between; }
+.row { display: flex; justify-content: space-between; align-items: center; padding: 7px 9px; border-radius: 7px; margin-top: 6px; }
+.dim { color: #8a8a8a; } .g { color: #32D74B; } .r { color: #FF453A; }
+.cur { display: inline-block; width: 7px; height: 14px; background: #fff; vertical-align: -2px; margin-left: 2px; }
+#title { position: absolute; left: 0; right: 0; top: 590px; text-align: center; }
+#title .t { font-size: 58px; font-weight: 800; letter-spacing: -2.2px; }
+#title .ph { font-family: Mono; font-size: 13px; letter-spacing: 3px; color: #a3a3a3; margin-top: 10px; }
+#title .chip { display: inline-block; margin-top: 18px; font-family: Mono; font-size: 12px; padding: 7px 12px; border: 1px solid rgba(255,255,255,0.4); border-radius: 18px; }
+#cursor { position: absolute; left: 0; top: 0; width: 18px; height: 24px; }
+.sheet { position: absolute; left: 20px; right: 20px; border-radius: 20px; background: #0d0d0d; border: 1px solid rgba(255,255,255,0.18); font-family: Inter; }
+.btn { display: inline-flex; align-items: center; justify-content: center; border-radius: 9px; font-weight: 700; font-size: 13px; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="world">
+    <div id="vignette"></div>
+    <canvas id="bg" width="1080" height="1920"></canvas>
+    <svg class="full" id="scene" width="540" height="960" viewBox="0 0 540 960"></svg>
+    <svg class="full" id="fx" width="540" height="960" viewBox="0 0 540 960"></svg>
+    <div id="labels"></div>
+  </div>
+  <div id="lb"><i style="top:0"></i><i style="bottom:0"></i></div>
+  <div id="dim"></div>
+  <div id="ui"></div>
+  <div id="title"></div>
+  <div id="flash"></div>
+  <div id="chapter"><b></b><span></span></div>
+  <div id="handle">
+    <svg width="17" height="17" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="6" fill="none" stroke="#fff" stroke-width="2"/><circle cx="12" cy="12" r="4.6" fill="none" stroke="#fff" stroke-width="2"/><circle cx="17.6" cy="6.4" r="1.3" fill="#fff"/></svg>
+    <div>@HOW.ITS.ENGINEERED</div>
+  </div>
+  <div id="bar"><div><i></i></div><div><i></i></div><div><i></i></div><div><i></i></div><div><i></i></div></div>
+  <div id="caps"></div>
+  <div id="grain"></div>
+  <svg id="cursor" viewBox="0 0 18 24"><path d="M2 2 L2 19 L6.5 15 L9.5 22 L12.5 20.7 L9.6 14 L15.5 14 Z" fill="#fff" stroke="#000" stroke-width="1.4" stroke-linejoin="round"/></svg>
+</div>
+<script src="../../tools/lib.js"></script>
+<script src="../../tools/iso.js"></script>
+<script src="voice/timings.js"></script>
+<script>
+const $ = (id) => document.getElementById(id);
+ISO.layer = $('scene');
+const FX = $('fx');
+const BG = $('bg').getContext('2d');
+const WD = window.WORDS || [];
+const TM = window.TIMINGS;
+const ph = (li, pi = 0) => TM.find((e) => e.li === li && e.pi === pi);
+const S = (li, pi = 0) => ph(li, pi).start, E = (li, pi = 0) => ph(li, pi).end;
+const nrm = (s) => s.toLowerCase().replace(/[^a-z0-9]/g, '');
+// start time of the first spoken word `w` at/after time `after` (falls back to fb)
+const W = (w, after, fb) => { const x = WD.find((e) => e[1] >= after - 0.05 && nrm(e[0]).startsWith(w)); return x && x[1] < after + 4 ? x[1] : (fb ?? after); };
+const END = E(11, 2) + 1.6;
+window.DURATION = Math.ceil(END * 30) / 30;
+const RED = '#FF453A', GREEN = '#32D74B';
+
+const caps = makeCaptions($('caps'), TM.map((e, i) => ({
+  t: e.start, dur: Math.max(0.35, e.end - e.start), text: e.show,
+  end: i + 1 < TM.length ? TM[i + 1].start - 0.02 : END - 0.3,
+})));
+$('grain').style.backgroundImage = `url(${grainURL(256, 0.07, 11)})`;
+
+// ---------- key times ----------
+const TAP = W('play', 0.8, 1.56) - 0.04;
+const WAVE = W('same', 1.8, 2.34);
+const OK = S(0, 1), WHY = S(0, 2);
+const L2 = S(2, 0), REQ = S(2, 1), FINE = S(2, 2), WHILE = W('while', FINE, E(2, 2) - 0.25);
+const L3 = S(3, 0);
+const L4 = S(4, 0), FLOOD = S(4, 1), HOT = S(4, 2), CRASH = W('crashes', S(4, 3), S(4, 3) + 0.4);
+const L5 = S(5, 0), ADD = W('more', S(5, 1), S(5, 1) + 0.25), LBT = W('load', S(5, 2), S(5, 2) + 0.35);
+const LAND = LBT + 0.08;
+const L6 = S(6, 0), SHORT = W('shortest', S(6, 1), S(6, 1) + 0.8);
+const L7 = S(7, 0);
+const ONE = W('one', L7 + 0.4, L7 + 1.2), TWO = W('two', ONE, ONE + 0.55), THREE = W('three', TWO, TWO + 0.5), REP = W('repeat', THREE, THREE + 0.4);
+const LC = S(7, 1), BUSY = W('busy', S(7, 2), S(7, 2) + 0.7);
+const L8 = S(8, 0), DIES = W('dies', L8, L8 + 0.4), SKIP = W('skips', S(8, 1), S(8, 1) + 0.85);
+const L9 = S(9, 0), ADD2 = S(9, 1), NOB = W('nobody', ADD2, ADD2 + 0.9);
+const L10 = S(10, 0), THOU = S(10, 1);
+const L11 = S(11, 0);
+
+// ---------- small helpers ----------
+const life = (t, a, b, fi = 0.35, fo = 0.25) => Math.max(0, Math.min(ep(t, a, a + fi), 1 - ep(t, b - fo, b)));
+const hash = (n) => { const x = Math.sin(n * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
+const at = (A, B, k) => [lerp(A[0], B[0], k), lerp(A[1], B[1], k)];
+const flipV = (F) => ({ o: add3(F.o, F.v), u: F.u, v: mul3(F.v, -1) });
+function fcircle(o, F, a, b, r, opt = {}) {
+  const lu = len3(F.u), lv = len3(F.v), pts = [];
+  for (let i = 0; i < 28; i++) { const q = (i / 28) * Math.PI * 2; pts.push(fp(F, a + (r * Math.cos(q)) / lu, b + (r * Math.sin(q)) / lv)); }
+  push(o, path2(pts), { w: 0.9, ...opt });
+}
+const circ = (p, r) => `M${p[0] - r} ${p[1]}a${r} ${r} 0 1 0 ${2 * r} 0a${r} ${r} 0 1 0 ${-2 * r} 0`;
+const recolor = (o, from, col) => { for (let k = from; k < o.items.length; k++) o.items[k].stroke = col; };
+const fx = (tag, attrs, parent = FX) => el(tag, attrs, parent);
+const labels = $('labels');
+function label(text, x, y, op, cls = '', extra = '') {
+  if (op <= 0.01) return;
+  const d = document.createElement('div');
+  d.className = 'lbl ' + cls; d.innerHTML = text;
+  d.style.left = x + 'px'; d.style.top = y + 'px'; d.style.opacity = Math.min(1, op);
+  if (extra) d.style.cssText += extra;
+  labels.appendChild(d);
+}
+const popScale = (t, t0, k = 0.45, d = 0.3) => `transform:translate(-50%,-50%) scale(${1 + k * (1 - ep(t, t0, t0 + d))})`;
+function card(a, style, inner, cls = 'card') {
+  if (a <= 0.001) return '';
+  const e = ease.back(clamp(a)), o = clamp(a * 1.5);
+  return `<div class="${cls}" style="${style};opacity:${o};transform:translateY(${(1 - e) * 18}px) scale(${lerp(0.92, 1, e)});filter:blur(${(1 - clamp(a * 1.3)) * 6}px)">${inner}</div>`;
+}
+function ripple(t, t0, p, col = '#fff', R = 34) {
+  const k = prog(t, t0, t0 + 0.55);
+  if (k <= 0 || k >= 1) return;
+  fx('circle', { cx: p[0], cy: p[1], r: 4 + ease.out(k) * R, fill: 'none', stroke: col, 'stroke-width': 1.6 * (1 - k) + 0.3, 'stroke-opacity': 1 - k });
+}
+function isoRing(t, t0, w, col = '#fff', R = 90, dur = 0.8) {
+  const k = prog(t, t0, t0 + dur);
+  if (k <= 0 || k >= 1) return;
+  const r = 10 + ease.out(k) * R, pts = [];
+  for (let i = 0; i <= 40; i++) { const q = (i / 40) * Math.PI * 2; pts.push(P(w[0] + r * Math.cos(q), w[1] + r * Math.sin(q), w[2] || 0)); }
+  fx('path', { d: path2(pts), fill: 'none', stroke: col, 'stroke-width': 1.4, 'stroke-opacity': (1 - k) * 0.9 });
+}
+function pop(t, t0, p, text, cls = 'big', dur = 1.1) {
+  const k = prog(t, t0, t0 + dur);
+  if (k <= 0 || k >= 1) return;
+  label(text, p[0], p[1] - ease.out(k) * 34, Math.min(ep(t, t0, t0 + 0.12), 1 - prog(k, 0.6, 1)), cls, `transform:translate(-50%,-50%) scale(${lerp(1.35, 1, ease.out(clamp(k * 4)))})`);
+}
+function shards(t, t0, p, col = RED, n = 9, R = 1) {
+  const k = prog(t, t0, t0 + 0.7);
+  if (k <= 0 || k >= 1) return;
+  for (let i = 0; i < n; i++) {
+    const a = (i / n) * Math.PI * 2 + hash(i) * 0.6, d = 6 + ease.out(k) * (26 + hash(i + 3) * 26) * R, L = 6 * (1 - k) + 2;
+    const x = p[0] + Math.cos(a) * d, y = p[1] + Math.sin(a) * d + k * k * 14;
+    fx('line', { x1: x, y1: y, x2: x + Math.cos(a + 1) * L, y2: y + Math.sin(a + 1) * L, stroke: col, 'stroke-width': 1.4, 'stroke-opacity': 1 - k });
+  }
+}
+function sparkle(t, t0, p, col = '#fff', R = 30) {
+  const k = prog(t, t0, t0 + 0.6);
+  if (k <= 0 || k >= 1) return;
+  for (let i = 0; i < 6; i++) {
+    const a = (i / 6) * Math.PI * 2 + 0.4, d = ease.out(k) * R * (0.7 + hash(i + 11) * 0.6), s = 5 * (1 - k);
+    const x = p[0] + Math.cos(a) * d, y = p[1] + Math.sin(a) * d;
+    fx('path', { d: `M${x} ${y - s}L${x + s * 0.25} ${y}L${x} ${y + s}L${x - s * 0.25} ${y}ZM${x - s} ${y}L${x} ${y + s * 0.25}L${x + s} ${y}L${x} ${y - s * 0.25}Z`, fill: col, 'fill-opacity': 1 - k });
+  }
+}
+const fmt = (n) => Math.round(n).toLocaleString('en-US');
+
+// ---------- world layout ----------
+const PH = [0, 250], LB = [0, -20], MK = [1000, -60];
+const XS = [-300, -150, 0, 150, 300];
+const SVP = [...XS.map((x) => [x, -210]), ...XS.map((x) => [x, -370])];
+const BTN = [PH[0], PH[1] - 58 + 0.755 * 116, 12];
+const LBTOP = [LB[0], LB[1], 44];
+const svTop = (i, z = 140) => P(SVP[i][0], SVP[i][1], z);
+
+// crowd: 420 viewers + 200 more that join in the surge
+const CROWD = [];
+for (let i = 0; CROWD.length < 620; i++) {
+  const x = (hash(i * 1.7 + 0.3) * 2 - 1) * 440, y = 125 + hash(i * 2.3 + 0.9) * 360;
+  if (Math.abs(x) < 82 && Math.abs(y - PH[1]) < 112) continue;
+  const extra = CROWD.length >= 420, d = Math.hypot(x - PH[0], y - PH[1]), r = hash(i + 5.1);
+  CROWD.push({ x, y, d, extra, s: hash(i + 9.9), press: extra ? 1e9 : r < 0.3 ? 0.25 + hash(i + 8.8) * (WAVE - 0.4) : WAVE + d * 0.0011, app: extra ? L9 + 0.1 + hash(i + 2.2) * 0.8 : -1 });
+}
+const crowdPick = (k) => CROWD[Math.floor(hash(k * 3.31 + 0.7) * 420)];
+
+// ---------- objects ----------
+function phoneObj(st, c = PH) {
+  const [cx, cy] = c, o = Obj();
+  const T = box(o, cx - 55, cy - 85, 0, 110, 170, 5);
+  tileDots(o, T.top, 6, 9);
+  const F = box(o, cx - 30, cy - 58, 5, 60, 116, 7), Sc = F.top;
+  fpoly(o, Sc, 0.08, 0.05, 0.84, 0.9, { fill: 'none' });
+  fline(o, Sc, 0.38, 0.1, 0.62, 0.1, { w: 1.2 });
+  const m = st.mode, press = st.press || 0;
+  if (m === 'play') {
+    ftext(o, Sc, 0.5, 0.19, 'TONIGHT · 9 PM', 4.4, { weight: 600, op: 0.7, ls: 0.4 });
+    ftext(o, Sc, 0.5, 0.27, 'The Finale', 8.2, { weight: 800 });
+    fcircle(o, Sc, 0.5, 0.47, 13, { fill: 'none', w: 1.2 });
+    push(o, path2([fp(Sc, 0.43, 0.43), fp(Sc, 0.43, 0.51), fp(Sc, 0.6, 0.47)]), { fill: '#fff', stroke: '#fff', w: 0.8 });
+    fpoly(o, Sc, 0.16, 0.69, 0.68, 0.13, { fill: press > 0.02 ? '#fff' : 'none', fillOp: press, w: 1 });
+    ftext(o, Sc, 0.5, 0.755, 'PLAY', 6.6, { fill: press > 0.5 ? '#000' : '#fff', weight: 800, ls: 0.6 });
+  } else if (m === 'load') {
+    ftext(o, Sc, 0.5, 0.27, 'The Finale', 8.2, { weight: 800, op: 0.45 });
+    for (let k = 0; k < 10; k++) {
+      const a = (k / 10) * Math.PI * 2, lit = ((k - st.t * 14) % 10 + 10) % 10 / 10;
+      fdot(o, Sc, 0.5 + (9 * Math.cos(a)) / 60, 0.5 + (9 * Math.sin(a)) / 116, 1.15, { fillOp: 0.15 + 0.85 * lit });
+    }
+    ftext(o, Sc, 0.5, 0.72, 'Loading…', 5, { weight: 500, op: 0.8 });
+  } else if (m === 'playing') {
+    fpoly(o, Sc, 0.12, 0.16, 0.76, 0.42, { fill: '#fff', fillOp: 0.07, w: 0.9 });
+    push(o, path2([fp(Sc, 0.14, 0.56), fp(Sc, 0.32, 0.37), fp(Sc, 0.45, 0.48), fp(Sc, 0.6, 0.31), fp(Sc, 0.86, 0.56)], false), { fill: 'none', w: 0.8 });
+    fcircle(o, Sc, 0.72, 0.24, 3.5, { fill: 'none', w: 0.8 });
+    const pr = 0.15 + ((st.t * 0.03) % 1) * 0.7;
+    fline(o, Sc, 0.14, 0.67, 0.86, 0.67, { op: 0.35, w: 1.4 });
+    fline(o, Sc, 0.14, 0.67, 0.14 + 0.72 * pr, 0.67, { stroke: GREEN, w: 1.7 });
+    ftext(o, Sc, 0.5, 0.8, 'Playing', 6, { fill: GREEN, weight: 800 });
+  } else if (m === 'error') {
+    fcircle(o, Sc, 0.5, 0.36, 12, { stroke: RED, fill: 'none', w: 1.4 });
+    fline(o, Sc, 0.42, 0.32, 0.58, 0.4, { stroke: RED, w: 1.6 }); fline(o, Sc, 0.58, 0.32, 0.42, 0.4, { stroke: RED, w: 1.6 });
+    ftext(o, Sc, 0.5, 0.58, "Can't play", 7, { fill: RED, weight: 800 });
+    ftext(o, Sc, 0.5, 0.7, 'Error 503', 5, { font: 'Mono', weight: 500, op: 0.8 });
+  }
+  if (F.px) { fline(o, F.px, 0.25, 0.5, 0.4, 0.5, { w: 1.1 }); fline(o, F.px, 0.5, 0.5, 0.58, 0.5, { w: 1.1 }); }
+  return o;
+}
+// one server: platform + rack; st = {rise, load, dead, col, flash}
+function serverObj(i, t, st) {
+  const [cx, cy] = SVP[i], o = Obj();
+  const T = box(o, cx - 42, cy - 38, 0, 84, 76, 4);
+  tileDots(o, T.top, 4, 4);
+  ftext(o, T.top, 0.5, 0.88, 'S' + (i + 1), 6.5, { font: 'Mono', weight: 500, op: 0.6 });
+  if (st.rise < 0.02) return o;
+  const h = 118 * st.rise, n0 = o.items.length;
+  const F = rack(o, cx - 26, cy - 22, 4, 52, 44, h);
+  if (st.col) recolor(o, n0, st.col);
+  if (F.py && st.rise > 0.85) {
+    if (st.dead > 0.5) {
+      fline(o, F.py, 0.2, 0.3, 0.8, 0.7, { stroke: RED, w: 2 }); fline(o, F.py, 0.8, 0.3, 0.2, 0.7, { stroke: RED, w: 2 });
+    } else {
+      const n = Math.round(12 * clamp(st.load));
+      for (let k = 0; k < 12; k++) {
+        const on = k < n, tw = Math.sin(t * (6 + i) + k * 1.9) > -0.2;
+        const v = Math.max(on && tw ? 0.9 : 0, st.flash * (0.5 + 0.5 * Math.sin(t * 40 + k)));
+        if (v > 0.05) fdot(o, F.py, 0.8, 0.06 + k * 0.074 + 0.036, 1.7, { fill: st.flash > 0.05 ? (st.fcol || GREEN) : st.load > 0.8 ? RED : '#fff', fillOp: v });
+      }
+    }
+  }
+  return o;
+}
+// load balancer: box with a dial and a pointer arm on top, a door on the front
+function lbObj(t, st) {
+  const [cx, cy] = LB, o = Obj();
+  const T = box(o, cx - 66, cy - 56, 0, 132, 112, 4);
+  tileDots(o, T.top, 6, 5);
+  const z = 4 + st.drop;
+  const n0 = o.items.length;
+  const B = box(o, cx - 45, cy - 35, z, 90, 70, 36);
+  if (st.col) recolor(o, n0, st.col);
+  if (B.py) {
+    const D = B.py;
+    fpoly(o, D, 0.06, 0.12, 0.88, 0.76, { fill: 'none', w: 0.6, op: 0.7 });
+    fpoly(o, D, 0.4, 0.0, 0.2, 0.74, { fill: st.door > 0.02 ? '#fff' : 'none', fillOp: 0.85 * st.door, w: 1, stroke: st.door > 0.02 ? GREEN : '#fff' });
+    for (let k = 0; k < 4; k++) fdot(o, D, 0.12 + k * 0.06, 0.62, 1.3, { fillOp: Math.sin(t * 7 + k * 2) > 0 ? 1 : 0.3 });
+    ftext(o, flipV(D), 0.8, 0.45, 'LB', 9, { font: 'Mono', weight: 500 });
+  }
+  if (B.px) for (let k = 0; k < 5; k++) fpoly(o, B.px, 0.12 + k * 0.16, 0.3, 0.1, 0.22, { fill: 'none', w: 0.6 });
+  const Tp = B.top, sx = 90, sy = 70;
+  fcircle(o, Tp, 0.5, 0.5, 24, { fill: 'none', w: 1.1 });
+  fcircle(o, Tp, 0.5, 0.5, 30, { fill: 'none', w: 0.5, op: 0.5 });
+  for (let i = 0; i < 10; i++) {
+    if (!st.ticks[i]) continue;
+    const a = Math.atan2(SVP[i][1] - cy, SVP[i][0] - cx), r = i < 5 ? 27 : 32;
+    fdot(o, Tp, 0.5 + (Math.cos(a) * r) / sx, 0.5 + (Math.sin(a) * r) / sy, 1.4, { fill: st.ticks[i] === 2 ? RED : '#fff', fillOp: st.ticks[i] === 2 ? 1 : 0.7 });
+  }
+  fline(o, Tp, 0.5, 0.5, 0.5 + (Math.cos(st.ang) * 22) / sx, 0.5 + (Math.sin(st.ang) * 22) / sy, { w: 2.4, stroke: st.armCol || '#fff' });
+  fcircle(o, Tp, 0.5, 0.5, 3.5, { fill: '#fff', w: 0.8 });
+  return o;
+}
+// supermarket set
+const LANES = [-135, -45, 45, 135].map((dx) => MK[0] + dx), QN = [4, 1, 3, 5];
+const qY = (k) => MK[1] - 18 + k * 30;
+function floorObj() {
+  const o = Obj();
+  const T = box(o, MK[0] - 200, MK[1] - 165, 0, 400, 380, 4);
+  tileDots(o, T.top, 12, 11);
+  return o;
+}
+function counterObj(j) {
+  const x = LANES[j], y0 = MK[1] - 140, o = Obj();
+  const F = box(o, x - 17, y0, 4, 34, 96, 24);
+  for (let k = 1; k < 7; k++) fline(o, F.top, 0.12, k / 7, 0.88, k / 7, { w: 0.5, op: 0.6 });
+  const R = box(o, x - 14, y0 + 72, 28, 28, 20, 16);
+  if (R.py) fpoly(o, R.py, 0.15, 0.25, 0.7, 0.5, { fill: 'none', w: 0.6 });
+  return o;
+}
+function personObj(x, y, t, col = '#fff', walk = 0, arm = null) {
+  const o = Obj(), bob = walk * Math.abs(Math.sin(t * 13)) * 3;
+  const n0 = o.items.length;
+  cylinder(o, x, y, 4 + bob, 7, 22, 0);
+  recolor(o, n0, col);
+  const hp = P(x, y, 36 + bob), r = 6 * CAM.scale;
+  push(o, circ(hp, r), { fill: '#000', stroke: col, w: 1 });
+  if (arm) { const s = P(x, y, 22 + bob), e = P(x + arm[0] * 26, y + arm[1] * 26, 30 + bob); push(o, path2([s, e], false), { fill: 'none', w: 2.2, stroke: col }); }
+  return o;
+}
+// far datacenter field for the recap
+const FIELD = [];
+for (let r = 0; r < 5; r++) for (let c = -5; c <= 5; c++) FIELD.push({ x: c * 150, y: -540 - r * 150, d: r * 0.1 + Math.abs(c) * 0.06 });
+function fieldRack(f, t, h) {
+  const o = Obj();
+  box(o, f.x - 30, f.y - 28, 0, 60, 56, 3);
+  const F = box(o, f.x - 22, f.y - 18, 3, 44, 36, h);
+  if (F.py && h > 30) for (let k = 0; k < 6; k++) {
+    fline(o, F.py, 0.15, 0.1 + k * 0.15, 0.62, 0.1 + k * 0.15, { w: 0.5, op: 0.6 });
+    if (Math.sin(t * 4 + f.x * 0.01 + f.y * 0.02 + k * 2) > 0.2) fdot(o, F.py, 0.8, 0.1 + k * 0.15, 1.4, { fill: GREEN, fillOp: 0.9 });
+  }
+  return o;
+}
+
+// ---------- packets ----------
+const FL = [];
+const fly = (t0, dur, A, B, text = '', kind = 'w', arc = 40, si = -1) => FL.push({ t0, dur, A, B, text, kind, arc, si });
+// the simple way: everyone hits one server
+const NAIVE = [];
+for (let x = REQ + 0.1; x < L3 - 0.2; x += 0.42) NAIVE.push(x);
+NAIVE.forEach((x, k) => { const c = crowdPick(k + 40); fly(x, 1.1, [c.x, c.y, 5], [0, -186, 46], k === 0 ? 'GET /play' : '', 'w', 50, 2); });
+for (let k = 0; k < 16; k++) { const c = crowdPick(k + 90); fly(FLOOD + 0.05 + k * 0.06, 0.8, [c.x, c.y, 5], [0, -186, 46], '', 'r', 40, 2); }
+// load balancer dispatches: {arr, i}
+const DISP = [];
+const disp = (arr, i, text = '', kind = 'w') => DISP.push({ arr, i, text, kind });
+const rr = (t0, t1, dt, seq, start = 0) => { let k = start; for (let x = t0; x < t1; x += dt) disp(x, seq[(k++) % seq.length]); };
+rr(LAND + 0.8, L7 - 0.3, 0.32, [0, 1, 2, 3, 4]);
+disp(ONE, 0, '1'); disp(TWO, 1, '2'); disp(THREE, 2, '3');
+[3, 4, 0, 1, 2].forEach((i, k) => disp(REP + 0.05 + k * 0.19, i, String(i + 1)));
+disp(LC + 0.5, 4); disp(LC + 0.95, 2);
+disp(BUSY + 0.45, 1, 'least busy ✓', 'g');
+rr(BUSY + 0.95, DIES - 0.1, 0.3, [2, 3, 4, 0, 1]);
+[[SKIP - 0.86, 0], [SKIP - 0.58, 1], [SKIP - 0.3, 2], [SKIP + 0.14, 4]].forEach(([a, i]) => disp(a, i));
+rr(SKIP + 0.42, L9, 0.28, [0, 1, 2, 4]);
+rr(L9, ADD2 + 0.6, 0.1, [0, 1, 2, 4]);
+rr(ADD2 + 0.6, L11 + 0.3, 0.085, [0, 5, 1, 6, 2, 7, 3, 8, 4, 9]);
+DISP.sort((a, b) => a.arr - b.arr);
+DISP.forEach((d) => fly(d.arr - 0.45, 0.45, LBTOP, [SVP[d.i][0], SVP[d.i][1] + 20, 40], d.text, d.kind, 26, d.i));
+const ARR = Array.from({ length: 10 }, (_, i) => FL.filter((f) => f.si === i).map((f) => f.t0 + f.dur));
+function drawPackets(t, op) {
+  for (const f of FL) {
+    const k = prog(t, f.t0, f.t0 + f.dur);
+    if (k <= 0 || k >= 1) continue;
+    const kk = ease.inOut(k);
+    const pos = (q) => [lerp(f.A[0], f.B[0], q), lerp(f.A[1], f.B[1], q), lerp(f.A[2], f.B[2], q) + Math.sin(q * Math.PI) * f.arc];
+    const col = f.kind === 'g' ? GREEN : f.kind === 'r' ? RED : null;
+    for (let g = 3; g >= 1; g--) {
+      const kg = clamp(kk - g * 0.04); if (kg <= 0) continue;
+      const q = pos(kg), o = Obj();
+      box(o, q[0] - 5, q[1] - 5, q[2], 10, 10, 10, col ? { stroke: col } : {});
+      emit(o, 1, op * (0.32 - g * 0.09));
+    }
+    const q = pos(kk), o = Obj();
+    const Fb = box(o, q[0] - 5, q[1] - 5, q[2], 10, 10, 10, col ? { stroke: col } : {});
+    fpoly(o, Fb.top, 0.25, 0.25, 0.5, 0.5, { fill: col || '#fff', stroke: 'none' });
+    emit(o, 1, op);
+    if (f.text) { const lp = P(q[0], q[1], q[2] + 28); label(f.text, lp[0], lp[1], op * ep(t, f.t0, f.t0 + 0.15), f.kind === 'g' ? 'big green' : 'big'); }
+  }
+}
+
+// ---------- server state over time ----------
+const BASE = [0.38, 0.3, 0.42, 0.34, 0.36];
+const CONN0 = [12, 4, 9, 15, 7];
+const conn = (i, t) => CONN0[i] + (i === 1 && t >= BUSY + 0.45 ? 1 : 0);
+const RISE = [ADD + 0.15, ADD, -1, ADD + 0.08, ADD + 0.23, ...[0, 1, 2, 3, 4].map((j) => ADD2 + 0.05 + j * 0.1)];
+function pw(t, pts) { if (t <= pts[0][0]) return pts[0][1]; for (let i = 0; i < pts.length - 1; i++) if (t < pts[i + 1][0]) return lerp(pts[i][1], pts[i + 1][1], ease.inOut(prog(t, pts[i][0], pts[i + 1][0]))); return pts[pts.length - 1][1]; }
+function naiveLoad(t) {
+  return pw(t, [[REQ, 0.12], [FINE, 0.24], [WHILE + 0.35, 0.56], [L4 + 0.2, 0.6], [E(4, 0), 0.83], [FLOOD + 0.6, 1.0]]) + (t > FLOOD + 0.6 ? 0.02 * Math.sin(t * 40) : 0);
+}
+function svState(i, t) {
+  const st = { rise: i === 2 ? 1 : ease.back(prog(t, RISE[i], RISE[i] + 0.55)), load: 0, dead: 0, col: null, flash: 0, fcol: GREEN };
+  for (const a of ARR[i]) if (t >= a) st.flash = Math.max(st.flash, 1 - prog(t, a, a + 0.35));
+  if (t < L5) {
+    if (i !== 2) return st;
+    st.load = naiveLoad(t);
+    const hot = ep(t, HOT - 0.15, HOT + 0.6);
+    if (hot > 0 && t < CRASH) st.col = Math.sin(t * 18) > -0.3 ? RED : '#fff';
+    if (t > FLOOD) st.fcol = RED;
+    if (t >= CRASH) { st.dead = 1; st.col = '#5a5a5a'; st.flash = 0; }
+    return st;
+  }
+  if (i === 2 && t < L5 + 0.35) { st.dead = 1; st.col = '#5a5a5a'; return st; }
+  let v = BASE[i % 5] + 0.04 * Math.sin(t * 1.3 + i * 2);
+  if (i >= 5) v = 0.45 * ep(t, ADD2 + 0.5, ADD2 + 1.3) + 0.04 * Math.sin(t * 1.3 + i * 2);
+  if (t >= LC - 0.2 && t < L8 - 0.1 && i < 5) v = conn(i, t) / 20;
+  const s = ep(t, L9, L9 + 0.8) * (1 - ep(t, ADD2 + 0.5, ADD2 + 1.3));
+  v = lerp(v, 0.9 + 0.04 * Math.sin(t * 3 + i), i < 5 ? s : 0);
+  if (t > ADD2 + 0.5 && i < 5) v = lerp(v, 0.46 + 0.04 * Math.sin(t * 1.7 + i), ep(t, ADD2 + 0.5, ADD2 + 1.3));
+  st.load = v;
+  if (i === 3 && t >= DIES && t < ADD2 + 0.5) { st.dead = 1; st.col = RED; st.load = 0; st.flash = 0; }
+  if (i === 2 && t < L5 + 0.9) { st.flash = Math.max(st.flash, 1 - prog(t, L5 + 0.35, L5 + 0.9)); }
+  return st;
+}
+function armAngle(t) {
+  let cur = null, prev = null;
+  for (const d of DISP) { if (d.arr - 0.5 <= t) { prev = cur; cur = d; } else break; }
+  const ang = (d) => Math.atan2(SVP[d.i][1] - LB[1], SVP[d.i][0] - LB[0]);
+  if (!cur) return -Math.PI / 2;
+  const a1 = ang(cur), a0 = prev ? ang(prev) : a1;
+  return lerp(a0, a1, ease.out(prog(t, cur.arr - 0.5, cur.arr - 0.36)));
+}
+
+// ---------- camera shots ----------
+const V = (f, s, y, p, sy = 540, r = 0, sx = 270) => ({ f, s, y, p, sy, r, sx });
+const SH = [];
+const shot = (t, a, b, kick = false, fn = ease.inOut) => SH.push({ t, a, b, kick, fn });
+const SHOP0 = [MK[0] + 125, MK[1] + 205];
+shot(0, V([0, 250, 12], 2.7, -0.42, 56, 520), V([0, 250, 12], 2.85, -0.28, 52, 520));
+shot(TAP + 0.1, null, V([0, 260, 0], 0.62, 0.32, 60, 560), false, ease.inOut);
+shot(OK - 0.05, V([0, 270, 0], 0.66, 0.55, 46, 560), V([0, 270, 0], 0.7, 0.85, 44, 560), true);
+shot(WHY - 0.08, V([0, 290, 30], 0.95, 0.95, 32, 600), V([0, 290, 30], 1.02, 1.05, 32, 600), true);
+shot(L2 - 0.08, V([0, 30, 30], 0.48, 0.1, 74, 520), V([0, 20, 30], 0.7, -0.62, 46, 540), true, ease.outExpo);
+shot(REQ - 0.05, V([0, 170, 20], 1.15, -0.62, 18, 560), V([0, -120, 40], 1.0, -0.45, 22, 520), true);
+shot(FINE - 0.05, V([0, -210, 70], 1.3, 0.42, 26, 580), V([0, -210, 70], 1.38, 0.2, 28, 580), true);
+shot(L3 - 0.05, V([0, 40, 40], 0.66, -0.85, 56, 520), V([0, 40, 40], 0.72, -0.68, 60, 520));
+shot(L4 - 0.08, V([0, -210, 75], 1.55, -0.32, 8, 600), V([0, -210, 75], 1.68, -0.14, 10, 600), true);
+shot(FLOOD - 0.05, V([0, 80, 30], 0.6, -0.5, 50, 540), V([0, -50, 40], 0.86, -0.78, 38, 500), true);
+shot(HOT - 0.05, V([0, -210, 85], 1.75, 0.22, 14, 590, -3), V([0, -210, 85], 1.9, 0.1, 14, 590, -5), true);
+shot(CRASH - 0.03, V([0, -170, 60], 1.1, -0.25, 30, 600), V([0, -170, 60], 1.02, -0.4, 32, 600), true);
+shot(L5 - 0.03, V([0, -60, 30], 0.48, 0.2, 74, 520), V([0, -60, 30], 0.6, -0.55, 44, 520), true, ease.outExpo);
+shot(S(5, 1) - 0.05, V([0, -210, 40], 0.86, -0.78, 13, 560), V([0, -210, 40], 0.92, -0.56, 16, 560), true);
+shot(LBT - 0.3, V([0, -40, 70], 1.15, 0.38, 30, 540), V([0, -90, 40], 0.72, -0.45, 40, 540));
+shot(L6 - 0.15, null, V([MK[0], MK[1] + 30, 30], 0.95, -0.35, 44, 540), false, ease.inOut);
+shot(L6 + 0.9, null, V([MK[0], MK[1] + 40, 30], 1.02, -0.55, 40, 540), false, (k) => k);
+shot(SHORT - 0.1, V([LANES[1] + 40, MK[1] + 40, 25], 1.5, -0.5, 34, 560), V([LANES[1] + 40, MK[1] + 40, 25], 1.62, -0.62, 34, 560), true);
+shot(L7 - 0.05, V([0, -120, 0], 0.8, -1.0, 84, 500), V([0, -120, 0], 0.86, -0.7, 80, 500), true);
+shot(LC - 0.05, V([0, -210, 60], 0.95, -0.85, 11, 470), V([0, -210, 60], 0.98, -0.66, 13, 470), true);
+shot(S(7, 2) - 0.05, V([-150, -210, 80], 1.3, -0.32, 18, 470), V([-150, -210, 80], 1.4, -0.2, 18, 470), true);
+shot(L8 - 0.05, V([150, -210, 75], 1.5, 0.28, 20, 600, -2), V([150, -210, 75], 1.6, 0.16, 20, 600, -3), true);
+shot(S(8, 1) - 0.05, V([0, -120, 30], 0.82, -0.5, 56, 530), V([0, -120, 30], 0.86, -0.75, 52, 530), true);
+shot(L9 - 0.05, V([0, -20, 30], 0.66, -0.4, 40, 520), V([0, -20, 30], 0.7, -0.62, 42, 520), true);
+shot(ADD2 - 0.05, V([0, -290, 30], 0.95, -0.32, 18, 600), V([0, -250, 30], 0.6, -0.5, 48, 540));
+shot(NOB - 0.08, V([0, 230, 10], 0.95, 0.42, 42, 560), V([0, 230, 10], 1.0, 0.26, 42, 560), true);
+shot(L10 - 0.05, V([0, -20, 30], 1.6, 0.2, 18, 560), V([0, -20, 30], 1.72, 0.08, 18, 560), true);
+shot(THOU - 0.05, null, V([0, -480, 0], 0.33, -0.45, 46, 520), false, ease.inOut);
+shot(L11, null, V([0, -480, 0], 0.3, -0.1, 52, 380));
+shot(END + 1, null, V([0, -480, 0], 0.3, -0.1, 52, 380));
+SH.forEach((s, i) => { if (!s.a) s.a = SH[i - 1].b; });
+const CUTS = SH.filter((s) => s.kick).map((s) => s.t);
+function camera(t) {
+  let i = 0; while (i < SH.length - 2 && t >= SH[i + 1].t) i++;
+  const s = SH[i], k = s.fn(prog(t, s.t, SH[i + 1].t)), a = s.a, b = s.b;
+  CAM.scale = lerp(a.s, b.s, k);
+  CAM.yaw = lerp(a.y, b.y, k) + 0.025 * Math.sin(t * 0.55);
+  CAM.pitch = (lerp(a.p, b.p, k) + 1.2 * Math.sin(t * 0.37)) * Math.PI / 180;
+  aim([lerp(a.f[0], b.f[0], k), lerp(a.f[1], b.f[1], k), lerp(a.f[2], b.f[2], k)], lerp(a.sx, b.sx, k), lerp(a.sy, b.sy, k));
+  return lerp(a.r, b.r, k);
+}
+
+// ---------- cursor ----------
+const COMMENT_POS = [195, 745], FOLLOW_POS = [345, 745];
+const tapComment = S(11, 1) + 0.1, tapFollow = W('follow', S(11, 2), S(11, 2) + 0.45) + 0.05;
+const tapsCTA = [tapComment, tapFollow];
+function cursorAt(t) {
+  const btn = () => P(...BTN);
+  const tracks = [
+    [[0.05, () => [600, 1000]], [TAP - 0.12, btn], [TAP + 0.3, btn], [TAP + 0.9, () => [640, 1040]]],
+    [[L11 + 0.6, () => [560, 1000]], [tapComment - 0.12, () => COMMENT_POS], [tapComment + 0.3, () => COMMENT_POS], [tapFollow - 0.12, () => FOLLOW_POS], [END, () => FOLLOW_POS]],
+  ];
+  for (const Tk of tracks) {
+    if (t < Tk[0][0] || t > Tk[Tk.length - 1][0]) continue;
+    for (let i = 0; i < Tk.length - 1; i++) if (t >= Tk[i][0] && t <= Tk[i + 1][0]) {
+      const k = ease.inOut(prog(t, Tk[i][0], Tk[i + 1][0])), a = Tk[i][1](), b = Tk[i + 1][1]();
+      return [lerp(a[0], b[0], k), lerp(a[1], b[1], k)];
+    }
+  }
+  return null;
+}
+const pressAmt = (t, taps) => Math.max(0, ...taps.map((x) => window01(t, x, x + 0.18, 0.05)));
+
+// ---------- 2D overlays ----------
+function loadBar(p, v, op, col) {
+  if (op <= 0.01) return;
+  const sc = clamp(CAM.scale * 1.05, 0.62, 1.35), w = 46 * sc, h = 5 * sc;
+  const g = el('g', { transform: `translate(${p[0] - w / 2} ${p[1]})`, opacity: op }, FX);
+  el('rect', { x: 0, y: 0, width: w, height: h, rx: h / 2, fill: 'rgba(255,255,255,0.14)' }, g);
+  el('rect', { x: 0, y: 0, width: w * clamp(v), height: h, rx: h / 2, fill: col }, g);
+  const tx = el('text', { x: w / 2, y: -4 * sc, 'text-anchor': 'middle', 'font-family': 'Mono', 'font-size': 9 * sc, fill: col }, g);
+  tx.textContent = Math.round(clamp(v) * 100) + '%';
+}
+const beat = (q) => Math.exp(-(((q - 0.46) / 0.014) ** 2)) - 0.35 * Math.exp(-(((q - 0.5) / 0.016) ** 2)) + 0.15 * Math.exp(-(((q - 0.64) / 0.04) ** 2));
+function ecg(t, p, dead, op, seed) {
+  if (op <= 0.01) return;
+  const sc = clamp(CAM.scale * 1.05, 0.62, 1.35), w = 56 * sc, pts = [];
+  for (let k = 0; k <= 48; k++) { const u = k / 48, q = (((u * 1.2 - t * 1.1 + seed) % 1) + 1) % 1; pts.push([p[0] - w / 2 + u * w, p[1] - (dead ? 0 : beat(q)) * 13 * sc]); }
+  fx('path', { d: path2(pts, false), fill: 'none', stroke: dead ? RED : GREEN, 'stroke-width': 1.5, 'stroke-opacity': op, 'stroke-linejoin': 'round' });
+}
+function magnifier(p, op) {
+  const g = el('g', { transform: `translate(${p[0]} ${p[1]})`, opacity: op }, FX);
+  el('circle', { cx: 0, cy: 0, r: 40, fill: 'rgba(255,255,255,0.05)', stroke: '#fff', 'stroke-width': 2.2 }, g);
+  el('path', { d: 'M -22 -18 A 28 28 0 0 1 -6 -30', fill: 'none', stroke: '#fff', 'stroke-width': 1.4, 'stroke-opacity': 0.6, 'stroke-linecap': 'round' }, g);
+  el('line', { x1: 29, y1: 29, x2: 62, y2: 62, stroke: '#fff', 'stroke-width': 7, 'stroke-linecap': 'round' }, g);
+  el('line', { x1: 29, y1: 29, x2: 62, y2: 62, stroke: '#000', 'stroke-width': 3.6, 'stroke-linecap': 'round' }, g);
+}
+// heat shimmer + smoke above a screen point
+function heat(t, p, op) {
+  if (op <= 0.01) return;
+  const sc = Math.min(1.6, CAM.scale);
+  for (let j = 0; j < 4; j++) {
+    const pts = [], x0 = p[0] + (j - 1.5) * 16 * sc;
+    for (let k = 0; k <= 14; k++) { const y = p[1] - k * 4 * sc; pts.push([x0 + Math.sin(k * 0.8 - t * 9 + j) * 3.5 * sc, y]); }
+    fx('path', { d: path2(pts, false), fill: 'none', stroke: RED, 'stroke-width': 1.3, 'stroke-opacity': op * 0.7, 'stroke-linecap': 'round' });
+  }
+}
+function smoke(t, t0, p, amt) {
+  if (amt <= 0.01) return;
+  const sc = Math.min(1.6, CAM.scale);
+  for (let i = 0; i < 16; i++) {
+    const q = ((t - t0) * 0.45 + hash(i + 3)) % 1;
+    if (t < t0 + hash(i) * 0.3) continue;
+    const x = p[0] + (hash(i + 1) - 0.5) * 30 * sc + Math.sin(q * 5 + i) * 8 * sc, y = p[1] - q * 110 * sc, r = (5 + q * 18) * sc;
+    fx('circle', { cx: x, cy: y, r, fill: '#9a9a9a', 'fill-opacity': amt * 0.22 * (1 - q), stroke: '#cfcfcf', 'stroke-width': 0.8, 'stroke-opacity': amt * 0.35 * (1 - q) });
+  }
+}
+
+// ---------- canvas: ground grid, crowd, request streams, dust, title fan ----------
+const DUST = Array.from({ length: 90 }, (_, i) => [hash(i + 1.3) * 1900 - 900, hash(i + 7.7) * 1500 - 1000, 20 + hash(i + 3.9) * 360, hash(i + 5.5)]);
+const STREAMS = [
+  { t0: REQ - 0.2, t1: L4 + 2.2, rate: 7, dur: 1.5, to: [0, -186, 30], col: 0 },
+  { t0: FLOOD - 0.1, t1: CRASH, rate: 170, dur: 0.85, to: [0, -186, 40], col: 1 },
+  { t0: LBT + 0.4, t1: L11 + 0.3, rate: 16, dur: 1.3, to: [0, -20, 30], col: 0 },
+  { t0: L9, t1: NOB, rate: 80, dur: 1.1, to: [0, -20, 30], col: 0 },
+];
+function crowdRGB(t) {
+  const g = Math.max(window01(t, OK - 0.05, S(1, 0) + 0.2, 0.25), window01(t, NOB - 0.1, L10 + 0.2, 0.3));
+  const r = window01(t, CRASH, L5 + 0.15, 0.08);
+  return [lerp(lerp(255, 50, g), 255, r), lerp(lerp(255, 215, g), 69, r), lerp(lerp(255, 75, g), 58, r)];
+}
+function drawBG(t, focus, gridOp, crowdOp, fan) {
+  const g = BG; g.setTransform(2, 0, 0, 2, 0, 0); g.clearRect(0, 0, 540, 960);
+  if (gridOp > 0) {
+    const gx = Math.round(focus[0] / 60) * 60, gy = Math.round(focus[1] / 60) * 60, N = 14;
+    for (let i = -N; i <= N; i++) for (let j = -N; j <= N; j++) {
+      const x = gx + i * 60, y = gy + j * 60, p = P(x, y, 0);
+      if (p[0] < -10 || p[0] > 550 || p[1] < -10 || p[1] > 970) continue;
+      const fade = 1 - clamp((Math.hypot(x - focus[0], y - focus[1]) - 320) / 560);
+      if (fade <= 0) continue;
+      g.fillStyle = `rgba(255,255,255,${0.16 * fade * gridOp})`;
+      const r = Math.min(1.6, 0.5 + CAM.scale * 0.45);
+      g.fillRect(p[0] - r / 2, p[1] - r / 2, r, r);
+    }
+  }
+  const [cr, cg, cb] = crowdRGB(t);
+  if (crowdOp > 0.01) {
+    const sc = Math.min(2.2, CAM.scale);
+    for (const c of CROWD) {
+      const a = c.extra ? ep(t, c.app, c.app + 0.4) : 1;
+      if (a <= 0) continue;
+      const p0 = P(c.x, c.y, 0), p1 = P(c.x, c.y, 10 + c.s * 4);
+      if (p0[0] < -20 || p0[0] > 560 || p0[1] < -40 || p0[1] > 1000) continue;
+      const pressed = t >= c.press, fl = pressed ? 1 - prog(t, c.press, c.press + 0.5) : 0;
+      const al = crowdOp * a * (0.32 + (pressed ? 0.38 : 0) + fl * 0.3 + 0.08 * Math.sin(t * 2 + c.s * 20));
+      g.strokeStyle = `rgba(${cr},${cg},${cb},${al})`; g.lineWidth = 1.1 * Math.max(0.6, sc * 0.7);
+      g.beginPath(); g.moveTo(p0[0], p0[1]); g.lineTo(p1[0], p1[1]); g.stroke();
+      g.fillStyle = `rgba(${cr},${cg},${cb},${al})`;
+      g.beginPath(); g.arc(p1[0], p1[1] - 1.5 * sc, 1.6 * Math.max(0.6, sc * 0.7), 0, 7); g.fill();
+      if (fl > 0 && fl < 1) { g.strokeStyle = `rgba(255,255,255,${fl * crowdOp * 0.8})`; g.lineWidth = 1; g.beginPath(); g.ellipse(p0[0], p0[1], (1 - fl) * 16 * sc + 2, (1 - fl) * 8 * sc + 1, 0, 0, 7); g.stroke(); }
+    }
+    // request streams (crowd → target)
+    for (const s of STREAMS) {
+      if (t < s.t0 || t > s.t1 + s.dur) continue;
+      const k0 = Math.max(0, Math.floor((t - s.dur - s.t0) * s.rate)), k1 = Math.floor((Math.min(t, s.t1) - s.t0) * s.rate);
+      for (let k = k0; k <= k1; k++) {
+        const tk = s.t0 + k / s.rate, q = (t - tk) / s.dur;
+        if (q < 0 || q > 1) continue;
+        const c = crowdPick(k * 1.37 + s.t0), kk = ease.inOut(q);
+        const p = P(lerp(c.x, s.to[0], kk), lerp(c.y, s.to[1], kk), lerp(4, s.to[2], kk) + Math.sin(kk * Math.PI) * 50);
+        const col = s.col ? `255,${lerp(255, 69, clamp(q * 1.5))},${lerp(255, 58, clamp(q * 1.5))}` : `${cr},${cg},${cb}`;
+        g.fillStyle = `rgba(${col},${crowdOp * 0.85 * Math.sin(q * Math.PI)})`;
+        g.beginPath(); g.arc(p[0], p[1], 1.5 * Math.max(0.7, Math.min(1.6, CAM.scale)), 0, 7); g.fill();
+      }
+    }
+  }
+  for (const [x, y, z, s] of DUST) {
+    const p = P(x + Math.sin(t * 0.3 + s * 9) * 20, y + Math.cos(t * 0.25 + s * 7) * 20, z + Math.sin(t * 0.5 + s * 5) * 10);
+    if (p[0] < -5 || p[0] > 545 || p[1] < -5 || p[1] > 965) continue;
+    g.fillStyle = `rgba(255,255,255,${(0.1 + s * 0.25) * gridOp})`;
+    g.beginPath(); g.arc(p[0], p[1], 0.6 + s * 1.2 * Math.min(1.6, CAM.scale), 0, 7); g.fill();
+  }
+  // title: particles pour into one node and fan out to 5 servers
+  const [form, burst, op] = fan;
+  if (op > 0) {
+    const NODE = [270, 400], OUT = [0, 1, 2, 3, 4].map((j) => [270 + (j - 2) * 88, 520]);
+    g.globalAlpha = op;
+    // server icons
+    OUT.forEach(([x, y], j) => {
+      const a = ep(form, 0.2 + j * 0.08, 0.5 + j * 0.08);
+      if (a <= 0) return;
+      g.strokeStyle = `rgba(255,255,255,${0.85 * a * (1 - burst)})`; g.lineWidth = 1.2;
+      g.strokeRect(x - 13, y + 8 - a * 8, 26, 34);
+      for (let k = 0; k < 3; k++) { g.beginPath(); g.moveTo(x - 8, y + 16 + k * 8 - a * 8); g.lineTo(x + 3, y + 16 + k * 8 - a * 8); g.stroke(); }
+      g.fillStyle = `rgba(50,215,75,${a * (1 - burst) * (Math.sin(t * 8 + j * 2) > 0 ? 1 : 0.35)})`;
+      g.fillRect(x + 6, y + 14 - a * 8, 3, 3);
+    });
+    // node
+    const na = ep(form, 0.1, 0.4);
+    g.save(); g.translate(...NODE); g.rotate(Math.PI / 4 + t * 0.6);
+    g.strokeStyle = `rgba(255,255,255,${na * (1 - burst)})`; g.lineWidth = 1.6; g.strokeRect(-11, -11, 22, 22);
+    g.restore();
+    for (let k = 0; k < 260; k++) {
+      const j = k % 5, phs = (t * 0.5 + hash(k + 0.31)) % 1, appear = ep(form, hash(k + 4.1) * 0.6, hash(k + 4.1) * 0.6 + 0.3);
+      if (appear <= 0) continue;
+      let x, y;
+      const src = [150 + hash(k + 1.7) * 240, 236];
+      if (phs < 0.5) { const q = ease.inOut(phs / 0.5); x = lerp(src[0], NODE[0], q); y = lerp(src[1], NODE[1], q); }
+      else { const q = ease.inOut((phs - 0.5) / 0.5); x = lerp(NODE[0], OUT[j][0], q); y = lerp(NODE[1], OUT[j][1] - 4, q); }
+      if (burst > 0) { const b = ease.in(burst); x += (x - 270) * b * 2.2; y += (y - 400) * b * 2.2; }
+      const a = appear * (1 - burst) * Math.min(1, Math.sin(phs * Math.PI) * 3);
+      g.fillStyle = phs > 0.5 ? `rgba(255,255,255,${a})` : `rgba(255,255,255,${a * 0.55})`;
+      g.beginPath(); g.arc(x, y, phs > 0.5 ? 1.5 : 1.1, 0, 7); g.fill();
+    }
+    g.globalAlpha = 1;
+  }
+}
+
+// ---------- HTML cards ----------
+function counterCard(t) {
+  const a = life(t, 0.05, S(1, 0) + 0.1, 0.25);
+  if (a <= 0) return '';
+  const ok = t >= OK;
+  const n = 10000000 * ease.inOut(prog(t, 0.15, WAVE + 0.55));
+  const s = ok ? 1 + 0.25 * (1 - ep(t, OK, OK + 0.3)) : 1;
+  return card(a, `left:120px;top:290px;width:300px;padding:12px 14px;text-align:center;border-color:${ok ? 'rgba(50,215,75,0.85)' : 'rgba(255,255,255,0.5)'}`,
+    `<div class="hd" style="justify-content:center"><span>${ok ? 'STREAMING · NO CRASH' : 'PRESSED PLAY'}</span></div><div style="font-family:Inter;font-size:36px;font-weight:800;margin-top:2px;letter-spacing:-0.5px;transform:scale(${s})" class="${ok ? 'g' : ''}">${fmt(n)}${ok ? ' ✓' : ''}</div><div class="dim" style="font-size:10px">${ok ? 'all streams OK' : 'same second'}</div>`);
+}
+function gaugeSVG(v, col, dead) {
+  const R = 64, cx = 84, cy = 78, pol = (q) => [cx - R * Math.cos(Math.PI * q), cy - R * Math.sin(Math.PI * q)];
+  const e = pol(clamp(v)), c0 = pol(0.85), c1 = [cx - (R + 9) * Math.cos(Math.PI * 0.85), cy - (R + 9) * Math.sin(Math.PI * 0.85)];
+  const nd = [cx - (R - 14) * Math.cos(Math.PI * clamp(v)), cy - (R - 14) * Math.sin(Math.PI * clamp(v))];
+  return `<svg width="168" height="92" viewBox="0 0 168 92" style="display:block;margin:4px auto 0">
+    <path d="M ${cx - R} ${cy} A ${R} ${R} 0 0 1 ${cx + R} ${cy}" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="9" stroke-linecap="round"/>
+    ${dead ? '' : `<path d="M ${cx - R} ${cy} A ${R} ${R} 0 0 1 ${e[0]} ${e[1]}" fill="none" stroke="${col}" stroke-width="9" stroke-linecap="round"/>`}
+    <line x1="${c0[0]}" y1="${c0[1]}" x2="${c1[0]}" y2="${c1[1]}" stroke="${RED}" stroke-width="2"/>
+    ${dead ? '' : `<line x1="${cx}" y1="${cy}" x2="${nd[0]}" y2="${nd[1]}" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/>`}
+    <circle cx="${cx}" cy="${cy}" r="4" fill="#fff"/></svg>`;
+}
+function gaugeCard(t) {
+  const a = Math.max(life(t, FINE - 0.05, L3 + 0.1), life(t, L4 - 0.05, L5 + 0.05));
+  if (a <= 0) return '';
+  const v = naiveLoad(t), dead = t >= CRASH, over = v > 0.84;
+  const col = over ? RED : '#fff';
+  const txt = dead ? `<span class="r">OFFLINE</span>` : `<span class="${over ? 'r' : ''}">${Math.round(clamp(v) * 100)}%</span>`;
+  return card(a, `left:32px;top:690px;width:${t > L4 ? 476 : 250}px;padding:12px 14px;border-color:${over || dead ? 'rgba(255,69,58,0.85)' : 'rgba(255,255,255,0.5)'}`,
+    `<div class="hd"><span>SERVER LOAD</span><span>${t > FLOOD - 0.1 ? '<span class="r">CAPACITY ▲</span>' : t > L4 ? 'S3' : '<span style="color:#fff;font-size:12px">' + Math.round(clamp(v) * 100) + '%</span>'}</span></div>
+     <div style="display:flex;align-items:center;justify-content:${t > L4 ? 'space-between' : 'center'};gap:10px">${gaugeSVG(v, col, dead)}
+     ${t > L4 ? `<div style="text-align:right;flex:1"><div style="font-family:Inter;font-size:40px;font-weight:800;letter-spacing:-1px">${txt}</div><div class="dim" style="font-size:10px;margin-top:2px">${dead ? '503 · service unavailable' : t > FLOOD ? fmt(10000000 * ep(t, FLOOD, FLOOD + 1.2)) + ' req/s' : 'max ~85%'}</div></div>` : ''}</div>`);
+}
+function clockCard(t) {
+  const a = life(t, FINE + 0.05, L3 + 0.1);
+  if (a <= 0) return '';
+  const k = ep(t, FINE + 0.1, WHILE + 0.4, ease.inOut), mins = 18 * 60 + k * 180, h = Math.floor(mins / 60), m = Math.floor(mins % 60);
+  const hh = ((h + 11) % 12) + 1, ang = (mins / 60) * 30, angM = (mins % 60) * 6;
+  return card(a, 'left:300px;top:690px;width:208px;padding:12px 14px', `<div class="hd"><span>PRIME TIME</span><span>${k > 0.98 ? '<span class="r">PEAK</span>' : ''}</span></div>
+    <div style="display:flex;align-items:center;gap:12px;margin-top:10px"><svg width="44" height="44" viewBox="-22 -22 44 44"><circle r="19" fill="none" stroke="#fff" stroke-width="1.6"/><line x1="0" y1="0" x2="${Math.sin(ang * Math.PI / 180) * 10}" y2="${-Math.cos(ang * Math.PI / 180) * 10}" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/><line x1="0" y1="0" x2="${Math.sin(angM * Math.PI / 180) * 15}" y2="${-Math.cos(angM * Math.PI / 180) * 15}" stroke="#fff" stroke-width="1.4" stroke-linecap="round"/></svg>
+    <div style="font-size:24px;font-weight:500">${hh}:${String(m).padStart(2, '0')}<span class="dim" style="font-size:13px"> PM</span></div></div>`);
+}
+function errCard(t) {
+  const a = life(t, CRASH + 0.05, L5 + 0.05, 0.2);
+  if (a <= 0) return '';
+  return card(a, 'left:70px;top:290px;width:400px;padding:12px 14px;text-align:center;border-color:rgba(255,69,58,0.9)',
+    `<div class="hd" style="justify-content:center"><span class="r">10,000,000 SCREENS</span></div><div style="font-family:Inter;font-size:30px;font-weight:800;margin-top:2px" class="r">503 · Can't play</div>`);
+}
+function mapCard(t) {
+  const a = life(t, SHORT + 0.4, L7 + 0.05, 0.25);
+  if (a <= 0) return '';
+  const r = (t0, l, rr) => `<div class="row" style="background:rgba(255,255,255,0.07);opacity:${ep(t, t0, t0 + 0.2)};transform:translateX(${(1 - ep(t, t0, t0 + 0.3)) * 24}px)"><span>${l}</span><span class="dim">→</span><span class="g">${rr}</span></div>`;
+  return card(a, 'left:60px;top:690px;width:420px;padding:12px 14px', `<div class="hd"><span>SAME IDEA</span></div>${r(SHORT + 0.45, 'manager', 'load balancer')}${r(SHORT + 0.65, 'checkout lanes', 'servers')}${r(SHORT + 0.85, 'shoppers', 'requests')}`);
+}
+function rrCard(t) {
+  const a = life(t, L7 + 0.1, LC + 0.05);
+  if (a <= 0) return '';
+  const hits = DISP.filter((d) => d.arr >= ONE - 0.01 && d.arr < LC && t >= d.arr);
+  const cur = hits.length ? hits[hits.length - 1] : null;
+  const chips = [0, 1, 2, 3, 4].map((i) => {
+    const on = cur && cur.i === i, s = on ? 1 + 0.25 * (1 - ep(t, cur.arr, cur.arr + 0.25)) : 1;
+    return `<div style="flex:1;text-align:center;padding:9px 0;border-radius:8px;border:1px solid rgba(255,255,255,${on ? 0.9 : 0.25});background:${on ? '#fff' : 'transparent'};color:${on ? '#000' : '#fff'};transform:scale(${s})">S${i + 1}</div>`;
+  }).join('');
+  const rep = ep(t, REP, REP + 0.3);
+  return card(a, 'left:40px;top:690px;width:460px;padding:12px 14px', `<div class="hd"><span>ROUND ROBIN</span><span style="opacity:${rep}">↺ REPEAT</span></div><div style="display:flex;gap:8px;margin-top:10px;font-size:14px">${chips}</div>`);
+}
+function lcCard(t) {
+  const a = life(t, LC + 0.05, L8 + 0.05);
+  if (a <= 0) return '';
+  const pick = t >= BUSY;
+  const rows = [0, 1, 2, 3, 4].map((i) => {
+    const n = conn(i, t), best = pick && i === 1, s = best ? 1 + 0.15 * (1 - ep(t, BUSY, BUSY + 0.3)) : 1;
+    return `<div style="display:flex;align-items:center;gap:10px;padding:2px 8px;border-radius:6px;background:${best ? 'rgba(50,215,75,0.18)' : 'transparent'};transform:scale(${s})"><span style="width:24px">S${i + 1}</span><div style="flex:1;height:6px;border-radius:3px;background:rgba(255,255,255,0.12)"><div style="height:100%;width:${n / 16 * 100}%;border-radius:3px;background:${best ? GREEN : '#fff'}"></div></div><span style="width:22px;text-align:right" class="${best ? 'g' : ''}">${n}</span></div>`;
+  }).join('');
+  return card(a, 'left:40px;top:690px;width:460px;padding:10px 14px', `<div class="hd"><span>ACTIVE CONNECTIONS</span><span>${pick ? '<span class="g">→ S2 · LEAST BUSY</span>' : 'scanning…'}</span></div><div style="margin-top:6px;font-size:12px">${rows}</div>`);
+}
+function hcCard(t) {
+  const a = life(t, L8 + 0.05, L9 + 0.05);
+  if (a <= 0) return '';
+  const rows = [0, 1, 2, 3, 4].map((i) => {
+    const dead = i === 3 && t >= DIES;
+    const st = dead ? (t >= SKIP ? '<span class="r">✕ DOWN · SKIPPED</span>' : '<span class="r">✕ NO HEARTBEAT</span>') : '<span class="g">● OK</span>';
+    return `<div style="flex:1;text-align:center;padding:7px 0;border-radius:7px;background:${dead ? 'rgba(255,69,58,0.16)' : 'rgba(255,255,255,0.06)'}"><div>S${i + 1}</div><div style="font-size:9px;margin-top:3px">${dead ? '<span class="r">✕</span>' : '<span class="g">●</span>'}</div></div>`;
+  }).join('');
+  const dead = t >= DIES;
+  return card(a, `left:40px;top:690px;width:460px;padding:12px 14px;border-color:${dead ? 'rgba(255,69,58,0.8)' : 'rgba(255,255,255,0.5)'}`,
+    `<div class="hd"><span>HEALTH CHECKS</span><span>${dead ? (t >= SKIP ? '<span class="r">S4 SKIPPED</span>' : '<span class="r">S4 DOWN</span>') : 'every 2s'}</span></div><div style="display:flex;gap:8px;margin-top:10px;font-size:13px">${rows}</div>`);
+}
+function scaleCard(t) {
+  const a = life(t, L9 + 0.05, L10 + 0.05);
+  if (a <= 0) return '';
+  const n = t >= ADD2 + 0.05 ? 5 + Math.min(5, Math.floor(prog(t, ADD2 + 0.05, ADD2 + 0.6) * 6)) : 5;
+  const live = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((i) => svState(i, t)).filter((s) => s.rise > 0.5 && !s.dead);
+  const avg = live.reduce((s, x) => s + x.load, 0) / Math.max(1, live.length), hot = avg > 0.8;
+  return card(a, `left:40px;top:690px;width:460px;padding:12px 14px;border-color:${hot ? 'rgba(255,69,58,0.8)' : t > NOB ? 'rgba(50,215,75,0.8)' : 'rgba(255,255,255,0.5)'}`,
+    `<div class="hd"><span>SERVERS</span><span>AVG LOAD</span></div><div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:4px"><div style="font-family:Inter;font-size:38px;font-weight:800">${n}${n > 5 ? '<span class="g" style="font-size:16px"> +' + (n - 5) + '</span>' : ''}</div><div style="font-family:Inter;font-size:38px;font-weight:800" class="${hot ? 'r' : t > NOB ? 'g' : ''}">${Math.round(avg * 100)}%</div></div>`);
+}
+function recapCard(t) {
+  const a = life(t, THOU + 0.35, L11 + 0.05);
+  if (a <= 0) return '';
+  const n = Math.round(lerp(10, 2400, ease.inOut(prog(t, THOU + 0.4, THOU + 1.6))));
+  return card(a, 'left:60px;top:690px;width:420px;padding:12px 14px;text-align:center;border-color:rgba(50,215,75,0.85)',
+    `<div class="hd" style="justify-content:center"><span>1 FRONT DOOR → MANY SERVERS</span></div><div style="font-family:Inter;font-size:36px;font-weight:800;margin-top:4px" class="g">${fmt(n)} servers</div><div class="dim" style="font-size:10px;margin-top:2px">one address · zero crashes</div>`);
+}
+function ctaSheet(t) {
+  const up = ep(t, L11 + 0.1, L11 + 0.6, ease.outExpo);
+  if (up <= 0) return '';
+  const cm = t >= tapComment + 0.05, followed = t >= tapFollow + 0.05;
+  const cs = cm ? 1 + 0.18 * (1 - ep(t, tapComment, tapComment + 0.35)) : 1;
+  const fol = followed ? 1 + 0.2 * (1 - ep(t, tapFollow, tapFollow + 0.35)) : 1;
+  const bubble = `<svg width="16" height="16" viewBox="0 0 24 24" style="vertical-align:-3px;margin-right:6px"><path d="M20.5 11.5a8.5 8.5 0 0 1-12.6 7.4L3.5 20.5l1.6-4.2A8.5 8.5 0 1 1 20.5 11.5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>`;
+  const dots = cm ? [0, 1, 2].map((k) => `<i style="display:inline-block;width:5px;height:5px;border-radius:50%;background:#fff;margin:0 2px;opacity:${0.3 + 0.7 * (Math.sin(t * 8 - k * 1.2) > 0 ? 1 : 0)}"></i>`).join('') : '';
+  return `<div style="position:absolute;left:110px;top:640px;width:320px;padding:16px;box-sizing:border-box;border-radius:20px;background:rgba(13,13,13,0.94);border:1px solid rgba(255,255,255,0.2);font-family:Inter;opacity:${up};transform:translateY(${(1 - up) * 40}px) scale(${lerp(0.9, 1, up)})">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div style="width:46px;height:46px;border-radius:50%;border:1.5px solid #fff;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="6" fill="none" stroke="#fff" stroke-width="2"/><circle cx="12" cy="12" r="4.6" fill="none" stroke="#fff" stroke-width="2"/><circle cx="17.6" cy="6.4" r="1.3" fill="#fff"/></svg></div>
+      <div style="flex:1"><div style="font-weight:700;font-size:14px">how.its.engineered</div><div style="color:#8a8a8a;font-size:11px">System design, explained</div></div>
+      <div style="height:20px">${dots}</div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:14px">
+      <div class="btn" style="flex:1;height:38px;transform:scale(${cs});${cm ? 'background:#262626;color:#fff;box-shadow:0 0 0 1px #fff' : 'border:1px solid rgba(255,255,255,0.35);color:#fff'}">${bubble}Comment</div>
+      <div class="btn" style="flex:1;height:38px;transform:scale(${fol});${followed ? 'background:#262626;color:#fff' : 'background:#fff;color:#000'}">${followed ? 'Following ✓' : 'Follow'}</div>
+    </div></div>`;
+}
+
+// ---------- chapters + progress ----------
+const CH = [[L2, L3, '01  THE SIMPLE WAY'], [L3, L5, '02  THE PROBLEM'], [L5, L7, '03  THE FIX'], [L7, L10, '04  HOW IT PICKS'], [L10, L11, '05  RECAP']];
+const BK = [0, L3, L5, L7, L10, END];
+
+window.render = function (t) {
+  ISO.layer.textContent = ''; FX.textContent = ''; labels.textContent = '';
+  const roll = camera(t);
+  const cp = cursorAt(t);
+  if (cp) CAM.yaw += clamp((cp[0] - 270) / 270, -1, 1) * 0.04;
+  const kick = Math.min(1, ...CUTS.map((c) => (t >= c && t < c + 0.45 ? lerp(0.45, 1, ep(t, c, c + 0.45)) : 1)));
+
+  // ---- visibility ----
+  const worldOp = 1 - 0.88 * window01(t, S(1, 0) - 0.1, L2 - 0.08, 0.3) - 0.45 * ep(t, L11, L11 + 0.5);
+  const phoneD = Math.min(kick, prog(t, -0.6, 0.4));
+  const sv2D = Math.min(kick, prog(t, L2 - 0.05, L2 + 0.9));
+  const lbOn = t >= LBT - 0.35;
+  const mkD = prog(t, L6 - 0.25, L6 + 0.7) * (t < L7 - 0.05 ? 1 : 0);
+  const crowdOp = worldOp * (t < TAP ? 0 : ep(t, TAP, TAP + 0.6)) * (t >= L6 + 0.3 && t < L7 - 0.05 ? 0 : 1);
+
+  // ---- background canvas ----
+  const fan = [prog(t, S(1, 0) - 0.15, S(1, 1) + 0.4), prog(t, L2 - 0.4, L2 - 0.05), window01(t, S(1, 0) - 0.15, L2 - 0.05, 0.3)];
+  drawBG(t, groundAt(270, 560), Math.max(0.15, worldOp), crowdOp, fan);
+
+  // ---- wires ----
+  if (sv2D > 0 && t < LBT && worldOp > 0.05) {
+    const red = t > FLOOD - 0.1 && t < L5;
+    el('path', { d: path2([P(0, 120, 4), P(0, lerp(120, -150, sv2D), 4)], false), stroke: red ? RED : '#fff', 'stroke-width': lerp(1.1, 2.4, red ? 1 : 0), 'stroke-dasharray': '3 6', 'stroke-dashoffset': -t * (red ? 60 : 26), 'stroke-opacity': (t > CRASH && t < L5 ? 0.2 : 0.6) * worldOp, fill: 'none' }, ISO.layer);
+  }
+  if (lbOn && t >= LAND) {
+    const wk = ep(t, LAND + 0.05, LAND + 0.55);
+    el('path', { d: path2([P(0, 120, 4), P(0, 40, 4)], false), stroke: '#fff', 'stroke-width': 1.1, 'stroke-dasharray': '3 6', 'stroke-dashoffset': -t * 30, 'stroke-opacity': 0.6 * worldOp, fill: 'none' }, ISO.layer);
+    for (let i = 0; i < 10; i++) {
+      const st = svState(i, t);
+      if (st.rise < 0.6) continue;
+      const k = i < 5 ? wk : ep(t, RISE[i] + 0.3, RISE[i] + 0.7);
+      const A = [LB[0], LB[1] - 40], B = [SVP[i][0], SVP[i][1] + 38], M = at(A, B, k);
+      const dead = st.dead > 0.5;
+      el('path', { d: path2([P(...A, 4), P(...M, 4)], false), stroke: dead ? RED : '#fff', 'stroke-width': 1, 'stroke-dasharray': dead ? '2 7' : '3 6', 'stroke-dashoffset': dead ? 0 : -t * 26, 'stroke-opacity': (dead ? 0.7 : 0.45) * worldOp, fill: 'none' }, ISO.layer);
+    }
+  }
+
+  // ---- objects (depth sorted) ----
+  const objs = [];
+  const add = (c, D, f, op = worldOp) => { if (D > 0 && op > 0.02) objs.push({ c, f: () => emit(f(), D, op) }); };
+  let pst = { mode: 'play', press: pressAmt(t, [TAP]) };
+  if (t >= TAP + 0.12 && t < OK) pst = { mode: 'load', t };
+  else if (t >= OK && t < CRASH) pst = { mode: 'playing', t };
+  else if (t >= CRASH && t < L5 + 0.4) pst = { mode: 'error', t };
+  else if (t >= L5 + 0.4) pst = { mode: 'playing', t };
+  add(PH, phoneD, () => phoneObj(pst));
+  const ST = [];
+  for (let i = 0; i < 10; i++) {
+    const st = (ST[i] = svState(i, t));
+    if (i === 2) add(SVP[i], sv2D, () => serverObj(i, t, st));
+    else if (t >= RISE[i]) add(SVP[i], kick, () => serverObj(i, t, st));
+  }
+  if (lbOn) {
+    const fall = prog(t, LBT - 0.35, LAND), drop = (1 - ease.in(fall)) * 300 + (t > LAND ? Math.sin((t - LAND) * 22) * 7 * (1 - prog(t, LAND, LAND + 0.5)) : 0);
+    const ticks = ST.map((s, i) => (s.rise > 0.6 && (i !== 2 || t >= L5) ? (s.dead > 0.5 ? 2 : 1) : 0));
+    const door = ep(t, L10 + 0.1, L10 + 0.6) * (1 - ep(t, L11, L11 + 0.4));
+    const lbCol = window01(t, L10 + 0.1, THOU + 0.3, 0.3) > 0.5 ? GREEN : null;
+    add(LB, kick, () => lbObj(t, { drop, ang: armAngle(t), ticks, door, col: lbCol, armCol: t > BUSY && t < BUSY + 0.9 ? GREEN : null }));
+  }
+  if (mkD > 0) {
+    add([MK[0], MK[1] - 400], mkD, () => floorObj(), 1);
+    [0, 1, 2, 3].forEach((j) => add([LANES[j], MK[1] - 92], mkD, () => counterObj(j), 1));
+    QN.forEach((n, j) => { for (let k = 0; k < n; k++) { const x = LANES[j], y = qY(k); add([x, y], mkD, () => personObj(x, y, t + k * 0.3 + j), 1); } });
+    // the new shopper walks in, gets sent to the shortest lane
+    const tgt = [LANES[1], qY(1)], mid = [LANES[1] + 20, MK[1] + 175];
+    const w1 = ep(t, L6 + 0.7, L6 + 1.5, ease.inOut), w2 = ep(t, SHORT - 0.15, SHORT + 0.55, ease.inOut);
+    const sp = w2 > 0 ? at(mid, tgt, w2) : at(SHOP0, mid, w1);
+    const walking = (w1 > 0 && w1 < 1) || (w2 > 0 && w2 < 1) ? 1 : 0;
+    add(sp, mkD, () => personObj(sp[0], sp[1], t, GREEN, walking), 1);
+    const MG = [MK[0] + 150, MK[1] + 120], dv = [tgt[0] - MG[0], tgt[1] - MG[1]], dl = Math.hypot(...dv);
+    const pointing = ep(t, L6 + 1.4, L6 + 1.7);
+    add(MG, mkD, () => personObj(MG[0], MG[1], t, '#fff', 0, pointing > 0 ? [(dv[0] / dl) * pointing, (dv[1] / dl) * pointing] : null), 1);
+    var shopperP = sp, managerP = MG;
+  }
+  if (t >= THOU - 0.2) FIELD.forEach((f) => { const h = 100 * ease.back(prog(t, THOU - 0.1 + f.d * 0.9, THOU + 0.4 + f.d * 0.9)); if (h > 1) add([f.x, f.y], 1, () => fieldRack(f, t, h)); });
+  // pile of stuck requests in front of the overloaded server
+  if (t > FLOOD && t < L5) {
+    const n = Math.floor(ep(t, FLOOD + 0.25, CRASH) * 21), fade = 1 - prog(t, CRASH, CRASH + 0.5);
+    for (let k = 0; k < n; k++) {
+      const layer = k < 8 ? 0 : k < 14 ? 1 : k < 18 ? 2 : 3, idx = layer === 0 ? k : layer === 1 ? k - 8 : layer === 2 ? k - 14 : k - 18;
+      const per = [8, 6, 4, 3][layer], x = (idx - (per - 1) / 2) * 12, y = -150 + (hash(k) - 0.5) * 6, z = 4 + layer * 11;
+      add([x, y], 1, () => { const o = Obj(); box(o, x - 5, y - 5, z, 10, 10, 10, { stroke: t > HOT ? RED : '#fff' }); return o; }, worldOp * fade);
+    }
+  }
+  objs.sort((a, b) => depth(...a.c) - depth(...b.c)).forEach((o) => o.f());
+  if (worldOp > 0.05) drawPackets(t, worldOp);
+
+  // ---- world-pinned fx + labels ----
+  const btnP = P(...BTN), s2 = svTop(2);
+  ripple(t, TAP, btnP);
+  // hook
+  label('?', P(0, 300, 70)[0], P(0, 300, 70)[1], life(t, WHY, S(1, 0) + 0.05, 0.12, 0.2), 'huge', popScale(t, WHY, 0.6, 0.3) + `;font-size:${64 + 4 * Math.sin(t * 9)}px`);
+  // the simple way
+  const wide = window01(t, L2 + 0.45, REQ + 0.1, 0.3) * worldOp;
+  const cl = P(0, 470, 0), sl = P(42, -172, 0);
+  label('10,000,000 VIEWERS', cl[0], cl[1] + 16, wide);
+  label('ONE SERVER', sl[0] + 16, sl[1] + 16, wide);
+  for (const a of ARR[2]) if (a < FLOOD) isoRing(t, a, [0, -210, 4], '#fff', 60, 0.6);
+  if (t > REQ && t < L5) loadBar(P(0, -210, 150), naiveLoad(t), life(t, REQ, CRASH + 0.2) * worldOp, naiveLoad(t) > 0.84 ? RED : '#fff');
+  // failure
+  label('OVERLOAD', s2[0], s2[1] - 44, life(t, FLOOD + 0.5, HOT, 0.15, 0.1), 'tag red', popScale(t, FLOOD + 0.5));
+  const temp = Math.round(lerp(48, 97, ep(t, HOT - 0.1, CRASH)));
+  label(`${temp}°C`, s2[0], s2[1] - 44, life(t, HOT, CRASH, 0.1, 0.05), 'tag red', popScale(t, HOT));
+  heat(t, P(0, -210, 128), life(t, HOT - 0.1, CRASH + 0.1, 0.3, 0.1) * worldOp);
+  smoke(t, HOT, P(0, -210, 125), life(t, HOT + 0.2, L5 + 0.25, 0.4, 0.2) * worldOp * (t > CRASH ? 1.6 : 0.7));
+  shards(t, CRASH, s2, RED, 18, 1.8);
+  shards(t, CRASH + 0.05, s2, '#fff', 12, 1.3);
+  isoRing(t, CRASH, [0, -210, 4], RED, 160, 0.9);
+  label('✕ DOWN', s2[0], s2[1] - 46, life(t, CRASH + 0.05, L5 + 0.1, 0.1), 'huge red', popScale(t, CRASH + 0.05, 0.5));
+  // fix
+  label('REBOOT ✓', s2[0], s2[1] - 40, life(t, L5 + 0.35, S(5, 1), 0.12, 0.2), 'tag green', popScale(t, L5 + 0.35));
+  for (let i = 0; i < 5; i++) if (i !== 2) { isoRing(t, RISE[i] + 0.4, [...SVP[i], 4], '#fff', 70, 0.7); }
+  label('+4 SERVERS', P(0, -210, 190)[0], P(0, -210, 190)[1], life(t, ADD + 0.5, LBT - 0.3, 0.15), 'tag', popScale(t, ADD + 0.5));
+  isoRing(t, LAND, [...LB, 4], '#fff', 150, 0.9);
+  const lbT = P(LB[0], LB[1], 80);
+  label('LOAD BALANCER', lbT[0], lbT[1] - 8, life(t, LAND + 0.1, L6 - 0.1, 0.15), 'tag', popScale(t, LAND + 0.1));
+  // supermarket
+  if (mkD > 0 && shopperP) {
+    const q = P(shopperP[0], shopperP[1], 58);
+    label('?', q[0], q[1], life(t, L6 + 0.55, L6 + 1.5, 0.15, 0.2), 'huge green', popScale(t, L6 + 0.55));
+    const m = P(managerP[0], managerP[1], 58);
+    label('MANAGER', m[0], m[1] - 6, life(t, L6 + 0.3, L7 - 0.1, 0.2) * mkD, 'tag');
+    QN.forEach((n, j) => {
+      const p = P(LANES[j], MK[1] - 40, 64), best = j === 1 && t >= SHORT;
+      const cnt = n + (j === 1 && t >= SHORT + 0.55 ? 1 : 0);
+      label(best ? `${cnt} · SHORTEST` : String(cnt), p[0], p[1], mkD * ep(t, L6 + 0.2 + j * 0.08, L6 + 0.5 + j * 0.08), best ? 'tag green' : 'out', best ? popScale(t, SHORT) : '');
+    });
+    isoRing(t, SHORT + 0.55, [LANES[1], qY(1), 4], GREEN, 50, 0.7);
+  }
+  // round robin: numbers pop over servers
+  for (const d of DISP) {
+    if (d.text && /^\d$/.test(d.text) && d.arr < LC - 0.45) { pop(t, d.arr, svTop(d.i, 150), d.text, 'huge', 0.7); isoRing(t, d.arr, [...SVP[d.i], 4], '#fff', 60, 0.6); }
+  }
+  // load bars / connections / heartbeats above the row
+  for (let i = 0; i < 10; i++) {
+    const st = ST[i];
+    if (st.rise < 0.8 || t < L5 + 0.4 || (i === 2 && t < L5 + 0.4)) continue;
+    const top = svTop(i, 150);
+    const lc = life(t, LC - 0.1, L8 - 0.05, 0.25, 0.2), hc = life(t, L8 - 0.1, L9, 0.25, 0.2) * (i < 5 ? 1 : 0);
+    const barOp = worldOp * (1 - Math.max(lc, hc)) * (t >= L6 - 0.1 && t < L7 - 0.05 ? 0 : 1) * (t >= L10 ? 1 - ep(t, L10, L10 + 0.3) : 1);
+    if (!st.dead) loadBar(top, st.load, barOp, st.load > 0.8 ? RED : t > NOB && t < L10 ? GREEN : '#fff');
+    if (i < 5 && lc > 0) {
+      const best = i === 1 && t >= BUSY, scan = Math.floor(prog(t, S(7, 2) + 0.05, BUSY) * 5);
+      const hl = t < BUSY && t > S(7, 2) + 0.05 && scan === i;
+      label(`${conn(i, t)}`, top[0], top[1] - 6, lc, best ? 'tag green' : hl ? 'tag' : 'out', best ? popScale(t, BUSY) : '');
+    }
+    if (hc > 0) ecg(t, [top[0], top[1] + 2], st.dead > 0.5, hc, i * 0.37);
+  }
+  shards(t, DIES, svTop(3, 120), RED, 14, 1.4);
+  isoRing(t, DIES, [...SVP[3], 4], RED, 90, 0.8);
+  label('✕', svTop(3, 200)[0], svTop(3, 200)[1], life(t, DIES, L9, 0.1), 'huge red', popScale(t, DIES, 0.6));
+  label('SKIPPED', svTop(3, 165)[0], svTop(3, 165)[1] + 6, life(t, SKIP, L9, 0.1), 'tag red', popScale(t, SKIP));
+  // more power
+  const lbL = P(LB[0], LB[1], 90);
+  label('TRAFFIC ×3 ↑', lbL[0], lbL[1], life(t, L9 + 0.15, ADD2 + 0.2, 0.15), 'tag red', popScale(t, L9 + 0.15));
+  for (let j = 5; j < 10; j++) isoRing(t, RISE[j] + 0.4, [...SVP[j], 4], GREEN, 70, 0.7);
+  label('+5 SERVERS', P(0, -370, 200)[0], P(0, -370, 200)[1], life(t, ADD2 + 0.45, NOB - 0.05, 0.15), 'tag green', popScale(t, ADD2 + 0.45));
+  const nb = P(0, 250, 90);
+  label('NOBODY NOTICES ✓', nb[0], nb[1] - 10, life(t, NOB + 0.05, L10, 0.15), 'tag green', popScale(t, NOB + 0.05));
+  isoRing(t, NOB, [0, 290, 4], GREEN, 380, 1.2);
+  // recap
+  const lbD = P(LB[0], LB[1] + 35, 60);
+  label('ONE FRONT DOOR', lbD[0], lbD[1] - 40, life(t, L10 + 0.2, THOU + 0.2, 0.15), 'tag green', popScale(t, L10 + 0.2));
+  isoRing(t, L10 + 0.15, [LB[0], LB[1], 4], GREEN, 110, 0.9);
+
+  // ---- title scene ----
+  const tp = fan[2];
+  if (tp > 0) {
+    const word = 'Load Balancing', k = prog(t, S(1, 1) - 0.05, S(1, 1) + 0.6);
+    const shown = word.split('').map((c, i) => `<span style="display:inline-block;white-space:pre;opacity:${ep(k, i / word.length * 0.7, i / word.length * 0.7 + 0.3)};transform:translateY(${(1 - ep(k, i / word.length * 0.7, i / word.length * 0.7 + 0.3, ease.back)) * 24}px);filter:blur(${(1 - ep(k, i / word.length * 0.7, i / word.length * 0.7 + 0.3)) * 8}px)">${c}</span>`).join('');
+    const p2 = ep(t, S(1, 1) + 0.5, S(1, 1) + 0.8), p3 = ep(t, S(1, 1) + 0.75, S(1, 1) + 1.05, ease.back);
+    const one = life(t, S(1, 0) - 0.05, S(1, 1) - 0.05, 0.2, 0.15);
+    $('title').innerHTML = `<div style="position:absolute;left:0;right:0;top:-30px;font-family:Mono;font-size:14px;letter-spacing:6px;color:#a3a3a3;opacity:${one}">ONE WORD</div><div class="t" style="font-size:54px">${shown}</div><div class="ph" style="opacity:${p2}">ONE DOOR · MANY SERVERS</div><div class="chip" style="opacity:${clamp(p3)};transform:scale(${lerp(0.8, 1, p3)})">spread the traffic → nobody crashes</div>`;
+    $('title').style.opacity = tp; $('title').style.display = '';
+  } else $('title').style.display = 'none';
+
+  // ---- problem: spotlight + magnifier ----
+  const pr = window01(t, L3 - 0.05, L4 - 0.1, 0.3);
+  if (pr > 0) {
+    const k = ease.inOut(prog(t, L3, S(3, 1) + 0.6));
+    const A = P(0, 300, 10), B = P(0, -210, 70), C = P(0, -210, 70);
+    const m = k < 0.6 ? [lerp(A[0], B[0], k / 0.6), lerp(A[1], B[1], k / 0.6)] : [lerp(B[0], C[0], (k - 0.6) / 0.4), lerp(B[1], C[1], (k - 0.6) / 0.4)];
+    $('dim').style.background = `radial-gradient(circle at ${m[0]}px ${m[1]}px, rgba(0,0,0,0) 0 46px, rgba(0,0,0,${0.78 * pr}) 120px)`;
+    magnifier(m, pr);
+    const q = ep(t, S(3, 1) + 0.6, S(3, 1) + 0.9, ease.back);
+    if (q > 0) label('only one?', C[0], C[1] - 66, pr * q, 'tag red');
+  } else $('dim').style.background = 'none';
+
+  // ---- HTML cards ----
+  $('ui').innerHTML = counterCard(t) + gaugeCard(t) + clockCard(t) + mapCard(t) + rrCard(t) + lcCard(t) + hcCard(t) + scaleCard(t) + recapCard(t) + ctaSheet(t);
+
+  // ---- flashes, shake, roll, letterbox ----
+  const red = Math.max(window01(t, CRASH, CRASH + 0.6, 0.05), window01(t, DIES, DIES + 0.4, 0.05) * 0.7);
+  const green = Math.max(window01(t, OK, OK + 0.45, 0.05), window01(t, L5 + 0.35, L5 + 0.75, 0.05) * 0.6, window01(t, NOB, NOB + 0.5, 0.06), window01(t, BUSY, BUSY + 0.35, 0.05) * 0.5);
+  const white = Math.max(window01(t, CRASH - 0.02, CRASH + 0.12, 0.03) * 0.6, window01(t, LAND, LAND + 0.18, 0.03) * 0.35, ...CH.map((c) => window01(t, c[0] - 0.04, c[0] + 0.14, 0.04) * 0.22));
+  const fl = $('flash');
+  if (white > Math.max(red, green)) { fl.style.background = 'radial-gradient(circle at 50% 40%, rgba(255,255,255,0.55), rgba(255,255,255,0.08) 70%)'; fl.style.opacity = white; }
+  else { fl.style.background = red > green ? `radial-gradient(circle at 50% 55%, rgba(255,69,58,0.32), rgba(255,69,58,0.06) 70%)` : `radial-gradient(circle at 50% 55%, rgba(50,215,75,0.25), rgba(50,215,75,0.04) 70%)`; fl.style.opacity = Math.max(red, green); }
+  const shk = (t0, a, d) => (t >= t0 ? a * (1 - prog(t, t0, t0 + d)) : 0);
+  const sh = Math.max(shk(CRASH, 1.2, 0.6), shk(LAND, 0.6, 0.35), shk(DIES, 0.5, 0.3), t > FLOOD && t < CRASH ? 0.18 + 0.25 * prog(t, FLOOD, CRASH) : 0);
+  const whip = Math.max(window01(t, L5 - 0.02, L5 + 0.32, 0.12), window01(t, L7 - 0.05, L7 + 0.28, 0.12));
+  $('world').style.transform = `translate(${Math.sin(t * 63) * 7 * sh}px, ${Math.cos(t * 51) * 5 * sh}px) rotate(${Math.sin(t * 47) * 0.6 * sh + roll}deg) scale(${1 + Math.abs(roll) * 0.012})`;
+  $('world').style.filter = whip > 0.01 ? `blur(${whip * 7}px)` : 'none';
+  const lbh = 46 * window01(t, HOT - 0.05, L5, 0.15);
+  document.querySelectorAll('#lb i').forEach((n) => (n.style.height = lbh + 'px'));
+
+  // ---- chrome ----
+  const ch = CH.find((c) => t >= c[0] && t < c[1]);
+  $('chapter').style.opacity = ch ? life(t, ch[0], ch[1], 0.3, 0.2) * (Math.floor(t * 3) % 6 === 0 && t - ch[0] < 1 ? 0.4 : 1) : 0;
+  if (ch) $('chapter').querySelector('span').textContent = ch[2];
+  $('handle').style.opacity = ep(t, 0.4, 1.0) * (1 - ep(t, L11, L11 + 0.3));
+  document.querySelectorAll('#bar i').forEach((n, i) => { n.style.width = prog(t, BK[i], BK[i + 1]) * 100 + '%'; });
+  $('grain').style.transform = `translate(${Math.floor(hash(Math.floor(t * 24)) * 40) - 20}px, ${Math.floor(hash(Math.floor(t * 24) + 5) * 40) - 20}px)`;
+
+  const cur = $('cursor');
+  if (cp) {
+    const pr2 = Math.max(pressAmt(t, [TAP]), pressAmt(t, tapsCTA));
+    cur.style.display = ''; cur.style.transform = `translate(${cp[0] - 2}px, ${cp[1] - 2}px) scale(${1 - 0.2 * pr2})`;
+  } else cur.style.display = 'none';
+  tapsCTA.forEach((x, i) => ripple(t, x, i === 0 ? COMMENT_POS : FOLLOW_POS));
+
+  caps.render(t);
+  $('stage').style.opacity = 1 - ep(t, END - 0.35, END);
+};
+// world point on the ground (z=0) under a screen point
+function groundAt(sx, sy) {
+  const a = raw(1, 0, 0), b = raw(0, 1, 0), dx = (sx - CAM.ox) / CAM.scale, dy = (sy - CAM.oy) / CAM.scale;
+  const det = a[0] * b[1] - a[1] * b[0];
+  return [(dx * b[1] - dy * b[0]) / det, (a[0] * dy - a[1] * dx) / det];
+}
+window.render(0);
+</script>
+</body>
+</html>

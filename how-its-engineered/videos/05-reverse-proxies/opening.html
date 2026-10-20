@@ -1,0 +1,520 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- Opening (~5 s) of 05 Reverse Proxies, in four style variants: opening.html#mono | #neon | #solid | #color.
+     No voice yet: TIMINGS below are estimates; the real video will load voice/timings.js instead. -->
+<style>
+@font-face { font-family: Inter; src: url(../../node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2) format('woff2'); font-weight: 100 900; }
+@font-face { font-family: Mono; src: url(../../node_modules/@fontsource/jetbrains-mono/files/jetbrains-mono-latin-400-normal.woff2) format('woff2'); font-weight: 400; }
+@font-face { font-family: Mono; src: url(../../node_modules/@fontsource/jetbrains-mono/files/jetbrains-mono-latin-500-normal.woff2) format('woff2'); font-weight: 500; }
+:root { --bg: #000; --cap: #a3a3a3; --key: #fff; --pill: rgba(255,255,255,0.14); --pillText: #fff; --acc: #fff; --card: rgba(0,0,0,0.92); --cardLine: rgba(255,255,255,0.5); }
+html, body { margin: 0; background: var(--bg); }
+#stage { position: relative; width: 540px; height: 960px; overflow: hidden; background: var(--bg); font-family: Inter, sans-serif; color: #fff; }
+#world { position: absolute; inset: 0; transform-origin: 50% 55%; -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,0.12) 70px, rgba(0,0,0,0.5) 190px, #000 270px); mask-image: linear-gradient(to bottom, rgba(0,0,0,0.12) 70px, rgba(0,0,0,0.5) 190px, #000 270px); }
+#vignette { position: absolute; inset: 0; }
+#bg { position: absolute; inset: 0; width: 540px; height: 960px; }
+svg.full { position: absolute; inset: 0; overflow: visible; }
+#flash { position: absolute; inset: 0; pointer-events: none; opacity: 0; }
+#grain { position: absolute; inset: -40px; pointer-events: none; opacity: 0.55; mix-blend-mode: screen; }
+#bar { position: absolute; top: 26px; left: 32px; right: 32px; display: flex; gap: 6px; }
+#bar div { flex: 1; height: 2.5px; border-radius: 2px; background: rgba(255,255,255,0.16); overflow: hidden; }
+#bar i { display: block; height: 100%; background: rgba(255,255,255,0.85); width: 0; }
+#caps { position: absolute; left: 0; right: 0; top: 150px; text-align: center; }
+.cap { position: absolute; left: 0; right: 0; padding: 0 30px; }
+.cap-line { font-size: 24px; line-height: 33px; font-weight: 400; color: var(--cap); letter-spacing: -0.2px; }
+.w { display: inline-block; margin: 0 3px; }
+.key { color: var(--key); font-weight: 700; }
+.pill { background: var(--pill); color: var(--pillText); border-radius: 9px; padding: 0 9px; }
+#chapter { position: absolute; left: 32px; top: 236px; font-family: Mono; font-size: 10px; letter-spacing: 2px; color: #8a8a8a; display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+#chapter b { display: inline-block; width: 6px; height: 6px; background: var(--acc); border-radius: 1px; }
+#handle { position: absolute; right: 32px; top: 232px; display: flex; flex-direction: column; align-items: flex-end; gap: 6px; font-weight: 700; font-size: 8.5px; letter-spacing: 0.6px; }
+#variant { position: absolute; left: 0; right: 0; bottom: 22px; text-align: center; font-family: Mono; font-size: 10px; letter-spacing: 2px; color: rgba(255,255,255,0.45); }
+.lbl { position: absolute; transform: translate(-50%, -50%); font-family: Mono; font-size: 10px; letter-spacing: 1.5px; color: #c4c4c4; white-space: nowrap; }
+.lbl.big { font-size: 12.5px; letter-spacing: 0.3px; color: #fff; font-weight: 500; }
+.lbl.tag { font-size: 11px; letter-spacing: 0.5px; color: #000; background: #fff; border-radius: 6px; padding: 3px 7px; font-weight: 500; }
+.lbl.out { background: rgba(0,0,0,0.85); border: 1px solid rgba(255,255,255,0.45); border-radius: 6px; padding: 3px 7px; color: #fff; font-size: 10.5px; letter-spacing: 0.6px; }
+.card { position: absolute; border: 1px solid var(--cardLine); border-radius: 12px; background: var(--card); font-family: Mono; box-sizing: border-box; font-size: 12.5px; }
+.card .hd { font-size: 9.5px; letter-spacing: 1.6px; color: #8a8a8a; display: flex; justify-content: space-between; }
+.row { display: flex; justify-content: space-between; align-items: center; padding: 7px 9px; border-radius: 7px; margin-top: 6px; }
+.dim { color: #8a8a8a; }
+#title { position: absolute; left: 0; right: 0; top: 700px; text-align: center; }
+#title .t { font-size: 54px; font-weight: 800; letter-spacing: -2px; }
+#title .ph { font-family: Mono; font-size: 13px; letter-spacing: 3px; color: #a3a3a3; margin-top: 8px; }
+#cursor { position: absolute; left: 0; top: 0; width: 18px; height: 24px; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="world">
+    <div id="vignette"></div>
+    <canvas id="bg" width="1080" height="1920"></canvas>
+    <svg class="full" id="scene" width="540" height="960" viewBox="0 0 540 960">
+      <defs><filter id="bloom" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+      <g id="sceneG"></g>
+    </svg>
+    <svg class="full" id="fx" width="540" height="960" viewBox="0 0 540 960"></svg>
+    <div id="labels"></div>
+  </div>
+  <div id="ui"></div>
+  <div id="title"></div>
+  <div id="flash"></div>
+  <div id="chapter"><b></b><span></span></div>
+  <div id="handle">
+    <svg width="17" height="17" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="6" fill="none" stroke="#fff" stroke-width="2"/><circle cx="12" cy="12" r="4.6" fill="none" stroke="#fff" stroke-width="2"/><circle cx="17.6" cy="6.4" r="1.3" fill="#fff"/></svg>
+    <div>@HOW.ITS.ENGINEERED</div>
+  </div>
+  <div id="bar"><div><i></i></div><div><i></i></div><div><i></i></div><div><i></i></div><div><i></i></div></div>
+  <div id="caps"></div>
+  <div id="grain"></div>
+  <div id="variant"></div>
+  <svg id="cursor" viewBox="0 0 18 24"><path d="M2 2 L2 19 L6.5 15 L9.5 22 L12.5 20.7 L9.6 14 L15.5 14 Z" fill="#fff" stroke="#000" stroke-width="1.4" stroke-linejoin="round"/></svg>
+</div>
+<script src="../../tools/lib.js"></script>
+<script src="../../tools/iso.js"></script>
+<script>
+// estimated phrase timings for the opening (replaced by voice/timings.js once the voice exists)
+window.TIMINGS = window.TIMINGS || [
+  { li: 0, pi: 0, show: "Your phone thinks it's talking to *Instagram's servers.*", start: 0.0, end: 2.25 },
+  { li: 0, pi: 1, show: "[It's not.]", start: 2.5, end: 3.0 },
+  { li: 1, pi: 0, show: "It's talking to a *middleman:*", start: 3.25, end: 4.15 },
+  { li: 1, pi: 1, show: "a [reverse proxy.]", start: 4.25, end: 4.95 },
+];
+</script>
+<script>
+const $ = (id) => document.getElementById(id);
+const RED = '#FF453A', GREEN = '#32D74B';
+
+// ---------- themes ----------
+const mk = (line, top, s1, s2, text = line, dot = line) => ({ line, top, s1, s2, text, dot });
+const THEMES = {
+  mono: {
+    label: 'A · MONO', bg: '#000', grid: '255,255,255', glow: 'rgba(255,255,255,0.05)', bloom: false,
+    acc: '#fff', packet: '#fff', heart: RED, warn: RED, ok: GREEN, crowd: '255,255,255',
+    css: {},
+    roles: { def: mk('#fff', '#000', '#000', '#000'), proxy: mk('#fff', '#000', '#000', '#000'), wall: mk('#fff', '#000', '#000', '#000'), server: mk('#fff', '#000', '#000', '#000') },
+  },
+  neon: {
+    label: 'B · NEON ACCENT', bg: '#000', grid: '255,255,255', glow: 'rgba(46,230,214,0.07)', bloom: true,
+    acc: '#2EE6D6', packet: '#2EE6D6', heart: '#FF375F', warn: '#FF375F', ok: '#2EE6D6', crowd: '255,255,255',
+    css: { '--pill': 'rgba(46,230,214,0.16)', '--pillText': '#2EE6D6', '--acc': '#2EE6D6', '--cardLine': 'rgba(46,230,214,0.55)' },
+    roles: { def: mk('#fff', '#000', '#000', '#000'), proxy: mk('#2EE6D6', '#000', '#000', '#000'), wall: mk('#2EE6D6', '#000', '#000', '#000'), server: mk('#fff', '#000', '#000', '#000') },
+  },
+  solid: {
+    label: 'C · SOLID 3D', bg: '#0b0b0e', grid: '255,255,255', glow: 'rgba(255,159,10,0.07)', bloom: false,
+    acc: '#FF9F0A', packet: '#FF9F0A', heart: '#FF453A', warn: '#FF453A', ok: '#30D158', crowd: '235,235,240',
+    css: { '--bg': '#0b0b0e', '--pill': 'rgba(255,159,10,0.18)', '--pillText': '#FFB340', '--acc': '#FF9F0A', '--card': 'rgba(22,22,26,0.94)', '--cardLine': 'rgba(255,255,255,0.22)' },
+    roles: {
+      def: mk('rgba(255,255,255,0.7)', '#3a3a42', '#1c1c21', '#2a2a31', '#fff', '#fff'),
+      proxy: mk('#FFB340', '#6b4410', '#2e1d07', '#46300c', '#FFE2B0', '#FFB340'),
+      wall: mk('rgba(255,255,255,0.55)', '#4a4a52', '#222228', '#34343b'),
+      server: mk('rgba(255,255,255,0.7)', '#3a3a42', '#1c1c21', '#2a2a31', '#fff', '#30D158'),
+    },
+  },
+  color: {
+    label: 'D · FULL COLOR', bg: '#060a1a', grid: '120,150,255', glow: 'rgba(110,90,255,0.12)', bloom: true,
+    acc: '#FFB020', packet: '#38E1FF', heart: '#FF4D8D', warn: '#FF4D8D', ok: '#3DFFA2', crowd: '150,175,255',
+    css: { '--bg': '#060a1a', '--cap': '#8f9bc4', '--pill': 'rgba(255,176,32,0.18)', '--pillText': '#FFC24D', '--acc': '#FFB020', '--card': 'rgba(9,14,36,0.94)', '--cardLine': 'rgba(130,150,255,0.45)' },
+    roles: {
+      def: mk('#dfe6ff', '#0b1230', '#0b1230', '#0b1230'),
+      proxy: mk('#FFB020', '#2a1c04', '#1c1303', '#241803', '#FFD27A', '#FFB020'),
+      wall: mk('#FFB020', '#1a1306', '#120d04', '#160f05'),
+      server: mk('#A18BFF', '#17123d', '#0f0b2b', '#140f36', '#d9d0ff', '#3DFFA2'),
+    },
+  },
+};
+const VID = THEMES[location.hash.slice(1)] ? location.hash.slice(1) : 'mono';
+const TH = THEMES[VID];
+for (const k in TH.css) document.documentElement.style.setProperty(k, TH.css[k]);
+$('variant').textContent = 'VARIANT ' + TH.label;
+$('vignette').style.background = `radial-gradient(110% 75% at 50% 52%, ${TH.glow}, rgba(0,0,0,0) 62%)`;
+if (TH.bloom) { $('sceneG').setAttribute('filter', 'url(#bloom)'); }
+
+ISO.layer = $('sceneG');
+const FX = $('fx');
+const BG = $('bg').getContext('2d');
+const TM = window.TIMINGS;
+const ph = (li, pi = 0) => TM.find((e) => e.li === li && e.pi === pi);
+const S = (li, pi = 0) => ph(li, pi).start, E = (li, pi = 0) => ph(li, pi).end;
+window.DURATION = 5.3;
+
+const caps = makeCaptions($('caps'), TM.map((e, i) => ({
+  t: e.start, dur: Math.max(0.35, e.end - e.start), text: e.show,
+  end: i + 1 < TM.length ? TM[i + 1].start - 0.02 : window.DURATION + 1,
+})));
+$('grain').style.backgroundImage = `url(${grainURL(256, 0.07, 11)})`;
+
+// ---------- key times ----------
+const TAP = 0.62, LAUNCH = 0.78;
+const BELIEF = 1.55;              // card says "connected to instagram.com ✓"
+const NOT = S(0, 1), IMPACT = NOT - 0.04;
+const MID = S(1, 0), RP = S(1, 1);
+
+// ---------- helpers ----------
+const life = (t, a, b, fi = 0.35, fo = 0.25) => Math.max(0, Math.min(ep(t, a, a + fi), 1 - ep(t, b - fo, b)));
+const hash = (n) => { const x = Math.sin(n * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
+const flipV = (F) => ({ o: add3(F.o, F.v), u: F.u, v: mul3(F.v, -1) });
+const circ = (p, r) => `M${p[0] - r} ${p[1]}a${r} ${r} 0 1 0 ${2 * r} 0a${r} ${r} 0 1 0 ${-2 * r} 0`;
+const fx = (tag, attrs, parent = FX) => el(tag, attrs, parent);
+function fcircle(o, F, a, b, r, opt = {}) {
+  const lu = len3(F.u), lv = len3(F.v), pts = [];
+  for (let i = 0; i < 28; i++) { const q = (i / 28) * Math.PI * 2; pts.push(fp(F, a + (r * Math.cos(q)) / lu, b + (r * Math.sin(q)) / lv)); }
+  push(o, path2(pts), { w: 0.9, ...opt });
+}
+// box with each face tagged, so the theme can shade it
+function box3(o, x, y, z, w, d, h, opt = {}) {
+  const c = Math.cos(CAM.yaw), s = Math.sin(CAM.yaw);
+  const vis = (nx, ny) => (nx * c - ny * s) + (nx * s + ny * c) > 0.001;
+  const F = {};
+  for (const [k, oo, u, v, nx, ny] of [
+    ['px', [x + w, y, z], [0, d, 0], [0, 0, h], 1, 0], ['nx', [x, y, z], [0, d, 0], [0, 0, h], -1, 0],
+    ['py', [x, y + d, z], [w, 0, 0], [0, 0, h], 0, 1], ['ny', [x, y, z], [w, 0, 0], [0, 0, h], 0, -1]]) {
+    if (!vis(nx, ny)) continue;
+    F[k] = { o: oo, u, v };
+    fpoly(o, F[k], 0, 0, 1, 1, { w: 1, face: k, ...opt });
+  }
+  F.top = { o: [x, y, z + h], u: [w, 0, 0], v: [0, d, 0] };
+  fpoly(o, F.top, 0, 0, 1, 1, { w: 1, face: 'top', ...opt });
+  return F;
+}
+// emit with the theme's colours for a role (def / proxy / wall / server)
+function emitT(o, D, op = 1, role = 'def') {
+  const R = TH.roles[role] || TH.roles.def;
+  for (const it of o.items) {
+    if (it.face) it.fill = it.fill ?? (it.face === 'top' ? R.top : it.face[0] === 'p' && it.face[1] === 'x' || it.face === 'nx' ? R.s1 : R.s2);
+    else if (it.fill === undefined || it.fill === '#000') it.fill = R.top;
+    else if (it.fill === '#fff' && it.stroke === 'none') it.fill = R.dot;
+    if (it.stroke === undefined) it.stroke = R.line;
+  }
+  for (const tx of o.texts) if (tx.fill === undefined) tx.fill = R.text;
+  emit(o, D, op);
+}
+function rack3(o, x, y, z, w, d, h) {
+  const F = box3(o, x, y, z, w, d, h);
+  if (F.py) {
+    const R = F.py;
+    fpoly(o, R, 0.07, 0.03, 0.86, 0.94, { fill: 'none', w: 0.6 });
+    for (let k = 0; k < 10; k++) {
+      const b = 0.07 + k * 0.088;
+      fline(o, R, 0.1, b, 0.9, b, { w: 0.55, op: 0.8 });
+      fpoly(o, R, 0.15, b + 0.02, 0.32, 0.045, { fill: 'none', w: 0.55 });
+    }
+  }
+  if (F.px) for (let k = 0; k < 8; k++) fline(o, F.px, 0.15 + k * 0.095, 0.1, 0.15 + k * 0.095, 0.9, { w: 0.5, op: 0.6 });
+  fpoly(o, F.top, 0.12, 0.14, 0.76, 0.72, { fill: 'none', w: 0.6 });
+  return F;
+}
+const labels = $('labels');
+function label(text, x, y, op, cls = '', extra = '') {
+  if (op <= 0.01) return;
+  const d = document.createElement('div');
+  d.className = 'lbl ' + cls; d.innerHTML = text;
+  d.style.left = x + 'px'; d.style.top = y + 'px'; d.style.opacity = Math.min(1, op);
+  if (extra) d.style.cssText += extra;
+  labels.appendChild(d);
+}
+function card(a, style, inner) {
+  if (a <= 0.001) return '';
+  const e = ease.back(clamp(a)), o = clamp(a * 1.5);
+  return `<div class="card" style="${style};opacity:${o};transform:translateY(${(1 - e) * 18}px) scale(${lerp(0.92, 1, e)});filter:blur(${(1 - clamp(a * 1.3)) * 6}px)">${inner}</div>`;
+}
+function ripple(t, t0, p, col, R = 34) {
+  const k = prog(t, t0, t0 + 0.55);
+  if (k <= 0 || k >= 1) return;
+  fx('circle', { cx: p[0], cy: p[1], r: 4 + ease.out(k) * R, fill: 'none', stroke: col, 'stroke-width': 1.6 * (1 - k) + 0.3, 'stroke-opacity': 1 - k });
+}
+function isoRing(t, t0, w, col, R = 90, dur = 0.8) {
+  const k = prog(t, t0, t0 + dur);
+  if (k <= 0 || k >= 1) return;
+  const r = 10 + ease.out(k) * R, pts = [];
+  for (let i = 0; i <= 40; i++) { const q = (i / 40) * Math.PI * 2; pts.push(P(w[0] + r * Math.cos(q), w[1] + r * Math.sin(q), w[2] || 0)); }
+  fx('path', { d: path2(pts), fill: 'none', stroke: col, 'stroke-width': 1.4, 'stroke-opacity': (1 - k) * 0.9 });
+}
+function shards(t, t0, p, col, n = 12, R = 1) {
+  const k = prog(t, t0, t0 + 0.7);
+  if (k <= 0 || k >= 1) return;
+  for (let i = 0; i < n; i++) {
+    const a = (i / n) * Math.PI * 2 + hash(i) * 0.6, d = 6 + ease.out(k) * (26 + hash(i + 3) * 30) * R, L = 7 * (1 - k) + 2;
+    const x = p[0] + Math.cos(a) * d, y = p[1] + Math.sin(a) * d + k * k * 14;
+    fx('line', { x1: x, y1: y, x2: x + Math.cos(a + 1) * L, y2: y + Math.sin(a + 1) * L, stroke: col, 'stroke-width': 1.5, 'stroke-opacity': 1 - k });
+  }
+}
+
+// ---------- world layout ----------
+const PH = [0, 270];                      // your phone
+const PX = [0, -60];                      // the reverse proxy, set in the wall
+const WALL_Y = -76;
+const SVX = [-225, -135, -45, 45, 135, 225], SVY = -285;
+const IMPACT_PT = [0, PX[1] + 40, 34];    // where the request hits the proxy's front
+const HEART = [PH[0] - 30 + 0.2 * 60, PH[1] - 58 + 0.66 * 116, 12];
+
+// other people on the public side (they light up once the proxy is revealed)
+const CROWD = [];
+for (let i = 0; CROWD.length < 300; i++) {
+  const x = (hash(i * 1.7 + 0.3) * 2 - 1) * 460, y = 60 + hash(i * 2.3 + 0.9) * 470;
+  if (Math.abs(x) < 85 && Math.abs(y - PH[1]) < 115) continue;
+  if (Math.abs(x) < 90 && y < 40) continue;
+  CROWD.push({ x, y, s: hash(i + 9.9) });
+}
+
+// ---------- objects ----------
+function heartPts(F, a, b, r) {
+  const lu = len3(F.u), lv = len3(F.v), pts = [];
+  for (let i = 0; i < 32; i++) {
+    const q = (i / 32) * Math.PI * 2;
+    const hx = Math.pow(Math.sin(q), 3), hy = -(13 * Math.cos(q) - 5 * Math.cos(2 * q) - 2 * Math.cos(3 * q) - Math.cos(4 * q)) / 16;
+    pts.push(fp(F, a + (r * hx) / lu, b + (r * hy) / lv));
+  }
+  return pts;
+}
+function phoneObj(t, like) {
+  const [cx, cy] = PH, o = Obj();
+  const T = box3(o, cx - 55, cy - 85, 0, 110, 170, 5);
+  tileDots(o, T.top, 6, 9);
+  const F = box3(o, cx - 30, cy - 58, 5, 60, 116, 7), Sc = F.top;
+  fpoly(o, Sc, 0.08, 0.05, 0.84, 0.9, { fill: 'none' });
+  fline(o, Sc, 0.38, 0.09, 0.62, 0.09, { w: 1.2 });
+  ftext(o, Sc, 0.15, 0.165, 'Instagram', 6.2, { weight: 800, anchor: 'start' });
+  fcircle(o, Sc, 0.8, 0.165, 2.6, { fill: 'none', w: 0.8 });
+  // the post
+  fpoly(o, Sc, 0.14, 0.23, 0.72, 0.37, { fill: 'none', w: 0.9 });
+  push(o, path2([fp(Sc, 0.16, 0.56), fp(Sc, 0.36, 0.38), fp(Sc, 0.48, 0.48), fp(Sc, 0.62, 0.33), fp(Sc, 0.84, 0.56)], false), { fill: 'none', w: 0.8 });
+  fcircle(o, Sc, 0.7, 0.3, 3.4, { fill: 'none', w: 0.8 });
+  // actions: heart, comment, share
+  const pop = like > 0 ? 1 + 0.45 * Math.sin(Math.PI * clamp(prog(t, TAP, TAP + 0.35))) : 1;
+  push(o, path2(heartPts(Sc, 0.2, 0.66, 4.2 * pop)), like > 0 ? { fill: TH.heart, fillOp: like, stroke: TH.heart, w: 1.1 } : { fill: 'none', w: 1 });
+  fcircle(o, Sc, 0.36, 0.66, 3.6, { fill: 'none', w: 0.9 });
+  push(o, path2([fp(Sc, 0.47, 0.63), fp(Sc, 0.57, 0.66), fp(Sc, 0.47, 0.69)]), { fill: 'none', w: 0.9 });
+  ftext(o, Sc, 0.15, 0.755, like > 0.5 ? '1,205 likes' : '1,204 likes', 4.6, { weight: 700, anchor: 'start' });
+  fline(o, Sc, 0.15, 0.82, 0.78, 0.82, { w: 0.7, op: 0.5 });
+  fline(o, Sc, 0.15, 0.87, 0.6, 0.87, { w: 0.7, op: 0.5 });
+  return o;
+}
+function serverObj(i, t) {
+  const cx = SVX[i], cy = SVY, o = Obj();
+  const F = rack3(o, cx - 24, cy - 20, 4, 48, 40, 104);
+  if (F.py) for (let k = 0; k < 10; k++) if (Math.sin(t * (5 + i) + k * 1.9) > -0.1) fdot(o, F.py, 0.8, 0.07 + k * 0.088 + 0.04, 1.4, { fill: TH.roles.server.dot, stroke: 'none', fillOp: 0.9 });
+  return o;
+}
+function floorObj() {
+  const o = Obj();
+  const T = box3(o, -300, -380, 0, 600, 200, 4);
+  tileDots(o, T.top, 14, 5);
+  return o;
+}
+function wallObj(h) {
+  const o = Obj();
+  for (const [x0, x1] of [[-430, -78], [78, 430]]) {
+    const F = box3(o, x0, WALL_Y - 7, 0, x1 - x0, 14, h);
+    if (F.py && h > 12) for (let k = 1; k < 3; k++) fline(o, F.py, 0, k / 3, 1, k / 3, { w: 0.5, op: 0.5 });
+    if (F.py && h > 12) for (let k = 1; k < 14; k++) fline(o, F.py, k / 14, (k % 2) / 3, k / 14, (k % 2) / 3 + 1 / 3, { w: 0.5, op: 0.45 });
+  }
+  return o;
+}
+function proxyObj(t, glow) {
+  const [cx, cy] = PX, o = Obj();
+  const T = box3(o, cx - 78, cy - 52, 0, 156, 104, 4);
+  tileDots(o, T.top, 7, 4);
+  const B = box3(o, cx - 52, cy - 36, 4, 104, 72, 56);
+  if (B.py) {
+    const D = B.py;
+    fpoly(o, D, 0.05, 0.1, 0.9, 0.8, { fill: 'none', w: 0.6, op: 0.7 });
+    fpoly(o, D, 0.38, 0.0, 0.24, 0.66, { fill: 'none', w: 1.1 });               // the gate
+    for (let k = 1; k < 5; k++) fline(o, D, 0.38 + k * 0.048, 0.0, 0.38 + k * 0.048, 0.66, { w: 0.7 });
+    for (let k = 0; k < 4; k++) fdot(o, D, 0.1 + k * 0.055, 0.78, 1.3, { fillOp: Math.sin(t * 7 + k * 2) > 0 ? 1 : 0.3 });
+    ftext(o, flipV(D), 0.81, 0.25, 'PROXY', 7, { font: 'Mono', weight: 500 });
+  }
+  if (B.px) for (let k = 0; k < 5; k++) fpoly(o, B.px, 0.12 + k * 0.16, 0.3, 0.1, 0.3, { fill: 'none', w: 0.6 });
+  // shield on the roof
+  const Tp = B.top, sh = [[0.5, 0.18], [0.66, 0.27], [0.64, 0.58], [0.5, 0.8], [0.36, 0.58], [0.34, 0.27]];
+  push(o, path2(sh.map(([a, b]) => fp(Tp, a, b))), { fill: glow > 0.02 ? TH.roles.proxy.line : 'none', fillOp: 0.25 * glow, w: 1.3 });
+  push(o, path2([fp(Tp, 0.43, 0.48), fp(Tp, 0.49, 0.58), fp(Tp, 0.59, 0.36)], false), { fill: 'none', w: 1.6 });
+  return o;
+}
+
+// ---------- packets ----------
+const FL = [];
+const fly = (t0, dur, A, B, text = '', col = null, arc = 40) => FL.push({ t0, dur, A, B, text, col, arc });
+fly(LAUNCH, IMPACT - LAUNCH, [HEART[0], HEART[1], HEART[2] + 4], IMPACT_PT, 'POST /like', null, 120);
+// the middleman: proxy forwards to a hidden server, the answer comes back through it
+fly(MID + 0.15, 0.45, [PX[0], PX[1] - 20, 62], [SVX[3], SVY + 20, 112], '', null, 40);
+fly(MID + 0.65, 0.45, [SVX[3], SVY + 20, 112], [PX[0], PX[1] - 20, 62], '', 'ok', 40);
+fly(MID + 1.15, 0.7, [PX[0], PX[1] + 30, 40], [PH[0], PH[1], 16], '200 OK ♥', 'ok', 70);
+function drawPackets(t) {
+  for (const f of FL) {
+    let k = prog(t, f.t0, f.t0 + f.dur);
+    if (k <= 0 || k >= 1) continue;
+    const kk = ease.inOut(k);
+    const pos = (q) => [lerp(f.A[0], f.B[0], q), lerp(f.A[1], f.B[1], q), lerp(f.A[2], f.B[2], q) + Math.sin(q * Math.PI) * f.arc];
+    const col = f.col === 'ok' ? TH.ok : TH.packet;
+    for (let g = 3; g >= 1; g--) {
+      const kg = clamp(kk - g * 0.035); if (kg <= 0) continue;
+      const q = pos(kg), o = Obj();
+      box3(o, q[0] - 5, q[1] - 5, q[2], 10, 10, 10, { stroke: col, fill: TH.bg });
+      emit(o, 1, 0.32 - g * 0.09);
+    }
+    const q = pos(kk), o = Obj();
+    const Fb = box3(o, q[0] - 5, q[1] - 5, q[2], 10, 10, 10, { stroke: col, fill: TH.bg });
+    fpoly(o, Fb.top, 0.25, 0.25, 0.5, 0.5, { fill: col, stroke: 'none' });
+    emit(o, 1, 1);
+    if (f.text) { const lp = P(q[0], q[1], q[2] + 28); label(f.text, lp[0], lp[1], ep(t, f.t0, f.t0 + 0.15), 'out'); }
+  }
+}
+
+// ---------- camera ----------
+const V = (f, s, y, p, sy = 540, r = 0, sx = 270) => ({ f, s, y, p, sy, r, sx });
+const SH = [];
+const shot = (t, a, b, kick = false, fn = ease.inOut) => SH.push({ t, a, b, kick, fn });
+shot(0, V([0, 262, 12], 2.55, -0.42, 56, 560), V([0, 262, 12], 2.7, -0.3, 52, 560));
+shot(LAUNCH - 0.06, null, V([0, 20, 50], 0.72, -0.5, 40, 470), false, ease.inOut);
+shot(1.6, null, V([0, -170, 60], 0.98, -0.62, 24, 520), false, ease.inOut);
+shot(IMPACT, V([0, -70, 40], 0.6, -0.62, 52, 540), V([0, -70, 40], 0.64, -0.72, 56, 540), true, ease.outExpo);
+shot(MID - 0.05, V([0, -10, 40], 0.6, 0.62, 20, 590), V([0, -10, 40], 0.63, 0.5, 22, 590), true);
+shot(RP - 0.05, V([0, -60, 46], 1.45, 0.34, 18, 520, -2), V([0, -60, 46], 1.6, 0.18, 22, 520, -3), true);
+shot(9, null, V([0, -60, 46], 1.6, 0.18, 22, 520, -3));
+SH.forEach((s, i) => { if (!s.a) s.a = SH[i - 1].b; });
+function camera(t) {
+  let i = 0; while (i < SH.length - 2 && t >= SH[i + 1].t) i++;
+  const s = SH[i], k = s.fn(prog(t, s.t, SH[i + 1].t)), a = s.a, b = s.b;
+  CAM.scale = lerp(a.s, b.s, k);
+  CAM.yaw = lerp(a.y, b.y, k) + 0.025 * Math.sin(t * 0.55);
+  CAM.pitch = (lerp(a.p, b.p, k) + 1.2 * Math.sin(t * 0.37)) * Math.PI / 180;
+  aim([lerp(a.f[0], b.f[0], k), lerp(a.f[1], b.f[1], k), lerp(a.f[2], b.f[2], k)], lerp(a.sx, b.sx, k), lerp(a.sy, b.sy, k));
+  return lerp(a.r, b.r, k);
+}
+function cursorAt(t) {
+  const tr = [[0.05, [600, 1000]], [TAP - 0.12, null], [TAP + 0.25, null], [TAP + 0.8, [640, 1050]]];
+  if (t < tr[0][0] || t > tr[3][0]) return null;
+  const pt = (x) => x || P(...HEART);
+  for (let i = 0; i < 3; i++) if (t >= tr[i][0] && t <= tr[i + 1][0]) {
+    const k = ease.inOut(prog(t, tr[i][0], tr[i + 1][0])), a = pt(tr[i][1]), b = pt(tr[i + 1][1]);
+    return [lerp(a[0], b[0], k), lerp(a[1], b[1], k)];
+  }
+  return null;
+}
+
+// ---------- canvas: grid, crowd, dust ----------
+const DUST = Array.from({ length: 90 }, (_, i) => [hash(i + 1.3) * 1900 - 900, hash(i + 7.7) * 1500 - 1000, 20 + hash(i + 3.9) * 360, hash(i + 5.5)]);
+function drawBG(t, focus, crowdOp) {
+  const g = BG; g.setTransform(2, 0, 0, 2, 0, 0); g.clearRect(0, 0, 540, 960);
+  const gx = Math.round(focus[0] / 60) * 60, gy = Math.round(focus[1] / 60) * 60, N = 14;
+  for (let i = -N; i <= N; i++) for (let j = -N; j <= N; j++) {
+    const x = gx + i * 60, y = gy + j * 60, p = P(x, y, 0);
+    if (p[0] < -10 || p[0] > 550 || p[1] < -10 || p[1] > 970) continue;
+    const fade = 1 - clamp((Math.hypot(x - focus[0], y - focus[1]) - 320) / 560);
+    if (fade <= 0) continue;
+    g.fillStyle = `rgba(${TH.grid},${0.16 * fade})`;
+    const r = Math.min(1.6, 0.5 + CAM.scale * 0.45);
+    g.fillRect(p[0] - r / 2, p[1] - r / 2, r, r);
+  }
+  if (crowdOp > 0.01) {
+    const sc = Math.min(2.2, CAM.scale);
+    for (const c of CROWD) {
+      const p0 = P(c.x, c.y, 0), p1 = P(c.x, c.y, 10 + c.s * 4);
+      if (p0[0] < -20 || p0[0] > 560 || p0[1] < -40 || p0[1] > 1000) continue;
+      const al = crowdOp * (0.3 + 0.1 * Math.sin(t * 2 + c.s * 20));
+      g.strokeStyle = g.fillStyle = `rgba(${TH.crowd},${al})`; g.lineWidth = 1.1 * Math.max(0.6, sc * 0.7);
+      g.beginPath(); g.moveTo(p0[0], p0[1]); g.lineTo(p1[0], p1[1]); g.stroke();
+      g.beginPath(); g.arc(p1[0], p1[1] - 1.5 * sc, 1.6 * Math.max(0.6, sc * 0.7), 0, 7); g.fill();
+    }
+    // after the reveal everyone's requests stream into the proxy too
+    const t0 = IMPACT + 0.3, rate = 26, dur = 1.1;
+    if (t > t0) {
+      const k0 = Math.max(0, Math.floor((t - dur - t0) * rate)), k1 = Math.floor((t - t0) * rate);
+      for (let k = k0; k <= k1; k++) {
+        const q = (t - (t0 + k / rate)) / dur;
+        if (q < 0 || q > 1) continue;
+        const c = CROWD[Math.floor(hash(k * 3.31 + 0.7) * CROWD.length)], kk = ease.inOut(q);
+        const p = P(lerp(c.x, PX[0], kk), lerp(c.y, PX[1] + 40, kk), lerp(4, 34, kk) + Math.sin(kk * Math.PI) * 50);
+        g.fillStyle = TH.packet; g.globalAlpha = crowdOp * 0.85 * Math.sin(q * Math.PI);
+        g.beginPath(); g.arc(p[0], p[1], 1.5 * Math.max(0.7, Math.min(1.6, CAM.scale)), 0, 7); g.fill();
+        g.globalAlpha = 1;
+      }
+    }
+  }
+  for (const [x, y, z, s] of DUST) {
+    const p = P(x + Math.sin(t * 0.3 + s * 9) * 20, y + Math.cos(t * 0.25 + s * 7) * 20, z + Math.sin(t * 0.5 + s * 5) * 10);
+    if (p[0] < -5 || p[0] > 545 || p[1] < -5 || p[1] > 965) continue;
+    g.fillStyle = `rgba(${TH.grid},${0.1 + s * 0.25})`;
+    g.beginPath(); g.arc(p[0], p[1], 0.6 + s * 1.2 * Math.min(1.6, CAM.scale), 0, 7); g.fill();
+  }
+}
+
+// ---------- 2D overlays ----------
+function connCard(t) {
+  const a = life(t, LAUNCH + 0.1, MID + 0.05);
+  if (a <= 0) return '';
+  const revealed = t >= IMPACT, ok = t >= BELIEF;
+  const spin = [0, 1, 2].map((k) => `<i style="display:inline-block;width:5px;height:5px;border-radius:50%;background:#fff;margin:0 2px;opacity:${0.25 + 0.75 * (Math.sin(t * 10 - k * 1.3) > 0 ? 1 : 0)}"></i>`).join('');
+  const glitch = revealed ? (1 - ep(t, IMPACT, IMPACT + 0.25)) : 0;
+  const shake = glitch * Math.sin(t * 90) * 6;
+  const strike = ep(t, IMPACT + 0.05, IMPACT + 0.3);
+  const real = ep(t, IMPACT + 0.2, IMPACT + 0.5);
+  const row1 = `<div class="row" style="background:rgba(255,255,255,0.06);opacity:${1 - 0.55 * strike}"><span style="position:relative">instagram.com servers<i style="position:absolute;left:0;top:50%;height:1.5px;background:${TH.warn};width:${strike * 100}%"></i></span><span>${revealed ? `<span style="color:${TH.warn}">✕</span>` : ok ? `<span style="color:${TH.ok}">✓</span>` : spin}</span></div>`;
+  const row2 = revealed ? `<div class="row" style="background:rgba(255,255,255,0.1);opacity:${real};transform:translateX(${(1 - real) * 24}px);color:${TH.acc}"><span>reverse proxy</span><span>157.240.22.35</span></div>` : '';
+  const hd = revealed ? `<span style="color:${TH.warn}">ACTUALLY CONNECTED TO</span>` : ok ? `<span>CONNECTED TO</span>` : '<span>CONNECTING…</span>';
+  return card(a, `left:50px;top:700px;width:440px;padding:12px 14px;margin-left:${shake}px;border-color:${revealed ? TH.warn : ''}`, `<div class="hd">${hd}<span>YOUR PHONE</span></div>${row1}${row2}`);
+}
+function titleHTML(t) {
+  const a = ep(t, RP + 0.05, RP + 0.5, ease.outExpo);
+  if (a <= 0) return '';
+  return `<div style="opacity:${a};transform:translateY(${(1 - a) * 20}px) scale(${lerp(0.94, 1, a)});filter:blur(${(1 - a) * 8}px)"><div class="t">Reverse <span style="color:${TH.acc}">Proxy</span></div><div class="ph">THE MIDDLEMAN</div></div>`;
+}
+
+// ---------- frame ----------
+function render(t) {
+  ISO.layer.innerHTML = ''; FX.innerHTML = ''; labels.innerHTML = '';
+  const roll = camera(t);
+  $('world').style.transform = `rotate(${roll}deg)`;
+
+  const reveal = ep(t, IMPACT, IMPACT + 0.55);
+  drawBG(t, [0, 0], ep(t, LAUNCH, LAUNCH + 0.8) * (0.55 + 0.45 * reveal));
+
+  // painter's order: far → near (servers, floor, wall, proxy, phone)
+  const hide = 1 - 0.62 * ep(t, IMPACT + 0.1, IMPACT + 0.7);
+  const svD = ep(t, 0.4, 1.4);
+  emitT(floorObj(), svD, hide, 'server');
+  [...SVX.keys()].sort((a, b) => depth(SVX[a], SVY) - depth(SVX[b], SVY))
+    .forEach((i) => emitT(serverObj(i, t), ep(t, 0.45 + i * 0.06, 1.3 + i * 0.06), hide, 'server'));
+  const wallH = 46 * ease.back(prog(t, IMPACT + 0.08, IMPACT + 0.6));
+  if (wallH > 0.5) emitT(wallObj(wallH), 1, 1, 'wall');
+  const pD = ep(t, IMPACT - 0.02, IMPACT + 0.45);
+  const glow = Math.max(window01(t, IMPACT, IMPACT + 0.9, 0.1), ep(t, RP, RP + 0.4));
+  if (pD > 0) emitT(proxyObj(t, glow), pD, 1, 'proxy');
+  const like = ep(t, TAP + 0.02, TAP + 0.12);
+  emitT(phoneObj(t, like), 1, 1, 'def');
+  drawPackets(t);
+
+  // effects
+  ripple(t, TAP, P(...HEART), TH.heart, 26);
+  const ip = P(...IMPACT_PT);
+  shards(t, IMPACT, ip, TH.acc, 14, 1.2);
+  isoRing(t, IMPACT, [PX[0], PX[1], 4], TH.acc, 160, 0.9);
+  isoRing(t, RP + 0.05, [PX[0], PX[1], 4], TH.acc, 120, 0.9);
+  $('flash').style.background = TH.acc;
+  $('flash').style.opacity = 0.28 * (1 - ep(t, IMPACT, IMPACT + 0.3)) * (t >= IMPACT ? 1 : 0);
+
+  // world labels
+  const svLbl = P(0, SVY, 165);
+  label(t < IMPACT + 0.3 ? 'INSTAGRAM SERVERS' : 'HIDDEN · PRIVATE NETWORK', svLbl[0], svLbl[1], life(t, 0.9, MID + 0.1) * (t < IMPACT ? 1 : ep(t, IMPACT + 0.3, IMPACT + 0.6)), t < IMPACT ? 'big' : '');
+  const tagOp = life(t, MID + 0.1, RP + 0.05, 0.25, 0.2);
+  const tp = P(PH[0], PH[1], 60), tx = P(PX[0], PX[1], 120), ts = P(0, SVY, 170);
+  label('YOU', tp[0], tp[1], tagOp, 'tag');
+  label('MIDDLEMAN', tx[0], tx[1], tagOp, 'tag', `background:${TH.acc};color:#000`);
+  label('SERVERS', ts[0], ts[1], tagOp, 'tag');
+
+  // UI
+  $('ui').innerHTML = connCard(t);
+  $('title').innerHTML = titleHTML(t);
+  caps.render(t);
+  $('chapter').lastChild.textContent = t < IMPACT ? '01 THE ILLUSION' : '02 THE MIDDLEMAN';
+  [...$('bar').querySelectorAll('i')].forEach((b, k) => { b.style.width = clamp(t / 60 * 5 - k) * 100 + '%'; });
+  const cp = cursorAt(t), cur = $('cursor');
+  if (cp) { const pr = window01(t, TAP, TAP + 0.18, 0.05); cur.style.display = ''; cur.style.transform = `translate(${cp[0] - 3}px, ${cp[1] - 2}px) scale(${1 - 0.15 * pr})`; }
+  else cur.style.display = 'none';
+}
+window.render = render;
+render(0);
+</script>
+</body>
+</html>

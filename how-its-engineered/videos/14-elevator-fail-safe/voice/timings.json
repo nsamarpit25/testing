@@ -1,0 +1,138 @@
+[
+ {
+  "li": 0,
+  "pi": 0,
+  "say": "If the elevator ropes snap, what stops you falling?",
+  "show": "If the elevator *ropes snap*, what stops you falling?",
+  "start": 0.0,
+  "end": 2.82
+ },
+ {
+  "li": 0,
+  "pi": 1,
+  "say": "The car grabs the rails.",
+  "show": "The car grabs [the rails.]",
+  "start": 3.38,
+  "end": 4.74
+ },
+ {
+  "li": 1,
+  "pi": 0,
+  "say": "In eighteen fifty-four, Elisha Otis made that automatic.",
+  "show": "In *1854*, *Elisha Otis* made that automatic.",
+  "start": 5.22,
+  "end": 7.94
+ },
+ {
+  "li": 1,
+  "pi": 1,
+  "say": "The lifting rope kept a spring bent, holding two catches back.",
+  "show": "The lifting rope kept a *spring* bent, holding two *catches* back.",
+  "start": 8.38,
+  "end": 11.64
+ },
+ {
+  "li": 1,
+  "pi": 2,
+  "say": "If the rope broke, the spring straightened, pushing the catches into teeth on the rails.",
+  "show": "If the rope broke, the spring *straightened*, pushing the catches into *teeth* on the rails.",
+  "start": 11.92,
+  "end": 16.1
+ },
+ {
+  "li": 1,
+  "pi": 3,
+  "say": "The failure itself fired the brake. That's fail-safe.",
+  "show": "The failure itself *fired the brake*. That's [fail-safe.]",
+  "start": 16.46,
+  "end": 19.66
+ },
+ {
+  "li": 2,
+  "pi": 0,
+  "say": "Now follow this thin rope. It moves with the car, turning a wheel called the governor.",
+  "show": "Now follow this *thin rope*. It moves with the car, turning a wheel called the *governor*.",
+  "start": 20.18,
+  "end": 24.52
+ },
+ {
+  "li": 2,
+  "pi": 1,
+  "say": "If the car goes too fast, weights swing outward and lock that rope.",
+  "show": "If the car goes *too fast*, weights swing outward and *lock* that rope.",
+  "start": 24.92,
+  "end": 28.36
+ },
+ {
+  "li": 3,
+  "pi": 0,
+  "say": "The car keeps moving, so the stopped rope pulls a lever.",
+  "show": "The car keeps moving, so the stopped rope pulls a *lever*.",
+  "start": 28.36,
+  "end": 31.94
+ },
+ {
+  "li": 3,
+  "pi": 1,
+  "say": "That pulls wedges between the car and rails, like pushing a doorstop under a door.",
+  "show": "That pulls *wedges* between the car and rails, like pushing a *doorstop* under a door.",
+  "start": 32.54,
+  "end": 36.5
+ },
+ {
+  "li": 3,
+  "pi": 2,
+  "say": "They squeeze against the rails, and friction slows the car.",
+  "show": "They squeeze against the rails, and [friction] slows the car.",
+  "start": 37.0,
+  "end": 39.5
+ },
+ {
+  "li": 4,
+  "pi": 0,
+  "say": "But cut that thin rope?",
+  "show": "But *cut* that thin rope?",
+  "start": 40.12,
+  "end": 41.4
+ },
+ {
+  "li": 4,
+  "pi": 1,
+  "say": "In nineteen forty-five, a bomber hit the Empire State Building. Falling debris cut car six's lifting ropes, and its governor rope.",
+  "show": "In *1945*, a *bomber* hit the *Empire State Building*. Falling debris cut car 6's lifting ropes, and its *governor rope*.",
+  "start": 41.88,
+  "end": 48.2
+ },
+ {
+  "li": 4,
+  "pi": 2,
+  "say": "Its wedges worked. Nothing triggered them.",
+  "show": "Its wedges worked. [Nothing triggered them.]",
+  "start": 48.56,
+  "end": 50.5
+ },
+ {
+  "li": 4,
+  "pi": 3,
+  "say": "It fell seventy-five floors. Operator Betty Lou Oliver survived.",
+  "show": "It fell *75 floors*. Operator *Betty Lou Oliver* survived.",
+  "start": 50.82,
+  "end": 54.58
+ },
+ {
+  "li": 5,
+  "pi": 0,
+  "say": "Newer systems remove that rope: a speed sensor and electronics trigger the wedges directly.",
+  "show": "Newer systems remove that rope: a *speed sensor* and *electronics* trigger the wedges directly.",
+  "start": 54.58,
+  "end": 59.6
+ },
+ {
+  "li": 5,
+  "pi": 1,
+  "say": "Follow for more of how things are engineered.",
+  "show": "[Follow] for more of how things are engineered.",
+  "start": 60.18,
+  "end": 61.66
+ }
+]

@@ -1,0 +1,154 @@
+[
+ {
+  "li": 0,
+  "pi": 0,
+  "say": "Your app crashed at three A-M.",
+  "show": "Your app *crashed* at 3 AM.",
+  "start": 0.0,
+  "end": 2.08
+ },
+ {
+  "li": 0,
+  "pi": 1,
+  "say": "By the time you woke up, it was already back. Nobody touched it.",
+  "show": "By the time you woke up, it was [already back.] Nobody touched it.",
+  "start": 2.38,
+  "end": 5.54
+ },
+ {
+  "li": 1,
+  "pi": 0,
+  "say": "With Docker alone, a crashed container stays dead until you restart it by hand.",
+  "show": "With Docker alone, a crashed container *stays dead* until you restart it [by hand.]",
+  "start": 6.06,
+  "end": 10.22
+ },
+ {
+  "li": 1,
+  "pi": 1,
+  "say": "Traffic doubles? More copies, by hand too.",
+  "show": "Traffic doubles? More copies, *by hand* too.",
+  "start": 10.74,
+  "end": 13.38
+ },
+ {
+  "li": 2,
+  "pi": 0,
+  "say": "The fix?",
+  "show": "The fix?",
+  "start": 13.9,
+  "end": 14.26
+ },
+ {
+  "li": 2,
+  "pi": 1,
+  "say": "Tell a robot what you want.",
+  "show": "Tell a robot *what you want.*",
+  "start": 14.64,
+  "end": 16.0
+ },
+ {
+  "li": 2,
+  "pi": 2,
+  "say": "That's Kubernetes.",
+  "show": "That's [Kubernetes.]",
+  "start": 16.46,
+  "end": 17.4
+ },
+ {
+  "li": 3,
+  "pi": 0,
+  "say": "Like a thermostat: you set twenty-one degrees, and it keeps the room there.",
+  "show": "Like a *thermostat:* you set *21\u00b0,* and it [keeps the room there.]",
+  "start": 17.84,
+  "end": 21.64
+ },
+ {
+  "li": 4,
+  "pi": 0,
+  "say": "Job one: heal.",
+  "show": "Job one: [heal.]",
+  "start": 22.24,
+  "end": 23.08
+ },
+ {
+  "li": 4,
+  "pi": 1,
+  "say": "Keep three copies running. One crashes? A new one starts in seconds.",
+  "show": "Keep *3 copies* running. One crashes? A new one starts *in seconds.*",
+  "start": 23.52,
+  "end": 27.1
+ },
+ {
+  "li": 5,
+  "pi": 0,
+  "say": "Job two: scale.",
+  "show": "Job two: [scale.]",
+  "start": 27.6,
+  "end": 28.58
+ },
+ {
+  "li": 5,
+  "pi": 1,
+  "say": "Traffic spikes? It adds copies. Traffic drops? It removes them.",
+  "show": "Traffic spikes? It *adds copies.* Traffic drops? It *removes them.*",
+  "start": 28.58,
+  "end": 32.44
+ },
+ {
+  "li": 6,
+  "pi": 0,
+  "say": "Job three: update.",
+  "show": "Job three: [update.]",
+  "start": 32.94,
+  "end": 34.0
+ },
+ {
+  "li": 6,
+  "pi": 1,
+  "say": "New version? It swaps copies one at a time. No downtime.",
+  "show": "New version? It swaps copies *one at a time.* No *downtime.*",
+  "start": 34.52,
+  "end": 37.92
+ },
+ {
+  "li": 7,
+  "pi": 0,
+  "say": "So that three A-M crash? Fixed before you woke up.",
+  "show": "So that *3 AM crash?* Fixed [before you woke up.]",
+  "start": 38.5,
+  "end": 41.28
+ },
+ {
+  "li": 8,
+  "pi": 0,
+  "say": "Docker packs the box. Kubernetes runs the fleet.",
+  "show": "*Docker* packs the box. *Kubernetes* runs the fleet.",
+  "start": 41.94,
+  "end": 44.52
+ },
+ {
+  "li": 8,
+  "pi": 1,
+  "say": "Google built it, and every big cloud offers it.",
+  "show": "*Google* built it, and every big cloud offers it.",
+  "start": 45.06,
+  "end": 47.22
+ },
+ {
+  "li": 9,
+  "pi": 0,
+  "say": "New to containers? The Docker reel is on my profile.",
+  "show": "New to containers? The *Docker reel* is on my profile.",
+  "start": 47.66,
+  "end": 50.18
+ },
+ {
+  "li": 9,
+  "pi": 1,
+  "say": "Follow for the rest of the series.",
+  "show": "[Follow] for the rest of the series.",
+  "start": 50.52,
+  "end": 51.58
+ }
+]

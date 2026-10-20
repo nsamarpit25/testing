@@ -1,0 +1,188 @@
+[
+ {
+  "li": 0,
+  "show": "Your Instagram feed loads in under a second...",
+  "start": 0,
+  "end": 2.726
+ },
+ {
+  "li": 0,
+  "show": "but the server is thousands of kilometres away.",
+  "start": 3.176,
+  "end": 5.515
+ },
+ {
+  "li": 0,
+  "show": "So how?",
+  "start": 5.815,
+  "end": 6.539
+ },
+ {
+  "li": 1,
+  "show": "One word.",
+  "start": 7.089,
+  "end": 7.581
+ },
+ {
+  "li": 1,
+  "show": "Caching.",
+  "start": 7.881,
+  "end": 8.601
+ },
+ {
+  "li": 2,
+  "show": "Here's the slow way.",
+  "start": 9.151,
+  "end": 10.426
+ },
+ {
+  "li": 2,
+  "show": "Every time you open the app, it asks the database.",
+  "start": 10.726,
+  "end": 13.701
+ },
+ {
+  "li": 2,
+  "show": "Again. And again.",
+  "start": 14.001,
+  "end": 15.479
+ },
+ {
+  "li": 2,
+  "show": "Every single time.",
+  "start": 15.779,
+  "end": 17.846
+ },
+ {
+  "li": 3,
+  "show": "Now imagine keeping a copy...",
+  "start": 18.396,
+  "end": 20.136
+ },
+ {
+  "li": 3,
+  "show": "right next to you.",
+  "start": 20.586,
+  "end": 21.424
+ },
+ {
+  "li": 3,
+  "show": "First visit? Slow.",
+  "start": 21.724,
+  "end": 23.2
+ },
+ {
+  "li": 3,
+  "show": "Second visit? Instant!",
+  "start": 23.5,
+  "end": 25.366
+ },
+ {
+  "li": 4,
+  "show": "But wait...",
+  "start": 25.916,
+  "end": 26.69
+ },
+ {
+  "li": 4,
+  "show": "can you spot the problem?",
+  "start": 27.14,
+  "end": 28.519
+ },
+ {
+  "li": 5,
+  "show": "You change your profile picture.",
+  "start": 29.419,
+  "end": 31.043
+ },
+ {
+  "li": 5,
+  "show": "But your friends...",
+  "start": 31.343,
+  "end": 32.21
+ },
+ {
+  "li": 5,
+  "show": "still see the old one.",
+  "start": 32.66,
+  "end": 33.937
+ },
+ {
+  "li": 6,
+  "show": "That's stale data.",
+  "start": 34.487,
+  "end": 35.723
+ },
+ {
+  "li": 6,
+  "show": "The cache is lying to you.",
+  "start": 36.023,
+  "end": 37.693
+ },
+ {
+  "li": 7,
+  "show": "So smart apps give every copy an expiry timer.",
+  "start": 38.243,
+  "end": 41.472
+ },
+ {
+  "li": 7,
+  "show": "For example, ten minutes.",
+  "start": 41.772,
+  "end": 44.249
+ },
+ {
+  "li": 7,
+  "show": "Then it refreshes.",
+  "start": 44.549,
+  "end": 45.404
+ },
+ {
+  "li": 8,
+  "show": "And when something really changes?",
+  "start": 45.954,
+  "end": 47.659
+ },
+ {
+  "li": 8,
+  "show": "Delete the copy.",
+  "start": 47.959,
+  "end": 49.116
+ },
+ {
+  "li": 8,
+  "show": "Fetch the fresh one.",
+  "start": 49.416,
+  "end": 50.481
+ },
+ {
+  "li": 9,
+  "show": "Fast when it can be.",
+  "start": 51.031,
+  "end": 52.182
+ },
+ {
+  "li": 9,
+  "show": "Fresh when it has to be.",
+  "start": 52.482,
+  "end": 53.854
+ },
+ {
+  "li": 10,
+  "show": "Would you pick speed, or freshness?",
+  "start": 54.404,
+  "end": 56.707
+ },
+ {
+  "li": 10,
+  "show": "Comment below.",
+  "start": 57.007,
+  "end": 57.828
+ },
+ {
+  "li": 10,
+  "show": "And follow for more!",
+  "start": 58.128,
+  "end": 59.6
+ }
+]

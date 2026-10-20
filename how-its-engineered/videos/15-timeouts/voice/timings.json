@@ -1,0 +1,122 @@
+[
+ {
+  "li": 0,
+  "pi": 0,
+  "say": "This little capsule is your app asking a server for the weather.",
+  "show": "This little capsule is your app asking a server for the *weather.*",
+  "start": 0.0,
+  "end": 3.3
+ },
+ {
+  "li": 0,
+  "pi": 1,
+  "say": "It leaves. And nothing comes back.",
+  "show": "It leaves. And [nothing comes back.]",
+  "start": 3.66,
+  "end": 5.56
+ },
+ {
+  "li": 0,
+  "pi": 2,
+  "say": "So how long should your app keep waiting?",
+  "show": "So how long should your app keep *waiting?*",
+  "start": 5.98,
+  "end": 7.86
+ },
+ {
+  "li": 1,
+  "pi": 0,
+  "say": "By default, it might wait forever.",
+  "show": "By default, it might wait [forever.]",
+  "start": 8.52,
+  "end": 10.3
+ },
+ {
+  "li": 1,
+  "pi": 1,
+  "say": "Python's requests library won't time out unless you pass a timeout.",
+  "show": "Python's *requests* library won't time out unless you pass a *timeout.*",
+  "start": 10.88,
+  "end": 14.06
+ },
+ {
+  "li": 1,
+  "pi": 2,
+  "say": "And Go's default client? Same story.",
+  "show": "And *Go's* default client? Same story.",
+  "start": 14.46,
+  "end": 16.6
+ },
+ {
+  "li": 2,
+  "pi": 0,
+  "say": "And waiting isn't free.",
+  "show": "And waiting [isn't free.]",
+  "start": 17.18,
+  "end": 18.32
+ },
+ {
+  "li": 2,
+  "pi": 1,
+  "say": "That call holds a thread while the spinner spins, and every request stuck behind it holds another.",
+  "show": "That call holds a *thread* while the spinner spins, and every request stuck behind it holds *another.*",
+  "start": 18.78,
+  "end": 23.84
+ },
+ {
+  "li": 3,
+  "pi": 0,
+  "say": "A timeout is a deadline: the longest you'll wait before calling it a failure.",
+  "show": "A [timeout] is a *deadline:* the longest you'll wait before calling it a *failure.*",
+  "start": 24.56,
+  "end": 28.3
+ },
+ {
+  "li": 4,
+  "pi": 0,
+  "say": "Pass timeout equals three, and after three seconds, you stop waiting.",
+  "show": "Pass *timeout=3,* and after *3 seconds,* you stop waiting.",
+  "start": 28.9,
+  "end": 32.4
+ },
+ {
+  "li": 5,
+  "pi": 0,
+  "say": "Now the slow call is a failure your code can handle.",
+  "show": "Now the slow call is a failure your code can [handle.]",
+  "start": 33.18,
+  "end": 35.78
+ },
+ {
+  "li": 5,
+  "pi": 1,
+  "say": "Show a clear error, or use a fallback, like the forecast you saved earlier.",
+  "show": "Show a clear *error,* or use a *fallback,* like the forecast you saved earlier.",
+  "start": 36.2,
+  "end": 39.8
+ },
+ {
+  "li": 6,
+  "pi": 0,
+  "say": "The spinner stops. The thread is freed. Your user knows what happened.",
+  "show": "The spinner *stops.* The thread is *freed.* Your user knows what happened.",
+  "start": 40.34,
+  "end": 44.0
+ },
+ {
+  "li": 7,
+  "pi": 0,
+  "say": "Haven't seen circuit breakers? That reel's on my profile.",
+  "show": "Haven't seen *circuit breakers?* That reel's on my profile.",
+  "start": 44.8,
+  "end": 47.48
+ },
+ {
+  "li": 7,
+  "pi": 1,
+  "say": "Follow for the rest of the series.",
+  "show": "[Follow] for the rest of the series.",
+  "start": 48.0,
+  "end": 49.26
+ }
+]

@@ -1,0 +1,14 @@
+It works on your laptop. You put it on a server and it crashes. Same code. 💥
+
+The code isn't the problem. Everything around it is: a different Node version, a library you installed months ago and forgot, a missing .env file.
+
+The fix? Don't send just the code. Send the whole machine. That's Docker:
+📝 Recipe: a Dockerfile lists exactly which Node, which libraries and which files your app needs
+❄️ Build: Docker freezes all of it into an image, a snapshot of everything your app needs
+🚀 Run: that image runs anywhere as a container. Laptop, server, your teammate's PC. Identical.
+
+The image is the box. The container is the box, running.
+
+What's the worst "works on my machine" bug you've hit? Comment below 👇
+
+#coding #programming #softwareengineer #docker #devops

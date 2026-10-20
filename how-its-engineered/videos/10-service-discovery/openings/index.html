@@ -1,0 +1,61 @@
+<!doctype html>
+<!-- All nine Service Discovery opening styles playing side by side on one clock. Open in a browser; nothing is rendered. -->
+<html><head><meta charset="utf-8"><title>10 Service Discovery · openings</title>
+<link rel="stylesheet" href="fonts.css">
+<style>
+  html, body { margin: 0; height: 100%; background: #050505; color: #ddd; font-family: Inter, system-ui, sans-serif; }
+  body { display: flex; flex-direction: column; }
+  #grid { flex: 1; min-height: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr)); gap: 10px; padding: 12px 12px 0; }
+  @media (min-aspect-ratio: 5/2) { #grid { grid-template-columns: repeat(9, minmax(0, 1fr)); grid-template-rows: minmax(0, 1fr); } }
+  .cell .lb i { font-style: normal; color: #4ADE80; margin-left: 6px; }
+  .cell { min-height: 0; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+  .cell .lb { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font: 700 11px/1 'JetBrains Mono', monospace; letter-spacing: .04em; color: #888; }
+  .cell .lb b { color: #FF6A1F; margin-right: 6px; }
+  .cell .fr { flex: 1; min-height: 0; overflow: hidden; display: flex; justify-content: center; }
+  iframe { border: 1px solid #222; border-radius: 8px; background: #000; }
+  .cell.pick iframe { border-color: #FF6A1F; }
+  #bar { display: flex; align-items: center; justify-content: center; gap: 12px; padding: 10px; font: 600 12px/1 'JetBrains Mono', monospace; color: #bbb; }
+  #bar button { all: unset; cursor: pointer; color: #FF6A1F; font-size: 15px; width: 22px; text-align: center; }
+  #bar input { width: min(420px, 50vw); accent-color: #FF6A1F; }
+</style></head>
+<body>
+<div id="grid"></div>
+<div id="bar"><button id="pp">❚❚</button><button id="rs" title="Restart">↺</button><input id="sc" type="range" min="0" max="1000" value="0"><span id="tl">0.00s</span><span style="color:#666">space = play/pause · ←/→ = 0.5 s</span></div>
+<script>
+const V = [
+  ['A', 'a-diorama', 'Diorama'], ['B', 'b-ember', 'Ember line art'], ['C', 'c-paper', 'Paper form'],
+  ['D', 'd-terminal', 'Terminal'], ['E', 'e-contour', 'Contour map'], ['F', 'f-mine', 'Mine (mixed)'],
+  ['G', 'g-code', 'Code + world', 1], ['H', 'h-phone', 'Phone analogy', 1],
+  ['I', 'i-hybrid', 'Hybrid: F world + G code', 1],
+];
+const D = 10, grid = document.getElementById('grid');
+const bust = Date.now();
+for (const [k, f, name, learn] of V) {
+  const c = document.createElement('div'); c.className = 'cell' + (learn ? ' pick' : '');
+  c.innerHTML = `<div class="lb"><b>${k}</b>${name}${learn ? '<i>· for learning</i>' : ''}</div><div class="fr"><iframe src="${f}.html?v=${bust}#play-embed" title="${name}"></iframe></div>`;
+  grid.appendChild(c);
+}
+// keep every frame 9:16 inside its cell
+const fitAll = () => document.querySelectorAll('.fr').forEach((f) => { const w = Math.min(f.clientWidth, f.clientHeight * 9 / 16); const ifr = f.firstChild; ifr.style.width = w + 'px'; ifr.style.height = w * 16 / 9 + 'px'; });
+addEventListener('resize', fitAll); requestAnimationFrame(fitAll);
+window.__T = 0;
+let playing = true, last = performance.now();
+const pp = document.getElementById('pp'), sc = document.getElementById('sc'), tl = document.getElementById('tl');
+const setPlay = (v) => { playing = v; pp.textContent = v ? '❚❚' : '▶'; };
+pp.onclick = () => setPlay(!playing);
+document.getElementById('rs').onclick = () => { __T = 0; setPlay(true); };
+sc.oninput = () => { __T = (sc.value / 1000) * D; setPlay(false); };
+addEventListener('keydown', (e) => {
+  if (e.code === 'Space') { e.preventDefault(); setPlay(!playing); }
+  if (e.code === 'ArrowRight') __T = Math.min(D, __T + 0.5);
+  if (e.code === 'ArrowLeft') __T = Math.max(0, __T - 0.5);
+});
+const tick = (now) => {
+  const dt = Math.min(0.1, (now - last) / 1000); last = now;
+  if (playing) { __T += dt; if (__T >= D) __T = 0; }
+  sc.value = Math.round((__T / D) * 1000); tl.textContent = __T.toFixed(2) + 's';
+  requestAnimationFrame(tick);
+};
+requestAnimationFrame(tick);
+</script>
+</body></html>

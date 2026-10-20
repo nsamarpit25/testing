@@ -1,0 +1,223 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- Opening variant G: "the code and the world". The caller's code sits on top with the address written into it, the machines sit below,
+     and a dashed wire links the two so the viewer sees the root cause: the service moved, the code still points at the old spot. Hook C, first 10 s. -->
+<link rel="stylesheet" href="fonts.css">
+<style>
+:root { --bg: #0A0F1E; --ink: #E8ECF6; --mut: #6B7799; --line: #1E2742; --cy: #22D3EE; --vi: #A78BFA; --or: #FF8A3D; --gr: #4ADE80; --rd: #FF3B5C; --ye: #FACC15; }
+html, body { margin: 0; background: #000; }
+#stage { position: relative; width: 540px; height: 960px; overflow: hidden; background: radial-gradient(120% 70% at 50% 35%, #121a33 0%, var(--bg) 70%); font-family: Inter, sans-serif; color: var(--ink); }
+#dots { position: absolute; inset: 0; background-image: radial-gradient(rgba(140,160,210,0.13) 1px, transparent 1.2px); background-size: 22px 22px; }
+#grain { position: absolute; inset: -40px; opacity: 0.5; mix-blend-mode: overlay; pointer-events: none; }
+#wrap { position: absolute; inset: 0; transform-origin: 50% 40%; }
+.mono { font-family: Mono; }
+.tagk { position: absolute; left: 24px; top: 42px; font: 800 10px/1 Mono; letter-spacing: 1.6px; color: var(--or); border: 1.5px solid var(--or); border-radius: 5px; padding: 5px 8px; }
+.handle { position: absolute; right: 24px; top: 46px; font: 600 10px/1 Mono; letter-spacing: 1px; color: var(--mut); }
+/* editor */
+#ed { position: absolute; left: 22px; right: 22px; top: 82px; height: 208px; background: #0E1428; border: 1.5px solid #26304f; border-radius: 14px; box-shadow: 0 18px 40px rgba(0,0,0,0.45); overflow: hidden; }
+#ed .tb { height: 32px; display: flex; align-items: center; gap: 6px; padding: 0 12px; border-bottom: 1px solid #1d2644; background: #0B1022; }
+#ed .tb i { width: 9px; height: 9px; border-radius: 50%; background: #2a3456; display: inline-block; }
+#ed .tb .tab { margin-left: 10px; font: 600 11px/1 Mono; color: #AFC0E8; padding: 6px 10px; border-radius: 6px; background: #151d38; }
+#ed .tb .tab b { color: var(--cy); font-weight: 600; }
+#ed .tb .st { margin-left: auto; font: 600 9.5px/1 Mono; letter-spacing: 1px; color: var(--mut); }
+#code { position: relative; padding: 12px 0 0; font: 600 15px/30px Mono; }
+.ln { position: relative; height: 30px; padding-left: 46px; white-space: pre; }
+.ln .n { position: absolute; left: 0; width: 30px; text-align: right; color: #3a4568; font-weight: 400; }
+.ln.run { background: rgba(34,211,238,0.07); }
+.ln.bad { background: rgba(255,59,92,0.1); }
+.c { color: #5d6a90; font-weight: 400; } .k { color: var(--vi); } .s { color: var(--ye); } .f { color: var(--cy); } .p { color: #c9d3ee; }
+#ipCode { position: relative; display: inline-block; }
+#ipBox { position: absolute; left: -5px; right: -5px; top: 2px; bottom: 2px; border: 2px solid var(--ye); border-radius: 6px; opacity: 0; }
+#res { margin-left: 10px; font-weight: 800; font-size: 12px; color: var(--rd); }
+#neq { position: absolute; left: 0; top: 0; font: 800 11px/1 Mono; color: #071016; background: var(--gr); border-radius: 6px; padding: 6px 8px; white-space: nowrap; opacity: 0; }
+#cursor { display: inline-block; width: 9px; height: 19px; background: var(--ye); vertical-align: -3px; }
+/* diagram */
+#svg { position: absolute; left: 0; top: 0; overflow: visible; }
+.mach { position: absolute; top: 380px; width: 152px; height: 128px; border: 1.5px solid #2a3558; border-radius: 14px; background: linear-gradient(#111933, #0d1429); box-sizing: border-box; }
+.mach .h { position: absolute; left: 12px; top: 11px; font: 600 10px/1 Mono; letter-spacing: 1px; color: var(--mut); }
+.mach .leds { position: absolute; right: 12px; top: 12px; display: flex; gap: 4px; }
+.mach .leds i { width: 6px; height: 6px; border-radius: 2px; background: #2a3558; }
+.ipt { position: absolute; top: 520px; width: 152px; text-align: center; font: 800 15px/1 Mono; letter-spacing: 0.5px; }
+.ipt .l { display: block; font: 600 8.5px/1 Mono; letter-spacing: 1.4px; color: var(--mut); margin-bottom: 6px; }
+.ipt .v { position: relative; display: inline-block; }
+.ipt .v:after { content: ''; position: absolute; left: -3px; right: -3px; top: 50%; height: 2.5px; background: var(--rd); transform-origin: 0 50%; transform: scaleX(var(--k, 0)); }
+.chip { position: absolute; width: 112px; height: 54px; border-radius: 11px; border: 2px solid var(--or); background: linear-gradient(#3a1f10, #26140b); box-shadow: 0 0 22px rgba(255,138,61,0.35); box-sizing: border-box; display: flex; flex-direction: column; justify-content: center; padding-left: 30px; }
+.chip .nm { font: 800 15px/1 Inter; letter-spacing: -0.3px; color: #FFD9BF; }
+.chip .vv { font: 600 9px/1 Mono; color: #c98a62; margin-top: 5px; letter-spacing: 0.6px; }
+.chip .dot { position: absolute; left: 12px; top: 50%; width: 9px; height: 9px; margin-top: -4.5px; border-radius: 50%; background: var(--gr); box-shadow: 0 0 10px var(--gr); }
+.ghost { position: absolute; width: 112px; height: 54px; border-radius: 11px; border: 2px dashed #4a5578; box-sizing: border-box; display: flex; align-items: center; justify-content: center; font: 600 10px/1 Mono; letter-spacing: 1.4px; color: #56628a; opacity: 0; }
+.pill { position: absolute; font: 800 10px/1 Mono; letter-spacing: 1px; border-radius: 20px; padding: 6px 10px; white-space: nowrap; opacity: 0; }
+#orders { position: absolute; left: 194px; top: 610px; width: 152px; height: 58px; border-radius: 12px; border: 2px solid var(--cy); background: linear-gradient(#0d2a33, #0a1d25); box-shadow: 0 0 22px rgba(34,211,238,0.25); box-sizing: border-box; display: flex; align-items: center; justify-content: center; gap: 8px; font: 800 16px/1 Inter; color: #CFF7FD; }
+#orders small { font: 600 9px/1 Mono; color: #5fb9c9; letter-spacing: 1px; }
+.x { position: absolute; font: 900 30px/1 Inter; color: var(--rd); text-shadow: 0 0 18px rgba(255,59,92,0.8); opacity: 0; }
+/* kinetic */
+#kin { position: absolute; left: 0; right: 0; top: 410px; text-align: center; font: 900 112px/1 Inter; letter-spacing: -5px; color: var(--rd); opacity: 0; text-shadow: 6px 0 rgba(34,211,238,0.55), -6px 0 rgba(255,59,92,0.55), 0 0 40px rgba(255,59,92,0.6); -webkit-text-stroke: 3px #1a0408; paint-order: stroke fill; }
+#kin small { display: block; font: 800 13px/1 Mono; letter-spacing: 2px; color: #ffd0d8; -webkit-text-stroke: 0; text-shadow: none; margin-top: 10px; }
+#lesson { position: absolute; left: 50%; top: 866px; transform: translateX(-50%); white-space: nowrap; font: 700 13px/1 Inter; color: var(--ink); background: #151d38; border: 1.5px solid #2c3760; border-radius: 30px; padding: 10px 16px; opacity: 0; }
+#lesson b { font: 800 10px/1 Mono; letter-spacing: 1.4px; color: var(--ye); margin-right: 8px; }
+#lesson em { font-family: Instrument; font-style: italic; font-size: 17px; font-weight: 400; color: var(--ye); }
+/* captions (house style) */
+#cap { position: absolute; left: 16px; right: 16px; top: 726px; height: 64px; pointer-events: none; }
+#cap .box { display: none; position: absolute; inset: 0; justify-content: center; align-items: center; white-space: nowrap; font-weight: 900; font-size: 37px; line-height: 1; letter-spacing: -1.1px; }
+#cap .w { display: inline-block; margin: 0 7px; color: #fff; -webkit-text-stroke: 7px #04060f; paint-order: stroke fill; text-shadow: 0 4px 0 #04060f, 0 0 26px rgba(0,0,0,0.75); transform-origin: 50% 85%; }
+#flash { position: absolute; inset: 0; background: var(--rd); opacity: 0; mix-blend-mode: screen; pointer-events: none; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="dots"></div>
+  <div id="wrap">
+    <div class="tagk">SYSTEM DESIGN · 10</div>
+    <div class="handle">@how.its.engineered</div>
+    <div id="ed">
+      <div class="tb"><i></i><i></i><i></i><span class="tab"><b>orders</b>/checkout.js</span><span class="st" id="edst">● LIVE</span></div>
+      <div id="code">
+        <div class="ln"><span class="n">1</span><span class="c">// orders calls the payments service</span></div>
+        <div class="ln" id="l2"><span class="n">2</span><span class="k">const</span> <span class="p">PAY =</span> <span class="s">"<span id="ipCode"><span id="ipTxt">10.0.0.7</span><span id="ipBox"></span></span>:8080"</span></div>
+        <div class="ln"><span class="n">3</span></div>
+        <div class="ln" id="l4"><span class="n">4</span><span class="k">await</span> <span class="f">fetch</span><span class="p">(PAY + </span><span class="s">"/charge"</span><span class="p">)</span><span id="res"></span></div>
+        <div class="ln"><span class="n">5</span><span class="c" id="l5c"></span></div>
+      </div>
+    </div>
+    <div id="neq">≠ it's at 10.0.4.23 now</div>
+    <svg id="svg" width="540" height="960" viewBox="0 0 540 960"></svg>
+    <div class="mach" style="left:24px"><div class="h">machine-1</div><div class="leds"><i></i><i></i><i></i></div></div>
+    <div class="mach" style="left:194px"><div class="h">machine-2</div><div class="leds"><i></i><i></i><i></i></div></div>
+    <div class="mach" style="left:364px"><div class="h">machine-3</div><div class="leds"><i></i><i></i><i></i></div></div>
+    <div class="ipt" id="ip1" style="left:24px"><span class="l">ADDRESS</span><span class="v" style="color:#FFB27F">10.0.0.7</span></div>
+    <div class="ipt" id="ip3" style="left:364px;opacity:0"><span class="l">NEW ADDRESS</span><span class="v" id="ip3v" style="color:var(--gr)">10.0.4.23</span></div>
+    <div class="ghost" id="ghost" style="left:44px;top:424px">EMPTY</div>
+    <div class="chip" id="chip"><i class="dot" id="cdot"></i><div class="nm">payments</div><div class="vv">v1.4 · <span id="cst">running</span></div></div>
+    <div class="pill" id="same" style="left:376px;top:350px;color:#06210f;background:var(--gr)">SAME CODE ✓ v1.4</div>
+    <div class="pill" id="crashp" style="left:36px;top:350px;color:#fff;background:var(--rd)">CRASHED · RESTARTING</div>
+    <div id="orders">orders <small>CALLER</small></div>
+    <div class="x" id="x0">✕</div><div class="x" id="x1">✕</div><div class="x" id="x2">✕</div>
+    <div id="kin">FAILED<small>3 / 3 CALLS · ECONNREFUSED</small></div>
+    <div id="lesson"><b>LESSON</b>addresses <em>change.</em> the code <em>doesn't.</em></div>
+    <div id="cap"></div>
+  </div>
+  <div id="flash"></div>
+  <div id="grain"></div>
+</div>
+<script src="../../../tools/lib.js"></script>
+<script src="hook.js"></script>
+<script>
+const $ = (id) => document.getElementById(id);
+const SVG = $('svg');
+const OLD = { x: 44, y: 424 }, NEW = { x: 384, y: 424 };   // chip top-left on machine-1 / machine-3
+const ORD = { x: 270, y: 610 };
+const XS = [{ x: 30, y: 470 }, { x: 140, y: 470 }, { x: 85, y: 476 }];
+// wire from the address in the code down to where it points
+const wire = el('path', { fill: 'none', stroke: '#FACC15', 'stroke-width': 1.6, 'stroke-dasharray': '5 5', opacity: 0 }, SVG);
+const wireDot = el('circle', { r: 4, fill: '#FACC15', opacity: 0 }, SVG);
+const wireNew = el('path', { fill: 'none', stroke: '#4ADE80', 'stroke-width': 1.6, 'stroke-dasharray': '3 5', opacity: 0 }, SVG);
+// request route from orders up to the old spot
+const route = el('path', { d: `M ${ORD.x - 30} ${ORD.y} C ${ORD.x - 60} 560, 140 560, 100 ${OLD.y + 58}`, fill: 'none', stroke: '#22D3EE', 'stroke-width': 2, 'stroke-dasharray': '2 7', 'stroke-linecap': 'round', opacity: 0 }, SVG);
+const qPath = el('path', { d: `M ${ORD.x + 30} ${ORD.y} C ${ORD.x + 60} 560, 400 560, 440 ${NEW.y + 58}`, fill: 'none', stroke: '#22D3EE', 'stroke-width': 2, 'stroke-dasharray': '6 7', opacity: 0 }, SVG);
+const qMark = el('text', { x: 360, y: 600, 'font-family': 'Inter', 'font-weight': 900, 'font-size': 34, fill: '#22D3EE', opacity: 0, 'text-anchor': 'middle' }, SVG); qMark.textContent = '?';
+const pk = [0, 1, 2].map(() => el('circle', { r: 6, fill: '#22D3EE', opacity: 0, style: 'filter: drop-shadow(0 0 6px #22D3EE)' }, SVG));
+const rings = [0, 1, 2].map(() => el('circle', { r: 0, fill: 'none', stroke: '#FF3B5C', 'stroke-width': 2, opacity: 0 }, SVG));
+let routeL = 0, ipPt = null;
+// position of the address text in the code, in stage pixels (offsets ignore the player's scaling)
+function offs(e) { let x = 0, y = 0; while (e && e.id !== 'stage') { x += e.offsetLeft; y += e.offsetTop; e = e.offsetParent; } return { x, y }; }
+const KEY = { service: '#FF8A3D', restarted: '#FF3B5C', same: '#4ADE80', code: '#4ADE80', new: '#FACC15', address: '#FACC15', failed: '#FF3B5C', find: '#22D3EE', it: null };
+const caps = popCaptions($('cap'), (w, a) => (w === 'it' && a > 8 ? '#22D3EE' : KEY[w] || null));
+window.ready = () => {
+  $('grain').style.background = `url(${grainURL(256, 0.08, 7)})`;
+  routeL = route.getTotalLength();
+  const o = offs($('ipCode')); ipPt = { x: o.x + $('ipCode').offsetWidth / 2, y: o.y + 24 };
+  wire.setAttribute('d', `M ${ipPt.x} ${ipPt.y} C ${ipPt.x} 330, 100 330, 100 ${OLD.y - 2}`);
+  wire._L = wire.getTotalLength(); wire.setAttribute('stroke-dasharray', `5 5`);
+  wireNew.setAttribute('d', `M ${ipPt.x + 40} ${ipPt.y} C ${ipPt.x + 80} 320, 440 320, 440 ${NEW.y - 2}`);
+  const nq = $('neq'); nq.style.left = (o.x - 6) + 'px'; nq.style.top = (o.y + 33) + 'px';
+};
+window.render = function (t) {
+  if (!ipPt) window.ready();
+  // gentle camera: slow push, kicks on the big beats
+  const kick = (a, s) => s * Math.exp(-Math.max(0, t - a) * 6) * (t >= a ? 1 : 0);
+  const sc = 1 + 0.006 * t + kick(B.crash, 0.04) + kick(B.respawn, 0.025) + B.hits.reduce((n, h) => n + kick(h, 0.018), 0) + kick(B.failed, 0.06);
+  const sh = t >= B.failed && t < B.failed + 0.4 ? (rndH(1, Math.floor(t * 60)) - 0.5) * 14 * (1 - (t - B.failed) / 0.4) : 0;
+  $('wrap').style.transform = `translate(${sh}px, ${sh * 0.4}px) scale(${sc})`;
+  // editor slides in
+  const ein = ep(t, 0, 0.45);
+  $('ed').style.opacity = ein; $('ed').style.transform = `translateY(${(1 - ein) * -24}px)`;
+  // wire: code -> machine-1
+  const wa = ep(t, 0.25, 0.75) * (1 - 0.5 * ep(t, B.q, B.q + 0.3));
+  wire.setAttribute('opacity', wa);
+  wire.setAttribute('stroke-dashoffset', -t * 18);
+  wire.setAttribute('stroke', t > B.hits[0] ? '#FF3B5C' : '#FACC15');
+  if (wire._L) { const p = wire.getPointAtLength(wire._L * ep(t, 0.25, 0.75)); wireDot.setAttribute('cx', p.x); wireDot.setAttribute('cy', p.y); wireDot.setAttribute('opacity', wa); wireDot.setAttribute('fill', t > B.hits[0] ? '#FF3B5C' : '#FACC15'); }
+  // payments chip: running -> crash -> gone -> respawn on machine-3
+  const chip = $('chip');
+  let cx = OLD.x, cy = OLD.y, ca = ep(t, 0.1, 0.4), csc = 1;
+  const crashing = t >= B.crash && t < B.gone;
+  if (crashing) { cx += (rndH(3, Math.floor(t * 40)) - 0.5) * 8; }
+  if (t >= B.gone) { const g = ep(t, B.gone, B.gone + 0.3, ease.in); ca = 1 - g; csc = 1 - 0.4 * g; }
+  if (t >= B.respawn) { const r = ep(t, B.respawn, B.respawn + 0.45, ease.back); cx = NEW.x; cy = NEW.y - (1 - r) * 70; ca = prog(t, B.respawn, B.respawn + 0.12); csc = 1; }
+  chip.style.left = cx + 'px'; chip.style.top = cy + 'px'; chip.style.opacity = ca; chip.style.transform = `scale(${csc})`;
+  const red = crashing || (t >= B.gone && t < B.respawn);
+  chip.style.borderColor = red ? '#FF3B5C' : ''; chip.style.boxShadow = red ? '0 0 28px rgba(255,59,92,0.6)' : '';
+  $('cdot').style.background = red ? '#FF3B5C' : t >= B.respawn && t < B.respawn + 0.5 ? '#FACC15' : '';
+  $('cst').textContent = red ? 'crashed' : t >= B.respawn && t < B.respawn + 0.5 ? 'starting' : 'running';
+  $('crashp').style.opacity = window01(t, B.crash, B.respawn + 0.2, 0.12);
+  $('ghost').style.opacity = ep(t, B.gone + 0.15, B.gone + 0.45) * (t > B.hits[0] ? 1 : 0.8);
+  $('ghost').style.borderColor = t > B.hits[0] ? '#FF3B5C' : '';
+  $('ghost').style.color = t > B.hits[0] ? '#FF7088' : '';
+  { const s = window01(t, B.same - 0.05, B.newip + 0.1, 0.15); $('same').style.opacity = s; $('same').style.transform = `translateY(${(1 - s) * 8}px)`; }
+  // machine LEDs
+  document.querySelectorAll('.mach').forEach((m, i) => m.querySelectorAll('i').forEach((d, j) => {
+    const has = (i === 0 && t < B.gone) || (i === 2 && t >= B.respawn);
+    d.style.background = has ? (red ? '#FF3B5C' : (Math.floor(t * 6 + j * 2 + i) % 3 ? '#FF8A3D' : '#3a2a20')) : '';
+  }));
+  // addresses
+  const n3 = ep(t, B.newip - 0.1, B.newip + 0.1);
+  $('ip3').style.opacity = n3; $('ip3v').textContent = ipAt(t);
+  $('ip1').querySelector('.v').style.setProperty('--k', ep(t, B.ipDone, B.ipDone + 0.25));
+  $('ip1').style.opacity = t > B.ipDone ? 0.55 : 1;
+  { const s = ep(t, B.ipDone + 0.05, B.ipDone + 0.3, ease.back) * (1 - ep(t, B.q - 0.1, B.q + 0.2)); $('neq').style.opacity = s; $('neq').style.transform = `scale(${0.6 + 0.4 * s})`; }
+  wireNew.setAttribute('opacity', ep(t, B.ipDone, B.ipDone + 0.4) * 0.9 * (1 - ep(t, B.q, B.q + 0.3)));
+  wireNew.setAttribute('stroke-dashoffset', -t * 14);
+  // the address in the code: highlighted while calls fly, then it becomes a question
+  $('ipBox').style.opacity = t > B.calls - 0.1 ? (t < B.q ? 1 : 0.6 + 0.4 * (Math.floor(t * 3) % 2)) : 0;
+  $('ipBox').style.borderColor = t > B.hits[0] && t < B.q ? '#FF3B5C' : '';
+  if (t < B.q + 0.25) $('ipTxt').textContent = OLD_IP;
+  else $('ipTxt').innerHTML = Math.floor(t * 2.5) % 2 ? '<span id="cursor"></span>' : '?';
+  $('ipTxt').style.color = t > B.hits[0] && t < B.q ? '#FF3B5C' : '';
+  // calls
+  $('l4').className = 'ln' + (t > B.calls && t < B.q ? (t > B.hits[0] ? ' bad' : ' run') : '');
+  const nh = B.hits.filter((h) => t >= h).length;
+  $('res').textContent = t > B.calls && nh === 0 ? '  ⟳ calling…' : nh ? `  ✕ ECONNREFUSED ${nh}/3` : '';
+  $('res').style.color = nh ? '' : '#22D3EE';
+  $('l5c').textContent = t > B.failed && t < B.q ? '// payments is not at 10.0.0.7 anymore' : '';
+  $('edst').textContent = nh ? '● ERRORS' : '● LIVE'; $('edst').style.color = nh ? '#FF3B5C' : '';
+  $('ed').style.borderColor = t >= B.hits[0] && t < B.failed + 0.8 ? `rgba(255,59,92,${0.4 + 0.6 * Math.exp(-(t - B.hits[nh - 1 || 0]) * 5)})` : '';
+  route.setAttribute('opacity', window01(t, B.calls - 0.1, B.q + 0.2, 0.2) * 0.8);
+  route.setAttribute('stroke-dashoffset', -t * 30);
+  B.hits.forEach((h, i) => {
+    const s = h - 0.42, k = prog(t, s, h);
+    const on = t >= s && t < h;
+    if (routeL) { const p = route.getPointAtLength(routeL * ease.inOut(k)); pk[i].setAttribute('cx', p.x); pk[i].setAttribute('cy', p.y); }
+    pk[i].setAttribute('opacity', on ? 1 : 0);
+    const r = prog(t, h, h + 0.5);
+    rings[i].setAttribute('cx', 100); rings[i].setAttribute('cy', OLD.y + 27); rings[i].setAttribute('r', 10 + 60 * ease.out(r)); rings[i].setAttribute('opacity', t >= h ? (1 - r) : 0);
+    const x = $('x' + i), xs = ep(t, h, h + 0.18, ease.back);
+    x.style.left = XS[i].x + 'px'; x.style.top = XS[i].y + 'px'; x.style.opacity = t >= h ? 1 - 0.6 * ep(t, B.q, B.q + 0.3) : 0; x.style.transform = `scale(${0.3 + 0.7 * xs}) rotate(${(i - 1) * 12}deg)`;
+  });
+  $('orders').style.transform = `translateY(${B.hits.reduce((n, h) => n + (t >= h ? 4 * Math.exp(-(t - h) * 12) : 0), 0)}px)`;
+  $('orders').style.borderColor = nh ? '#FF3B5C' : ''; $('orders').style.boxShadow = nh ? '0 0 22px rgba(255,59,92,0.35)' : '';
+  // FAILED slam
+  { const a = window01(t, B.failed, B.failed + 1.05, 0.08), p = ep(t, B.failed, B.failed + 0.16, ease.back);
+    const k = $('kin'); k.style.opacity = a; k.style.transform = `scale(${1.5 - 0.5 * p}) skewX(${t < B.failed + 0.25 ? (rndH(5, Math.floor(t * 50)) - 0.5) * 16 : 0}deg)`; }
+  $('flash').style.opacity = 0.35 * Math.exp(-Math.max(0, t - B.failed) * 9) * (t >= B.failed ? 1 : 0) + 0.18 * Math.exp(-Math.max(0, t - B.crash) * 9) * (t >= B.crash ? 1 : 0);
+  // question: who tells orders the new address?
+  { const q = ep(t, B.q + 0.2, B.q + 0.8); qPath.setAttribute('opacity', q); qPath.setAttribute('stroke-dashoffset', -t * 20);
+    const qm = ep(t, B.find - 0.2, B.find + 0.1, ease.back); qMark.setAttribute('opacity', qm); qMark.setAttribute('transform', `translate(360 590) scale(${0.4 + 0.6 * qm + 0.06 * Math.sin(t * 6)}) translate(-360 -590)`); }
+  { const l = ep(t, B.q + 0.35, B.q + 0.7, ease.back); $('lesson').style.opacity = l; $('lesson').style.transform = `translateX(-50%) translateY(${(1 - l) * 12}px)`; }
+  caps(t);
+};
+</script>
+<script src="play.js"></script>
+</body>
+</html>

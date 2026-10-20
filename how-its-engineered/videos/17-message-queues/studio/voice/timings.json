@@ -1,0 +1,98 @@
+[
+ {
+  "li": 0,
+  "pi": 0,
+  "say": "You hit buy. The order service calls payment directly, and you wait.",
+  "show": "You hit *buy.* The order service calls *payment* directly, and you *wait.*",
+  "start": 0.0,
+  "end": 3.54
+ },
+ {
+  "li": 1,
+  "pi": 0,
+  "say": "Black Friday. Payment slows down, orders pile up, the app crashes.",
+  "show": "*Black Friday.* Payment *slows down,* orders *pile up,* the [app crashes.]",
+  "start": 4.06,
+  "end": 7.44
+ },
+ {
+  "li": 2,
+  "pi": 0,
+  "say": "The fix? A message queue in the middle.",
+  "show": "The fix? A [message queue] in the middle.",
+  "start": 7.78,
+  "end": 9.68
+ },
+ {
+  "li": 3,
+  "pi": 0,
+  "say": "Order drops your order in the queue, and instantly says: received.",
+  "show": "Order *drops* your order in the queue, and instantly says: *received.*",
+  "start": 10.24,
+  "end": 13.18
+ },
+ {
+  "li": 4,
+  "pi": 0,
+  "say": "Payment becomes a worker, pulling orders out at its own pace.",
+  "show": "Payment becomes a *worker,* pulling orders out at its *own pace.*",
+  "start": 13.76,
+  "end": 16.62
+ },
+ {
+  "li": 4,
+  "pi": 1,
+  "say": "Traffic spikes? The line just grows. Nothing crashes.",
+  "show": "Traffic spikes? The line just *grows.* [Nothing crashes.]",
+  "start": 16.96,
+  "end": 19.36
+ },
+ {
+  "li": 5,
+  "pi": 0,
+  "say": "Too slow? Add more workers. They all share one queue.",
+  "show": "Too slow? Add *more workers.* They all share *one queue.*",
+  "start": 19.8,
+  "end": 22.82
+ },
+ {
+  "li": 6,
+  "pi": 0,
+  "say": "Worker dies mid-order? The queue only deletes an order once a worker says done,",
+  "show": "Worker *dies* mid-order? The queue only deletes an order once a worker says *done,*",
+  "start": 23.32,
+  "end": 27.14
+ },
+ {
+  "li": 6,
+  "pi": 1,
+  "say": "so it goes right back in line.",
+  "show": "so it goes [right back in line.]",
+  "start": 27.22,
+  "end": 28.6
+ },
+ {
+  "li": 7,
+  "pi": 0,
+  "say": "That's RabbitMQ and Amazon S-Q-S.",
+  "show": "That's *RabbitMQ* and *Amazon SQS.*",
+  "start": 28.6,
+  "end": 31.34
+ },
+ {
+  "li": 7,
+  "pi": 1,
+  "say": "Haven't seen retries? That reel's on my profile.",
+  "show": "Haven't seen *retries?* That reel's on my profile.",
+  "start": 31.54,
+  "end": 33.78
+ },
+ {
+  "li": 7,
+  "pi": 2,
+  "say": "If you're a vibe coder, follow for the system design your AI skipped.",
+  "show": "If you're a *vibe coder,* follow for the system design your *AI skipped.*",
+  "start": 34.16,
+  "end": 36.78
+ }
+]

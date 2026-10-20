@@ -1,0 +1,43 @@
+{
+ "topic": "Circuit Breakers",
+ "lines": [
+  [
+   {"say": "The reviews on a shopping app got slow. Not broken. Just slow. And the whole app went down.",
+    "show": "The *reviews* on a shopping app got slow. Not broken. Just slow. And [the whole app went down.]"}
+  ],
+  [
+   {"say": "This product page calls four services: product, price, reviews, recommendations.",
+    "show": "This product page calls four services: product, price, *reviews,* recommendations."},
+   {"say": "Every request now waits on reviews. Each waiting request holds a thread.",
+    "show": "Every request now *waits* on reviews. Each waiting request holds a *thread.*"},
+   {"say": "Threads run out, and the server stops answering everyone, even for the parts that work.",
+    "show": "Threads run out, and the server [stops answering everyone,] even for the parts that work."},
+   {"say": "That's a cascading failure. And retrying just piles on more calls.",
+    "show": "That's a [cascading failure.] And *retrying* just piles on more calls."}
+  ],
+  [
+   {"say": "The fix is borrowed from your house: a circuit breaker. Too much current? It trips and cuts the circuit before the wires burn.",
+    "show": "The fix is borrowed from your house: a [circuit breaker.] Too much current? It *trips* and cuts the circuit before the wires burn."}
+  ],
+  [
+   {"say": "In software, it wraps every call to reviews. Closed: calls go through, and it counts the failures. A timeout turns slow into failed.",
+    "show": "In software, it wraps every call to reviews. [Closed:] calls go through, and it counts the *failures.* A *timeout* turns slow into failed."},
+   {"say": "Too many failures? It trips. Open.",
+    "show": "Too many failures? It trips. [Open.]"},
+   {"say": "Now calls to reviews fail instantly, with no waiting. The page hides the reviews and loads everything else. And reviews gets room to recover.",
+    "show": "Now calls to reviews *fail instantly,* with no waiting. The page [hides the reviews] and loads everything else. And reviews gets room to *recover.*"}
+  ],
+  [
+   {"say": "After a cooldown, it goes half-open and lets a few test calls through. They work? Closed again. They fail? Back to open.",
+    "show": "After a cooldown, it goes [half-open] and lets a few *test calls* through. They work? *Closed* again. They fail? Back to *open.*"}
+  ],
+  [
+   {"say": "Netflix built Hystrix for this. Today, Resilience4j does it in a few lines.",
+    "show": "*Netflix* built Hystrix for this. Today, [Resilience4j] does it in a few lines."}
+  ],
+  [
+   {"say": "Haven't seen how health checks work? That reel's on my profile. Follow for the rest of the series.",
+    "show": "Haven't seen how *health checks* work? That reel's on my profile. [Follow] for the rest of the series."}
+  ]
+ ]
+}

@@ -1,0 +1,45 @@
+{
+ "topic": "Distributed Transactions",
+ "lines": [
+  [
+   {"say": "You booked a flight and a hotel in one checkout.", "show": "You booked a *flight* and a *hotel* in one checkout."},
+   {"say": "The flight went through. The hotel failed.", "show": "The flight went *through.* The hotel [failed.]"}
+  ],
+  [
+   {"say": "Now you've paid for a flight, with nowhere to sleep.", "show": "Now you've paid for a flight, with *nowhere to sleep.*"}
+  ],
+  [
+   {"say": "Two services. Two databases. Both have to succeed, or neither should.", "show": "Two services. Two databases. Both have to succeed, or [neither should.]"}
+  ],
+  [
+   {"say": "That's called a distributed transaction.", "show": "That's called a [distributed transaction.]"}
+  ],
+  [
+   {"say": "Think of a contract. It doesn't count until both sides sign.", "show": "Think of a *contract.* It doesn't count until *both sides* sign."},
+   {"say": "One signature alone? Nothing happens.", "show": "One signature alone? [Nothing happens.]"}
+  ],
+  [
+   {"say": "Software does this in two steps. It's called two-phase commit.", "show": "Software does this in two steps. It's called [two-phase commit.]"}
+  ],
+  [
+   {"say": "Step one: a coordinator asks every service, can you do this?", "show": "Step one: a *coordinator* asks every service, can you do this?"},
+   {"say": "Each one holds its seat or room, and answers yes or no.", "show": "Each one *holds* its seat or room, and answers *yes* or *no.*"}
+  ],
+  [
+   {"say": "Step two: if everyone said yes, they all commit together.", "show": "Step two: if everyone said *yes,* they all [commit] together."},
+   {"say": "If anyone said no, everyone cancels.", "show": "If anyone said *no,* everyone [cancels.]"}
+  ],
+  [
+   {"say": "You get both, or you get neither. Never half.", "show": "You get both, or you get neither. Never [half.]"}
+  ],
+  [
+   {"say": "The catch? Everyone waits for the slowest one.", "show": "The catch? Everyone waits for the *slowest* one."}
+  ],
+  [
+   {"say": "Google Spanner uses it. PostgreSQL has it built in.", "show": "*Google Spanner* uses it. *PostgreSQL* has it built in."}
+  ],
+  [
+   {"say": "If you're a vibe coder, follow for the system design your AI skipped.", "show": "If you're a vibe coder, follow for the system design your AI [skipped.]"}
+  ]
+ ]
+}

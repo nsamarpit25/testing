@@ -1,0 +1,329 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+@font-face { font-family: Inter; src: url(../node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2) format('woff2'); font-weight: 100 900; }
+@font-face { font-family: Mono; src: url(../node_modules/@fontsource/jetbrains-mono/files/jetbrains-mono-latin-400-normal.woff2) format('woff2'); font-weight: 400; }
+@font-face { font-family: Mono; src: url(../node_modules/@fontsource/jetbrains-mono/files/jetbrains-mono-latin-500-normal.woff2) format('woff2'); font-weight: 500; }
+html, body { margin: 0; background: #000; }
+#stage { position: relative; width: 540px; height: 960px; overflow: hidden; background: #000; font-family: Inter, sans-serif; color: #fff; }
+#vignette { position: absolute; inset: 0; background: radial-gradient(120% 80% at 50% 50%, rgba(255,255,255,0.035), rgba(0,0,0,0) 60%); pointer-events: none; }
+svg { position: absolute; inset: 0; }
+#caps { position: absolute; left: 0; right: 0; top: 150px; text-align: center; }
+.cap { position: absolute; left: 0; right: 0; }
+.cap-line { font-size: 23px; line-height: 31px; font-weight: 400; color: #a3a3a3; letter-spacing: -0.2px; }
+.w { display: inline-block; margin: 0 3px; }
+.key { color: #fff; font-weight: 700; }
+.pill { background: rgba(255,255,255,0.13); border-radius: 9px; padding: 0 8px; }
+.lbl { position: absolute; transform: translate(-50%, -50%); font-family: Mono; font-size: 9.5px; letter-spacing: 1.6px; color: #bdbdbd; white-space: nowrap; }
+.lbl.big { font-size: 13px; letter-spacing: 0.5px; color: #fff; font-weight: 500; }
+#handle { position: absolute; display: flex; flex-direction: column; align-items: flex-end; gap: 6px; font-family: Inter; font-weight: 700; font-size: 8.5px; letter-spacing: 0.6px; color: #fff; }
+#term { position: absolute; left: 70px; width: 400px; top: 660px; border: 1px solid rgba(255,255,255,0.55); border-radius: 9px; background: #000; font-family: Mono; font-size: 15px; line-height: 24px; padding: 16px 18px; box-sizing: border-box; }
+#term .dim { color: #8a8a8a; }
+#term .cur { display: inline-block; width: 8px; height: 15px; background: #fff; vertical-align: -2px; margin-left: 1px; }
+#cursor { position: absolute; left: 0; top: 0; width: 18px; height: 24px; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="vignette"></div>
+  <svg id="scene" width="540" height="960" viewBox="0 0 540 960"></svg>
+  <div id="labels"></div>
+  <div id="handle">
+    <svg width="17" height="17" viewBox="0 0 24 24" style="position:static"><rect x="2" y="2" width="20" height="20" rx="6" fill="none" stroke="#fff" stroke-width="2"/><circle cx="12" cy="12" r="4.6" fill="none" stroke="#fff" stroke-width="2"/><circle cx="17.6" cy="6.4" r="1.3" fill="#fff"/></svg>
+    <div>@HOW.ITS.ENGINEERED</div>
+  </div>
+  <div id="term"></div>
+  <div id="caps"></div>
+  <svg id="cursor" viewBox="0 0 18 24"><path d="M2 2 L2 19 L6.5 15 L9.5 22 L12.5 20.7 L9.6 14 L15.5 14 Z" fill="#fff" stroke="#000" stroke-width="1.4" stroke-linejoin="round"/></svg>
+</div>
+<script src="../tools/lib.js"></script>
+<script>
+window.DURATION = 20;
+const scene = document.getElementById('scene');
+const labels = document.getElementById('labels');
+const term = document.getElementById('term');
+const cursor = document.getElementById('cursor');
+const handle = document.getElementById('handle');
+
+const caps = makeCaptions(document.getElementById('caps'), [
+  { t: 0.35, end: 4.95, text: 'Your app loads|in under [one second.]' },
+  { t: 5.15, end: 10.45, text: 'But the database|is *9,000 km* away.' },
+  { t: 10.65, end: 15.35, text: 'So you keep a [copy]|right next to you.' },
+  { t: 15.6, end: 19.7, text: 'One word.|*Caching.*', gaps: [0.3, 0.55] },
+], 0.27);
+
+// ---------- isometric camera ----------
+const CAM = { yaw: 0, scale: 1, ox: 270, oy: 520 };
+function raw(x, y, z) {
+  const c = Math.cos(CAM.yaw), s = Math.sin(CAM.yaw);
+  const rx = x * c - y * s, ry = x * s + y * c;
+  return [(rx - ry) * 0.866, (rx + ry) * 0.5 - z];
+}
+function P(x, y, z) { const r = raw(x, y, z); return [CAM.ox + r[0] * CAM.scale, CAM.oy + r[1] * CAM.scale]; }
+const depth = (x, y) => { const c = Math.cos(CAM.yaw), s = Math.sin(CAM.yaw); return (x * c - y * s) + (x * s + y * c); };
+const path2 = (pts, close = true) => 'M' + pts.map((p) => p[0].toFixed(2) + ' ' + p[1].toFixed(2)).join('L') + (close ? 'Z' : '');
+const add3 = (a, b) => [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
+const mul3 = (a, k) => [a[0] * k, a[1] * k, a[2] * k];
+
+// ---------- primitive collection with staggered draw-in ----------
+function Obj() { return { items: [] }; }
+function push(o, d, opt = {}) { o.items.push({ d, ...opt }); }
+// face frame: point(a,b) = o + a*u + b*v
+const fp = (F, a, b) => P(...add3(add3(F.o, mul3(F.u, a)), mul3(F.v, b)));
+function fpoly(o, F, a, b, wa, hb, opt = {}) {
+  push(o, path2([fp(F, a, b), fp(F, a + wa, b), fp(F, a + wa, b + hb), fp(F, a, b + hb)]), { w: 0.7, ...opt });
+}
+function fline(o, F, a1, b1, a2, b2, opt = {}) { push(o, path2([fp(F, a1, b1), fp(F, a2, b2)], false), { w: 0.7, fill: 'none', ...opt }); }
+function fdot(o, F, a, b, r = 0.9, opt = {}) {
+  const p = fp(F, a, b); const R = r * Math.min(1.4, CAM.scale + 0.2);
+  push(o, `M${p[0] - R} ${p[1]}a${R} ${R} 0 1 0 ${2 * R} 0a${R} ${R} 0 1 0 ${-2 * R} 0`, { fill: '#fff', stroke: 'none', ...opt });
+}
+// box: returns visible faces keyed by name, after pushing their outlines
+function box(o, x, y, z, w, d, h, opt = {}) {
+  const c = Math.cos(CAM.yaw), s = Math.sin(CAM.yaw);
+  const vis = (nx, ny) => (nx * c - ny * s) + (nx * s + ny * c) > 0.001;
+  const F = {};
+  const sides = [
+    ['px', [x + w, y, z], [0, d, 0], [0, 0, h], 1, 0],
+    ['nx', [x, y, z], [0, d, 0], [0, 0, h], -1, 0],
+    ['py', [x, y + d, z], [w, 0, 0], [0, 0, h], 0, 1],
+    ['ny', [x, y, z], [w, 0, 0], [0, 0, h], 0, -1],
+  ];
+  for (const [k, oo, u, v, nx, ny] of sides) {
+    if (!vis(nx, ny)) continue;
+    F[k] = { o: oo, u, v };
+    fpoly(o, F[k], 0, 0, 1, 1, { fill: '#000', w: 1, ...opt });
+  }
+  F.top = { o: [x, y, z + h], u: [w, 0, 0], v: [0, d, 0] };
+  fpoly(o, F.top, 0, 0, 1, 1, { fill: '#000', w: 1, ...opt });
+  return F;
+}
+function cylinder(o, cx, cy, z, r, h, bands = 2) {
+  const N = 48;
+  const ring = (zz) => Array.from({ length: N + 1 }, (_, i) => { const a = (i / N) * Math.PI * 2; return P(cx + r * Math.cos(a), cy + r * Math.sin(a), zz); });
+  const bot = ring(z), top = ring(z + h);
+  let L = 0, R = 0;
+  bot.forEach((p, i) => { if (p[0] < bot[L][0]) L = i; if (p[0] > bot[R][0]) R = i; });
+  // front arc = the half with larger screen y
+  const arc = (pts) => { const a = []; let i = L; for (let k = 0; k <= N; k++) { a.push(pts[i]); if (i === R) break; i = (i + 1) % N; } return a; };
+  let front = arc(bot);
+  const mid = front[Math.floor(front.length / 2)];
+  const goesFront = mid[1] > (bot[L][1] + bot[R][1]) / 2;
+  const frontArc = (pts) => { if (goesFront) return arc(pts); const a = []; let i = L; for (let k = 0; k <= N; k++) { a.push(pts[i]); if (i === R) break; i = (i - 1 + N) % N; } return a; };
+  const fb = frontArc(bot), ft = frontArc(top);
+  push(o, path2([...fb, ...ft.slice().reverse()]), { fill: '#000', w: 1 });
+  for (let b = 1; b <= bands; b++) {
+    const zz = z + (h * b) / (bands + 1);
+    push(o, path2(frontArc(ring(zz)), false), { fill: 'none', w: 0.7 });
+  }
+  push(o, path2(top), { fill: '#000', w: 1 });
+  push(o, path2(ring(z + h - 0.01).map((p, i) => p)), { fill: 'none', w: 0.6 });
+}
+function emit(o, D, layer = scene) {
+  if (D <= 0) return;
+  const n = o.items.length;
+  o.items.forEach((it, i) => {
+    const f = n > 1 ? (i / (n - 1)) * 0.6 : 0;
+    const dp = ease.out(prog(D, f, f + 0.4));
+    if (dp <= 0) return;
+    const p = el('path', {
+      d: it.d, fill: it.fill ?? '#000', 'fill-opacity': it.fill === 'none' ? 0 : clamp(dp * 1.6) * (it.fillOp ?? 1),
+      stroke: it.stroke ?? '#fff', 'stroke-width': it.w ?? 1, 'stroke-opacity': it.op ?? 1,
+      'stroke-linejoin': 'round', 'stroke-linecap': 'round',
+    }, layer);
+    if (it.dash) p.setAttribute('stroke-dasharray', it.dash);
+    else if (dp < 1 && it.stroke !== 'none') { p.setAttribute('pathLength', '1'); p.setAttribute('stroke-dasharray', '1 1'); p.setAttribute('stroke-dashoffset', 1 - dp); }
+  });
+}
+
+// ---------- objects ----------
+function tileDots(o, F, nx, ny) {
+  for (let i = 1; i < nx; i++) for (let j = 1; j < ny; j++) fdot(o, F, i / nx, j / ny, 0.55, { fillOp: 0.55 });
+}
+function phoneObj(cx, cy) {
+  const o = Obj();
+  const T = box(o, cx - 55, cy - 85, 0, 110, 170, 5);
+  tileDots(o, T.top, 6, 9);
+  const F = box(o, cx - 30, cy - 58, 5, 60, 116, 7);
+  const S = F.top;
+  fpoly(o, S, 0.08, 0.06, 0.84, 0.88, { fill: 'none' });
+  fline(o, S, 0.38, 0.11, 0.62, 0.11, { w: 1.2 });
+  for (let k = 0; k < 3; k++) {
+    const b = 0.18 + k * 0.24;
+    fpoly(o, S, 0.15, b, 0.7, 0.19, { fill: 'none' });
+    fline(o, S, 0.22, b + 0.06, 0.6, b + 0.06);
+    fline(o, S, 0.22, b + 0.12, 0.48, b + 0.12, { op: 0.6 });
+  }
+  if (F.px) { fline(o, F.px, 0.25, 0.5, 0.4, 0.5, { w: 1.1 }); fline(o, F.px, 0.5, 0.5, 0.58, 0.5, { w: 1.1 }); }
+  return o;
+}
+function rack(o, x, y, z, w, d, h) {
+  const F = box(o, x, y, z, w, d, h);
+  if (F.py) {
+    const R = F.py;
+    fpoly(o, R, 0.07, 0.03, 0.86, 0.94, { fill: 'none', w: 0.6 });
+    for (let k = 0; k < 12; k++) {
+      const b = 0.06 + k * 0.074;
+      fline(o, R, 0.1, b, 0.9, b, { w: 0.55, op: 0.8 });
+      fpoly(o, R, 0.15, b + 0.016, 0.32, 0.04, { fill: 'none', w: 0.55 });
+      fpoly(o, R, 0.5, b + 0.016, 0.18, 0.04, { fill: 'none', w: 0.55, op: 0.7 });
+      fdot(o, R, 0.8, b + 0.036, 0.75);
+    }
+  }
+  if (F.px) {
+    const S = F.px;
+    for (let k = 0; k < 9; k++) fline(o, S, 0.15 + k * 0.085, 0.62, 0.15 + k * 0.085, 0.92, { w: 0.55, op: 0.7 });
+    for (let k = 0; k < 9; k++) fline(o, S, 0.15 + k * 0.085, 0.08, 0.15 + k * 0.085, 0.38, { w: 0.55, op: 0.7 });
+  }
+  fpoly(o, F.top, 0.1, 0.12, 0.8, 0.76, { fill: 'none', w: 0.6 });
+  fline(o, F.top, 0.2, 0.3, 0.8, 0.3, { w: 0.6 });
+  fline(o, F.top, 0.2, 0.5, 0.8, 0.5, { w: 0.6 });
+}
+function dbObj(cx, cy) {
+  const o = Obj();
+  const T = box(o, cx - 80, cy - 72, 0, 160, 144, 5);
+  tileDots(o, T.top, 8, 7);
+  rack(o, cx - 68, cy - 60, 5, 58, 52, 132);
+  rack(o, cx - 6, cy - 60, 5, 58, 52, 132);
+  cylinder(o, cx + 36, cy + 42, 5, 22, 46, 2);
+  return o;
+}
+function cacheObj(cx, cy) {
+  const o = Obj();
+  const T = box(o, cx - 45, cy - 45, 0, 90, 90, 5);
+  tileDots(o, T.top, 5, 5);
+  const F = box(o, cx - 26, cy - 26, 5, 52, 52, 13);
+  for (const k of ['px', 'py']) if (F[k]) for (let i = 0; i < 6; i++) fline(o, F[k], 0.14 + i * 0.145, 0.25, 0.14 + i * 0.145, 0.75, { w: 0.6 });
+  fpoly(o, F.top, 0.2, 0.2, 0.6, 0.6, { fill: 'none' });
+  for (let i = 1; i < 3; i++) { fline(o, F.top, 0.2 + i * 0.2, 0.2, 0.2 + i * 0.2, 0.8, { w: 0.55, op: 0.7 }); fline(o, F.top, 0.2, 0.2 + i * 0.2, 0.8, 0.2 + i * 0.2, { w: 0.55, op: 0.7 }); }
+  return o;
+}
+function packet(o, x, y, z) {
+  const F = box(o, x - 6, y - 6, z, 12, 12, 12);
+  fpoly(o, F.top, 0.25, 0.25, 0.5, 0.5, { fill: '#fff', stroke: 'none' });
+}
+
+// ---------- scene layout ----------
+const PH = [0, 150], DB = [0, -150], CA = [0, 5];
+const at = (A, B, k) => [lerp(A[0], B[0], k), lerp(A[1], B[1], k)];
+
+function cursorPos(t) {
+  // keyframes [time, x, y]
+  const K = [[1.4, 560, 900], [2.6, 300, 560], [3.6, 345, 515], [4.6, 310, 585], [5.4, 600, 700],
+             [10.6, 600, 760], [11.4, 280, 545], [11.9, 280, 545], [13.4, 380, 640], [14.8, 350, 600], [15.4, 600, 760]];
+  if (t <= K[0][0] || t >= K[K.length - 1][0]) return null;
+  for (let i = 0; i < K.length - 1; i++) {
+    const [ta, xa, ya] = K[i], [tb, xb, yb] = K[i + 1];
+    if (t >= ta && t <= tb) { const k = ease.inOut(prog(t, ta, tb)); return [lerp(xa, xb, k), lerp(ya, yb, k)]; }
+  }
+  return null;
+}
+
+function label(text, x, y, op, cls = '') {
+  if (op <= 0.01) return;
+  const d = document.createElement('div');
+  d.className = 'lbl ' + cls; d.textContent = text;
+  d.style.left = x + 'px'; d.style.top = y + 'px'; d.style.opacity = op;
+  labels.appendChild(d);
+}
+
+window.render = function (t) {
+  scene.textContent = ''; labels.textContent = '';
+
+  // camera: focus point + scale over time
+  const k1 = ep(t, 4.9, 6.3, ease.inOut), k2 = ep(t, 15.2, 16.4, ease.inOut);
+  const focus = [lerp(PH[0], 0, k1), lerp(PH[1], 0, k1), lerp(20, 30, k1)];
+  CAM.scale = lerp(lerp(1.55, 1.7, prog(t, 0, 5)), lerp(0.95, 1.0, prog(t, 6.3, 15)), k1) * lerp(1, 0.8, k2);
+  const screenY = lerp(lerp(560, 575, k1), 450, k2);
+
+  const cp = cursorPos(t);
+  const idle = 0.035 * Math.sin(t * 0.55);
+  const target = cp ? clamp((cp[0] - 270) / 270, -1, 1) * 0.16 : 0;
+  CAM.yaw = idle + target * ep(t, 1.6, 2.4) * (1 - ep(t, 15.0, 15.6));
+  const fr = raw(...focus);
+  CAM.ox = 270 - fr[0] * CAM.scale; CAM.oy = screenY - fr[1] * CAM.scale;
+
+  // draw progress per object
+  const dPh = prog(t, 0.25, 2.1), dDb = prog(t, 5.6, 7.4), dCa = prog(t, 11.9, 13.0);
+  const dPath = ep(t, 6.9, 7.6);
+
+  // objects sorted far -> near
+  const objs = [
+    { c: DB, D: dDb, make: () => dbObj(...DB) },
+    { c: CA, D: dCa, make: () => cacheObj(...CA) },
+    { c: PH, D: dPh, make: () => phoneObj(...PH) },
+  ].sort((a, b) => depth(...a.c) - depth(...b.c));
+
+  // floor path first (under everything)
+  if (dPath > 0) {
+    const a = at(PH, DB, 0.3), b = at(PH, DB, lerp(0.3, 0.74, dPath));
+    const p = el('path', { d: path2([P(a[0], a[1], 5), P(b[0], b[1], 5)], false), stroke: '#fff', 'stroke-width': 0.9, 'stroke-dasharray': '3 5', 'stroke-opacity': 0.6, fill: 'none' }, scene);
+  }
+  for (const ob of objs) emit(ob.make(), ob.D);
+
+  // slow request: phone -> db and back (7.6 - 10.2)
+  const slow = prog(t, 7.7, 10.1);
+  if (slow > 0 && slow < 1) {
+    const k = slow < 0.5 ? ease.inOut(slow * 2) : ease.inOut(2 - slow * 2);
+    const q = at(PH, DB, lerp(0.2, 0.8, k));
+    const o = Obj(); packet(o, q[0], q[1], 7); emit(o, 1);
+  }
+  // fast requests: phone <-> cache (13.2 - 15)
+  for (let r = 0; r < 3; r++) {
+    const f = prog(t, 13.25 + r * 0.55, 13.7 + r * 0.55);
+    if (f <= 0 || f >= 1) continue;
+    const k = f < 0.5 ? ease.inOut(f * 2) : ease.inOut(2 - f * 2);
+    const q = at(PH, CA, lerp(0.42, 0.8, k));
+    const o = Obj(); packet(o, q[0], q[1], 7); emit(o, 1);
+  }
+
+  // labels
+  const lp = (w, dz) => P(w[0] + 40, w[1] + 40, dz);
+  const youP = P(PH[0] + 70, PH[1] + 95, 0);
+  label('YOU', youP[0], youP[1] + 14, ep(t, 1.6, 2.2) * (1 - 0.4 * k2));
+  const dbP = P(DB[0] + 90, DB[1] + 82, 0);
+  label('DATABASE', dbP[0], dbP[1] + 14, ep(t, 7.0, 7.6));
+  const caP = P(CA[0] + 52, CA[1] + 52, 0);
+  label('CACHE', caP[0] + 4, caP[1] + 14, ep(t, 12.6, 13.1));
+  const mid = at(PH, DB, 0.5); const mp = P(mid[0], mid[1], 60);
+  const ms = Math.round(800 * ep(t, 7.7, 10.1, (x) => x));
+  label(`${String(ms).padStart(3, ' ')} ms`, mp[0] + 30, mp[1] - 6, ep(t, 7.6, 8.0) * (1 - ep(t, 10.4, 10.8)), 'big');
+  label('9,000 KM', mp[0] + 30, mp[1] + 12, ep(t, 7.6, 8.0) * (1 - ep(t, 10.4, 10.8)));
+  const cq = P(CA[0], CA[1], 70);
+  label('5 ms', cq[0] + 2, cq[1] - 8, ep(t, 13.3, 13.6) * (1 - ep(t, 15.2, 15.5)), 'big');
+
+  // watermark near drawing
+  handle.style.left = lerp(388, 42, k1) + 'px'; handle.style.top = '250px'; handle.style.alignItems = k1 > 0.5 ? 'flex-start' : 'flex-end';
+  handle.style.opacity = ep(t, 0.6, 1.2) * (1 - window01(t, 5.0, 6.2, 0.6));
+  handle.style.transform = 'translateX(0)';
+
+  // terminal (scene 4)
+  const tOn = ep(t, 15.7, 16.2);
+  term.style.opacity = tOn; term.style.transform = `translateY(${(1 - tOn) * 14}px)`;
+  const cmd = 'curl app.io/feed';
+  const typed = cmd.slice(0, Math.floor(prog(t, 16.3, 17.4) * cmd.length));
+  const blink = Math.floor(t * 2.4) % 2 === 0;
+  let html = `<span class="dim">&gt;</span> ${typed}`;
+  if (t < 17.6) html += `<span class="cur" style="opacity:${blink ? 1 : 0}"></span>`;
+  if (t >= 17.7) html += `<br><span class="dim">cache:</span> HIT`;
+  if (t >= 18.0) html += `<br><span class="dim">time:&nbsp;</span> 5 ms<span class="cur" style="opacity:${blink ? 1 : 0}"></span>`;
+  html += `<br><span class="dim" style="font-size:11px">skill · how-its-engineered</span>`;
+  term.innerHTML = html;
+
+  // cursor
+  if (cp) {
+    const click = Math.max(window01(t, 11.75, 12.05, 0.12), 0);
+    cursor.style.display = '';
+    cursor.style.transform = `translate(${cp[0]}px, ${cp[1]}px) scale(${1 - 0.18 * click})`;
+  } else cursor.style.display = 'none';
+
+  // fade out end
+  document.getElementById('stage').style.opacity = 1 - ep(t, 19.6, 20);
+  caps.render(t);
+};
+window.render(0);
+</script>
+</body>
+</html>

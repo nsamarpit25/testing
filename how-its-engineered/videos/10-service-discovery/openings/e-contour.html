@@ -1,0 +1,245 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- Opening variant E: 3D contour map with location pins, giant half-outlined white type (from the contour frames in the reference). Hook C, first 10 s. -->
+<link rel="stylesheet" href="fonts.css">
+<style>
+:root { --o: #FF6A1F; --w: #F2EEE8; --g: #7b746d; }
+html, body { margin: 0; background: #000; }
+#stage { position: relative; width: 540px; height: 960px; overflow: hidden; background: #0c0b0a; font-family: Inter, sans-serif; color: var(--w); }
+#cv { position: absolute; inset: 0; width: 540px; height: 960px; }
+.layer { position: absolute; inset: 0; }
+#grain { position: absolute; inset: -40px; opacity: 0.55; mix-blend-mode: screen; pointer-events: none; }
+#vig { position: absolute; inset: 0; background: radial-gradient(100% 70% at 50% 50%, rgba(0,0,0,0) 45%, rgba(0,0,0,0.75) 100%); pointer-events: none; }
+#flash { position: absolute; inset: 0; background: var(--o); opacity: 0; mix-blend-mode: screen; }
+.meta { position: absolute; font-family: Mono; font-size: 9px; letter-spacing: 1.4px; color: var(--g); }
+.meta b { color: var(--o); font-weight: 600; }
+.lb { position: absolute; font-family: Mono; font-size: 9.5px; white-space: nowrap; color: #e7e0d8; transform: translate(-50%, -100%); text-align: center; letter-spacing: 0.4px; }
+.lb .ip { color: var(--o); font-weight: 600; }
+/* type */
+#ty { position: absolute; left: 0; right: 0; top: 118px; height: 200px; }
+.ph { position: absolute; left: 26px; right: 10px; top: 0; display: none; }
+.ph .lead { font-family: Mono; font-weight: 600; font-size: 12px; letter-spacing: 3px; color: #d8d0c8; margin-bottom: 4px; }
+.ph .lead span { display: inline-block; margin-right: 9px; }
+.ph .big { font-weight: 900; font-size: 92px; line-height: 0.92; letter-spacing: -2px; white-space: nowrap; transform-origin: 0 50%; }
+.ph .big span { display: inline-block; position: relative; }
+.ph .big span b { position: absolute; left: 0; top: 0; font-weight: 900; color: var(--w); text-shadow: 0 6px 30px rgba(0,0,0,0.6); clip-path: inset(0 100% 0 0); }
+.ph .big span i { font-style: normal; color: transparent; -webkit-text-stroke: 1.4px rgba(242,238,232,0.75); }
+.ph.fail .big span b { color: var(--o); text-shadow: 0 0 30px rgba(255,106,31,0.6); }
+</style>
+</head>
+<body>
+<div id="stage">
+  <canvas id="cv" width="1080" height="1920"></canvas>
+  <div class="layer" id="lbls"></div>
+  <div id="vig"></div>
+  <div id="ty"></div>
+  <div class="meta" style="left:26px;top:58px">// 10 — <b>service discovery</b></div>
+  <div class="meta" style="right:26px;top:58px">HOW.ITS.ENGINEERED</div>
+  <div class="meta" id="co" style="left:26px;bottom:58px"></div>
+  <div class="meta" style="right:26px;bottom:58px">SYSTEM DESIGN · <b>10</b></div>
+  <div id="flash"></div>
+  <div id="grain"></div>
+</div>
+<script src="../../../tools/lib.js"></script>
+<script src="hook.js"></script>
+<script>
+const $ = (id) => document.getElementById(id);
+const rnd = rndH;
+const cv = $('cv'), g = cv.getContext('2d');
+// map: hills, with payments first on hill A, then on hill B
+const A = [-0.42, 0.05], Bp = [0.5, 0.95], CL = [[-0.55, -0.85, 'cart'], [0.0, -0.95, 'orders'], [0.55, -0.85, 'login']];
+const HILLS = [[A[0], A[1], 0.32, 1.0], [Bp[0], Bp[1], 0.36, 1.1], [0.05, 0.45, 0.5, 0.5], [-0.8, 1.1, 0.4, 0.6], [0.9, -0.2, 0.35, 0.55]];
+function field(u, v) {
+  let h = 0.12 * Math.sin(u * 3.1 + v * 1.7) * Math.cos(v * 2.3 - u * 0.8) + 0.06 * Math.sin(u * 7 + v * 5);
+  for (const [x, y, r, a] of HILLS) h += a * Math.exp(-((u - x) ** 2 + (v - y) ** 2) / (r * r));
+  return h;
+}
+// marching squares, once
+const U0 = -1.5, U1 = 1.5, V0 = -1.3, V1 = 1.9, NU = 120, NV = 130;
+const LEVELS = []; for (let l = -0.1; l < 1.2; l += 0.055) LEVELS.push(l);
+const SEG = LEVELS.map(() => []);
+{
+  const du = (U1 - U0) / NU, dv = (V1 - V0) / NV, F = [];
+  for (let j = 0; j <= NV; j++) { F.push([]); for (let i = 0; i <= NU; i++) F[j].push(field(U0 + i * du, V0 + j * dv)); }
+  LEVELS.forEach((L, li) => {
+    for (let j = 0; j < NV; j++) for (let i = 0; i < NU; i++) {
+      const c = [F[j][i], F[j][i + 1], F[j + 1][i + 1], F[j + 1][i]];
+      const P4 = [[i, j], [i + 1, j], [i + 1, j + 1], [i, j + 1]];
+      const pts = [];
+      for (let e = 0; e < 4; e++) { const a = c[e], b = c[(e + 1) % 4]; if ((a < L) !== (b < L)) { const k = (L - a) / (b - a), p = P4[e], q = P4[(e + 1) % 4]; pts.push([U0 + (p[0] + (q[0] - p[0]) * k) * du, V0 + (p[1] + (q[1] - p[1]) * k) * dv, L]); } }
+      if (pts.length >= 2) SEG[li].push([pts[0], pts[1]]);
+      if (pts.length === 4) SEG[li].push([pts[2], pts[3]]);
+    }
+  });
+}
+// camera
+const cam = { yaw: 0, tilt: 1.0, d: 2.6, f: 560, cx: 270, cy: 560, hs: 0.22, fu: 0, fv: 0 };
+function Pm(u, v, h) {
+  const x0 = u - cam.fu, y0 = v - cam.fv, c = Math.cos(cam.yaw), s = Math.sin(cam.yaw);
+  const x = x0 * c - y0 * s, y = x0 * s + y0 * c, z = h * cam.hs;
+  const zc = cam.d + y * Math.sin(cam.tilt) - z * Math.cos(cam.tilt);
+  const yc = y * Math.cos(cam.tilt) + z * Math.sin(cam.tilt);
+  return [cam.cx + (cam.f * x) / zc, cam.cy - (cam.f * yc) / zc, zc];
+}
+const KEYS = [[0, { yaw: -0.25, tilt: 0.95, d: 1.9, fu: A[0], fv: A[1] - 0.15, cy: 600 }], [1.7, { yaw: -0.15, tilt: 0.95, d: 1.9, fu: A[0], fv: A[1] - 0.15, cy: 600 }],
+  [2.25, { yaw: 0.05, tilt: 0.92, d: 1.95, fu: Bp[0], fv: Bp[1] - 0.2, cy: 600 }], [3.9, { yaw: 0.12, tilt: 0.92, d: 1.85, fu: Bp[0], fv: Bp[1] - 0.2, cy: 600 }],
+  [4.6, { yaw: 0.05, tilt: 0.88, d: 2.45, fu: 0.0, fv: 0.0, cy: 540 }], [7.0, { yaw: 0.12, tilt: 0.88, d: 2.55, fu: 0.0, fv: 0.0, cy: 540 }],
+  [9.8, { yaw: 0.45, tilt: 1.0, d: 2.9, fu: 0.0, fv: 0.1, cy: 520 }]];
+function camAt(t) {
+  let i = 0; while (i < KEYS.length - 1 && t >= KEYS[i + 1][0]) i++;
+  const [t0, a] = KEYS[i], [t1, b] = KEYS[Math.min(i + 1, KEYS.length - 1)];
+  const p = t1 > t0 ? ease.inOut(prog(t, t0, t1)) : 1;
+  for (const k in a) cam[k] = lerp(a[k], b[k], p);
+  const kick = 0.06 * Math.exp(-Math.max(0, t - B.crash) * 7) * (t > B.crash ? 1 : 0) + 0.07 * Math.exp(-Math.max(0, t - B.failed) * 7) * (t > B.failed ? 1 : 0) + 0.04 * Math.exp(-Math.max(0, t - B.newip) * 7) * (t > B.newip ? 1 : 0);
+  cam.d /= 1 + kick;
+  const sh = (t > B.crash && t < B.crash + 0.4 ? 7 * (1 - (t - B.crash) / 0.4) : 0) + (t > B.failed && t < B.failed + 0.4 ? 6 * (1 - (t - B.failed) / 0.4) : 0);
+  cam.cx = 270 + sh * Math.sin(t * 91); cam.cy += sh * Math.cos(t * 67);
+}
+const O = [255, 106, 31];
+const rgba = (c, a) => `rgba(${c[0]},${c[1]},${c[2]},${a})`;
+const hot = (u, v, cx, cy, r) => Math.exp(-((u - cx) ** 2 + (v - cy) ** 2) / (r * r));
+function drawMap(t) {
+  g.setTransform(2, 0, 0, 2, 0, 0);
+  g.fillStyle = '#0c0b0a'; g.fillRect(0, 0, 540, 960);
+  const heatA = t < B.crash ? 0.35 : window01(t, B.crash, 7.2, 0.15) * (t > B.hits[0] ? 1 : 0.85);
+  const heatB = t > B.respawn ? 0.35 + 0.65 * Math.exp(-(t - B.respawn - 0.3) * 2) + (t > B.find ? 0.4 : 0) : 0;
+  g.lineWidth = 0.8;
+  SEG.forEach((segs, li) => {
+    g.beginPath();
+    for (const [p, q] of segs) { const a = Pm(...p), b = Pm(...q); if (a[2] < 0.3 || b[2] < 0.3) continue; g.moveTo(a[0], a[1]); g.lineTo(b[0], b[1]); }
+    const fog = 0.22 + 0.25 * (li / LEVELS.length);
+    g.strokeStyle = `rgba(232,224,214,${fog})`; g.stroke();
+  });
+  // orange heat on the contours around the pins
+  g.save(); g.globalCompositeOperation = 'lighter'; g.lineWidth = 1.2; g.shadowColor = rgba(O, 0.9); g.shadowBlur = 10;
+  [[A, heatA, 0.28], [Bp, heatB, 0.3]].forEach(([c, k, r]) => {
+    if (k <= 0.01) return;
+    SEG.forEach((segs) => { g.beginPath(); for (const [p, q] of segs) { const hh = hot(p[0], p[1], c[0], c[1], r); if (hh < 0.15) continue; const a = Pm(...p), b = Pm(...q); g.moveTo(a[0], a[1]); g.lineTo(b[0], b[1]); } g.strokeStyle = rgba(O, 0.85 * k); g.stroke(); });
+  });
+  g.restore();
+}
+// a dashed route over the terrain, from a caller to a point, revealed to q
+function route(from, to, q, col, a, seed) {
+  if (a <= 0.01 || q <= 0) return null;
+  const pts = []; const N = 60;
+  for (let i = 0; i <= N * q; i++) { const k = i / N; const u = lerp(from[0], to[0], k) + 0.06 * Math.sin(k * 9 + seed) * Math.sin(k * Math.PI), v = lerp(from[1], to[1], k) + 0.04 * Math.sin(k * 13 + seed * 2) * Math.sin(k * Math.PI); pts.push(Pm(u, v, field(u, v) + 0.03)); }
+  g.save(); g.globalCompositeOperation = 'lighter'; g.strokeStyle = col; g.globalAlpha = a; g.lineWidth = 1.6; g.setLineDash([5, 4]); g.lineDashOffset = -t_ * 30; g.shadowColor = col; g.shadowBlur = 8;
+  g.beginPath(); pts.forEach((p, i) => (i ? g.lineTo(p[0], p[1]) : g.moveTo(p[0], p[1]))); g.stroke(); g.restore();
+  return pts[pts.length - 1];
+}
+function routeAt(from, to, k, seed) { const u = lerp(from[0], to[0], k) + 0.06 * Math.sin(k * 9 + seed) * Math.sin(k * Math.PI), v = lerp(from[1], to[1], k) + 0.04 * Math.sin(k * 13 + seed * 2) * Math.sin(k * Math.PI); return Pm(u, v, field(u, v) + 0.03); }
+function dot(p, a = 1, r = 3) { if (!p || a <= 0.01) return; g.save(); g.globalCompositeOperation = 'lighter'; const rg = g.createRadialGradient(p[0], p[1], 0, p[0], p[1], r * 4); rg.addColorStop(0, `rgba(255,230,200,${a})`); rg.addColorStop(0.3, rgba(O, 0.6 * a)); rg.addColorStop(1, rgba(O, 0)); g.fillStyle = rg; g.beginPath(); g.arc(p[0], p[1], r * 4, 0, 7); g.fill(); g.restore(); }
+// location pin standing on the terrain. k: 0..1 height, col
+function pin(c, k, col, a) {
+  if (a <= 0.01 || k <= 0.01) return null;
+  const h0 = field(c[0], c[1]), b = Pm(c[0], c[1], h0), top = Pm(c[0], c[1], h0 + 1.6 * k);
+  g.save(); g.globalAlpha = a;
+  g.strokeStyle = col; g.lineWidth = 1.4; g.shadowColor = col; g.shadowBlur = 12;
+  g.beginPath(); g.moveTo(b[0], b[1]); g.lineTo(top[0], top[1]); g.stroke();
+  g.fillStyle = col; g.beginPath(); g.moveTo(top[0], top[1] - 9); g.lineTo(top[0] + 7, top[1]); g.lineTo(top[0], top[1] + 9); g.lineTo(top[0] - 7, top[1]); g.closePath(); g.fill();
+  g.beginPath(); g.ellipse(b[0], b[1], 14, 5, 0, 0, 7); g.stroke();
+  g.restore();
+  return top;
+}
+function rings(t, t0, c, dur = 0.9, n = 3) {
+  for (let i = 0; i < n; i++) {
+    const p = prog(t, t0 + i * 0.12, t0 + i * 0.12 + dur); if (p <= 0 || p >= 1) continue;
+    const r = 0.04 + 0.35 * ease.out(p), pts = [];
+    for (let k = 0; k <= 40; k++) { const th = (k / 40) * Math.PI * 2, u = c[0] + Math.cos(th) * r, v = c[1] + Math.sin(th) * r; pts.push(Pm(u, v, field(u, v) + 0.02)); }
+    g.save(); g.globalCompositeOperation = 'lighter'; g.strokeStyle = rgba(O, (1 - p) * 0.9); g.lineWidth = 1.6; g.shadowColor = rgba(O, 1); g.shadowBlur = 10;
+    g.beginPath(); pts.forEach((q, k) => (k ? g.lineTo(q[0], q[1]) : g.moveTo(q[0], q[1]))); g.stroke(); g.restore();
+  }
+}
+function callerSq(c, t, fail) {
+  const p = Pm(c[0], c[1], field(c[0], c[1]) + 0.02);
+  g.save(); g.strokeStyle = fail ? rgba(O, 1) : 'rgba(242,238,232,0.9)'; g.lineWidth = 1.4; if (fail) { g.shadowColor = rgba(O, 1); g.shadowBlur = 12; }
+  g.strokeRect(p[0] - 9, p[1] - 9, 18, 18); g.fillStyle = fail ? rgba(O, 0.25) : 'rgba(12,11,10,0.9)'; g.fillRect(p[0] - 8, p[1] - 8, 16, 16); g.restore();
+  return p;
+}
+const LB = {};
+function label(k, html, p, a, dy = -14) { if (!LB[k]) { LB[k] = document.createElement('div'); LB[k].className = 'lb'; $('lbls').appendChild(LB[k]); } const e = LB[k]; if (e._h !== html) { e._h = html; e.innerHTML = html; } if (!p || a <= 0.01) { e.style.display = 'none'; return; } e.style.display = ''; e.style.left = p[0] + 'px'; e.style.top = p[1] + dy + 'px'; e.style.opacity = a; }
+
+/* ---------------- type: mono lead-in + giant word that fills in left to right */
+const PH = [
+  { sm: [0, 1], bg: [2], t1: 1.82 },
+  { sm: [3], bg: [4], t1: 2.82 },
+  { sm: [5], bg: [6], t1: 4.15 },
+  { sm: [7, 8, 9, 10, 11, 12], bg: [13], t1: 7.05, fail: 1 },
+  { sm: [14, 15, 16, 17, 18], bg: [19, 20], t1: 99 },
+];
+PH.forEach((ph) => {
+  ph.el = document.createElement('div'); ph.el.className = 'ph' + (ph.fail ? ' fail' : ''); $('ty').appendChild(ph.el);
+  const lead = document.createElement('div'); lead.className = 'lead'; ph.el.appendChild(lead);
+  ph.ls = ph.sm.map((i) => { const s = document.createElement('span'); s.textContent = WORDS[i][0].toUpperCase().replace(/[.]$/, ''); lead.appendChild(s); return s; });
+  const big = document.createElement('div'); big.className = 'big'; ph.el.appendChild(big);
+  const txt = ph.bg.map((i) => WORDS[i][0].replace(/[.]$/, '').toUpperCase()).join(' ');
+  const sp = document.createElement('span'); sp.innerHTML = `<i>${txt}</i><b>${txt}</b>`; big.appendChild(sp); ph.fill = sp.querySelector('b'); ph.big = big;
+  ph.t0 = WORDS[ph.sm[0]][1] - 0.05; ph.ta = WORDS[ph.bg[0]][1]; ph.tb = WORDS[ph.bg[ph.bg.length - 1]][2];
+  big.style.fontSize = txt.length > 8 ? '72px' : txt.length > 6 ? '82px' : '96px';
+});
+function type(t) {
+  for (const ph of PH) {
+    const on = t >= ph.t0 && t < ph.t1; ph.el.style.display = on ? 'block' : 'none'; if (!on) continue;
+    const out = ep(t, ph.t1 - 0.12, ph.t1, ease.in); ph.el.style.opacity = 1 - out;
+    ph.ls.forEach((s, k) => { const a = WORDS[ph.sm[k]][1]; s.style.opacity = prog(t, a - 0.03, a + 0.06); });
+    const ap = ep(t, ph.ta - 0.15, ph.ta + 0.05);
+    ph.big.style.opacity = ap; ph.big.style.transform = `translateY(${(1 - ap) * 16}px) scaleX(${1.12 + 0.03 * ep(t, ph.ta, ph.t1)})`;
+    const fp = ep(t, ph.ta, ph.tb + 0.1, ease.out);
+    ph.fill.style.clipPath = `inset(0 ${(1 - fp) * 100}% 0 0)`;
+    ph.fill.style.transform = ph.fail && t > ph.ta && Math.sin(t * 47) > 0.8 ? 'translateX(6px) skewX(-10deg)' : '';
+  }
+}
+
+let t_ = 0;
+window.ready = () => { $('grain').style.background = `url(${grainURL(256, 0.06, 13)})`; };
+window.render = function (t) {
+  t_ = t;
+  camAt(t); drawMap(t);
+  // callers + routes
+  const cp = CL.map((c, i) => callerSq(c, t, t > B.hits[i]));
+  CL.forEach((c, i) => {
+    const pre = t < B.crash + 0.15, post = t > B.calls;
+    if (pre) { const e = route(c, A, ep(t, 0.05 + i * 0.1, 0.6 + i * 0.1), 'rgba(242,238,232,0.9)', 1 - ep(t, B.crash, B.crash + 0.15), i); const q = ((t - 0.6 - i * 0.2) % 0.8) / 0.8; if (t > 0.6 && t < B.crash) dot(routeAt(c, A, q, i), 1); }
+    if (post) {
+      const red = t > B.hits[i];
+      route(c, A, ep(t, B.calls + i * 0.12, B.calls + i * 0.12 + 0.5), red ? rgba(O, 1) : 'rgba(242,238,232,0.85)', 1 - 0.65 * ep(t, 7.1, 7.6), i);
+      if (t < B.hits[i] && t > B.hits[i] - 0.55) dot(routeAt(c, A, prog(t, B.hits[i] - 0.55, B.hits[i]), i), 1, 3.4);
+    }
+    label('c' + i, c[2], cp[i], 1, 28);
+  });
+  // pins
+  const fall = ep(t, B.crash + 0.2, B.gone + 0.2, ease.in);
+  const topA = pin(A, 1 - fall, t > B.crash ? (Math.sin(t * 40) > 0 ? rgba(O, 1) : '#f2eee8') : rgba(O, 1), t < B.gone + 0.25 ? 1 : 0);
+  rings(t, B.crash, A, 0.9, 3);
+  B.hits.forEach((th) => rings(t, th, A, 0.6, 1));
+  const rise = ep(t, B.respawn, B.respawn + 0.35, ease.back);
+  const topB = pin(Bp, rise, rgba(O, 1), t > B.respawn ? 1 : 0);
+  rings(t, B.respawn + 0.2, Bp, 1.0, 3);
+  rings(t, B.newip, Bp, 0.8, 2);
+  // search trace at the end: an orange wandering path like a pen on the map
+  if (t > B.q) {
+    const n = Math.floor(ep(t, B.q, 9.8, ease.inOut) * 120), pts = [];
+    for (let i = 0; i <= n; i++) { const k = i / 120, u = -0.1 + 0.55 * Math.sin(k * 7.5) * (1 - k * 0.3), v = -0.75 + 1.5 * k + 0.12 * Math.sin(k * 23); pts.push(Pm(u, v, field(u, v) + 0.03)); }
+    g.save(); g.globalCompositeOperation = 'lighter'; g.strokeStyle = rgba(O, 1); g.lineWidth = 1.8; g.shadowColor = rgba(O, 1); g.shadowBlur = 10;
+    g.beginPath(); pts.forEach((p, i) => (i ? g.lineTo(p[0], p[1]) : g.moveTo(p[0], p[1]))); g.stroke(); g.restore();
+    dot(pts[pts.length - 1], 1, 4);
+  }
+  // labels
+  const a0 = t < B.crash ? 1 : 0;
+  label('pa', `payments<br><span class="ip">${OLD_IP}</span>`, topA, a0);
+  label('pr', `<span class="ip">restarting…</span>`, topA, window01(t, B.crash, B.gone + 0.2, 0.08));
+  label('pv', `<span style="color:#7b746d">${OLD_IP} · nothing here</span>`, Pm(A[0], A[1], field(...A) + 0.1), window01(t, 3.8, 7.1, 0.15), -6);
+  label('pb', t < B.newip - 0.05 ? 'payments<br><span style="color:#f2eee8">same code ✓</span>' : `payments<br><span class="ip">${ipAt(t)}</span>`, topB, t > B.respawn + 0.15 ? 1 : 0);
+  B.hits.forEach((th, i) => label('x' + i, '<span class="ip">✕ refused</span>', cp[i], window01(t, th, 7.1, 0.1), -16));
+  label('q', '<span class="ip">where is payments?</span>', cp[1], ep(t, 7.4, 7.7), 46);
+  type(t);
+  const uu = t < B.respawn ? A : Bp; $('co').textContent = `LAT ${(uu[1] * 40 + 12.97).toFixed(3)} · LON ${(uu[0] * 40 + 77.59).toFixed(3)} · T+${t.toFixed(2)}`;
+  let fl = 0; for (const [t0, a] of [[B.crash, 0.3], [B.respawn + 0.2, 0.1], [B.newip, 0.1], [B.failed, 0.28]]) { const dt = t - t0; if (dt > 0 && dt < 0.5) fl = Math.max(fl, a * Math.exp(-dt * 9)); }
+  $('flash').style.opacity = fl;
+};
+</script>
+<script src="play.js"></script>
+</body>
+</html>

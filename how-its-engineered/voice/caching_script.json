@@ -1,0 +1,57 @@
+{
+ "lines": [
+  [
+   "Your Instagram feed loads in under a second...",
+   "but the server is thousands of kilometres away.",
+   "So how?"
+  ],
+  [
+   "One word.",
+   "Caching."
+  ],
+  [
+   "Here's the slow way.",
+   "Every time you open the app, it asks the database.",
+   "Again. And again.",
+   "Every single time."
+  ],
+  [
+   "Now imagine keeping a copy...",
+   "right next to you.",
+   "First visit? Slow.",
+   "Second visit? Instant!"
+  ],
+  [
+   "But wait...",
+   "can you spot the problem?"
+  ],
+  [
+   "You change your profile picture.",
+   "But your friends...",
+   "still see the old one."
+  ],
+  [
+   "That's stale data.",
+   "The cache is lying to you."
+  ],
+  [
+   "So smart apps give every copy an expiry timer.",
+   "For example, ten minutes.",
+   "Then it refreshes."
+  ],
+  [
+   "And when something really changes?",
+   "Delete the copy.",
+   "Fetch the fresh one."
+  ],
+  [
+   "Fast when it can be.",
+   "Fresh when it has to be."
+  ],
+  [
+   "Would you pick speed, or freshness?",
+   "Comment below.",
+   "And follow for more!"
+  ]
+ ]
+}

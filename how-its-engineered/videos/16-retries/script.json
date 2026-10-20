@@ -1,0 +1,91 @@
+{
+ "topic": "Retries",
+ "lines": [
+  [
+   {
+    "say": "The weather server hiccups for one second.",
+    "show": "The weather server *hiccups* for one second."
+   },
+   {
+    "say": "Every app hits retry at the same moment.",
+    "show": "Every app hits *retry* at the same moment."
+   },
+   {
+    "say": "And now it's down for real.",
+    "show": "And now it's [down for real.]"
+   }
+  ],
+  [
+   {
+    "say": "Retrying is smart. Most failures are brief: a network blip, a server restarting.",
+    "show": "Retrying is *smart.* Most failures are *brief:* a network blip, a server restarting."
+   },
+   {
+    "say": "Try again, and it often just works.",
+    "show": "Try again, and it often just *works.*"
+   }
+  ],
+  [
+   {
+    "say": "But retry instantly, again and again, and each failure turns into more calls.",
+    "show": "But retry *instantly,* again and again, and each failure turns into *more calls.*"
+   },
+   {
+    "say": "That's a retry storm.",
+    "show": "That's a [retry storm.]"
+   }
+  ],
+  [
+   {
+    "say": "Fix one: cap it. Three attempts, then stop and show an error.",
+    "show": "Fix one: [cap it.] *3 attempts,* then stop and show an error."
+   }
+  ],
+  [
+   {
+    "say": "Fix two: back off. Wait one second, then two, then four.",
+    "show": "Fix two: [back off.] Wait *1 second,* then *2,* then *4.*"
+   },
+   {
+    "say": "Each wait gives the server more room to recover.",
+    "show": "Each wait gives the server more room to *recover.*"
+   }
+  ],
+  [
+   {
+    "say": "But if every app waits exactly one second, they all come back together.",
+    "show": "But if every app waits *exactly* one second, they all come back *together.*"
+   },
+   {
+    "say": "Fix three: jitter. Add a little randomness, and the crowd spreads out.",
+    "show": "Fix three: [jitter.] Add a little *randomness,* and the crowd *spreads out.*"
+   }
+  ],
+  [
+   {
+    "say": "Only retry what might fix itself, like a timeout or a five-oh-three. Not a four-oh-four.",
+    "show": "Only retry what might fix itself, like a *timeout* or a *503.* Not a *404.*"
+   },
+   {
+    "say": "And retrying a payment can charge twice, unless it's idempotent.",
+    "show": "And retrying a payment can *charge twice,* unless it's *idempotent.*"
+   }
+  ],
+  [
+   {
+    "say": "AWS SDKs already retry with backoff by default.",
+    "show": "*AWS* SDKs already retry with *backoff* by default."
+   }
+  ],
+  [
+   {
+    "say": "Haven't seen idempotency? That reel's on my profile.",
+    "show": "Haven't seen *idempotency?* That reel's on my profile."
+   },
+   {
+    "say": "Follow for the rest of the series.",
+    "show": "[Follow] for the rest of the series."
+   }
+  ]
+ ]
+}

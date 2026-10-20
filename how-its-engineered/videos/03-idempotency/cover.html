@@ -1,0 +1,93 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+@font-face { font-family: Inter; src: url(../../node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2) format('woff2'); font-weight: 100 900; }
+@font-face { font-family: Mono; src: url(../../node_modules/@fontsource/jetbrains-mono/files/jetbrains-mono-latin-500-normal.woff2) format('woff2'); font-weight: 500; }
+html, body { margin: 0; background: #000; }
+#stage { position: relative; width: 540px; height: 960px; overflow: hidden; background: #000; font-family: Inter, sans-serif; color: #fff; }
+#vignette { position: absolute; inset: 0; background: radial-gradient(120% 80% at 50% 50%, rgba(255,255,255,0.04), rgba(0,0,0,0) 60%); }
+svg.full { position: absolute; inset: 0; }
+#kicker { position: absolute; top: 168px; left: 0; right: 0; text-align: center; font-family: Mono; font-weight: 500; font-size: 13px; letter-spacing: 3.5px; color: #a3a3a3; }
+#title { position: absolute; top: 192px; left: 0; right: 0; text-align: center; font-size: 66px; font-weight: 800; letter-spacing: -2.4px; }
+#sub { position: absolute; top: 282px; left: 0; right: 0; text-align: center; font-size: 21px; color: #a3a3a3; letter-spacing: -0.2px; }
+#sub b { color: #fff; }
+.lbl { position: absolute; transform: translate(-50%, -50%); font-family: Mono; font-weight: 500; font-size: 12px; letter-spacing: 1px; white-space: nowrap; }
+#handle { position: absolute; bottom: 150px; left: 0; right: 0; display: flex; justify-content: center; align-items: center; gap: 8px; font-weight: 700; font-size: 11px; letter-spacing: 0.8px; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="vignette"></div>
+  <svg class="full" id="scene" width="540" height="960" viewBox="0 0 540 960"></svg>
+  <div id="labels"></div>
+  <div id="kicker">SYSTEM DESIGN · 03</div>
+  <div id="title">Idempotency</div>
+  <div id="sub">Why you're <b>never charged twice</b></div>
+  <div id="handle">
+    <svg width="18" height="18" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="6" fill="none" stroke="#fff" stroke-width="2"/><circle cx="12" cy="12" r="4.6" fill="none" stroke="#fff" stroke-width="2"/><circle cx="17.6" cy="6.4" r="1.3" fill="#fff"/></svg>
+    <div>@HOW.ITS.ENGINEERED</div>
+  </div>
+</div>
+<script src="../../tools/lib.js"></script>
+<script src="../../tools/iso.js"></script>
+<script>
+const $ = (id) => document.getElementById(id);
+ISO.layer = $('scene');
+window.DURATION = 1;
+const PH = [0, 150], SV = [0, -150], EL = [0, 0];
+const at = (A, B, k) => [lerp(A[0], B[0], k), lerp(A[1], B[1], k)];
+const BTN = [0, 150 - 58 + 0.745 * 116, 12];            // PAY button centre (world)
+const flipV = (F) => ({ o: add3(F.o, F.v), u: F.u, v: mul3(F.v, -1) });
+function fcircle(o, F, a, b, r, opt = {}) {
+  const lu = len3(F.u), lv = len3(F.v), pts = [];
+  for (let i = 0; i < 28; i++) { const q = (i / 28) * Math.PI * 2; pts.push(fp(F, a + (r * Math.cos(q)) / lu, b + (r * Math.sin(q)) / lv)); }
+  push(o, path2(pts), { w: 0.9, ...opt });
+}
+
+function phoneObj(press, glowId) {
+  const [cx, cy] = PH, o = Obj();
+  const T = box(o, cx - 55, cy - 85, 0, 110, 170, 5);
+  tileDots(o, T.top, 6, 9);
+  const F = box(o, cx - 30, cy - 58, 5, 60, 116, 7), Sc = F.top;
+  fpoly(o, Sc, 0.08, 0.05, 0.84, 0.9, { fill: 'none' });
+  fline(o, Sc, 0.38, 0.1, 0.62, 0.1, { w: 1.2 });
+  ftext(o, Sc, 0.5, 0.2, 'Coffee Shop', 5.5, { weight: 500, op: 0.7 });
+  ftext(o, Sc, 0.5, 0.33, '$50.00', 13, { weight: 800 });
+  fline(o, Sc, 0.22, 0.46, 0.78, 0.46, { op: 0.5 });
+  fline(o, Sc, 0.22, 0.53, 0.62, 0.53, { op: 0.5 });
+  fpoly(o, Sc, 0.16, 0.68, 0.68, 0.13, { fill: press > 0.02 ? '#fff' : 'none', fillOp: press, w: 1 });
+  ftext(o, Sc, 0.5, 0.745, 'PAY $50', 6.6, { fill: press > 0.5 ? '#000' : '#fff', weight: 800, ls: 0.4 });
+  if (F.px) { fline(o, F.px, 0.25, 0.5, 0.4, 0.5, { w: 1.1 }); fline(o, F.px, 0.5, 0.5, 0.58, 0.5, { w: 1.1 }); }
+  return o;
+}
+function serverObj() {
+  const [cx, cy] = SV, o = Obj();
+  const T = box(o, cx - 80, cy - 72, 0, 160, 144, 5);
+  tileDots(o, T.top, 8, 7);
+  rack(o, cx - 68, cy - 60, 5, 58, 52, 132);
+  rack(o, cx - 6, cy - 60, 5, 58, 52, 132);
+  return o;
+}
+function label(text, x, y, color) {
+  const d = document.createElement('div'); d.className = 'lbl'; d.textContent = text;
+  d.style.left = x + 'px'; d.style.top = y + 'px'; d.style.color = color; $('labels').appendChild(d);
+}
+window.render = () => {
+  ISO.layer.textContent = ''; $('labels').textContent = '';
+  CAM.scale = 0.78; CAM.yaw = 0.03;
+  aim([0, 0, 30], 270, 575);
+  const a = at(PH, SV, 0.3), b = at(PH, SV, 0.72);
+  el('path', { d: path2([P(a[0], a[1], 5), P(b[0], b[1], 5)], false), stroke: '#fff', 'stroke-width': 0.9, 'stroke-dasharray': '3 5', 'stroke-opacity': 0.6, fill: 'none' }, ISO.layer);
+  emit(serverObj(), 1);
+  emit(phoneObj(1), 1);
+  for (const k of [0.42, 0.58]) { const q = at(PH, SV, k), o = Obj(); packet(o, q[0], q[1], 7); emit(o, 1); }
+  const s = P(SV[0] + 80, SV[1] + 72, 0);
+  label('CHARGED ONCE ✓', s[0] - 6, s[1] + 18, '#32D74B');
+  const p = P(PH[0] + 55, PH[1] + 85, 0);
+  label('TAPPED × 2', p[0], p[1] + 18, '#a3a3a3');
+};
+</script>
+</body>
+</html>

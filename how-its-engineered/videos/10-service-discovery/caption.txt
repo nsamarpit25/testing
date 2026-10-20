@@ -1,0 +1,17 @@
+Your service restarted. Same code, new address. And every call to it failed. 💥
+
+The bug: the address was written into the code. In the cloud, servers restart and move all the time, so that address goes stale.
+
+The fix: save the name, not the number. Like your phone contacts. That's service discovery.
+
+📝 Register: when a service starts, it tells a registry "I'm payments, here's my address"
+🔍 Look up: before every call, the caller asks the registry where payments is right now
+💓 Check: the registry keeps pinging every copy. One stops answering? It's off the list
+
+In Kubernetes it's built in: call payments by name and it routes you to the right address.
+
+New to Kubernetes? That reel is on my profile ☸️
+
+Have you ever hardcoded an IP and had it break on you? Comment below 👇
+
+#coding #programming #softwareengineer #systemdesign #microservices

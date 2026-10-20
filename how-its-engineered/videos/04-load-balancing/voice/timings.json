@@ -1,0 +1,250 @@
+[
+ {
+  "li": 0,
+  "pi": 0,
+  "say": "Ten million people pressed Play at the same second.",
+  "show": "*10 million* people pressed [Play] at the same second.",
+  "start": 0.0,
+  "end": 3.14
+ },
+ {
+  "li": 0,
+  "pi": 1,
+  "say": "Netflix didn't crash.",
+  "show": "Netflix *didn't crash.*",
+  "start": 3.5,
+  "end": 4.5
+ },
+ {
+  "li": 0,
+  "pi": 2,
+  "say": "Why?",
+  "show": "Why?",
+  "start": 4.92,
+  "end": 5.08
+ },
+ {
+  "li": 1,
+  "pi": 0,
+  "say": "One word.",
+  "show": "One word.",
+  "start": 5.58,
+  "end": 5.98
+ },
+ {
+  "li": 1,
+  "pi": 1,
+  "say": "Load balancing.",
+  "show": "[Load balancing.]",
+  "start": 6.46,
+  "end": 7.04
+ },
+ {
+  "li": 2,
+  "pi": 0,
+  "say": "Here's the simple way.",
+  "show": "Here's the *simple* way.",
+  "start": 7.98,
+  "end": 8.72
+ },
+ {
+  "li": 2,
+  "pi": 1,
+  "say": "Every request goes to one server.",
+  "show": "Every request goes to *one server.*",
+  "start": 9.1,
+  "end": 10.74
+ },
+ {
+  "li": 2,
+  "pi": 2,
+  "say": "It works fine... for a while.",
+  "show": "It works fine... *for a while.*",
+  "start": 11.02,
+  "end": 12.94
+ },
+ {
+  "li": 3,
+  "pi": 0,
+  "say": "But wait...",
+  "show": "But wait...",
+  "start": 13.48,
+  "end": 13.8
+ },
+ {
+  "li": 3,
+  "pi": 1,
+  "say": "can you spot the problem?",
+  "show": "can you spot the [problem?]",
+  "start": 14.0,
+  "end": 14.82
+ },
+ {
+  "li": 4,
+  "pi": 0,
+  "say": "One server can only take so much.",
+  "show": "One server can only take *so much.*",
+  "start": 15.7,
+  "end": 17.7
+ },
+ {
+  "li": 4,
+  "pi": 1,
+  "say": "Ten million requests hit it at once.",
+  "show": "*10 million* requests hit it *at once.*",
+  "start": 18.16,
+  "end": 19.66
+ },
+ {
+  "li": 4,
+  "pi": 2,
+  "say": "It overheats...",
+  "show": "It *overheats...*",
+  "start": 19.74,
+  "end": 20.82
+ },
+ {
+  "li": 4,
+  "pi": 3,
+  "say": "and crashes.",
+  "show": "[and crashes.]",
+  "start": 20.82,
+  "end": 21.76
+ },
+ {
+  "li": 5,
+  "pi": 0,
+  "say": "The smarter way?",
+  "show": "The *smarter* way?",
+  "start": 22.3,
+  "end": 22.96
+ },
+ {
+  "li": 5,
+  "pi": 1,
+  "say": "Add more servers.",
+  "show": "Add *more servers.*",
+  "start": 23.32,
+  "end": 24.3
+ },
+ {
+  "li": 5,
+  "pi": 2,
+  "say": "And put a load balancer in front.",
+  "show": "And put a [load balancer] in front.",
+  "start": 24.56,
+  "end": 25.96
+ },
+ {
+  "li": 6,
+  "pi": 0,
+  "say": "It's like a supermarket manager,",
+  "show": "It's like a *supermarket manager,*",
+  "start": 26.3,
+  "end": 27.68
+ },
+ {
+  "li": 6,
+  "pi": 1,
+  "say": "sending you to the shortest queue.",
+  "show": "sending you to the *shortest queue.*",
+  "start": 27.68,
+  "end": 29.12
+ },
+ {
+  "li": 7,
+  "pi": 0,
+  "say": "Round robin: one, two, three, repeat.",
+  "show": "[Round robin:] 1, 2, 3, *repeat.*",
+  "start": 29.64,
+  "end": 32.6
+ },
+ {
+  "li": 7,
+  "pi": 1,
+  "say": "Or least connections:",
+  "show": "Or [least connections:]",
+  "start": 33.04,
+  "end": 34.0
+ },
+ {
+  "li": 7,
+  "pi": 2,
+  "say": "send it to the least busy one.",
+  "show": "send it to the *least busy* one.",
+  "start": 34.44,
+  "end": 35.74
+ },
+ {
+  "li": 8,
+  "pi": 0,
+  "say": "If a server dies,",
+  "show": "If a server *dies,*",
+  "start": 36.2,
+  "end": 36.98
+ },
+ {
+  "li": 8,
+  "pi": 1,
+  "say": "the load balancer just skips it.",
+  "show": "the load balancer just [skips it.]",
+  "start": 37.3,
+  "end": 38.8
+ },
+ {
+  "li": 9,
+  "pi": 0,
+  "say": "Need more power?",
+  "show": "Need *more power?*",
+  "start": 39.38,
+  "end": 39.96
+ },
+ {
+  "li": 9,
+  "pi": 1,
+  "say": "Add servers. Nobody notices.",
+  "show": "Add servers. *Nobody notices.*",
+  "start": 40.34,
+  "end": 41.92
+ },
+ {
+  "li": 10,
+  "pi": 0,
+  "say": "One front door.",
+  "show": "One *front door.*",
+  "start": 42.52,
+  "end": 43.28
+ },
+ {
+  "li": 10,
+  "pi": 1,
+  "say": "Thousands of servers behind it.",
+  "show": "[Thousands of servers] behind it.",
+  "start": 43.72,
+  "end": 45.0
+ },
+ {
+  "li": 11,
+  "pi": 0,
+  "say": "Which app do you think has the biggest load balancer?",
+  "show": "Which app has the *biggest* load balancer?",
+  "start": 45.4,
+  "end": 47.58
+ },
+ {
+  "li": 11,
+  "pi": 1,
+  "say": "Comment below.",
+  "show": "[Comment below.]",
+  "start": 47.96,
+  "end": 48.4
+ },
+ {
+  "li": 11,
+  "pi": 2,
+  "say": "And follow for more!",
+  "show": "And follow for more!",
+  "start": 48.4,
+  "end": 49.4
+ }
+]

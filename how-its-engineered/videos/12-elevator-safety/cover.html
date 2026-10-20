@@ -1,0 +1,1291 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- 12 Elevator Safety cover: the video frozen on the opening shot, with a title overlay. From video.html: 12 Elevator Safety: an engineering timeline of how an elevator is kept from falling, in the 10/11 ember line-art style.
+     Sets: hook (ropes snap, wedges grab the rails), the first rope lift, Otis 1854 catches, traction + counterweight, the spring brake,
+     the governor close-up, rope-vs-car pull on the wedges, soft stops + buffers, the 1945 weak spot, the fix, newer codes, electronic safeties.
+     Times come from voice/words.json. Open with #play to watch live, #play-safe for Instagram's UI zones. -->
+<link rel="stylesheet" href="lib/fonts.css">
+<style>
+:root { --o: #FF6A1F; --o2: #FFB070; --w: #F2EEE8; --g: #77706A; --ok: #7CF29A; --ice: #9FD3FF; --red: #FF4632; }
+html, body { margin: 0; background: #000; }
+#stage { position: relative; width: 540px; height: 960px; overflow: hidden; background: #0b0a09; font-family: Inter, sans-serif; color: var(--w); }
+#world, .layer { position: absolute; inset: 0; }
+#cv { position: absolute; inset: 0; width: 540px; height: 960px; }
+#fx { position: absolute; inset: 0; overflow: visible; }
+#grain { position: absolute; inset: -40px; opacity: 0.55; mix-blend-mode: screen; pointer-events: none; }
+#vig { position: absolute; inset: 0; background: radial-gradient(110% 75% at 50% 45%, rgba(0,0,0,0) 50%, rgba(0,0,0,0.7) 100%); pointer-events: none; }
+#dim { position: absolute; inset: 0; background: #0b0a09; opacity: 0; pointer-events: none; }
+#flash { position: absolute; inset: 0; opacity: 0; background: var(--o); mix-blend-mode: screen; pointer-events: none; }
+#wflash { position: absolute; inset: 0; opacity: 0; background: #fff; pointer-events: none; }
+#frame { position: absolute; left: 14px; right: 14px; top: 112px; bottom: 46px; border: 1px solid rgba(255,255,255,0.07); border-radius: 14px; pointer-events: none; }
+#frame i { position: absolute; width: 10px; height: 10px; border-color: rgba(255,255,255,0.45); border-style: solid; }
+#frame i:nth-child(1) { left: 8px; top: 8px; border-width: 1px 0 0 1px; } #frame i:nth-child(2) { right: 8px; top: 8px; border-width: 1px 1px 0 0; }
+#frame i:nth-child(3) { left: 8px; bottom: 8px; border-width: 0 0 1px 1px; } #frame i:nth-child(4) { right: 8px; bottom: 8px; border-width: 0 1px 1px 0; }
+.meta { position: absolute; font-family: Mono; font-size: 9px; letter-spacing: 1.4px; color: var(--g); }
+.meta b { color: var(--o); font-weight: 600; }
+.co { position: absolute; font-family: Mono; font-size: 9.5px; white-space: nowrap; color: #d9d2ca; display: flex; align-items: center; gap: 5px; letter-spacing: 0.4px; }
+.co:before { content: ''; width: 4px; height: 4px; border-radius: 50%; background: var(--o); }
+#cap { position: absolute; left: 24px; right: 24px; top: 742px; height: 40px; pointer-events: none; }
+#cap .box { display: none; position: absolute; inset: 0; justify-content: center; align-items: center; white-space: nowrap; font-weight: 800; font-size: 23px; line-height: 1; letter-spacing: -0.4px; }
+#cap .w { display: inline-block; margin: 0 4px; color: #fff; -webkit-text-stroke: 4px #0b0a09; paint-order: stroke fill; text-shadow: 0 2px 10px rgba(0,0,0,0.8); }
+#ed { position: absolute; left: 26px; right: 26px; top: 148px; background: rgba(12,11,10,0.94); border: 1px solid rgba(255,106,31,0.32); border-radius: 10px; box-shadow: 0 14px 34px rgba(0,0,0,0.6); overflow: hidden; }
+#ed .tb { height: 26px; display: flex; align-items: center; gap: 5px; padding: 0 10px; border-bottom: 1px solid rgba(255,255,255,0.06); font: 600 10px/1 Mono; color: #9c948c; letter-spacing: 0.5px; }
+#ed .tb i { width: 7px; height: 7px; border-radius: 50%; background: #2c2925; display: inline-block; }
+#ed .tb .fn { margin-left: 8px; color: #d9d2ca; } #ed .tb .fn b { color: var(--o); font-weight: 600; }
+#ed .tb .st { margin-left: auto; letter-spacing: 1.2px; }
+#code { padding: 6px 0 8px; font: 600 13.5px/26px Mono; color: #d9d2ca; }
+.ln { position: relative; height: 26px; padding-left: 36px; padding-right: 12px; white-space: pre; display: flex; align-items: center; }
+.ln .n { position: absolute; left: 0; width: 22px; text-align: right; color: #3d3833; font-weight: 400; }
+.ln .r { margin-left: auto; font-weight: 800; font-size: 12px; }
+.ln.run { background: rgba(255,176,112,0.06); } .ln.bad { background: rgba(255,106,31,0.13); } .ln.good { background: rgba(124,242,154,0.07); } .ln.ice { background: rgba(159,211,255,0.08); }
+.c { color: #6b645e; font-weight: 400; } .k { color: #9c948c; } .s { color: var(--o2); } .okc { color: var(--ok); } .oc { color: var(--o); } .ic { color: var(--ice); } .rc { color: var(--red); }
+.fl { font: 800 15px/1 Mono; color: #fff; letter-spacing: -0.5px; }
+.bar { display: inline-flex; gap: 2px; vertical-align: -1px; }
+.bar i { display: inline-block; width: 7px; height: 11px; border-radius: 1.5px; background: #2a2622; }
+.slam { position: absolute; left: 0; right: 0; text-align: center; pointer-events: none; display: none; white-space: nowrap; }
+.slam .t { position: relative; display: inline-block; font: italic 400 112px/1 Instrument; letter-spacing: -2px; color: transparent; background: linear-gradient(180deg, #FFE1C4 0%, #FFB070 40%, #FF6A1F 85%); -webkit-background-clip: text; background-clip: text; filter: drop-shadow(0 0 22px rgba(255,106,31,0.45)); }
+.slam .t.g { background: linear-gradient(180deg, #E9FFF0, #7CF29A 70%); -webkit-background-clip: text; background-clip: text; filter: drop-shadow(0 0 22px rgba(124,242,154,0.45)); }
+.slam .sub { font: 800 11px/1 Mono; letter-spacing: 3px; color: var(--g); margin-top: 6px; }
+#hk { position: absolute; left: 0; right: 0; top: 560px; text-align: center; pointer-events: none; }
+#hk .a { font: 900 58px/1 Inter; letter-spacing: -2.5px; color: #fff; -webkit-text-stroke: 6px #0b0a09; paint-order: stroke fill; text-shadow: 0 0 30px rgba(255,106,31,0.4); }
+#hk .a span { color: var(--o); }
+#hk .b { margin-top: 8px; font: italic 400 34px/1 Instrument; color: #F2EEE8; text-shadow: 0 2px 12px rgba(0,0,0,0.9); }
+#hk .b span { color: var(--ok); }
+.stamp { position: absolute; display: none; font: 900 26px/1 Inter; letter-spacing: 2px; padding: 10px 16px; border: 3px solid currentColor; border-radius: 10px; background: rgba(12,11,10,0.85); white-space: nowrap; box-shadow: 0 0 24px currentColor; }
+.tagx { position: absolute; display: none; font: 800 10px/1 Mono; letter-spacing: 2px; padding: 6px 9px; border-radius: 6px; white-space: nowrap; color: #9FD3FF; border: 1px solid rgba(159,211,255,0.6); background: rgba(12,11,10,0.85); }
+#chart { position: absolute; left: 60px; right: 60px; top: 300px; display: none; padding: 12px 14px 10px; background: rgba(14,13,12,0.95); border: 1px solid rgba(255,176,112,0.4); border-radius: 12px; box-shadow: 0 18px 40px rgba(0,0,0,0.6); }
+#chart .h { font: 800 9.5px/1 Mono; letter-spacing: 2px; color: var(--o2); display: flex; justify-content: space-between; }
+#chart svg { display: block; margin-top: 8px; }
+#chart .lg { display: flex; gap: 14px; margin-top: 6px; font: 700 9.5px/1 Mono; color: #d9d2ca; }
+#chart .lg i { display: inline-block; width: 14px; height: 3px; border-radius: 2px; vertical-align: 2px; margin-right: 5px; }
+#lay { position: absolute; left: 40px; right: 40px; top: 250px; display: none; padding: 16px 16px 12px; background: rgba(14,13,12,0.96); border: 1px solid rgba(255,176,112,0.45); border-radius: 16px; box-shadow: 0 24px 60px rgba(0,0,0,0.75); }
+#lay .h { font: 800 10px/1 Mono; letter-spacing: 2.2px; color: var(--o2); margin-bottom: 10px; }
+#lay .r { display: flex; align-items: center; gap: 10px; height: 30px; border-top: 1px solid rgba(255,255,255,0.05); font: 700 12.5px/1 Inter; color: #EDE7E0; }
+#lay .r .n { width: 20px; font: 800 11px/1 Mono; color: var(--o); }
+#lay .r .k { margin-left: auto; font: 900 13px/1 Inter; color: var(--ok); }
+#prof { position: absolute; left: 44px; top: 270px; width: 452px; display: none; background: rgba(16,14,12,0.97); border: 1px solid rgba(255,176,112,0.4); border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,0.7); font-family: Inter; overflow: hidden; }
+#prof .top { display: flex; align-items: center; gap: 12px; padding: 16px 16px 12px; }
+#prof .ring { width: 56px; height: 56px; border-radius: 50%; padding: 3px; box-sizing: border-box; flex: none; background: conic-gradient(#FF6A1F, #FFB070, #FF6A1F); }
+#prof .ring div { width: 100%; height: 100%; border-radius: 50%; background: #0b0a09; display: flex; align-items: center; justify-content: center; font: 800 16px/1 Mono; color: #fff; }
+#fb { width: 104px; height: 38px; border-radius: 10px; background: var(--o); color: #0b0a09; display: flex; align-items: center; justify-content: center; font: 900 14px/1 Inter; flex: none; }
+#prof .tiles { display: flex; gap: 8px; padding: 0 16px 16px; }
+#prof .tile { position: relative; flex: 1; height: 150px; border-radius: 10px; background: #1c1916; border: 2px solid transparent; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; }
+#prof .tile .n { font: 800 34px/1 Mono; color: #3a342e; }
+#prof .tile .t { font: 800 11px/1 Mono; letter-spacing: 1px; color: #d9d2ca; text-align: center; line-height: 1.3; }
+#cursor { position: absolute; left: 0; top: 0; width: 22px; height: 28px; display: none; pointer-events: none; filter: drop-shadow(0 3px 6px rgba(0,0,0,0.6)); }
+#ed, #hk, #chart, #lay, #prof, #cap, #cursor, #flash, #wflash, #cards, #kin, #lbls, #dim, #tc, .meta, .slam, #stCaught, #stClamp, #stSurv, #stStop, #tgSlow { display: none !important; }
+#ct { position: absolute; inset: 0; text-align: center; background: linear-gradient(180deg, rgba(11,10,9,0.95) 0%, rgba(11,10,9,0.9) 40%, rgba(11,10,9,0) 52%); }
+#world { transform: translateY(150px) scale(0.86); transform-origin: 50% 50%; }
+#ct .k { position: absolute; top: 160px; left: 0; right: 0; font-family: Mono; font-weight: 800; font-size: 13px; letter-spacing: 3.5px; color: var(--o2); }
+#ct .t { position: absolute; top: 186px; left: 0; right: 0; font-weight: 900; font-size: 76px; letter-spacing: -3.5px; line-height: 0.9; background: linear-gradient(180deg,#FFB070,#FF6A1F 70%); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 0 22px rgba(255,106,31,0.45)); }
+#ct .s { position: absolute; top: 340px; left: 30px; right: 30px; font-family: Instrument; font-size: 34px; line-height: 38px; color: #F2EEE8; }
+#ct .s i { color: var(--o); }
+#ct .h { position: absolute; bottom: 82px; left: 0; right: 0; font-family: Mono; font-size: 11px; letter-spacing: 2px; color: #9c948c; }
+</style>
+<script>document.fonts.load('34px Instrument'); document.fonts.load('italic 34px Instrument');</script>
+</head>
+<body>
+<div id="stage">
+  <div id="world">
+    <canvas id="cv" width="1080" height="1920"></canvas>
+    <svg id="fx" width="540" height="960" viewBox="0 0 540 960"></svg>
+    <div class="layer" id="lbls"></div>
+  </div>
+  <div id="vig"></div>
+  <div id="dim"></div>
+  <div class="layer" id="cards"></div>
+  <div class="layer" id="kin"></div>
+  <div id="frame"><i></i><i></i><i></i><i></i></div>
+  <div class="meta" style="left:30px;top:126px">// 12 — <b>elevator safety</b></div>
+  <div class="meta" style="right:30px;top:126px">HOW.ITS.ENGINEERED</div>
+  <div class="meta" id="tc" style="left:30px;bottom:60px">T+00.00s</div>
+  <div class="meta" style="right:30px;bottom:60px">ENGINEERING · <b>12</b></div>
+  <div id="ed">
+    <div class="tb"><i></i><i></i><i></i><span class="fn" id="edfn"></span><span class="st" id="edst">● LIVE</span></div>
+    <div id="code">
+      <div class="ln" id="l1"><span class="n">1</span><span id="l1t"></span><span class="r" id="l1r"></span></div>
+      <div class="ln" id="l2"><span class="n">2</span><span id="l2t"></span><span class="r" id="l2r"></span></div>
+      <div class="ln" id="l3"><span class="n">3</span><span id="l3t"></span><span class="r" id="l3r"></span></div>
+      <div class="ln" id="l4"><span class="n">4</span><span id="l4t"></span><span class="r" id="l4r"></span></div>
+    </div>
+  </div>
+  <div id="hk"><div class="a"><span>THE RAILS</span></div><div class="b">are part of the <span>brake.</span></div></div>
+  <div class="slam" id="sl1854" style="top:560px"><div class="t">1854</div><div class="sub">ELISHA OTIS · THE SAFETY CATCH</div></div>
+  <div class="slam" id="slFS" style="top:575px"><div class="t g">fail-safe</div><div class="sub">THE FAILURE FIRES THE BRAKE</div></div>
+  <div class="slam" id="sl1945" style="top:560px"><div class="t">1945</div><div class="sub">EMPIRE STATE BUILDING · FOG</div></div>
+  <div class="slam" id="slNow" style="top:575px"><div class="t">Now</div><div class="sub">NO ROPE TO CUT</div></div>
+  <div class="stamp" id="stCaught" style="color:#7CF29A">✓ CAUGHT</div>
+  <div class="stamp" id="stClamp" style="color:#7CF29A">✓ CLAMPED</div>
+  <div class="stamp" id="stSurv" style="color:#7CF29A">✓ SURVIVED</div>
+  <div class="stamp" id="stStop" style="color:#7CF29A">✋ STOPPED</div>
+  <div class="tagx" id="tgSlow">◐ SLOW-MO</div>
+  <div id="chart">
+    <div class="h"><span>HOW HARD IT STOPS</span><span style="color:#77706A">SPEED ↓ TIME →</span></div>
+    <svg width="392" height="104" viewBox="0 0 392 104">
+      <line x1="10" y1="96" x2="386" y2="96" stroke="#3a342e"/><line x1="10" y1="6" x2="10" y2="96" stroke="#3a342e"/>
+      <path id="cvI" d="M10 14 L120 14 L124 96" fill="none" stroke="#FF4632" stroke-width="3" stroke-linejoin="round"/>
+      <path id="cvG" d="M10 14 L120 14 C 180 30, 280 80, 360 96" fill="none" stroke="#7CF29A" stroke-width="3"/>
+      <circle id="cvD" r="4" fill="#fff"/>
+    </svg>
+    <div class="lg"><span><i style="background:#FF4632"></i>instant catch · slammed</span><span><i style="background:#7CF29A"></i>gradual wedges · slowed</span></div>
+  </div>
+  <div id="lay">
+    <div class="h">EVERY ELEVATOR · LAYER BY LAYER</div>
+    <div class="r"><span class="n">01</span>Catches lock into the rails<span class="k">✓</span></div>
+    <div class="r"><span class="n">02</span>Several steel ropes + counterweight<span class="k">✓</span></div>
+    <div class="r"><span class="n">03</span>Spring brake · power holds it open<span class="k">✓</span></div>
+    <div class="r"><span class="n">04</span>Speed governor pulls the wedges<span class="k">✓</span></div>
+    <div class="r"><span class="n">05</span>Gradual wedges + pit buffers<span class="k">✓</span></div>
+    <div class="r"><span class="n">06</span>Trigger moved out of harm's way<span class="k">✓</span></div>
+    <div class="r"><span class="n">07</span>Upward + doors-open brakes<span class="k">✓</span></div>
+    <div class="r"><span class="n">08</span>Electronic trigger · no rope<span class="k">✓</span></div>
+  </div>
+  <div id="prof">
+    <div class="top"><div class="ring"><div>{ }</div></div><div style="flex:1;min-width:0"><div style="font-weight:800;font-size:16px">@how.its.engineered</div><div style="color:#9c948c;font-size:11.5px;margin-top:3px">Engineering, one reel at a time</div></div><div id="fb">Follow</div></div>
+    <div class="tiles"><div class="tile" id="t0"><div class="n" style="color:#FF6A1F">12</div><div class="t">ELEVATOR<br>SAFETY</div></div><div class="tile"><div class="n">11</div><div class="t">HEALTH<br>CHECKS</div></div><div class="tile"><div class="n">10</div><div class="t">SERVICE<br>DISCOVERY</div></div></div>
+  </div>
+  <div id="cap"></div>
+  <svg id="cursor" viewBox="0 0 22 28"><path d="M2 2 L2 22 L7.5 17 L11 25 L14.5 23.5 L11 15.5 L18.5 15.5 Z" fill="#fff" stroke="#0b0a09" stroke-width="1.6" stroke-linejoin="round"/></svg>
+  <div id="flash"></div>
+  <div id="wflash"></div>
+  <div id="ct"><div class="k">ENGINEERING</div><div class="t">ELEVATORS</div><div class="s">Why they <i>can't fall,</i><br>and the one that did</div><div class="h">@HOW.ITS.ENGINEERED</div></div>
+  <div id="grain"></div>
+</div>
+<script src="../../tools/lib.js"></script>
+<script src="voice/timings.js"></script>
+<script src="voice/warp.js"></script>
+<script src="lib/engine.js"></script>
+<script>
+// the scenes below are timed on the first (robotic) take; WARP maps the current voice's clock onto that one
+const CAPW = window.CAPW, WARP = window.WARP;
+const DURATION = CAPW[CAPW.length - 1][2] + 1.7;
+window.DURATION = DURATION;
+function toRef(t) {
+  if (t <= WARP[0][0]) return t;
+  for (let i = 1; i < WARP.length; i++) if (t <= WARP[i][0]) { const [n0, r0] = WARP[i - 1], [n1, r1] = WARP[i]; return r0 + (r1 - r0) * (t - n0) / (n1 - n0); }
+  const [n, r] = WARP[WARP.length - 1]; return r + (t - n);
+}
+const REF_END = toRef(DURATION);
+const O = hex('#FF6A1F'), O2 = hex('#FFB070'), W = [242, 238, 232], GR = [119, 112, 106], INK = [14, 13, 12], OK = hex('#7CF29A'), IC = hex('#9FD3FF'), RED = [255, 70, 50], STEELC = [170, 164, 156];
+
+/* ---------------- beats (seconds, from voice/words.json) */
+const T = {
+  snap: 1.0, stops: 2.32, not: 3.24, rails: 4.36,
+  lifts: 5.6, platform: 6.22, rope1: 7.04, breaks1: 7.82, nothing1: 8.66,
+  y1854: 10.82, otis: 12.12, ropesPull: 13.64, spring: 14.56, holds: 15.78, catches: 16.34,
+  breaks2: 17.62, gone: 18.78, spring2: 19.48, straight: 20.06, catches2: 21.02, teeth: 21.84, failure: 23.32, fires: 24.06, failsafe: 26.18,
+  modern: 27.5, several: 28.56, notOne: 29.54, loop: 30.72, motor: 31.58, counterweight: 32.5, lifts2: 33.7, difference: 34.66,
+  brake: 36.38, springs: 37.8, shut: 38.56, electricity: 39.2, open: 40.24, power: 40.88, cut: 41.1, clamps: 41.9,
+  tooFast: 44.88, upTop: 45.82, governor: 46.66, thin: 48.22, moves: 48.94, spin: 50.18, weights: 51.44, swing: 52.04, flip: 53.64, cuts: 54.48, still: 55.46, lock: 56.84,
+  ropeStops: 58.48, carKeeps: 59.68, pulls: 60.98, lever: 61.44, wedges: 62.56, up: 63.1, rails3: 64.3, friction: 65.0, stop: 66.1,
+  fast: 67.12, gradually: 68.58, slowed: 69.84, slammed: 70.6, buffers: 71.44, catch: 72.12,
+  weak: 73.7, everything: 74.56, thinRope: 75.54,
+  y1945: 76.56, bomber: 78.06, hit: 78.24,
+  debris: 80.34, cutE: 80.72, govRope: 82.4, wfine: 83.74, nothing2: 84.86, them: 85.4, car6: 86.02, fell: 86.42, floors: 87.24, operator: 88.38, betty: 89.24, survived: 90.34,
+  safetyGear: 91.84, moved: 92.4, far: 92.98, side: 93.14, away: 94.28, harm: 94.7,
+  codes: 95.98, brakeUp: 97.2, shooting: 97.88, upward: 98.2, stopD: 99.16, movesD: 99.7, doors: 100.26, openD: 100.46,
+  latest: 101.74, drop: 102.42, completely: 103.08, sensor: 104.08, speed: 104.84, electronics: 105.56, fire: 106.08, wedgesN: 106.68, noRope: 107.8, cutN: 108.56,
+  every: 109.5, layers: 110.74, follow: 111.94,
+};
+const CUT = { EA: 5.15, OT: 10.55, TR: 27.25, BR: 35.6, GV: 43.45, GV2: 45.75, RL: 57.9, SF: 66.9, WK: 73.4, ES: 76.35, E45: 80.0, PT: 87.55, FX: 91.2, CD: 95.45, CD2: 98.85, NW: 101.3, END: 109.35, FOL: 111.75 };
+const ORDER = [['H', 0], ['EA', CUT.EA], ['OT', CUT.OT], ['TR', CUT.TR], ['BR', CUT.BR], ['GV', CUT.GV], ['GV2', CUT.GV2], ['RL', CUT.RL], ['SF', CUT.SF], ['WK', CUT.WK], ['ES', CUT.ES], ['E45', CUT.E45], ['PT', CUT.PT], ['FX', CUT.FX], ['CD', CUT.CD], ['CD2', CUT.CD2], ['NW', CUT.NW], ['END', CUT.END], ['FOL', CUT.FOL]];
+function sceneOf(t) { let s = 'H'; for (const [k, a] of ORDER) if (t >= a) s = k; return s; }
+
+/* ---------------- shaft geometry */
+const FL = 46, SX = 52, SY = 32, RX = 36;
+const CW = 60, CD = 46, CH = 52;
+const GX = 47, GY = 14, GR_ = 9;
+const Z75 = 75 * FL;
+
+/* ---------------- car motion per set */
+// hook: ropes snap, slow-mo slip, the wedges grab the rails on "rails"
+function zH(t) { if (t < T.snap) return 220; if (t < T.rails) return 220 - 34 * Math.pow(prog(t, T.snap, T.rails), 1.6); return 186 + 1.2 * Math.sin((t - T.rails) * 30) * Math.exp(-(t - T.rails) * 8); }
+const slowH = (t) => t > T.snap + 0.05 && t < T.rails - 0.05;
+// too fast (wide), before the governor close-up
+const zG1 = (t) => 330 - 70 * (t - CUT.GV);
+// rope stops, car keeps going, wedges slide up, friction stops it
+const ZF_RL = 265;
+function zR(t) {
+  const v = 25;
+  if (t < T.up) return 280 - v * (t - CUT.RL);
+  const z1 = 280 - v * (T.up - CUT.RL), q = prog(t, T.up, T.stop);
+  return z1 - v * (T.stop - T.up) / 2 * (1 - (1 - q) * (1 - q));
+}
+// soft stop down onto the buffers
+function zS(t) {
+  if (t < T.catch) return lerp(170, 26, 1 - Math.pow(1 - prog(t, CUT.SF, T.catch), 1.4));
+  return 26 - 8 * ep(t, T.catch, T.catch + 0.5);
+}
+// 1945
+const ZCUT = Z75 + CH + 74, FALL_T0 = T.car6, FALL_T1 = CUT.PT - 0.03, REST = 16;
+function zE(t) {
+  if (t < T.cutE) return Z75;
+  if (t < FALL_T0) return Z75 - 18 * Math.pow(prog(t, T.cutE, FALL_T0), 1.5);
+  return lerp(Z75 - 18, REST, Math.pow(prog(t, FALL_T0, FALL_T1), 1.75));
+}
+const slowE = (t) => t > T.cutE + 0.05 && t < FALL_T0 - 0.05;
+// newer codes: the car shoots up and is stopped; then creeps with doors open and is stopped
+function zC(t) {
+  if (t < T.shooting - 0.1) return 150 + 4 * (t - CUT.CD);
+  const z0 = 150 + 4 * (T.shooting - 0.1 - CUT.CD);
+  if (t < T.upward + 0.25) return z0 + 60 * Math.pow(prog(t, T.shooting - 0.1, T.upward + 0.25), 1.5);
+  return z0 + 60 + 2 * Math.sin((t - T.upward - 0.25) * 25) * Math.exp(-(t - T.upward - 0.25) * 8);
+}
+const ZD = 3 * FL;
+function zD(t) { return ZD - 5 * ep(t, T.movesD, T.doors + 0.05, ease.in); }
+// electronic safeties: slow ride, overspeed, the board fires the wedges
+function zN(t) {
+  if (t < 104.6) return 230 - 6 * (t - CUT.NW);
+  const z1 = 230 - 6 * (104.6 - CUT.NW);
+  if (t < T.wedgesN) return z1 - 0.5 * 60 * (t - 104.6) * (t - 104.6);
+  const z2 = z1 - 0.5 * 60 * (T.wedgesN - 104.6) ** 2, v = 60 * (T.wedgesN - 104.6);
+  return z2 - v * 0.4 / 2 * (1 - (1 - prog(t, T.wedgesN, T.wedgesN + 0.4)) ** 2);
+}
+const floorOf = (z) => Math.max(0, Math.round(z / FL));
+const flName = (n) => (n <= 0 ? 'B' : String(n));
+
+/* ---------------- camera */
+const SHOTS = [
+  // H (focus z added to the car's z)
+  { t: 0, d: 0, f: [10, 0, 30], s: 1.75, a: 0.55, e: 0.42, sy: 520 },
+  { t: 0.8, d: 0.4, s: 2.0 },
+  { t: 2.9, d: 0.8, f: [30, 0, 8], s: 2.7, a: 0.38, e: 0.34 },
+  { t: 4.6, d: 0.4, f: [10, 0, 26], s: 2.0, a: 0.52 },
+  // EA: the first rope lift
+  { t: CUT.EA, d: 0, f: [0, -30, 140], s: 1.2, a: 0.6, e: 0.3, sy: 540 },
+  { t: 6.2, d: 1.0, f: [0, -10, 160], s: 1.7 },
+  { t: 8.3, d: 0.4, f: [0, -20, 70], s: 1.3, a: 0.66 },
+  // OT: Otis 1854
+  { t: CUT.OT, d: 0, f: [0, -40, 160], s: 1.12, a: 0.6, e: 0.3, sy: 540 },
+  { t: 12.3, d: 0.8, f: [0, 0, 222], s: 2.4, a: 0.45, e: 0.26, sy: 520 },
+  { t: 16.1, d: 0.5, f: [-28, 0, 222], s: 3.2, a: 0.4 },
+  { t: 17.4, d: 0.4, f: [0, 0, 222], s: 2.5, a: 0.45 },
+  { t: 20.6, d: 0.5, f: [-34, 0, 222], s: 3.7, a: 0.32 },
+  { t: 22.8, d: 0.8, f: [0, -30, 190], s: 1.7, a: 0.62, e: 0.3, sy: 520 },
+  // TR: ropes over the motor wheel to a counterweight
+  { t: CUT.TR, d: 0, f: [6, 0, 190], s: 1.0, a: 0.62, e: 0.28, sy: 560 },
+  { t: 28.3, d: 0.6, f: [-22, 0, 170], s: 1.6, a: 0.5 },
+  { t: 30.5, d: 0.6, f: [6, 0, 320], s: 2.0, a: 0.42 },
+  { t: 32.3, d: 0.6, f: [34, 0, 120], s: 1.75, a: 0.66 },
+  { t: 33.5, d: 0.8, f: [6, 0, 200], s: 1.05, a: 0.56 },
+  // BR: the spring brake close-up (front view)
+  { t: CUT.BR, d: 0, f: [0, 0, 128], s: 2.1, a: 0.3, e: 0.14, sy: 540 },
+  { t: 37.5, d: 0.4, f: [-50, 0, 165], s: 2.9 },
+  { t: 39.0, d: 0.4, f: [0, 0, 160], s: 2.5 },
+  { t: 40.7, d: 0.4, f: [0, 0, 128], s: 2.1 },
+  // GV: too fast (wide), then the governor close-up
+  { t: CUT.GV, d: 0, f: [10, 0, 270], s: 1.3, a: 0.6, e: 0.36, sy: 540 },
+  { t: CUT.GV2, d: 0, f: [0, 0, 200], s: 2.2, a: 0.22, e: 0.12, sy: 520 },
+  { t: 48.1, d: 0.6, f: [-20, 0, 120], s: 1.6 },
+  { t: 50.1, d: 0.5, f: [0, 0, 200], s: 2.9 },
+  { t: 53.3, d: 0.4, f: [26, 0, 222], s: 3.2 },
+  { t: 55.3, d: 0.5, f: [-20, 0, 170], s: 2.5 },
+  { t: 56.6, d: 0.3, f: [-30, 0, 148], s: 3.4 },
+  // RL (focus z added to the car's z)
+  { t: CUT.RL, d: 0, f: [24, 0, 40], s: 1.6, a: 0.55, e: 0.36, sy: 520 },
+  { t: 61.2, d: 0.4, f: [36, GY, 44], s: 2.8, a: 0.5 },
+  { t: 62.4, d: 0.4, f: [33, 0, 8], s: 3.0, a: 0.38, e: 0.32 },
+  { t: 64.9, d: 0.6, f: [10, 0, 26], s: 1.9, a: 0.55 },
+  // SF
+  { t: CUT.SF, d: 0, f: [0, 0, 100], s: 1.25, a: 0.55, e: 0.34, sy: 640 },
+  { t: 71.2, d: 0.6, f: [0, 0, 22], s: 2.4, a: 0.5, sy: 600 },
+  // WK
+  { t: CUT.WK, d: 0, f: [GX, GY, 300], s: 1.05, a: 0.6, e: 0.36, sy: 540 },
+  { t: 74.5, d: 1.2, f: [GX, GY, 260], s: 1.25 },
+  // ES
+  { t: CUT.ES, d: 0, f: [0, 0, 330], s: 0.8, a: 0.55, e: 0.22, sy: 500 },
+  { t: 77.5, d: 0.7, f: [-60, -60, 440], s: 1.25, a: 0.48 },
+  { t: T.hit, d: 0.2, f: [-10, -40, 420], s: 1.7 },
+  { t: 78.9, d: 1.0, f: [0, 0, 380], s: 0.95, a: 0.62, e: 0.26 },
+  // E45 (focus z added to the car's z)
+  { t: CUT.E45, d: 0, f: [0, 0, 160], s: 1.25, a: 0.55, e: 0.45, sy: 560 },
+  { t: 80.5, d: 0.3, f: [0, 0, 120], s: 1.75 },
+  { t: 82.1, d: 0.4, f: [GX, GY, 120], s: 2.0, a: 0.42 },
+  { t: 83.6, d: 0, f: [30, 0, 10], s: 3.0, a: 0.35, e: 0.35, sy: 520 },
+  { t: 84.7, d: 0, f: [GX, GY, 220], s: 1.6, a: 0.5, e: 0.4, sy: 520 },
+  { t: FALL_T0 - 0.05, d: 0, f: [0, 0, 30], s: 1.9, a: 0.55, e: 0.45, sy: 470 },
+  { t: 86.6, d: 0.5, s: 1.4, e: 0.38 },
+  // PT
+  { t: CUT.PT, d: 0, f: [0, 0, 60], s: 1.9, a: 0.55, e: 0.4, sy: 560 },
+  { t: 88.3, d: 1.0, f: [0, -10, 40], s: 2.3, a: 0.7 },
+  // FX: plan view
+  { t: CUT.FX, d: 0, f: [0, 0, 0], s: 2.5, a: 0.3, e: 1.25, sy: 500 },
+  { t: 94.0, d: 0.8, s: 2.2, a: 0.4, e: 1.12 },
+  // CD: upward, then doors open
+  { t: CUT.CD, d: 0, f: [0, 0, 230], s: 1.15, a: 0.55, e: 0.34, sy: 540 },
+  { t: 97.6, d: 0.4, f: [0, 0, 300], s: 1.35 },
+  { t: CUT.CD2, d: 0, f: [0, -20, ZD + 30], s: 2.3, a: 0.62, e: 0.22, sy: 540 },
+  { t: 100.2, d: 0.3, s: 2.6 },
+  // NW (focus z added to the car's z)
+  { t: CUT.NW, d: 0, f: [0, 0, 60], s: 1.25, a: 0.55, e: 0.36, sy: 540 },
+  { t: 103.8, d: 0.5, f: [-34, 0, 32], s: 2.5, a: 0.8 },
+  { t: 105.3, d: 0.4, f: [0, 0, 56], s: 2.2, a: 0.55 },
+  { t: 106.4, d: 0.3, f: [33, 0, 6], s: 2.7, a: 0.38 },
+  { t: 107.5, d: 0.8, f: [20, 0, 70], s: 1.5, a: 0.55 },
+  // END / FOL
+  { t: CUT.END, d: 0, f: [0, 0, 120], s: 1.0, a: 0.55, e: 0.45, sy: 560 },
+  { t: 112, d: 3, s: 0.9, a: 0.7 },
+];
+const KICKS = [[T.snap, 0.06], [T.rails, 0.08], [CUT.EA, 0.04], [T.breaks1, 0.05], [8.45, 0.08], [CUT.OT, 0.04], [T.breaks2, 0.05], [T.teeth, 0.08], [T.failsafe, 0.05],
+  [CUT.TR, 0.04], [T.counterweight, 0.04], [CUT.BR, 0.04], [T.electricity, 0.04], [T.clamps, 0.08], [T.governor, 0.04], [T.flip, 0.06], [T.lock, 0.08], [T.ropeStops, 0.05], [T.lever, 0.04], [T.up, 0.07],
+  [T.catch, 0.05], [T.hit, 0.12], [T.cutE, 0.08], [T.govRope, 0.06], [FALL_T0, 0.05], [CUT.PT, 0.14], [T.survived, 0.05], [T.harm, 0.06], [T.upward + 0.25, 0.08], [T.doors + 0.05, 0.07], [T.drop, 0.04], [T.wedgesN, 0.08]];
+const SHAKES = [[T.snap, 4, 0.4], [T.rails, 6, 0.4], [8.45, 8, 0.5], [T.teeth, 5, 0.35], [T.clamps, 5, 0.4], [T.lock, 5, 0.4], [T.up, 6, 0.5], [T.hit, 12, 0.9], [T.cutE, 6, 0.5], [FALL_T0, 3, 1.5], [CUT.PT, 14, 0.8], [T.upward + 0.25, 6, 0.4], [T.wedgesN, 7, 0.45]];
+function followZ(t) { const s = sceneOf(t); return s === 'H' ? zH(t) : s === 'RL' ? zR(t) : s === 'E45' ? zE(t) : s === 'NW' ? zN(t) : 0; }
+
+/* ---------------- drawing helpers */
+function wbox(x, y, z, w, d, h, edge, o = {}) {
+  box(x, y, z, w, d, h, o.fill || INK, { op: o.op, edge: rgba(edge, 1, o.ea ?? 0.9), lw: o.lw || 1, gl: o.glow ? [rgba(edge, 1, o.glow), 14] : null, front: o.front, side: o.side, top: o.top, dz: o.dz, layer: o.layer });
+}
+let ZLO = -1e9, ZHI = 1e9;
+function visRange() { const k = cam.s * ce; ZLO = cam.f[2] - (960 - cam.sy + 120) / Math.max(0.05, k) - 60; ZHI = cam.f[2] + (cam.sy + 120) / Math.max(0.05, k) + 60; }
+function seg(a, b, col, lw = 1, o = {}) {
+  add(o.layer ?? 1, D((a[0] + b[0]) / 2, (a[1] + b[1]) / 2, (a[2] + b[2]) / 2) + (o.dz || 0), () => {
+    g.save(); if (o.glow) glow(o.glow, o.blur || 6); if (o.add) g.globalCompositeOperation = 'lighter';
+    g.strokeStyle = col; g.lineWidth = lw * Math.max(0.6, Math.min(2.2, cam.s * 0.75)); g.lineCap = 'round';
+    if (o.dash) { g.setLineDash(o.dash.map((v) => v * cam.s)); g.lineDashOffset = o.off || 0; }
+    g.beginPath(); g.moveTo(...P(...a)); g.lineTo(...P(...b)); g.stroke(); g.restore();
+  });
+}
+function pline(pts, col, lw = 1, o = {}) {
+  if (pts.length < 2) return;
+  const m = pts[Math.floor(pts.length / 2)];
+  add(o.layer ?? 1, (o.depth ?? D(...m)) + (o.dz || 0), () => {
+    g.save(); if (o.glow) glow(o.glow, o.blur || 6); if (o.add) g.globalCompositeOperation = 'lighter';
+    g.strokeStyle = col; g.lineWidth = lw * Math.max(0.6, Math.min(2.2, cam.s * 0.75)); g.lineCap = 'round'; g.lineJoin = 'round';
+    if (o.dash) g.setLineDash(o.dash.map((v) => v * cam.s));
+    g.beginPath(); pts.forEach((p, i) => (i ? g.lineTo(...P(...p)) : g.moveTo(...P(...p)))); if (o.close) g.closePath();
+    if (o.fill) { g.fillStyle = o.fill; g.fill(); }
+    g.stroke(); g.restore();
+  });
+}
+function vline(x, y, z0, z1, col, lw = 1, o = {}) {
+  const a = Math.max(z0, ZLO), b = Math.min(z1, ZHI);
+  if (b <= a) return;
+  const n = Math.max(1, Math.ceil((b - a) / FL));
+  for (let i = 0; i < n; i++) seg([x, y, lerp(a, b, i / n)], [x, y, lerp(a, b, (i + 1) / n)], col, lw, o);
+}
+const ringPts = (cx, cy, cz, R, n = 28, a0 = 0, a1 = Math.PI * 2) => { const p = []; for (let k = 0; k <= n; k++) { const a = lerp(a0, a1, k / n); p.push([cx + Math.cos(a) * R, cy, cz + Math.sin(a) * R]); } return p; };
+function wheel(cx, cy, cz, r, ang, col, o = {}) {
+  pline(ringPts(cx, cy, cz, r), col, o.lw || 1.2, { glow: o.glow, dz: -2 });
+  pline(ringPts(cx, cy, cz, r * 0.72), col, 0.6, { dz: -2 });
+  for (let k = 0; k < (o.spokes || 4); k++) { const a = ang + (k / (o.spokes || 4)) * Math.PI * 2; seg([cx, cy, cz], [cx + Math.cos(a) * r * 0.72, cy, cz + Math.sin(a) * r * 0.72], col, 0.7, { dz: -3 }); }
+  if (o.fly) for (const sd of [0, Math.PI]) { const a = ang + sd + 0.6, R = r * (0.25 + 0.4 * o.fly); spark([cx + Math.cos(a) * R, cy - 0.5, cz + Math.sin(a) * R], 0.9, 1.8 + o.fly, o.flyCol || O2); }
+}
+function spark(p, a = 1, r = 3, col = O) {
+  if (a <= 0.01) return;
+  add(1, D(...p) - 6, () => { const c = P(...p), R = r * cam.s * 0.6; g.save(); g.globalCompositeOperation = 'lighter'; const rg = g.createRadialGradient(c[0], c[1], 0, c[0], c[1], R * 4); rg.addColorStop(0, `rgba(255,236,210,${a})`); rg.addColorStop(0.3, rgba(col, 1, 0.6 * a)); rg.addColorStop(1, rgba(col, 1, 0)); g.fillStyle = rg; g.beginPath(); g.arc(c[0], c[1], R * 4, 0, Math.PI * 2); g.fill(); g.restore(); });
+}
+function shower(t, t0, x, y, z, n, seed, spd = 170, life = 0.9, col = O) {
+  const dt = t - t0; if (dt <= 0 || dt > life) return;
+  add(3, 0, () => {
+    g.save(); g.globalCompositeOperation = 'lighter'; g.lineCap = 'round';
+    for (let i = 0; i < n; i++) {
+      const th = rnd(i, seed) * Math.PI * 2, up = 0.2 + rnd(i, seed + 1) * 1.0, v = spd * (0.4 + rnd(i, seed + 2) * 0.9);
+      const pos = (d) => P(x + Math.cos(th) * v * d, y + Math.sin(th) * v * d, z + up * v * d - 300 * d * d);
+      const a = pos(dt), b = pos(Math.max(0, dt - 0.03)), k = 1 - dt / life;
+      g.strokeStyle = rgba(mixc(col, [255, 240, 200], rnd(i, seed + 3)), 1.2, k); g.lineWidth = (0.8 + 1.2 * k) * Math.min(1.6, cam.s * 0.6);
+      g.beginPath(); g.moveTo(...b); g.lineTo(...a); g.stroke();
+    }
+    g.restore();
+  });
+}
+// a steady stream of friction sparks off a rail
+function grind(t, a, b, x, y, z, seed, col = O2) {
+  if (t < a || t > b) return;
+  for (let i = 0; i < 8; i++) { const ph = (t * 3 + rnd(i, seed)) % 1; spark([x + (rnd(i, seed + 1) - 0.5) * 4, y + (rnd(i, seed + 2) - 0.5) * 6, z + 4 + ph * 24], (1 - ph) * 0.8, 1.6 + rnd(i, seed + 3), col); }
+}
+function popText(t, t0, p, txt, col, size = 9, life = 0.8) {
+  const k = prog(t, t0, t0 + life); if (k <= 0 || k >= 1) return;
+  add(3, 0, () => { const q = P(p[0], p[1], p[2] + 10 + k * 16), s = Math.min(1.5, cam.s); g.save(); g.globalAlpha = Math.min(1, (1 - k) * 2.2) * Math.min(1, k * 8); g.font = `900 ${size * s}px Inter`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.lineWidth = 3; g.strokeStyle = '#0b0a09'; g.strokeText(txt, q[0], q[1]); g.fillStyle = rgba(col, 1.2); glow(rgba(col), 8); g.fillText(txt, q[0], q[1]); g.restore(); });
+}
+function figure(x, y, z, col, lit, o = {}) {
+  const op = o.op ?? 1; if (op <= 0.01) return;
+  add(1, D(x, y, z + 14) + (o.dz || 0), () => {
+    g.globalAlpha = op;
+    const j = o.jump || 0, b = P(x, y, z + j), s = cam.s, tp = P(x, y, z + 21 + j), h = P(x, y, z + 30 + j);
+    ell(P(x, y, z), 9 * s, 9 * s * se, 'rgba(0,0,0,0.35)');
+    if (lit > 0.05) glow(rgba(col, 1, lit), 12);
+    const bw = 13 * s; g.fillStyle = rgba(col, 0.85); g.beginPath(); g.roundRect(b[0] - bw / 2, tp[1], bw, b[1] - tp[1] + 1, [bw / 2, bw / 2, 3 * s, 3 * s]); g.fill();
+    g.fillStyle = rgba(col, 1.15); g.beginPath(); g.arc(h[0], h[1], 6.3 * s, 0, Math.PI * 2); g.fill();
+    if (o.hat) { noGlow(); g.fillStyle = '#1a1714'; g.strokeStyle = rgba(O2, 1.2); g.lineWidth = 1; g.beginPath(); g.rect(h[0] - 9 * s, h[1] - 5.5 * s, 18 * s, 2 * s); g.rect(h[0] - 5 * s, h[1] - 14 * s, 10 * s, 8.5 * s); g.fill(); g.stroke(); }
+    noGlow(); g.globalAlpha = 1;
+  });
+}
+function floorGrid(a = 1) {
+  add(0, 1e7, () => {
+    const X0 = -500, X1 = 520, Y0 = -360, Y1 = 520;
+    g.save(); g.lineWidth = 0.6; g.globalAlpha = a;
+    for (let x = X0; x <= X1; x += 20) { const maj = x % 100 === 0; g.strokeStyle = `rgba(255,240,225,${maj ? 0.08 : 0.03})`; g.beginPath(); g.moveTo(...P(x, Y0, 0)); g.lineTo(...P(x, Y1, 0)); g.stroke(); }
+    for (let y = Y0; y <= Y1; y += 20) { const maj = y % 100 === 0; g.strokeStyle = `rgba(255,240,225,${maj ? 0.08 : 0.03})`; g.beginPath(); g.moveTo(...P(X0, y, 0)); g.lineTo(...P(X1, y, 0)); g.stroke(); }
+    g.restore();
+  });
+}
+const zig = (x0, x1, y, z, n, amp) => { const p = []; for (let k = 0; k <= n * 2; k++) { const u = k / (n * 2); p.push([lerp(x0, x1, u), y, z + (k === 0 || k === n * 2 ? 0 : (k % 2 ? amp : -amp))]); } return p; };
+
+/* ---------------- the shaft (cutaway) */
+function shaft(t, o) {
+  const top = o.topFloor * FL, k0 = Math.max(0, Math.floor(ZLO / FL)), k1 = Math.min(o.topFloor, Math.ceil(ZHI / FL));
+  const wc = rgba(GR, 1.3, 0.55), fc = rgba(GR, 1.2, 0.18);
+  for (let k = k0; k <= k1; k++) {
+    const z = k * FL, hot = o.hotFloor != null ? pulse(t, o.hotT, 2) * (Math.abs(k - o.hotFloor) < 1 ? 1 : 0) : 0;
+    const passing = o.passing ? Math.max(0, 1 - Math.abs(z - o.passing) / 90) : 0;
+    const c = hot > 0.01 ? rgba(mixc(GR, O, hot), 1.4, 0.8) : passing > 0.01 ? rgba(mixc(GR, O2, passing), 1.3 + passing * 0.4, 0.55 + 0.35 * passing) : wc;
+    seg([-SX, SY, z], [SX, SY, z], c, 0.9);
+    seg([SX, SY, z], [SX, -SY, z], c, 0.9);
+    seg([-SX, -SY, z], [SX, -SY, z], fc, 0.7, { dz: -200 });
+    seg([-SX, SY, z], [-SX, -SY, z], fc, 0.7);
+    if (k === 0) continue;
+    const dc = passing > 0.01 ? rgba(O2, 1.2, 0.5 + 0.4 * passing) : rgba(GR, 1.3, 0.42);
+    pline([[-17, SY, z], [-17, SY, z + 34], [17, SY, z + 34], [17, SY, z]], dc, 0.8);
+    seg([0, SY, z], [0, SY, z + 34], rgba(GR, 1, 0.3), 0.5);
+    const F = { o: [-SX, SY, z], u: [1, 0, 0], v: [0, 0, 1] }, lab = o.label ? o.label(k) : String(k);
+    add(1, D(-36, SY, z + 26), () => ftext(F, 16, 27, lab, k === o.markFloor ? 9 : 7.5, k === o.markFloor ? rgba(O, 1.4) : passing > 0.3 ? rgba(O2, 1.4, 0.95) : rgba(GR, 1.6, 0.85), 'Mono', 800));
+  }
+  vline(-SX, SY, 0, top + 40, wc, 0.9);
+  vline(SX, SY, 0, top + 40, wc, 0.9);
+  vline(SX, -SY, 0, top + 40, fc, 0.7);
+  const railCol = o.railCol || rgba(STEELC, 1.1, 0.75);
+  for (const sx of [-1, 1]) for (const dx of [-1.3, 1.3]) vline(sx * RX + dx, 0, 0, top + 30, railCol, 0.75, { glow: o.railGlow });
+  if (ZLO < 20) {
+    wbox(0, 0, -6, SX * 2, SY * 2, 6, GR, { ea: 0.6, fill: [20, 18, 16] });
+    const F = { o: [-SX, -SY, -6], u: [1, 0, 0], v: [0, 0, 1] };
+    add(1, D(0, -SY, -3) - 20, () => ftext(F, SX, 3, o.pitLabel || 'PIT', 3.6, rgba(GR, 1.6, 0.9), 'Mono', 700));
+  }
+  if (ZHI > top - 20 && o.machine !== false) {
+    wbox(0, 0, top + 40, SX * 2 + 10, SY * 2 + 6, 5, GR, { ea: 0.7, fill: [22, 20, 18] });
+    wbox(0, 0, top + 45, 34, 26, 18, O2, { lw: 1.1, glow: 0.25, fill: mixc(INK, O, 0.06), front: (F, w, h) => ftext(F, w / 2, h / 2, 'motor', 4.4, rgba(O2, 1.3), 'Mono', 700) });
+    wheel(0, -14, top + 30, 9, -(o.sheave || 0), rgba(O2, 1.1, 0.9), { spokes: 5 });
+    wbox(GX, GY, top + 45, 20, 14, 6, GR, { ea: 0.8 });
+  }
+}
+function hoist(t, z, o) {
+  const xs = o.n === 6 ? [-10, -6, -2, 2, 6, 10] : [-9, -3, 3, 9], topZ = o.top * FL + 30;
+  xs.forEach((x, i) => {
+    const lit = o.lit ? o.lit(i) : 0, col = o.col || rgba(mixc(STEELC, O2, lit), 1.1 + lit * 0.4, 0.85);
+    const gl = lit > 0.05 ? rgba(O2, 1, lit) : null;
+    if (o.cutZ == null || t < o.cutT) { vline(x, 0, z + CH, topZ, col, 1.1, { glow: gl }); return; }
+    const dt = t - o.cutT, sw = o.sway ? o.sway(t) : Math.min(1, dt * 2);
+    vline(x, 0, o.cutZ + 6, topZ, col, 1.1);
+    const up = []; for (let k = 0; k <= 6; k++) { const u = k / 6; up.push([x + Math.sin(dt * 7 + i + u * 3) * 5 * sw * u, Math.cos(dt * 5 + i) * 3 * sw * u, o.cutZ + 6 + 40 * (1 - u) - 4 * u]); }
+    pline(up, col, 1.1);
+    const L = o.cutZ - 6 - (o.cutCarZ + CH), lo = [];
+    for (let k = 0; k <= 10; k++) { const u = k / 10; lo.push([x + Math.sin(u * 5 + dt * 6 + i * 1.3) * 7 * sw * u, Math.sin(u * 4 + i) * 4 * sw * u, z + CH + L * u * (1 - 0.12 * sw)]); }
+    pline(lo, col, 1.1);
+  });
+}
+// the governor loop in the shaft. o: {top, pos, grab, fly, cutZ, cutT, cutCarZ, lit, litCol, attached, armLift, armHi, armOk, op, dash}
+function governor(t, z, o) {
+  const wz = o.top * FL + 45 + 9, x1 = GX - GR_, x2 = GX + GR_, pitZ = 12, op = o.op ?? 1;
+  const lc = o.litCol || O, col = rgba(mixc(STEELC, lc, o.lit || 0), 1.15 + (o.lit || 0) * 0.3, 0.9 * op), gl = o.lit > 0.05 ? rgba(lc, 1, o.lit * op) : null;
+  const ang = (o.pos || 0) / GR_;
+  if (op > 0.02) wheel(GX, GY, wz, GR_, ang, o.wheelCol || rgba(O2, 1.2, 0.95 * op), { fly: o.fly || 0, glow: o.wheelGlow, spokes: 4, lw: 1.4 });
+  if (ZLO < 30 && op > 0.02) wheel(GX, GY, pitZ, GR_, ang, rgba(GR, 1.4, 0.8 * op), { spokes: 3 });
+  const gp = o.grab || 0;
+  if (op > 0.02) for (const sd of [-1, 1]) wbox(x1 + sd * (2.4 + 4 * (1 - gp)), GY, wz - 16, 3, 7, 7, gp > 0.5 ? O : GR, { lw: 1, glow: gp * 0.9, fill: mixc(INK, O, gp * 0.4), op });
+  const armZ = z + 40;
+  const strand = (x, za, zb, c = col, g_ = gl) => { if (zb > za && op > 0.02) vline(x, GY, za, zb, c, 0.9, { glow: g_, dash: o.dash }); };
+  if (o.cutZ == null || t < o.cutT) {
+    strand(x1, pitZ, wz); strand(x2, pitZ, wz);
+  } else {
+    const dt = t - o.cutT, sw = Math.min(1, dt * 2), rc = rgba(RED, 1.1, 0.95);
+    strand(x1, o.cutZ + 6, wz, rc, rgba(RED, 1, 0.5)); strand(x2, o.cutZ + 6, wz, rc, rgba(RED, 1, 0.5));
+    const drop = o.cutCarZ - z, lowTop = o.cutZ - 6 - drop;
+    const lo = []; for (let k = 0; k <= 8; k++) { const u = k / 8; lo.push([x1 + Math.sin(u * 4 + dt * 6) * 5 * sw * u, GY, armZ + (lowTop - armZ) * u]); }
+    if (lowTop > armZ) pline(lo, rc, 0.9);
+    strand(x1, pitZ, armZ); strand(x2, pitZ, o.cutZ - 6);
+  }
+  if (op > 0.5) {
+    const pos = o.pos || 0, a = Math.max(ZLO, pitZ), b = Math.min(ZHI, wz);
+    for (const [x, sgn] of [[x1, 1], [x2, -1]]) {
+      const off = ((sgn * pos) % 14 + 14) % 14;
+      for (let zz = Math.ceil((a - off) / 14) * 14 + off; zz < b; zz += 14) {
+        if (o.cutZ != null && t >= o.cutT && Math.abs(zz - o.cutZ) < 8) continue;
+        seg([x - 1.6, GY, zz], [x + 1.6, GY, zz], rgba(STEELC, 1.3, 0.7), 0.6);
+      }
+    }
+  }
+  if (o.attached !== false && op > 0.02) {
+    const lift = o.armLift || 0, hl = o.armHi || 0;
+    pline([[CW / 2, GY, armZ - 6], [CW / 2 + 3, GY, armZ], [x1, GY, armZ + lift]], rgba(mixc(mixc(O2, OK, o.armOk || 0), [255, 255, 255], hl * 0.4), 1.2 + hl * 0.3), 1.3 + hl, { glow: rgba(O2, 1, 0.4 + (o.armOk || 0) * 0.5 + hl * 0.5) });
+    spark([x1, GY, armZ + lift], 0.5 + 0.5 * Math.max(o.armOk || 0, hl), 2, (o.armOk || 0) > 0.5 ? OK : O2);
+  }
+}
+// the car. o: {x, wedge, wedgeLit, betty, bettyLit, lit, label, ind, doors, sway, op}
+function carBox(t, z, o = {}) {
+  const X = o.x || 0, lit = o.lit || 0, c = mixc(O, [255, 255, 255], lit * 0.5), op = o.op ?? 1;
+  wbox(X, 0, z, CW, CD, CH, c, { op, lw: 1.3, glow: 0.6 + lit, fill: mixc(INK, O, 0.08 + lit * 0.2),
+    front: (F, w, h) => {
+      const d = o.doors || 0;
+      if (d > 0.01) {
+        fquad(F, w / 2 - 15 * d, 3, w / 2 + 15 * d, h - 13, `rgba(255,214,170,${0.28 * d})`);
+        fpath(F, [[w / 2 - 15 * d, 3], [w / 2 - 15 * d, h - 13]], rgba(c, 1.2, 0.9), 0.7);
+        fpath(F, [[w / 2 + 15 * d, 3], [w / 2 + 15 * d, h - 13]], rgba(c, 1.2, 0.9), 0.7);
+      } else fpath(F, [[w / 2, 3], [w / 2, h - 13]], rgba(c, 1, 0.55), 0.5);
+      ftext(F, 6, h - 6, o.label || 'CAR', 4.2, rgba(c, 1.4), 'Mono', 800, 'left');
+      ftext(F, w - 6, h - 6, o.ind || '', 4.4, rgba(O2, 1.4), 'Mono', 800, 'right');
+      if (o.betty) {
+        const wx0 = 16, wx1 = w - 16, wy0 = 13, wy1 = h - 15;
+        fquad(F, wx0, wy0, wx1, wy1, rgba(mixc(INK, O2, 0.12 + 0.2 * (o.bettyLit || 0)), 1, 0.95));
+        fpath(F, [[wx0, wy0], [wx1, wy0], [wx1, wy1], [wx0, wy1], [wx0, wy0]], rgba(O2, 1.2, 0.8), 0.5);
+        const hc = rgba(mixc(W, O2, 0.3), 1.2, 0.95), cx = w / 2 + 2 + (o.sway || 0), cy = wy0 + 13;
+        const head = []; for (let k = 0; k <= 16; k++) { const a = (k / 16) * Math.PI * 2; head.push([cx + Math.cos(a) * 3.4, cy + Math.sin(a) * 3.4]); }
+        fpath(F, head, hc, 0.7);
+        fpath(F, [[cx - 7, wy0 + 1], [cx - 6, cy - 5], [cx, cy - 4], [cx + 6, cy - 5], [cx + 7, wy0 + 1]], hc, 0.7);
+      }
+    },
+    top: (F, w, d) => { fquad(F, w / 2 - 12, d / 2 - 3, w / 2 + 12, d / 2 + 3, rgba(GR, 1, 0.8)); },
+  });
+  const wg = o.wedge || 0, wl = o.wedgeLit || 0;
+  for (const sx of [-1, 1]) {
+    const x = X + sx * (CW / 2 + 1.6 + 2.6 * wg), col = wl > 0.5 ? OK : mixc(GR, O2, Math.max(wg, wl));
+    wbox(x, 0, z + 2 + 4 * wg, 4, 12, 10, col, { lw: 1.1, glow: 0.2 + wl * 0.9 + wg * 0.6, fill: mixc(INK, col, 0.25 + wg * 0.3) });
+  }
+}
+function coil(t, z0, z1, turns, r, col, a) {
+  if (a <= 0.01 || turns <= 0.05) return;
+  const pts = [], n = Math.ceil(turns * 18);
+  for (let k = 0; k <= n; k++) { const u = k / n, th = u * turns * Math.PI * 2; pts.push([Math.cos(th) * r, Math.sin(th) * r * 0.8, z0 + (z1 - z0) * u]); }
+  pline(pts, rgba(col, 1.2, 0.9 * a), 1.4, { glow: rgba(col, 1, 0.5 * a), depth: D(0, 0, z0) + 30 });
+}
+
+/* ---------------- the first rope lift + Otis 1854 */
+const OT_TOP = 262;
+function otisZ(t, early) {
+  if (early) { if (t < T.breaks1) return 150; return Math.max(5, 150 - 0.5 * 600 * (t - T.breaks1) ** 2); }
+  if (t < T.breaks2) return 150;
+  if (t < T.teeth) return 150 - 5 * ease.in(prog(t, T.breaks2, T.teeth));
+  return 145 + 1.5 * Math.sin((t - T.teeth) * 30) * Math.exp(-(t - T.teeth) * 8);
+}
+const otisRelease = (t) => ep(t, T.spring2, T.straight + 0.15, ease.back);
+const otisPawl = (t) => ep(t, T.catches2 - 0.2, T.teeth, ease.in);
+function otis(t, early) {
+  floorGrid(1);
+  const zp = otisZ(t, early), broke = t > (early ? T.breaks1 : T.breaks2), wood = [214, 150, 96];
+  const rel = early ? 0 : otisRelease(t), pw = early ? 0 : otisPawl(t);
+  for (const sx of [-1, 1]) {
+    wbox(sx * 44, 0, 0, 6, 12, OT_TOP, wood, { ea: 0.85, lw: 1, fill: mixc(INK, wood, 0.12) });
+    if (!early) {
+      const hi = window01(t, T.catches2 - 0.1, T.failure, 0.2), pts = [];
+      for (let z = 14; z < OT_TOP - 6; z += 7) { pts.push([sx * 41, -2, z]); pts.push([sx * 37.5, -2, z + 3.5]); }
+      pline(pts, rgba(mixc(STEELC, O2, hi), 1.3, 0.85), 0.8, { dz: -30, glow: hi > 0.05 ? rgba(O2, 1, hi * 0.5) : null });
+    } else seg([sx * 40, -2, 10], [sx * 40, -2, OT_TOP - 6], rgba(STEELC, 1.2, 0.7), 0.8, { dz: -30 });
+  }
+  wbox(0, 0, OT_TOP, 100, 12, 8, wood, { ea: 0.85, fill: mixc(INK, wood, 0.12) });
+  wheel(0, -8, OT_TOP - 6, 7, t * 0.4, rgba(wood, 1.2), { spokes: 4 });
+  const c = mixc(wood, O2, 0.3);
+  wbox(0, 0, zp, 70, 54, 5, c, { lw: 1.2, glow: 0.3, fill: mixc(INK, wood, 0.14) });
+  for (const sx of [-1, 1]) wbox(sx * 31, 0, zp + 5, 4, 5, 64, c, { ea: 0.85 });
+  wbox(0, 0, zp + 69, 66, 6, 4, c, { ea: 0.85 });
+  const zs = zp + 75;
+  let bow = 0;
+  if (!early) {
+    bow = 10 * (1 - rel);
+    const sp = []; for (let k = 0; k <= 16; k++) { const u = k / 16 * 2 - 1; sp.push([u * 28, -3, zs + bow * (1 - u * u)]); }
+    const hiS = window01(t, T.spring - 0.1, T.holds + 0.3, 0.2) + window01(t, T.spring2 - 0.1, T.catches2, 0.2);
+    pline(sp, rgba(mixc(O2, OK, rel), 1.25 + hiS * 0.3), 2.2 + hiS, { glow: rgba(O2, 1, 0.5 + rel * 0.4 + hiS * 0.4), dz: -40 });
+    const hiC = window01(t, T.catches - 0.1, T.breaks2, 0.2);
+    for (const sx of [-1, 1]) {
+      const x0 = sx * 28, x1 = sx * (28 + 10 * pw), cc = pw > 0.95 ? rgba(OK, 1.3) : rgba(mixc(O2, [255, 255, 255], hiC * 0.4), 1.3);
+      pline([[x0, -3, zs], [x1, -3, zs + 1], [x1 + sx * 1.5, -3, zs - 4], [x0, -3, zs - 5]], cc, 1.4 + hiC, { glow: pw > 0.95 ? rgba(OK, 1, 0.8) : hiC > 0.05 ? rgba(O2, 1, hiC) : null, close: true, fill: 'rgba(20,16,12,0.9)', dz: -42 });
+    }
+  }
+  wbox(-16, 8, zp + 5, 18, 16, 16, wood, { ea: 0.7, fill: mixc(INK, wood, 0.1) });
+  wbox(-16, 8, zp + 21, 12, 12, 10, wood, { ea: 0.6, fill: mixc(INK, wood, 0.1) });
+  if (!early) figure(12, -6, zp + 5, mixc(W, O2, 0.2), 0.2 + 0.6 * pulse(t, T.otis, 2), { hat: true });
+  const rc = rgba([226, 205, 170], 1.1, 0.95), topR = OT_TOP - 13, hook = early ? zp + 69 : zs + bow;
+  if (!broke) {
+    const tension = early ? 0 : window01(t, T.ropesPull - 0.1, T.spring + 0.4, 0.2);
+    seg([0, -3, topR], [0, -3, hook], rc, 1.4 + tension, { glow: tension > 0 ? rgba(O, 1, tension) : null, dz: -45 });
+    if (tension > 0.05) for (let i = 0; i < 3; i++) { const ph = (t * 1.5 + i / 3) % 1; spark([0, -3, lerp(hook, topR, ph)], tension * (1 - ph), 2.4, O); }
+  } else {
+    const t0 = early ? T.breaks1 : T.breaks2, dt = t - t0, cz = Math.min(topR - 10, hook + 34);
+    const up = [], lo = [];
+    for (let k = 0; k <= 8; k++) { const u = k / 8; up.push([Math.sin(u * 3 + dt * 7) * 4 * Math.min(1, dt * 3) * u, -3, lerp(topR, cz + 6, u)]); }
+    for (let k = 0; k <= 8; k++) { const u = k / 8; lo.push([Math.sin(u * 4 + dt * 6) * 6 * Math.min(1, dt * 2) * u, -3 - 6 * u * Math.min(1, dt * 2), hook + 20 * u * (1 - 0.5 * Math.min(1, dt * 1.5))]); }
+    pline(up, rc, 1.4, { dz: -45 }); pline(lo, rc, 1.4, { dz: -45 });
+    shower(t, t0, 0, -3, cz, 20, 7, 110, 0.5, O);
+  }
+  if (early) { shower(t, 8.45, 0, 0, 5, 60, 31, 200, 1.0, O2); ripple(t, 8.45, 0, 0, 2, O, 100, 0.9, 2.4); pool(0, 0, 160, O, 0.6 * pulse(t, 8.45, 2)); }
+  else for (const sx of [-1, 1]) { shower(t, T.teeth, sx * 38, -3, otisZ(T.teeth) + 75, 22, 40 + sx, 120, 0.6, O2); ripple(t, T.teeth, sx * 38, -3, otisZ(T.teeth) + 75, OK, 18, 0.5, 1.4); }
+}
+
+/* ---------------- traction: ropes over a motor wheel to a counterweight */
+const TR_X = -22, CWX = 34, SCX = 6, SCR = 28, SCZ = 330, CWH = 50;
+const trCar = (t) => 80 + 9 * (t - CUT.TR), trCw = (t) => 220 - trCar(t);
+function traction(t) {
+  floorGrid(0.6);
+  const zc = trCar(t), zw = trCw(t), ang = -(zc / SCR);
+  const wheelHi = window01(t, T.loop - 0.1, T.counterweight, 0.15), cwHi = window01(t, T.counterweight - 0.1, T.difference + 0.6, 0.15);
+  for (const x of [TR_X - 36, TR_X + 36]) vline(x, 0, 0, SCZ + 20, rgba(STEELC, 1.1, 0.6), 0.8);
+  for (const x of [CWX - 11, CWX + 11]) vline(x, 6, 0, SCZ + 20, rgba(STEELC, 1.1, 0.5), 0.7);
+  wbox(SCX, 0, -6, 160, 70, 6, GR, { ea: 0.5, fill: [20, 18, 16] });
+  wbox(SCX, 0, SCZ + 32, 130, 30, 6, GR, { ea: 0.7, fill: [22, 20, 18] });
+  wbox(SCX, 26, SCZ - 22, 34, 18, 44, O2, { lw: 1.1, glow: 0.2 + wheelHi * 0.6, fill: mixc(INK, O, 0.06), front: (F, w, h) => ftext(F, w / 2, h / 2, 'motor', 5, rgba(O2, 1.3), 'Mono', 800) });
+  pline(ringPts(SCX, 0, SCZ, SCR), rgba(O2, 1.2 + wheelHi * 0.3), 1.6 + wheelHi, { glow: rgba(O2, 1, 0.3 + wheelHi * 0.6) });
+  pline(ringPts(SCX, 0, SCZ, SCR - 3), rgba(O2, 1, 0.6), 0.7);
+  for (let k = 0; k < 6; k++) { const a = ang + k * Math.PI / 3; seg([SCX, 0, SCZ], [SCX + Math.cos(a) * (SCR - 3), 0, SCZ + Math.sin(a) * (SCR - 3)], rgba(O2, 1, 0.6), 0.7); }
+  [-6, -2, 2, 6].forEach((y, i) => {
+    const lit = window01(t, T.several + i * 0.12, T.loop + 0.4, 0.1) * 0.9 + wheelHi * 0.4, col = rgba(mixc(STEELC, O2, lit), 1.1 + lit * 0.4, 0.9), gl = lit > 0.05 ? rgba(O2, 1, lit * 0.7) : null;
+    vline(TR_X, y, zc + CH, SCZ, col, 1.1, { glow: gl });
+    pline(ringPts(SCX, y, SCZ, SCR + 0.5, 18, Math.PI, 0), col, 1.1, { glow: gl });
+    vline(CWX, y, zw + CWH, SCZ, col, 1.1, { glow: gl });
+  });
+  wbox(CWX, 0, zw, 18, 30, CWH, cwHi > 0.05 ? O : GR, { lw: 1.2, glow: 0.2 + cwHi * 0.7, fill: mixc(INK, O, 0.05 + cwHi * 0.12),
+    front: (F, w, h) => { for (let v = 6; v < h - 2; v += 6) fpath(F, [[2, v], [w - 2, v]], rgba(GR, 1.3, 0.6), 0.5); } });
+  carBox(t, zc, { x: TR_X, label: 'CAR', ind: '' });
+  for (const dx of [-10, 6]) figure(TR_X + dx, -4, zc + 3, mixc(W, O2, 0.2), 0.2, { op: 0.9 });
+  const dif = window01(t, T.lifts2 - 0.1, CUT.BR, 0.2);
+  if (dif > 0.02) { spark([SCX, -16, SCZ + 4], dif, 5, OK); for (let i = 0; i < 3; i++) { const ph = (t * 1.3 + i / 3) % 1; spark([TR_X, -16, lerp(zc + CH, SCZ - 30, ph)], dif * (1 - ph), 2.5, OK); } }
+}
+
+/* ---------------- the spring brake (front view, x-z plane) */
+const BZ = 120, BR_ = 26;
+const brPower = (t) => window01(t, T.electricity - 0.05, T.power + 0.3, 0.25);
+function brOpen(t) { return t < T.power + 0.25 ? ep(t, T.electricity, T.electricity + 0.35, ease.inOut) : 1 - ep(t, T.power + 0.25, T.power + 0.45, ease.in); }
+function brAng(t) {
+  const a0 = T.electricity + 0.2, a1 = T.power + 0.4;
+  if (t < a0) return 0;
+  if (t < a1) return 4 * (t - a0) * ep(t, a0, a0 + 0.4);
+  return 4 * (a1 - a0) + 4 * 0.25 * (1 - Math.exp(-(t - a1) * 4));
+}
+function brakeSet(t) {
+  const op = brOpen(t), gap = 5 * op, pw = brPower(t), ang = brAng(t);
+  const sprHi = window01(t, T.springs - 0.1, T.electricity, 0.2), clampHi = pulse(t, T.power + 0.45, 2);
+  pline(ringPts(0, 0, BZ, BR_), rgba(O2, 1.2), 1.6, { glow: rgba(O2, 1, 0.3) });
+  pline(ringPts(0, 0, BZ, BR_ - 4), rgba(O2, 1, 0.55), 0.7);
+  for (let k = 0; k < 6; k++) { const a = ang + k * Math.PI / 3; seg([0, 0, BZ], [Math.cos(a) * (BR_ - 4), 0, BZ + Math.sin(a) * (BR_ - 4)], rgba(O2, 1, 0.6), 0.8); }
+  wbox(0, 0, BZ - 52, 170, 30, 6, GR, { ea: 0.6, fill: [20, 18, 16] });
+  for (const sx of [-1, 1]) {
+    const px = sx * (BR_ + 9), shoeX = sx * (BR_ + 9 + gap), topX = sx * (BR_ + 9 + gap * 2);
+    const shoeCol = op < 0.5 ? mixc(OK, [255, 255, 255], clampHi * 0.3) : O2;
+    pline([[px, -2, BZ - 46], [shoeX, -2, BZ], [topX, -2, BZ + 46]], rgba(GR, 1.6), 2.2, { dz: -10 });
+    spark([px, -2, BZ - 46], 0.4, 2, GR);
+    const a0 = sx > 0 ? -0.75 : Math.PI - 0.75, a1 = sx > 0 ? 0.75 : Math.PI + 0.75;
+    pline(ringPts(sx * gap, -1, BZ, BR_ + 1.5, 14, a0, a1), rgba(shoeCol, 1.3), 3.2, { glow: rgba(shoeCol, 1, 0.5 + 0.4 * (1 - op)), dz: -12 });
+    const postX = sx * 92;
+    wbox(postX + sx * 3, 0, BZ + 20, 6, 14, 40, GR, { ea: 0.7 });
+    const sc = rgba(mixc(O2, OK, sprHi), 1.3 + sprHi * 0.3);
+    pline(zig(topX, postX, -2, BZ + 40, 6, 5 - gap * 0.3), sc, 1.6 + sprHi, { glow: rgba(sprHi > 0.1 ? OK : O2, 1, 0.3 + sprHi * 0.6), dz: -14 });
+    seg([sx * 15, -2, BZ + 62], [topX, -2, BZ + 46], rgba(mixc(GR, IC, pw), 1.4), 1.6, { glow: pw > 0.1 ? rgba(IC, 1, pw * 0.6) : null, dz: -10 });
+    if (op > 0.5 && t > T.electricity && t < T.power + 0.3) for (let i = 0; i < 3; i++) { const ph = (t * 4 + i / 3 + (sx > 0 ? 0.5 : 0)) % 1; spark([shoeX + sx * 1, -3, BZ + lerp(-20, 20, ph)], 0.25, 1.2, O2); }
+  }
+  wbox(0, 0, BZ + 56, 30, 18, 18, pw > 0.1 ? IC : GR, { lw: 1.3, glow: pw * 0.9, fill: mixc(INK, IC, pw * 0.25), front: (F, w, h) => { for (let u = 5; u < w - 3; u += 3.5) fpath(F, [[u, 3], [u + 1.5, h - 3]], rgba(pw > 0.1 ? IC : GR, 1.3, 0.8), 0.6); } });
+  seg([0, 0, BZ + 74], [0, 0, BZ + 110], rgba(mixc(GR, IC, pw), 1.3), 1.4, { glow: pw > 0.1 ? rgba(IC, 1, pw) : null });
+  wbox(0, 0, BZ + 110, 34, 16, 16, pw > 0.1 ? IC : RED, { lw: 1.2, glow: 0.3 + pw * 0.6, front: (F, w, h) => ftext(F, w / 2, h / 2, pw > 0.1 ? '⚡ ON' : 'OFF', 5, rgba(pw > 0.1 ? IC : RED, 1.4), 'Mono', 800) });
+  if (pw > 0.1) for (let i = 0; i < 4; i++) { const ph = (t * 2.5 + i / 4) % 1; spark([0, 0, lerp(BZ + 110, BZ + 74, ph)], pw * 0.9, 2.2, IC); }
+  shower(t, T.power + 0.45, -(BR_ + 2), -2, BZ, 20, 11, 110, 0.6, O2);
+  shower(t, T.power + 0.45, BR_ + 2, -2, BZ, 20, 12, 110, 0.6, O2);
+  ripple(t, T.power + 0.45, 0, 0, BZ, OK, 50, 0.6, 2);
+}
+
+/* ---------------- the governor close-up (front view) */
+const GVZ = 200, GVR = 30;
+function gvSpeed(t) { if (t < T.spin) return 1; if (t < 52.3) return lerp(1, 2.8, ease.inOut(prog(t, T.spin, 52.3))); if (t < T.lock) return 2.8; return 2.8 * (1 - prog(t, T.lock, T.lock + 0.15)); }
+function gvPos(t) { let p = 0; for (let u = CUT.GV2; u < t; u += 1 / 30) p += gvSpeed(u) / 30; return p; }
+function govClose(t) {
+  const sp = gvSpeed(t), pos = gvPos(t), ang = -pos * 2.2, sw = clamp((sp - 1.2) / 1.4);
+  const trip = t > T.flip, grab = ep(t, T.lock, T.lock + 0.12), wHi = window01(t, T.weights - 0.1, T.flip, 0.15);
+  pline(ringPts(0, 0, GVZ, GVR), rgba(O2, 1.2), 1.8, { glow: rgba(O2, 1, 0.35) });
+  pline(ringPts(0, 0, GVZ, GVR - 3), rgba(O2, 1, 0.6), 0.8);
+  pline(ringPts(0, 0, GVZ, 4), rgba(O2, 1.3), 1.2);
+  for (const k of [0, 1]) {
+    const a = ang + k * Math.PI, rw = lerp(10, 22, sw), pv = [Math.cos(a + 1.1) * 7, -1, GVZ + Math.sin(a + 1.1) * 7];
+    const wp = [Math.cos(a) * rw, -1, GVZ + Math.sin(a) * rw], col = mixc(O2, O, sw);
+    pline([pv, wp], rgba(col, 1.3), 1.4 + wHi, { dz: -8 });
+    pline(ringPts(wp[0], -1.5, wp[2], 4.6, 14), rgba(col, 1.4), 1.4, { close: true, fill: rgba(mixc(INK, col, 0.4), 1, 0.95), glow: rgba(col, 1, 0.4 + wHi * 0.6 + sw * 0.3), dz: -9 });
+    const opp = [Math.cos(a + Math.PI) * 6, -1, GVZ + Math.sin(a + Math.PI) * 6];
+    pline(Array.from({ length: 7 }, (_, i) => { const p = lerp3(wp, opp, i / 6); return [p[0], p[1], p[2] + (i % 2 ? 1.5 : -1.5) * (i && i < 6 ? 1 : 0)]; }), rgba(GR, 1.5, 0.6), 0.6, { dz: -7 });
+  }
+  const lv = trip ? -0.9 : 0.35;
+  wbox(44, 0, GVZ + 14, 14, 10, 12, trip ? RED : GR, { lw: 1.2, glow: trip ? 0.7 : 0.1, front: (F, w, h) => ftext(F, w / 2, h / 2, trip ? 'OFF' : 'ON', 3.6, rgba(trip ? RED : OK, 1.4), 'Mono', 800) });
+  pline([[38, -2, GVZ + 22], [38 - Math.cos(lv) * 10, -2, GVZ + 22 + Math.sin(lv) * 10]], rgba(trip ? RED : O2, 1.3), 1.8, { glow: rgba(trip ? RED : O2, 1, 0.5) });
+  if (trip) seg([51, 0, GVZ + 26], [80, 0, GVZ + 60], rgba(RED, 1.2, 0.8), 1, { dash: [3, 2] });
+  const ticks = pos * GVR * 2.2;
+  for (const [i, x] of [-GVR, GVR].entries()) {
+    const sg = i ? -1 : 1, rc = rgba(mixc(STEELC, O, window01(t, T.thin - 0.1, T.spin, 0.2) * 0.8 + grab * 0.6), 1.2);
+    vline(x, 0, GVZ - 280, GVZ, rc, 1.2, { glow: grab > 0.1 ? rgba(O, 1, grab * 0.6) : null });
+    const off = ((sg * ticks) % 12 + 12) % 12;
+    for (let zz = GVZ - 280 + off; zz < GVZ; zz += 12) seg([x - 1.8, 0, zz], [x + 1.8, 0, zz], rgba(STEELC, 1.4, 0.75), 0.7);
+  }
+  pline(ringPts(0, 0, GVZ, GVR + 0.6, 18, 0, Math.PI), rgba(STEELC, 1.2), 1.2);
+  const jz = GVZ - 52;
+  for (const sd of [-1, 1]) wbox(-GVR + sd * (3 + 6 * (1 - grab)), 0, jz, 4, 10, 12, grab > 0.5 ? O : GR, { lw: 1.2, glow: 0.1 + grab, fill: mixc(INK, O, grab * 0.4) });
+  wbox(-GVR - 16, 0, jz - 4, 6, 10, 20, GR, { ea: 0.6 });
+  shower(t, T.lock, -GVR, 0, jz + 6, 26, 61, 120, 0.6, O2);
+  ripple(t, T.lock, -GVR, 0, jz + 6, O, 26, 0.5, 1.6);
+  shower(t, T.flip, 40, 0, GVZ + 22, 18, 62, 90, 0.5, RED);
+}
+
+/* ---------------- the Empire State Building in fog */
+const TIERS = [[150, 110, 0, 40], [120, 90, 40, 260], [96, 72, 300, 140], [72, 54, 440, 70], [46, 36, 510, 35], [16, 16, 545, 65]];
+const HIT = [-10, -36, 418], PLANE0 = [-620, -360, 436];
+const planeAt = (t) => lerp3(PLANE0, HIT, prog(t, 76.9, T.hit));
+function esb(t) {
+  floorGrid(0.7);
+  const hit = t > T.hit, burn = ep(t, T.hit, T.hit + 0.4);
+  TIERS.forEach(([w, d, z0, h], ti) => {
+    wbox(0, 0, z0, w, d, h, [170, 160, 150], { ea: 0.55, lw: 0.9, fill: [16, 15, 14],
+      front: (F, ww, hh) => {
+        for (let u = 6; u < ww - 4; u += 7) for (let v = 4; v < hh - 3; v += 9) {
+          const wz = z0 + v, near = hit && Math.abs(wz - HIT[2]) < 22 && Math.abs(u - ww / 2 + 10) < 30;
+          fquad(F, u, v, u + 3, v + 5, near ? rgba(O, 1.3, 0.6 + 0.4 * Math.sin(t * 20 + u)) : rnd(u * 13 + v, ti) > 0.55 ? `rgba(255,200,150,${0.16 + 0.1 * rnd(u, v)})` : 'rgba(255,255,255,0.04)');
+        }
+      },
+      side: (F, ww, hh) => { for (let u = 6; u < ww - 4; u += 7) for (let v = 4; v < hh - 3; v += 9) fquad(F, u, v, u + 3, v + 5, rnd(u * 7 + v, ti + 9) > 0.6 ? 'rgba(255,200,150,0.14)' : 'rgba(255,255,255,0.03)'); } });
+  });
+  seg([0, 0, 610], [0, 0, 690], rgba([200, 190, 180], 1, 0.7), 0.9);
+  spark([0, 0, 690], 0.5 + 0.5 * Math.sin(t * 6), 2.4, RED);
+  if (t < T.hit && t > 76.8) {
+    const p = planeAt(t), dir = [HIT[0] - PLANE0[0], HIT[1] - PLANE0[1]], L = Math.hypot(dir[0], dir[1]);
+    const fx_ = [dir[0] / L, dir[1] / L], sx_ = [-fx_[1], fx_[0]];
+    const at = (f, s, z = 0) => [p[0] + fx_[0] * f + sx_[0] * s, p[1] + fx_[1] * f + sx_[1] * s, p[2] + z];
+    const pc = rgba(O2, 1.3), gl = rgba(O2, 1, 0.7);
+    pline([at(16, 0), at(-22, 0, 1)], pc, 2.2, { glow: gl, layer: 2 });
+    pline([at(2, -24), at(4, 0), at(2, 24)], pc, 1.6, { glow: gl, layer: 2 });
+    for (const s of [-9, 9]) { pline([at(9, s), at(-1, s)], pc, 2.6, { glow: gl, layer: 2 }); spark(at(10, s), 0.5, 2, O2); }
+    pline([at(-20, -9), at(-20, 9)], pc, 1.2, { layer: 2 });
+  }
+  if (hit) {
+    pool(HIT[0], HIT[1] + 30, 200, O, 0.6 * burn);
+    for (let i = 0; i < 26; i++) { const ph = (t * 0.7 + rnd(i, 4)) % 1; spark([HIT[0] - 26 + rnd(i, 5) * 52, HIT[1] - 2, HIT[2] - 6 + ph * 60], (1 - ph) * burn * 0.8, 3 + rnd(i, 6) * 3, mixc(O, [255, 220, 120], rnd(i, 7))); }
+    spark(HIT, burn * (0.7 + 0.3 * Math.sin(t * 17)), 10, O);
+  }
+  shower(t, T.hit, HIT[0], HIT[1], HIT[2], 70, 21, 230, 1.2, O);
+  ripple(t, T.hit, HIT[0], HIT[1], HIT[2], O, 120, 0.9, 2);
+}
+function fog(t, a) {
+  if (a <= 0.01) return;
+  add(3, 1e6, () => {
+    g.save();
+    for (let i = 0; i < 7; i++) {
+      const y = 260 + i * 70 + Math.sin(t * 0.4 + i) * 14, x = ((t * (8 + i * 3) + i * 140) % 900) - 180;
+      const gr = g.createRadialGradient(x, y, 0, x, y, 260);
+      gr.addColorStop(0, `rgba(190,190,195,${0.13 * a})`); gr.addColorStop(1, 'rgba(190,190,195,0)');
+      g.save(); g.translate(x, y); g.scale(1.8, 0.45); g.translate(-x, -y); g.fillStyle = gr; g.fillRect(x - 300, y - 300, 600, 600); g.restore();
+    }
+    g.restore();
+  });
+}
+function engineBlock(t) {
+  if (t < CUT.E45) return;
+  const zTop = Z75 + 420, zStop = ZCUT + 6;
+  const q = ep(t, CUT.E45, T.cutE, ease.in), z = lerp(zTop, zStop, q), wob = Math.sin(t * 9) * 3 * (1 - q), hot = 0.6 + 0.4 * Math.sin(t * 14);
+  wbox(-4 + wob, 2, z, 30, 26, 22, O, { lw: 1.3, glow: 0.8 * hot, fill: mixc(INK, O, 0.18),
+    front: (F, w, h) => { for (let k = 0; k < 6; k++) fpath(F, [[4 + k * 4.4, 3], [4 + k * 4.4, h - 3]], rgba(O2, 1.2, 0.6), 0.5); ftext(F, w / 2, h / 2, 'DEBRIS', 4, rgba(W, 1.3), 'Mono', 800); } });
+  for (let i = 0; i < 10; i++) { const ph = (t * 1.3 + rnd(i, 2)) % 1; spark([-4 + rnd(i, 3) * 26 - 13, 2, z + 22 + ph * 40], (1 - ph) * 0.7, 2.5, O); }
+}
+
+/* ---------------- plan view: the safety gear moves to the far side */
+const PL = { out: 94.0, hit: T.away };
+function plan(t) {
+  const mv = ep(t, T.moved, T.side + 0.2, ease.inOut), safe = ep(t, PL.hit, T.harm);
+  wbox(-SX - 14, 0, 0, 18, 150, 12, RED, { lw: 1.3, glow: 0.5, fill: mixc(INK, RED, 0.15), top: (F, w, d) => { ftext(F, w / 2, d / 2, 'OUTER WALL', 3.8, rgba(RED, 1.3), 'Mono', 800); } });
+  pline([[-SX, -SY, 6], [SX, -SY, 6], [SX, SY, 6], [-SX, SY, 6]], rgba(GR, 1.4, 0.8), 1.2, { close: true });
+  wbox(0, 0, 0, CW, CD, 6, O, { lw: 1.3, glow: 0.4, fill: mixc(INK, O, 0.1), top: (F, w, d) => ftext(F, w / 2, d / 2, 'CAR', 5, rgba(O, 1.3), 'Mono', 800) });
+  for (const sx of [-1, 1]) wbox(sx * RX, 0, 0, 3, 8, 7, STEELC, { ea: 0.9 });
+  const gx = lerp(-SX + 10, SX - 10, mv), col = mixc(O2, OK, mv);
+  for (const dy of [-9, 9]) spark([gx, GY + dy, 8], 1, 3.2, col);
+  wbox(gx, GY, 0, 10, 26, 8, col, { lw: 1.3, glow: 0.6 + 0.6 * mv, fill: mixc(INK, col, 0.2), top: (F, w, d) => ftext(F, w / 2, d / 2, 'GEAR', 3.2, rgba(col, 1.4), 'Mono', 800) });
+  if (t > T.moved - 0.2 && t < T.side + 0.5) wireBox(-SX + 10, GY, 0, 10, 26, 8, O2, 0.6 * (1 - mv * 0.6), 2, [2, 2]);
+  const k = ep(t, PL.out, PL.hit, ease.in);
+  if (t > PL.out && t < PL.hit) { const p = [lerp(-SX - 140, -SX + 4, k), -6, 10]; spark(p, 1, 6, O); for (let s = 1; s < 5; s++) spark([p[0] - s * 10, p[1], p[2]], 0.4 * (1 - s / 5), 3, O); }
+  shower(t, PL.hit, -SX + 4, -6, 10, 40, 77, 150, 0.8, O);
+  ripple(t, PL.hit, -SX + 4, -6, 6, O, 50, 0.7, 2);
+  ripple(t, T.harm, gx, GY, 6, OK, 40, 0.8, 2);
+  pool(gx, GY, 70, OK, 0.4 * safe);
+}
+
+/* ---------------- status card */
+const setH = (id, h) => { const e = $(id); if (e._h !== h) { e._h = h; e.innerHTML = h; } };
+const typed = (s, t, a, cps = 26) => s.slice(0, Math.floor(clamp((t - a) * cps, 0, s.length)));
+const bar = (v, lim = 99, col = '#7CF29A') => '<span class="bar">' + Array.from({ length: 10 }, (_, i) => `<i style="background:${i < v ? (i >= lim ? '#FF4632' : col) : '#2a2622'}${i === lim ? ';box-shadow:-2px 0 0 #FFB070' : ''}"></i>`).join('') + '</span>';
+function card(t) {
+  const sc = sceneOf(t);
+  const ein = ep(t, 0, 0.3) * (1 - window01(t, CUT.END - 0.25, REF_END + 1, 0.25));
+  $('ed').style.opacity = ein; $('ed').style.display = ein > 0.01 ? '' : 'none';
+  let fn = '', st = '● LIVE', stc = '';
+  const L = [['', ''], ['', ''], ['', ''], ['', '']], cls = ['', '', '', ''];
+  const set = (i, a, b, c = '') => { L[i] = [a, b]; cls[i] = c; };
+  if (sc === 'H') {
+    fn = '<b>car</b>/status';
+    set(0, '<span class="k">hoist ropes</span>', t > T.snap ? '<span class="rc">✕ snapped</span>' : '<span class="okc">✓ holding</span>', t > T.snap ? 'bad' : '');
+    if (t > T.snap) set(1, '<span class="k">car</span>', t > T.rails ? '<span class="okc">✓ held</span>' : '<span class="oc">↓ slipping</span>', t > T.rails ? 'good' : 'bad');
+    if (t > T.not - 0.1) set(2, '<span class="k">what stops it</span>', t > T.rails - 0.1 ? '<span class="okc">the rails ✓</span>' : '<span class="rc">✕ not the ropes</span>', t > T.rails - 0.1 ? 'good' : '');
+    st = t > T.rails ? '● HELD' : t > T.snap ? '● FALLING' : '● LIVE'; stc = t > T.rails ? 'g' : t > T.snap ? 'r' : '';
+  } else if (sc === 'EA') {
+    fn = '<b>lift</b>/version-1';
+    set(0, '<span class="c">// a platform on one rope</span>', '');
+    set(1, '<span class="k">rope</span>', t > T.breaks1 ? '<span class="rc">✕ broke</span>' : '<span class="okc">✓ holding</span>', t > T.breaks1 ? 'bad' : '');
+    set(2, '<span class="k">backup</span>', '<span class="rc">— none</span>', t > T.nothing1 - 0.2 ? 'bad' : '');
+    st = t > T.breaks1 ? '● FELL' : '● 1800s'; stc = t > T.breaks1 ? 'r' : '';
+  } else if (sc === 'OT') {
+    fn = '<b>layer-1</b>/otis-1854';
+    const brk = t > T.breaks2, pw = otisPawl(t);
+    set(0, `<span class="c">// ${t < T.breaks2 ? typed('the rope\'s pull holds the catches in', t, T.ropesPull - 0.2, 40) : 'rope gone → spring wins'}</span>`, '');
+    set(1, '<span class="k">rope pull</span>', brk ? '<span class="rc">✕ gone</span>' : t > T.ropesPull - 0.1 ? '<span class="okc">✓ pulling up</span>' : '<span class="okc">✓ taut</span>', brk ? 'bad' : '');
+    set(2, '<span class="k">spring</span>', otisRelease(t) > 0.3 ? '<span class="s">→ snaps straight</span>' : t > T.spring - 0.1 ? '<span class="k">⌒ held bent</span>' : '', otisRelease(t) > 0.3 ? 'run' : '');
+    set(3, '<span class="k">catches</span>', pw > 0.95 ? '<span class="okc">▸◂ in the teeth</span>' : pw > 0.05 ? '<span class="s">→ moving out</span>' : t > T.catches - 0.1 ? '<span class="k">◂▸ tucked in</span>' : '', pw > 0.95 ? 'good' : '');
+    st = t > T.failsafe - 0.1 ? '● FAIL-SAFE' : brk && pw < 0.95 ? '● FALLING' : '● 1854'; stc = t > T.failsafe - 0.1 || pw > 0.95 ? 'g' : brk ? 'r' : '';
+  } else if (sc === 'TR') {
+    fn = '<b>layer-2</b>/ropes + counterweight';
+    const n = Math.min(4, Math.floor(clamp((t - T.several + 0.1) / 0.12, 0, 4)));
+    set(0, '<span class="k">steel ropes</span>', n ? `<span class="okc">${'✓ '.repeat(n).trim()}</span>` : '', n === 4 ? 'good' : '');
+    set(1, '<span class="k">car + riders</span>', bar(8, 99, '#FFB070'));
+    if (t > T.counterweight - 0.1) set(2, '<span class="k">counterweight</span>', bar(6, 99, '#9c948c'));
+    if (t > T.lifts2 - 0.1) set(3, '<span class="k">motor lifts</span>', '<span class="okc">the difference</span> ' + bar(2), 'good');
+    st = '● TRACTION';
+  } else if (sc === 'BR') {
+    fn = '<b>layer-3</b>/motor brake';
+    const pw = brPower(t) > 0.5, op = brOpen(t) > 0.5;
+    set(0, '<span class="k">springs</span>', t > T.springs - 0.1 ? '<span class="okc">→ squeeze it shut ←</span>' : '<span class="k">→ push in ←</span>', t > T.springs - 0.1 && t < T.electricity ? 'good' : '');
+    if (t > T.electricity - 0.1) set(1, '<span class="k">electricity</span>', pw ? '<span class="ic">⚡ holds it open</span>' : '<span class="rc">✕ power cut</span>', pw ? 'ice' : 'bad');
+    set(2, '<span class="k">brake</span>', op ? '<span class="s">○ open · car moves</span>' : t > T.power ? '<span class="okc">● clamped by itself</span>' : '<span class="okc">● clamped</span>', op ? 'run' : 'good');
+    st = t > T.power + 0.4 ? '● FAIL-SAFE' : pw ? '● POWERED' : '● CLAMPED'; stc = t > T.power + 0.4 ? 'g' : pw ? 'ice' : '';
+  } else if (sc === 'GV' || sc === 'GV2') {
+    fn = '<b>layer-4</b>/speed governor';
+    const v = sc === 'GV' ? Math.min(10, 6 + Math.floor((t - CUT.GV) * 3)) : Math.round(gvSpeed(t) / 2.8 * 9);
+    set(0, '<span class="k">car speed</span>', bar(Math.max(0, Math.min(10, v)), 6), v > 6 ? 'bad' : '');
+    if (sc === 'GV2' && t > T.weights - 0.1) set(1, '<span class="k">weights</span>', gvSpeed(t) > 1.6 ? '<span class="s">⟷ swung out</span>' : '<span class="k">tucked in</span>', gvSpeed(t) > 1.6 ? 'run' : '');
+    if (sc === 'GV2' && t > T.flip - 0.1) set(2, '<span class="k">switch</span>', '<span class="rc">✕ power cut</span>', 'bad');
+    if (sc === 'GV2' && t > T.still - 0.1) set(3, '<span class="k">governor rope</span>', t > T.lock ? '<span class="oc">🔒 locked</span>' : '<span class="s">still too fast</span>', t > T.lock ? 'run' : 'bad');
+    const hot = sc === 'GV' || gvSpeed(t) > 1.6;
+    st = t > T.lock ? '● ROPE LOCKED' : t > T.flip ? '● POWER CUT' : hot ? '● TOO FAST' : '● WATCHING'; stc = t > T.flip || hot ? 'r' : '';
+  } else if (sc === 'RL') {
+    fn = '<b>layer-4</b>/rope → wedges';
+    set(0, '<span class="k">governor rope</span>', '<span class="oc">🔒 stopped</span>', 'run');
+    if (t > T.carKeeps - 0.1) set(1, '<span class="k">car</span>', t > T.stop ? '<span class="okc">✓ stopped</span>' : '<span class="s">↓ still moving</span>', t > T.stop ? 'good' : 'bad');
+    if (t > T.lever - 0.1) set(2, '<span class="k">lever</span>', '<span class="s">↑ pulled up</span>', 'run');
+    if (t > T.wedges - 0.1) set(3, '<span class="k">wedges</span>', t > T.friction - 0.1 ? '<span class="okc">✓ friction on the rails</span>' : '<span class="s">↑ sliding up</span>', t > T.friction - 0.1 ? 'good' : 'run');
+    st = t > T.stop ? '● STOPPED' : '● BRAKING'; stc = t > T.stop ? 'g' : 'r';
+  } else if (sc === 'SF') {
+    fn = '<b>layer-5</b>/soft stops';
+    set(0, '<span class="k">fast-lift wedges</span>', '<span class="okc">grip gradually</span>', 'good');
+    if (t > T.slowed - 0.1) set(1, '<span class="k">riders</span>', '<span class="okc">slowed, not slammed</span>', 'good');
+    if (t > T.buffers - 0.1) set(2, '<span class="k">pit buffers</span>', t > T.catch ? '<span class="okc">✓ catch the rest</span>' : '<span class="s">waiting</span>', t > T.catch ? 'good' : '');
+    st = '● GRADUAL'; stc = 'g';
+  } else if (sc === 'WK') {
+    fn = '<b>weak-spot</b>';
+    set(0, '<span class="c">// every brake waits for one signal</span>', '');
+    set(1, '<span class="k">trigger</span>', '<span class="rc">⚠ the thin governor rope</span>', 'bad');
+    st = '● SINGLE TRIGGER'; stc = 'r';
+  } else if (sc === 'ES') {
+    fn = '<b>empire-state</b>/1945';
+    set(0, '<span class="c">// thick fog</span>', '');
+    if (t > T.bomber - 0.3) set(1, '<span class="k">B-25 bomber</span>', t > T.hit ? '<span class="rc">✕ hit the building</span>' : '<span class="s">→ inbound</span>', t > T.hit ? 'bad' : '');
+    st = t > T.hit ? '● IMPACT' : '● FOG'; stc = t > T.hit ? 'r' : 'ice';
+  } else if (sc === 'E45' || sc === 'PT') {
+    const z = sc === 'PT' ? REST : zE(t), fl = floorOf(z), falling = sc === 'E45' && t > FALL_T0;
+    fn = '<b>car-6</b>/1945';
+    set(0, `<span class="k">floor </span><span class="fl">${flName(fl)}</span>`, sc === 'PT' ? '<span class="rc">↓ fell 75 floors</span>' : falling ? '<span class="oc">↓ falling</span>' : slowE(t) ? '<span class="ic">◐ slipping</span>' : '<span class="okc">● holding</span>', falling || sc === 'PT' ? 'bad' : '');
+    set(1, '<span class="k">hoist ropes</span>', t > T.cutE ? '<span class="rc">✕ cut</span>' : '<span class="okc">✓ holding</span>', t > T.cutE ? 'bad' : '');
+    if (t > T.govRope - 0.1) set(2, '<span class="k">governor rope</span>', '<span class="rc">✕ cut</span>', 'bad');
+    if (t > T.wfine - 0.1) set(3, '<span class="k">wedges</span>', t > T.nothing2 - 0.1 ? '<span class="okc">✓ fine</span> <span class="k">·</span> <span class="rc">✕ never pulled</span>' : '<span class="okc">✓ fine</span>', t > T.nothing2 - 0.1 ? 'bad' : 'good');
+    if (sc === 'PT' && t > T.betty - 0.2) set(3, '<span class="k">Betty Lou Oliver</span>', t > T.survived - 0.1 ? '<span class="okc">✓ survived</span>' : '<span class="k">operator</span>', t > T.survived - 0.1 ? 'good' : '');
+    st = sc === 'PT' ? (t > T.survived ? '● SURVIVED' : '● IMPACT') : falling ? '● FALLING' : t > T.cutE ? '● ROPES CUT' : '● 75TH FLOOR'; stc = sc === 'PT' && t > T.survived ? 'g' : t > T.cutE ? 'r' : '';
+  } else if (sc === 'FX') {
+    fn = '<b>layer-6</b>/protect the trigger';
+    set(0, '<span class="k">safety gear</span>', t > T.moved ? '<span class="s">outer wall</span><span class="k"> ▸ </span><span class="okc">far side</span>' : '<span class="s">next to the outer wall</span>', t > T.side ? 'good' : '');
+    if (t > PL.hit - 0.1) set(1, '<span class="k">trigger</span>', '<span class="okc">✓ away from harm</span>', 'good');
+    st = '● AFTER 1945'; stc = 'g';
+  } else if (sc === 'CD' || sc === 'CD2') {
+    fn = '<b>layer-7</b>/newer codes';
+    if (t > T.shooting - 0.2) set(0, '<span class="k">car shooting upward</span>', t > T.upward + 0.25 ? '<span class="okc">✓ braked</span>' : '<span class="rc">↑ overspeed</span>', t > T.upward + 0.25 ? 'good' : 'bad');
+    if (sc === 'CD2' && t > T.movesD - 0.1) set(1, '<span class="k">moving, doors open</span>', t > T.doors + 0.05 ? '<span class="okc">✓ stopped</span>' : '<span class="rc">↓ creeping</span>', t > T.doors + 0.05 ? 'good' : 'bad');
+    if (t < T.shooting - 0.2) set(0, '<span class="c">// more failure cases, more brakes</span>', '');
+    st = '● CODE';
+  } else if (sc === 'NW') {
+    fn = '<b>layer-8</b>/electronic safety';
+    set(0, '<span class="k">governor rope</span>', t > T.drop ? '<span class="rc">✕ removed</span>' : '<span class="k">○</span>', t > T.drop ? 'bad' : '');
+    if (t > T.sensor - 0.1) set(1, '<span class="k">speed sensor</span>', t > 104.6 ? '<span class="rc">↓ too fast</span>' : '<span class="okc">● reading</span>', t > 104.6 ? 'bad' : 'good');
+    if (t > T.electronics - 0.1) set(2, '<span class="k">safety board</span>', t > T.fire - 0.1 ? '<span class="oc">⚡ fire</span>' : '<span class="s">deciding…</span>', 'run');
+    if (t > T.wedgesN - 0.1) set(3, '<span class="k">wedges</span>', '<span class="okc">✓ bite · no rope needed</span>', 'good');
+    st = t > T.wedgesN ? '● STOPPED' : '● ELECTRONIC'; stc = t > T.wedgesN ? 'g' : 'ice';
+  }
+  for (let i = 0; i < 4; i++) { setH(`l${i + 1}t`, L[i][0]); setH(`l${i + 1}r`, L[i][1]); $(`l${i + 1}`).className = 'ln' + (cls[i] ? ' ' + cls[i] : ''); }
+  $('l4').style.display = L[3][0] ? 'flex' : 'none';
+  $('l3').style.display = L[2][0] || L[3][0] ? 'flex' : 'none';
+  setH('edfn', fn); setH('edst', st);
+  $('edst').style.color = stc === 'r' ? '#FF4632' : stc === 'g' ? '#7CF29A' : stc === 'ice' ? '#9FD3FF' : '';
+  $('ed').style.borderColor = stc === 'r' ? 'rgba(255,70,50,0.5)' : stc === 'g' ? 'rgba(124,242,154,0.4)' : '';
+}
+
+/* ---------------- captions: one plain line, a few key words coloured */
+const HL = { rails: '#7CF29A', '1854': '#FF6A1F', catches: '#FFB070', pull: '#FF6A1F', bent: '#FFB070', teeth: '#7CF29A', 'fail-safe': '#7CF29A', steel: '#FFB070', counterweight: '#FF6A1F', difference: '#7CF29A',
+  springs: '#7CF29A', electricity: '#9FD3FF', cut: '#FF4632', clamps: '#7CF29A', fast: '#FF4632', governor: '#FF6A1F', weights: '#FFB070', switch: '#FF4632', lock: '#FF6A1F', lever: '#FFB070', wedges: '#7CF29A',
+  friction: '#FFB070', gradually: '#7CF29A', slammed: '#FF4632', buffers: '#FFB070', weak: '#FF4632', bomber: '#FF6A1F', fine: '#7CF29A', '75': '#FF6A1F', survived: '#7CF29A', far: '#7CF29A', side: '#7CF29A',
+  upward: '#FF4632', doors: '#FFB070', sensor: '#9FD3FF', electronics: '#9FD3FF', layers: '#FF6A1F', follow: '#FF6A1F' };
+const hlCol = (w) => HL[w] || null;
+const CHUNKS = [];
+(() => {
+  // the script's own spelling, timed by whisper (voice/warp.py)
+  const ws = CAPW.map(([s, a, b]) => ({ s, a, b }));
+  const WEAK = new Set(['a', 'an', 'the', 'are', 'on', 'in', 'it', 'and', 'at', 'is', 'of', 'to', 'for', 'with', 'by', 'its', 'has', 'that', 'so', 'but']);
+  let cur = [];
+  const flushC = () => {
+    if (!cur.length) return;
+    const carry = [];
+    while (carry.length < 2 && cur.length > 2 && !/[.,?:!]$/.test(cur[cur.length - 1].s) && WEAK.has(cur[cur.length - 1].s.toLowerCase())) carry.unshift(cur.pop());
+    CHUNKS.push(cur); cur = carry;
+  };
+  ws.forEach((w) => {
+    const prev = cur[cur.length - 1];
+    const len = cur.reduce((n, x) => n + x.s.length + 1, 0);
+    if (prev && (/[.?:!]$/.test(prev.s) || (/,$/.test(prev.s) && cur.length >= 3) || cur.length >= 4 || len + w.s.length > 24 || w.a - prev.b > 0.6)) flushC();
+    cur.push(w);
+  });
+  flushC();
+  for (let i = CHUNKS.length - 1; i > 0; i--) {
+    const c = CHUNKS[i], p = CHUNKS[i - 1], len = [...p, ...c].reduce((n, x) => n + x.s.length + 1, 0);
+    if (c.length <= 2 && p.length + c.length <= 5 && !/[.?!]$/.test(p[p.length - 1].s) && len <= 30) { p.push(...c); CHUNKS.splice(i, 1); }
+  }
+})();
+CHUNKS.forEach((c, ci) => {
+  const box = div($('cap'), 'box'); c.box = box;
+  c.els = c.map((w) => {
+    const s = document.createElement('span'); s.className = 'w';
+    s.textContent = w.s.replace(/[.,:;]+$/, '');
+    const col = hlCol(w.s.toLowerCase().replace(/[.,?:!]/g, ''));
+    if (col) s.style.color = col;
+    box.appendChild(s); return s;
+  });
+  c.t0 = c[0].a - 0.04; c.t1 = CHUNKS[ci + 1] ? Math.min(CHUNKS[ci + 1][0].a - 0.04, c[c.length - 1].b + 0.9) : DURATION;
+});
+function caps(t) {
+  for (const c of CHUNKS) {
+    const on = t >= c.t0 && t < c.t1;
+    c.box.style.display = on ? 'flex' : 'none';
+    if (!on) continue;
+    c.els.forEach((s, i) => { s.style.opacity = prog(t, c[i].a - 0.04, c[i].a + 0.06); });
+  }
+}
+
+/* ---------------- kinetic type */
+function slam(id, t, a, b) {
+  const e = $(id), on = t > a && t < b;
+  e.style.display = on ? 'block' : 'none';
+  if (!on) return;
+  const i = ease.outExpo(prog(t, a, a + 0.35)), o = ep(t, b - 0.25, b, ease.in);
+  e.style.opacity = Math.min(1, prog(t, a, a + 0.08)) * (1 - o);
+  e.style.transform = `scale(${lerp(1.6, 1, i) + 0.03 * o}) translateY(${o * -10}px)`;
+  e.style.filter = i < 0.98 ? `blur(${(1 - i) * 6}px)` : 'none';
+}
+function hookText(t) {
+  const e = $('hk'), a = 1 - ep(t, CUT.EA - 0.3, CUT.EA);
+  e.style.display = a > 0.01 ? 'block' : 'none'; if (a <= 0.01) return;
+  e.style.opacity = a;
+  const k = pulse(t, T.rails, 6);
+  e.querySelector('.a').style.transform = `scale(${1 + 0.1 * k})`;
+  e.querySelector('.b').style.opacity = ep(t, 0.15, 0.45);
+}
+function stamp(id, t, a, b, x, y, rot = -6) {
+  const e = $(id), on = t > a && t < b;
+  e.style.display = on ? 'block' : 'none'; if (!on) return;
+  const i = ease.back(prog(t, a, a + 0.25)), o = ep(t, b - 0.2, b);
+  e.style.left = x + 'px'; e.style.top = y + 'px';
+  e.style.opacity = Math.min(1, prog(t, a, a + 0.06)) * (1 - o);
+  e.style.transform = `translate(-50%,-50%) rotate(${rot}deg) scale(${lerp(2.2, 1, Math.min(1, i))})`;
+}
+function tagAt(id, t, wins, x, y) {
+  const e = $(id), w = wins.find(([a, b]) => t > a && t < b);
+  e.style.display = w ? 'block' : 'none'; if (!w) return;
+  e.style.left = x + 'px'; e.style.top = y + 'px'; e.style.opacity = Math.min(1, prog(t, w[0], w[0] + 0.15)) * (1 - ep(t, w[1] - 0.15, w[1])) * (0.75 + 0.25 * Math.sin(t * 8));
+}
+function chart(t) {
+  const p = popIn(t, T.fast - 0.1, T.buffers - 0.1), e = $('chart');
+  vis(e, p.a, `translateY(${p.y}px) scale(${p.s})`); e.style.display = p.a > 0.001 ? 'block' : 'none';
+  if (p.a <= 0.001) return;
+  const q = prog(t, T.fast + 0.2, T.slammed + 0.3);
+  for (const id of ['cvI', 'cvG']) { const el = $(id), L = el.getTotalLength(); el.style.strokeDasharray = L; el.style.strokeDashoffset = L * (1 - q); }
+  const gL = $('cvG'), pt = gL.getPointAtLength(gL.getTotalLength() * q);
+  $('cvD').setAttribute('cx', pt.x); $('cvD').setAttribute('cy', pt.y);
+}
+function layers(t) {
+  const p = popIn(t, CUT.END, CUT.FOL), e = $('lay');
+  vis(e, p.a, `translateY(${p.y}px) scale(${p.s})`); e.style.display = p.a > 0.001 ? 'block' : 'none';
+  if (p.a <= 0.001) return;
+  [...e.querySelectorAll('.r')].forEach((r, i) => { const k = prog(t, CUT.END + 0.15 + i * 0.15, CUT.END + 0.4 + i * 0.15); r.style.opacity = k; r.style.transform = `translateX(${(1 - ease.out(k)) * -14}px)`; });
+}
+const CUR = $('cursor');
+function cursorAt(x, y, a, press) { CUR.style.display = a > 0.01 ? 'block' : 'none'; CUR.style.opacity = a; CUR.style.left = x + 'px'; CUR.style.top = y + 'px'; CUR.style.transform = `scale(${1 - 0.18 * press})`; }
+const TAP_F = T.follow + 0.35;
+function profile(t) {
+  const p = popIn(t, CUT.FOL, REF_END + 1), pr = $('prof');
+  vis(pr, p.a, `translateY(${p.y}px) scale(${p.s})`); pr.style.display = p.a > 0.001 ? 'block' : 'none';
+  if (p.a <= 0.001) { cursorAt(0, 0, 0, 0); return; }
+  const fb = $('fb'), done = t > TAP_F + 0.08;
+  if (fb._d !== done) { fb._d = done; fb.textContent = done ? 'Following ✓' : 'Follow'; fb.style.background = done ? '#2a2521' : ''; fb.style.color = done ? '#F2EEE8' : ''; fb.style.fontSize = done ? '12.5px' : ''; }
+  fb.style.transform = `scale(${1 - 0.06 * window01(t, TAP_F, TAP_F + 0.16, 0.06)})`;
+  const tk = $('t0'), hi = ep(t, CUT.FOL + 0.2, CUT.FOL + 0.5);
+  tk.style.borderColor = `rgba(255,106,31,${hi})`; tk.style.boxShadow = `0 0 ${24 * hi}px rgba(255,106,31,${0.5 * hi})`;
+  const k2 = ep(t, T.follow - 0.1, TAP_F - 0.02, ease.inOut), fx_ = 44 + 452 - 16 - 52, fy = pr.offsetTop + 34;
+  cursorAt(lerp(460, fx_, k2), lerp(760, fy, k2), window01(t, CUT.FOL + 0.1, REF_END + 1, 0.15), window01(t, TAP_F, TAP_F + 0.16, 0.06));
+}
+
+/* ---------------- background */
+function bg(t) {
+  g.setTransform(2, 0, 0, 2, 0, 0);
+  g.fillStyle = '#0b0a09'; g.fillRect(0, 0, 540, 960);
+  g.save(); g.globalCompositeOperation = 'lighter';
+  const heat = 0.5 + 0.8 * pulse(t, T.hit, 1.5) + 0.8 * pulse(t, CUT.PT, 2);
+  const rg = g.createRadialGradient(270, 420, 0, 270, 420, 440); rg.addColorStop(0, `rgba(255,106,31,${0.07 * heat})`); rg.addColorStop(1, 'rgba(255,106,31,0)');
+  g.fillStyle = rg; g.fillRect(0, 0, 540, 960);
+  for (let i = 0; i < 50; i++) { const x = (rnd(i, 9) * 540 + t * (4 + rnd(i, 3) * 8)) % 540, y = (rnd(i, 8) * 960 - t * (3 + rnd(i, 2) * 6) + 9600) % 960; g.fillStyle = `rgba(255,200,160,${0.05 + rnd(i, 7) * 0.12})`; g.fillRect(x, y, 1.2, 1.2); }
+  g.restore();
+}
+function speedLines(t, v, dir = 1) {
+  if (v <= 0.02) return;
+  add(3, 1e6, () => {
+    g.save(); g.globalCompositeOperation = 'lighter'; g.lineCap = 'round';
+    for (let i = 0; i < 26; i++) {
+      const x = 40 + rnd(i, 31) * 460, L = 40 + rnd(i, 32) * 120 * v, y = ((rnd(i, 33) * 1300 - dir * t * (900 + rnd(i, 34) * 900) * v) % 1300 + 1300) % 1300 - 200;
+      g.strokeStyle = `rgba(255,${180 + rnd(i, 35) * 60 | 0},140,${(0.08 + 0.18 * rnd(i, 36)) * v})`; g.lineWidth = 0.8 + rnd(i, 37) * 1.4;
+      g.beginPath(); g.moveTo(x, y); g.lineTo(x, y + L); g.stroke();
+    }
+    g.restore();
+  });
+}
+
+/* ---------------- render */
+window.ready = () => { $('grain').style.background = `url(${grainURL(256, 0.06, 5)})`; };
+window.render = function (tr) {
+  const t = toRef(tr);
+  t_ = t;
+  const sc = sceneOf(t);
+  camAt(t, SHOTS, KICKS, SHAKES);
+  const fz = followZ(t);
+  if (fz) { cam.f = [cam.f[0], cam.f[1], cam.f[2] + fz]; camApply(); }
+  visRange();
+  bg(t);
+  g.setTransform(2, 0, 0, 2, 0, 0);
+  const used = new Set();
+  const L = (k, txt, wp, dx, dy, a, b, col = '#FF6A1F') => { used.add(k); callout(k, txt, wp, dx, dy, window01(t, a, b, 0.15), col); };
+
+  if (sc === 'H') {
+    const z = zH(t), held = t > T.rails, grab = ep(t, T.rails - 0.15, T.rails);
+    shaft(t, { topFloor: 8, passing: z + 26, railGlow: held ? rgba(OK, 1, 0.6 * pulse(t, T.rails, 1)) : null, railCol: held ? rgba(mixc(STEELC, OK, pulse(t, T.rails, 1)), 1.2) : null });
+    hoist(t, z, { n: 4, top: 8, cutZ: 220 + CH + 50, cutCarZ: 220, cutT: T.snap });
+    governor(t, z, { top: 8, pos: t < T.rails - 0.2 ? z : zH(T.rails - 0.2), grab, armLift: t > T.rails - 0.2 ? 6 * grab : 0, armOk: ep(t, T.rails, T.rails + 0.15) });
+    carBox(t, z, { wedge: grab, wedgeLit: ep(t, T.rails, T.rails + 0.15), ind: flName(floorOf(z)) });
+    shower(t, T.snap, 0, 0, 220 + CH + 50, 40, 3, 160, 0.6, O);
+    for (const sx of [-1, 1]) { shower(t, T.rails, sx * RX, 0, z + 6, 30, 50 + sx, 150, 0.7, O2); ripple(t, T.rails, sx * RX, 0, z + 6, OK, 24, 0.5, 1.6); }
+    speedLines(t, slowH(t) ? 0.15 : 0);
+    L('h1', 'ropes · <span style="color:#FF4632">snapped</span>', [0, 0, 220 + CH + 50], 30, -30, T.snap + 0.1, T.not, '#FF4632');
+    L('h2', 'the rails', [RX, 0, z + 30], 40, -30, T.rails - 0.1, CUT.EA, '#7CF29A');
+    L('h3', 'wedges grip them', [CW / 2 + 3, 0, z + 6], 30, 40, T.rails, CUT.EA, '#7CF29A');
+  } else if (sc === 'EA') {
+    otis(t, true);
+    L('ea1', 'one rope', [0, -3, 225], 34, -30, T.platform, T.breaks1 - 0.05, '#FFB070');
+    L('ea2', 'nothing else holds it', [0, 0, 160], 50, 20, T.breaks1 + 0.1, CUT.OT - 0.05, '#FF4632');
+    L('ea3', 'plain rails · nothing to grab', [-40, -2, 120], -24, 40, T.nothing1, CUT.OT - 0.05, '#77706A');
+  } else if (sc === 'OT') {
+    otis(t, false);
+    const zp = otisZ(t, false);
+    L('o1', 'Elisha Otis', [12, -6, zp + 40], 40, -40, T.otis - 0.05, T.ropesPull - 0.1, '#FFB070');
+    L('o2', 'the rope pulls up', [0, -3, zp + 100], 30, -40, T.ropesPull, T.spring - 0.1, '#FF6A1F');
+    L('o3', 'spring · held bent', [14, -3, zp + 83], 34, -40, T.spring, T.breaks2 - 0.1, '#FFB070');
+    L('o4', 'catch · tucked in', [-28, -3, zp + 73], -30, 44, T.catches - 0.05, T.breaks2 - 0.1, '#FFB070');
+    L('o5', 'spring snaps straight', [14, -3, zp + 75], 34, -40, T.spring2, T.catches2, '#FFB070');
+    L('o6', 'catch → teeth', [-38, -3, zp + 73], -20, 46, T.catches2, T.failure, '#7CF29A');
+    L('o7', 'teeth on the rails', [-40, -3, zp + 40], -14, -50, T.teeth, T.failure, '#7CF29A');
+  } else if (sc === 'TR') {
+    traction(t);
+    const zc = trCar(t), zw = trCw(t);
+    L('t1', 'several steel ropes', [TR_X, 6, zc + CH + 60], -40, -20, T.several, T.loop - 0.1, '#FFB070');
+    L('t2', 'grooved motor wheel', [SCX, 0, SCZ + SCR], 40, -30, T.loop, T.counterweight - 0.1, '#FF6A1F');
+    L('t3', 'counterweight', [CWX, -15, zw + CWH / 2], 30, 30, T.counterweight - 0.05, CUT.BR - 0.1, '#FF6A1F');
+    L('t4', 'car + riders', [TR_X, -CD / 2, zc + CH / 2], -40, 30, T.counterweight - 0.05, CUT.BR - 0.1, '#FFB070');
+    L('t5', 'motor lifts only the difference', [SCX, -16, SCZ + 4], -30, -46, T.lifts2, CUT.BR - 0.1, '#7CF29A');
+  } else if (sc === 'BR') {
+    brakeSet(t);
+    L('b1', 'springs push the shoes in', [-75, -2, BZ + 40], -10, -50, T.springs - 0.05, T.electricity - 0.05, '#7CF29A');
+    L('b2', 'brake drum (on the motor)', [BR_, 0, BZ - 10], 50, 40, T.brake, T.springs - 0.1, '#FFB070');
+    L('b3', 'electromagnet holds them open', [0, 0, BZ + 65], 40, -40, T.electricity, T.power - 0.05, '#9FD3FF');
+    L('b4', 'shoes clamp the drum', [-(BR_ + 4), -2, BZ - 10], -30, 50, T.power + 0.45, CUT.GV - 0.1, '#7CF29A');
+    L('b5', 'gap · drum turns', [BR_ + 5, -2, BZ + 20], 50, -10, T.open - 0.2, T.power, '#FFB070');
+  } else if (sc === 'GV') {
+    const z = zG1(t);
+    shaft(t, { topFloor: 8, passing: z + 26 });
+    hoist(t, z, { n: 4, top: 8 });
+    governor(t, z, { top: 8, pos: z, fly: 0.8, lit: 0.4 });
+    carBox(t, z, { ind: flName(floorOf(z)) });
+    speedLines(t, 0.7);
+    L('g0', 'too fast', [0, -CD / 2, z + CH], -40, -30, T.tooFast - 0.2, CUT.GV2, '#FF4632');
+  } else if (sc === 'GV2') {
+    govClose(t);
+    L('g1', 'governor wheel', [0, 0, GVZ + GVR], 40, -40, T.governor - 0.1, T.thin - 0.1, '#FF6A1F');
+    L('g2', 'thin rope loop', [GVR, 0, GVZ - 100], 30, 20, T.thin - 0.05, T.spin - 0.1, '#FFB070');
+    L('g3', '↓ tied to the car', [-GVR, 0, GVZ - 140], -30, 30, T.moves - 0.1, T.spin - 0.1, '#FFB070');
+    L('g4', 'weights swing out', [0, -1, GVZ + 20], -60, -60, T.weights - 0.05, T.flip - 0.1, '#FFB070');
+    L('g5', 'switch · cuts the power', [44, 0, GVZ + 26], 10, -60, T.flip, T.still - 0.1, '#FF4632');
+    L('g6', 'jaws lock the rope', [-GVR, 0, GVZ - 46], -30, 40, T.lock, CUT.RL - 0.05, '#FF6A1F');
+    popText(t, T.cuts, [44, 0, GVZ + 30], '⚡ POWER CUT', RED, 9, 0.9);
+  } else if (sc === 'RL') {
+    const z = zR(t), wed = ep(t, T.wedges, T.up);
+    shaft(t, { topFloor: 8 });
+    hoist(t, z, { n: 4, top: 8, col: rgba(STEELC, 1, 0.5) });
+    const lift = Math.min(9, (ZF_RL - z) * 0.12);
+    governor(t, z, { top: 8, pos: ZF_RL, grab: 1, lit: 0.6, armLift: lift, armHi: window01(t, T.lever - 0.1, T.wedges + 0.3, 0.15), armOk: ep(t, T.friction, T.stop) });
+    carBox(t, z, { wedge: wed, wedgeLit: ep(t, T.friction, T.stop), ind: flName(floorOf(z)) });
+    for (const sx of [-1, 1]) { grind(t, T.up, T.stop, sx * RX, 0, z, 70 + sx); shower(t, T.up, sx * RX, 0, zR(T.up) + 6, 24, 72 + sx, 140, 0.6, O2); }
+    L('r1', 'rope · stopped', [GX - GR_, GY, z + 120], 30, -30, T.ropeStops - 0.1, T.lever - 0.1, '#FF6A1F');
+    L('r2', 'car · still moving ↓', [0, -CD / 2, z + CH], -40, -30, T.carKeeps - 0.1, T.lever - 0.1, '#FFB070');
+    L('r3', 'lever pulled up', [CW / 2 + 6, GY, z + 44], 30, -36, T.lever - 0.05, T.wedges, '#FFB070');
+    L('r4', 'wedges slide up', [CW / 2 + 3, 0, z + 8], 30, 40, T.wedges, T.friction - 0.1, '#7CF29A');
+    L('r5', 'friction on the rails', [RX, 0, z + 10], 34, 40, T.friction, CUT.SF - 0.05, '#7CF29A');
+  } else if (sc === 'SF') {
+    const z = zS(t);
+    shaft(t, { topFloor: 5, machine: false, pitLabel: 'PIT · BUFFERS' });
+    hoist(t, z, { n: 4, top: 6, col: rgba(STEELC, 1, 0.5) });
+    const sq = clamp((26 - z) / 8), bx1 = -14, bx2 = 16, bh = 18 - 6 * sq, bHi = window01(t, T.buffers - 0.1, CUT.WK, 0.2);
+    wbox(bx1, 0, 0, 10, 10, 12, O2, { lw: 1.1, glow: 0.2 + 0.5 * bHi, front: (F, w, h) => ftext(F, w / 2, h / 2, 'OIL', 3, rgba(O2, 1.3), 'Mono', 800) });
+    seg([bx1, 0, 12], [bx1, 0, 6 + bh], rgba(STEELC, 1.3), 2.2);
+    wbox(bx1, 0, 6 + bh, 12, 12, 2, STEELC, { ea: 0.9 });
+    pline(Array.from({ length: 25 }, (_, k) => { const u = k / 24, th = u * 5 * Math.PI * 2; return [bx2 + Math.cos(th) * 5, Math.sin(th) * 4, u * (6 + bh)]; }), rgba(O2, 1.2), 1.2, { glow: rgba(O2, 1, 0.3 + 0.5 * bHi) });
+    carBox(t, z, { wedge: 1, wedgeLit: 1, ind: flName(floorOf(z)) });
+    for (const sx of [-1, 1]) grind(t, CUT.SF, T.catch, sx * RX, 0, z, 80 + sx);
+    ripple(t, T.catch, 0, 0, 2, O2, 50, 0.6, 1.8);
+    L('s1', 'buffers', [bx1, -6, 14], -40, 30, T.buffers - 0.05, CUT.WK - 0.05, '#FFB070');
+  } else if (sc === 'WK') {
+    const z = 200;
+    shaft(t, { topFloor: 8 });
+    hoist(t, z, { n: 4, top: 8, col: rgba(STEELC, 1, 0.5) });
+    const lit = 0.5 + 0.5 * Math.sin(t * 7);
+    governor(t, z, { top: 8, pos: z + t * 6, lit: 0.6 + 0.4 * lit, litCol: RED, wheelGlow: rgba(RED, 1, 0.6) });
+    carBox(t, z, { ind: '' });
+    L('w1', 'the trigger for every wedge', [GX - GR_, GY, 300], -50, -30, T.weak - 0.1, CUT.ES - 0.05, '#FF4632');
+  } else if (sc === 'ES') {
+    esb(t);
+    fog(t, 1 - 0.4 * ep(t, T.hit, T.hit + 1));
+    if (t < T.hit) L('es1', 'B-25 bomber', planeAt(t), 30, -36, T.bomber - 0.3, T.hit, '#FFB070');
+    L('es2', 'impact', HIT, 50, -46, T.hit + 0.1, CUT.E45 - 0.1, '#FF6A1F');
+  } else if (sc === 'E45') {
+    const z = zE(t), falling = t > FALL_T0;
+    shaft(t, { topFloor: 80, passing: falling ? z + 26 : null, markFloor: 75, hotFloor: 77, hotT: T.cutE });
+    engineBlock(t);
+    hoist(t, z, { n: 6, top: 80, cutZ: ZCUT, cutCarZ: Z75, cutT: T.cutE });
+    governor(t, z, { top: 80, pos: t < T.govRope ? z : Z75, cutZ: ZCUT, cutT: T.govRope, cutCarZ: Z75 });
+    carBox(t, z, { betty: true, bettyLit: window01(t, 86.0, CUT.PT, 0.2), lit: 0.4 * pulse(t, T.cutE, 4), wedgeLit: window01(t, T.wfine, T.nothing2 + 0.2, 0.15), label: 'CAR 6', ind: flName(floorOf(z)), sway: falling ? Math.sin(t * 30) * 1.5 : 0 });
+    for (const x of [-10, -6, -2, 2, 6, 10]) shower(t, T.cutE + Math.abs(x) * 0.01, x, 0, ZCUT, 10, 80 + x, 150, 0.7, O);
+    for (const x of [GX - GR_, GX + GR_]) shower(t, T.govRope, x, GY, ZCUT, 24, 90 + x, 150, 0.8, RED);
+    ripple(t, T.govRope, GX - GR_, GY, ZCUT, RED, 30, 0.6, 1.8);
+    const top = 80 * FL + 54;
+    for (const s0 of [T.nothing2, T.them + 0.1]) {
+      const q = prog(t, s0, s0 + 0.5);
+      if (q > 0 && q < 1) { const zz = lerp(top, ZCUT + 8, ease.in(q)); spark([GX - GR_, GY, zz], 1, 3.6, O); for (let s = 1; s < 5; s++) spark([GX - GR_, GY, zz + s * 6], 0.35 * (1 - s / 5), 2, O); }
+      shower(t, s0 + 0.5, GX - GR_, GY, ZCUT + 8, 14, 99 + s0, 80, 0.5, RED);
+      popText(t, s0 + 0.5, [GX - GR_, GY, ZCUT + 8], '✕ no signal', RED, 8, 0.8);
+    }
+    speedLines(t, falling ? clamp(prog(t, FALL_T0, FALL_T0 + 0.8)) : 0);
+    L('e1', 'car 6 · 75th floor', [0, -CD / 2, Z75 + CH], 40, -36, CUT.E45 + 0.1, T.cutE, '#FFB070');
+    L('e2', 'ropes cut', [-10, 0, ZCUT], -36, -26, T.cutE + 0.05, T.govRope - 0.1, '#FF4632');
+    L('e3', 'governor rope · cut', [GX - GR_, GY, ZCUT], 36, -30, T.govRope, T.wfine - 0.15, '#FF4632');
+    L('e4', 'wedges · <span style="color:#7CF29A">✓ fine</span>', [CW / 2 + 3, 0, z + 6], 28, 46, T.wfine, T.nothing2 - 0.1, '#7CF29A');
+    L('e5', 'nothing to pull them', [GX, GY, ZCUT + 40], 34, -30, T.nothing2, FALL_T0 - 0.15, '#FF4632');
+  } else if (sc === 'PT') {
+    shaft(t, { topFloor: 6, label: (k) => (k === 1 ? 'B' : String(k - 1)), machine: false });
+    coil(t, 1, REST - 1, 5, 17, O2, 1);
+    coil(t, 1, (REST - 1) * 0.9, 4, 11, [210, 190, 160], 0.8);
+    hoist(t, REST, { n: 6, top: 6, cutZ: REST + CH + 90, cutCarZ: REST, cutT: 0, sway: () => 0.6 });
+    carBox(t, REST, { betty: true, bettyLit: window01(t, T.betty - 0.1, CUT.FX, 0.2), lit: 0.6 * pulse(t, CUT.PT, 3), label: 'CAR 6', ind: 'B' });
+    shower(t, CUT.PT, 0, 0, 4, 80, 5, 220, 1.0, O2); ripple(t, CUT.PT, 0, 0, 2, O, 110, 0.9, 2.4);
+    for (let i = 0; i < 40; i++) { const x = (rnd(i, 51) - 0.5) * (SX * 2 - 8), y = (rnd(i, 52) - 0.5) * (SY * 2 - 8), zz = rnd(i, 53) * 14 + Math.sin(t * 6 + i) * 2; spark([x, y, zz], 0.35 * window01(t, CUT.PT + 0.2, CUT.FX, 0.3), 1.4, IC); }
+    L('p1', 'cut cables · coiled like a spring', [17, 0, 8], 40, 30, CUT.PT + 0.3, CUT.FX - 0.05, '#FFB070');
+    L('p2', 'trapped air · a cushion', [-SX + 8, -SY, 8], -20, 50, CUT.PT + 0.5, CUT.FX - 0.05, '#9FD3FF');
+  } else if (sc === 'FX') {
+    plan(t);
+    const mv = ep(t, T.moved, T.side + 0.2, ease.inOut);
+    L('f1', 'safety gear + governor rope', [lerp(-SX + 10, SX - 10, mv), GY, 8], 20, 70, T.safetyGear - 0.1, PL.hit - 0.1, '#FFB070');
+    L('f2', 'far side · <span style="color:#7CF29A">✓ safe</span>', [SX - 10, GY, 8], -20, 74, PL.hit, CUT.CD - 0.1, '#7CF29A');
+    L('f3', 'outer wall · crash side', [-SX - 14, -60, 12], -14, -90, CUT.FX + 0.2, CUT.CD - 0.1, '#FF4632');
+  } else if (sc === 'CD') {
+    const z = zC(t), grip = ep(t, T.upward, T.upward + 0.25);
+    shaft(t, { topFloor: 8, passing: z + 26 });
+    hoist(t, z, { n: 4, top: 8, lit: () => grip * 0.8 });
+    governor(t, z, { top: 8, pos: z });
+    carBox(t, z, { ind: flName(floorOf(z)) });
+    const gz = 8 * FL + 6;
+    for (const sd of [-1, 1]) wbox(sd * (13 + 4 * (1 - grip)), 0, gz, 4, 14, 12, grip > 0.5 ? OK : GR, { lw: 1.2, glow: 0.2 + grip * 0.8, fill: mixc(INK, OK, grip * 0.3) });
+    shower(t, T.upward + 0.2, 0, 0, gz + 6, 30, 81, 140, 0.6, O2);
+    speedLines(t, t > T.shooting - 0.1 && t < T.upward + 0.3 ? 0.6 : 0, -1);
+    L('c1', 'car shooting upward', [0, -CD / 2, z + CH], -40, -30, T.shooting - 0.1, T.upward + 0.2, '#FF4632');
+    L('c2', 'brake grips the ropes', [12, 0, gz + 6], 34, -30, T.upward + 0.2, CUT.CD2 - 0.05, '#7CF29A');
+  } else if (sc === 'CD2') {
+    const z = zD(t), dr = ep(t, T.stopD - 0.3, T.movesD - 0.1, ease.inOut), stp = t > T.doors + 0.05;
+    shaft(t, { topFloor: 5, machine: false });
+    hoist(t, z, { n: 4, top: 6, col: rgba(STEELC, 1, 0.5) });
+    carBox(t, z, { doors: dr, wedge: ep(t, T.doors - 0.1, T.doors + 0.05), wedgeLit: stp ? 1 : 0, ind: '3' });
+    figure(0, -CD / 2 - 14, ZD, mixc(W, O2, 0.2), 0.3, { op: dr });
+    seg([-30, -CD / 2 - 2, ZD], [30, -CD / 2 - 2, ZD], rgba(O2, 1.2, 0.8), 1.2);
+    if (t > T.movesD && t < T.doors + 0.05) spark([0, -CD / 2 - 2, (z + ZD) / 2], 0.6, 3, RED);
+    for (const sx of [-1, 1]) shower(t, T.doors + 0.05, sx * RX, 0, z + 6, 20, 90 + sx, 120, 0.6, O2);
+    L('c3', 'doors open', [0, -CD / 2, z + 40], 50, -40, T.movesD - 0.2, T.openD + 0.5, '#FFB070');
+    L('c4', 'car creeps → stop', [CW / 2 + 3, 0, z + 6], 30, 40, T.movesD, CUT.NW - 0.05, '#7CF29A');
+  } else if (sc === 'NW') {
+    const z = zN(t), fade = 1 - ep(t, T.drop, T.completely + 0.3), bite = t > T.wedgesN;
+    shaft(t, { topFloor: 8, passing: z + 26 });
+    hoist(t, z, { n: 4, top: 8 });
+    if (fade > 0.02) governor(t, z, { top: 8, pos: z, op: fade, lit: 1 - fade, litCol: RED, dash: fade < 1 ? [3, 2] : null });
+    for (let zz = Math.max(0, Math.floor(ZLO / 10) * 10); zz < Math.min(8 * FL, ZHI); zz += 10) seg([-RX - 6, -10, zz], [-RX - 6, -10, zz + 5], rgba(IC, 1, 0.45), 1.2);
+    const sOn = ep(t, T.sensor - 0.1, T.sensor + 0.2);
+    wbox(-CW / 2 - 4, -10, z + 26, 6, 8, 10, IC, { lw: 1.2, glow: 0.2 + 0.7 * sOn, fill: mixc(INK, IC, 0.2 * sOn) });
+    if (sOn > 0.1) for (let i = 0; i < 3; i++) { const ph = (t * 3 + i / 3) % 1; spark([lerp(-CW / 2 - 4, -RX - 6, ph), -10, z + 31], sOn * (1 - ph), 2, IC); }
+    const bOn = ep(t, T.electronics - 0.1, T.electronics + 0.2);
+    wbox(0, 6, z + CH, 18, 12, 6, bOn > 0.1 ? O : GR, { lw: 1.2, glow: bOn * 0.8, fill: mixc(INK, O, bOn * 0.2), top: (F, w, d) => ftext(F, w / 2, d / 2, 'SAFETY', 2.6, rgba(O2, 1.3), 'Mono', 800) });
+    if (t > T.fire - 0.1 && t < T.wedgesN + 0.1) for (const sx of [-1, 1]) { const q = prog(t, T.fire - 0.1, T.wedgesN); spark([lerp(0, sx * (CW / 2 + 2), q), 6, lerp(z + CH, z + 10, q)], 1, 3, O); }
+    carBox(t, z, { wedge: ep(t, T.wedgesN - 0.1, T.wedgesN), wedgeLit: bite ? 1 : 0, ind: flName(floorOf(z)) });
+    for (const sx of [-1, 1]) { shower(t, T.wedgesN, sx * RX, 0, zN(T.wedgesN) + 6, 26, 95 + sx, 140, 0.7, O2); ripple(t, T.wedgesN, sx * RX, 0, zN(T.wedgesN) + 6, OK, 22, 0.5, 1.6); }
+    speedLines(t, t > 104.8 && t < T.wedgesN ? 0.5 : 0);
+    popText(t, T.noRope, [GX, GY, z + 120], '✂ no rope to cut', OK, 9, 1.0);
+    L('n1', 'governor rope · removed', [GX + GR_, GY, z + 140], 20, -30, T.drop, T.sensor - 0.2, '#FF4632');
+    L('n2', 'speed sensor reads the rail tape', [-CW / 2 - 4, -10, z + 31], -20, -50, T.sensor, T.electronics - 0.1, '#9FD3FF');
+    L('n3', 'safety board', [0, 6, z + CH + 6], 40, -40, T.electronics, T.wedgesN - 0.05, '#FF6A1F');
+    L('n4', 'actuators fire the wedges', [CW / 2 + 3, 0, z + 8], 30, 40, T.wedgesN, CUT.END - 0.1, '#7CF29A');
+  } else {
+    // END / FOL: dim backdrop
+    shaft(t, { topFloor: 6, machine: false });
+    hoist(t, 120, { n: 4, top: 6, col: rgba(STEELC, 1, 0.5) });
+    governor(t, 120, { top: 6, pos: 120 });
+    carBox(t, 120, { wedgeLit: 1, ind: '' });
+  }
+  flush();
+  g.setTransform(2, 0, 0, 2, 0, 0);
+  for (const k in LB) if (!used.has(k)) { LB[k].style.display = 'none'; if (LN[k]) LN[k].style.display = 'none'; }
+
+  /* DOM */
+  card(t); caps(tr); hookText(t); chart(t); layers(t);
+  slam('sl1854', t, T.y1854 - 0.05, 12.0);
+  slam('slFS', t, T.failsafe - 0.05, CUT.TR - 0.05);
+  slam('sl1945', t, T.y1945 - 0.05, 77.6);
+  slam('slNow', t, CUT.NW, 102.3);
+  stamp('stCaught', t, T.teeth, T.failure - 0.1, 270, 640);
+  stamp('stClamp', t, T.clamps - 0.05, CUT.GV - 0.05, 270, 640);
+  stamp('stSurv', t, T.survived - 0.05, CUT.FX - 0.05, 270, 640);
+  stamp('stStop', t, T.doors + 0.05, CUT.NW - 0.05, 270, 650);
+  tagAt('tgSlow', t, [[T.snap + 0.02, T.rails - 0.05], [T.breaks2 + 0.02, T.teeth - 0.05], [T.cutE + 0.1, FALL_T0 - 0.08]], 396, 312);
+  profile(t);
+  $('dim').style.opacity = sc === 'END' || sc === 'FOL' ? ep(t, CUT.END, CUT.END + 0.4) * 0.6 : 0;
+  $('tc').textContent = 'T+' + t.toFixed(2).padStart(6, '0') + 's';
+  let fl = 0, wf = 0;
+  for (const [t0, a] of [[T.snap, 0.18], [T.rails, 0.15], [CUT.EA, 0.15], [8.45, 0.2], [CUT.OT, 0.15], [T.teeth, 0.15], [CUT.TR, 0.12], [CUT.BR, 0.12], [T.clamps, 0.15], [CUT.GV, 0.12], [CUT.GV2, 0.12], [T.flip, 0.12], [T.lock, 0.15], [CUT.RL, 0.12], [T.up, 0.18], [CUT.SF, 0.12], [CUT.WK, 0.12], [CUT.ES, 0.12], [T.cutE, 0.2], [T.govRope, 0.12], [FALL_T0, 0.1], [CUT.FX, 0.12], [PL.hit, 0.12], [CUT.CD, 0.12], [T.upward + 0.25, 0.15], [CUT.CD2, 0.12], [CUT.NW, 0.12], [T.wedgesN, 0.18], [CUT.END, 0.1]]) { const dt = t - t0; if (dt > 0 && dt < 0.5) fl = Math.max(fl, a * Math.exp(-dt * 9)); }
+  for (const [t0, a] of [[T.hit, 0.85], [CUT.PT, 0.9], [CUT.E45, 0.25]]) { const dt = t - t0; if (dt > 0 && dt < 0.8) wf = Math.max(wf, a * Math.exp(-dt * 7)); }
+  $('flash').style.opacity = fl; $('wflash').style.opacity = wf;
+  if (t > TAP_F + 0.08 && t < TAP_F + 1.7) {
+    g.save(); g.globalCompositeOperation = 'lighter';
+    const dt = t - TAP_F - 0.08, cols = ['#FF6A1F', '#FFB070', '#F2EEE8', '#7CF29A'];
+    const fbx = 44 + 452 - 16 - 52, fby = $('prof').offsetTop + 34;
+    for (let i = 0; i < 70; i++) {
+      const th = rnd(i, 70) * Math.PI * 2, v = 160 + rnd(i, 71) * 260;
+      const x = fbx + Math.cos(th) * v * dt, y = fby + Math.sin(th) * v * dt * 0.8 + 260 * dt * dt;
+      g.fillStyle = cols[i % 4]; g.globalAlpha = Math.max(0, 1 - dt / 1.5);
+      g.save(); g.translate(x, y); g.rotate(dt * 8 + i); g.fillRect(-3, -1.5, 6, 3); g.restore();
+    }
+    g.restore(); g.globalAlpha = 1;
+  }
+  $('stage').style.opacity = 1 - ep(tr, DURATION - 0.35, DURATION) * 0.85;
+};
+</script>
+<script src="lib/play.js"></script>
+</body>
+</html>

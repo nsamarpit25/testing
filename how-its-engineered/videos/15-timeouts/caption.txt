@@ -1,0 +1,15 @@
+Your app asked a server for the weather, and nothing came back. How long should it wait? ⏳
+
+By default, it might wait forever. Python's requests won't time out unless you pass a timeout, and Go's default http client is the same.
+
+Waiting isn't free:
+🧵 The slow call holds a thread while the spinner spins
+📥 Every request stuck behind it holds another
+🔴 Run out of threads and your app stops answering everyone
+
+⏱️ A timeout is a deadline: the longest you'll wait before calling it a failure. timeout=3 means after 3 seconds you stop waiting.
+✅ Then handle it: show a clear error, or fall back to the forecast you saved earlier.
+
+Have you ever had a request hang forever with no error? Comment below 👇
+
+#coding #programming #softwareengineer #systemdesign #backend

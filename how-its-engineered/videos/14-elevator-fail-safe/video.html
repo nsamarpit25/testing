@@ -1,0 +1,686 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- 14 What stops a falling elevator (remake). World designed fresh by Codex: one orange-rimmed car hanging in a dark shaft.
+     Eras: hook (ropes snap, the safeties grab), 1854 Otis spring + catches, the modern governor loop → lever → wedges,
+     a doorstop comparison, the Empire State Building in 1945 (cut ropes, wedges never triggered), newer electronic trigger.
+     Times come from voice/words.json via voice/warp.js. Open with #play to watch live. -->
+<link rel="stylesheet" href="lib/fonts.css">
+<style>
+:root { --o: #FF852E; --o2: #FFB070; --w: #F2EEE8; --g: #77706A; --ok: #66E3A0; --st: #8FB0C4; --red: #FF4545; --ye: #FFD050; }
+html, body { margin: 0; background: #000; }
+#stage { position: relative; width: 540px; height: 960px; overflow: hidden; background: #080A0D; font-family: Inter, sans-serif; color: var(--w); }
+#world, .layer { position: absolute; inset: 0; }
+#cv { position: absolute; inset: 0; width: 540px; height: 960px; }
+#fx { position: absolute; inset: 0; overflow: visible; }
+#grain { position: absolute; inset: -40px; opacity: 0.55; mix-blend-mode: screen; pointer-events: none; }
+#vig { position: absolute; inset: 0; background: radial-gradient(110% 75% at 50% 45%, rgba(0,0,0,0) 50%, rgba(0,0,0,0.72) 100%); pointer-events: none; }
+#dim { position: absolute; inset: 0; background: #050608; opacity: 0; pointer-events: none; }
+#flash { position: absolute; inset: 0; opacity: 0; background: var(--o); mix-blend-mode: screen; pointer-events: none; }
+.co { position: absolute; font-family: Mono; font-size: 11px; font-weight: 700; white-space: nowrap; color: #e6dfd6; display: flex; align-items: center; gap: 6px; letter-spacing: 1.2px; }
+.co:before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: var(--o); }
+#chip { position: absolute; left: 50%; top: 132px; display: none; font: 800 14px/1 Mono; letter-spacing: 2.4px; padding: 10px 14px; border-radius: 9px; white-space: nowrap; color: #F2EEE8; background: rgba(10,11,13,0.92); border: 1px solid rgba(255,133,46,0.55); box-shadow: 0 10px 30px rgba(0,0,0,0.6); }
+#ctr { position: absolute; left: 0; right: 0; top: 118px; text-align: center; display: none; }
+#ctr .l { font: 800 12px/1 Mono; letter-spacing: 3px; color: #b9b0a6; }
+#ctr .n { font: 800 76px/1 Mono; color: #FF4545; letter-spacing: -2px; margin-top: 6px; text-shadow: 0 0 24px rgba(255,69,69,0.5); }
+#bcard { position: absolute; left: 0; right: 0; top: 330px; text-align: center; display: none; font: 400 50px/1.05 Instrument; color: #F6EBDD; }
+#bcard i { color: #FFD9B0; }
+#bcard .k { font: 800 11px/1 Mono; letter-spacing: 3px; color: #8d857c; margin-bottom: 14px; }
+#endc { position: absolute; left: 0; right: 0; top: 128px; display: none; text-align: center; }
+#endc .h { font: 800 18px/1 Inter; letter-spacing: -0.2px; }
+#fb { display: inline-block; margin-top: 12px; padding: 10px 22px; border-radius: 10px; background: var(--o); color: #0b0a09; font: 900 14px/1 Inter; }
+#cap { position: absolute; left: 24px; right: 24px; top: 742px; height: 40px; pointer-events: none; }
+#cap .box { display: none; position: absolute; inset: 0; justify-content: center; align-items: center; white-space: nowrap; font-weight: 800; font-size: 23px; line-height: 1; letter-spacing: -0.4px; }
+#cap .w { display: inline-block; margin: 0 4px; color: #fff; -webkit-text-stroke: 4px #080A0D; paint-order: stroke fill; text-shadow: 0 2px 10px rgba(0,0,0,0.8); }
+.slam { position: absolute; left: 0; right: 0; text-align: center; pointer-events: none; display: none; white-space: nowrap; }
+.slam .t { position: relative; display: inline-block; font: italic 400 104px/1 Instrument; letter-spacing: -2px; color: transparent; background: linear-gradient(180deg, #E6FFF1 0%, #9CF2C2 45%, #66E3A0 85%); -webkit-background-clip: text; background-clip: text; filter: drop-shadow(0 0 22px rgba(102,227,160,0.45)); }
+.slam .e { position: absolute; inset: 0; font: italic 400 104px/1 Instrument; letter-spacing: -2px; opacity: 0.6; }
+.slam .sub { font: 800 11px/1 Mono; letter-spacing: 3px; color: var(--g); margin-top: 6px; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="world">
+    <canvas id="cv" width="1080" height="1920"></canvas>
+    <svg id="fx" width="540" height="960" viewBox="0 0 540 960"></svg>
+    <div class="layer" id="lbls"></div>
+  </div>
+  <div id="vig"></div>
+  <div id="dim"></div>
+  <div class="layer" id="cards"></div>
+  <div class="layer" id="kin"></div>
+  <div id="chip"></div>
+  <div id="ctr"><div class="l">FLOORS FALLEN</div><div class="n" id="ctrn">00</div></div>
+  <div id="bcard"></div>
+  <div class="slam" id="slFS" style="top:150px"><div class="t">fail-safe</div><div class="sub">THE FAILURE FIRES THE BRAKE</div></div>
+  <div id="endc"><div class="h">@how.its.engineered</div><div id="fb">Follow</div></div>
+  <div id="cap"></div>
+  <div id="flash"></div>
+  <div id="grain"></div>
+</div>
+<script src="../../tools/lib.js"></script>
+<script src="voice/timings.js"></script>
+<script src="voice/warp.js"></script>
+<script src="lib/engine.js"></script>
+<script>
+// scenes are timed on the robotic take (voice/ref_words.json); WARP maps the current voice's clock onto it
+const CAPW = window.CAPW, WARP = window.WARP;
+const DURATION = CAPW[CAPW.length - 1][2] + 1.7;
+window.DURATION = DURATION;
+function toRef(t) {
+  if (t <= WARP[0][0]) return t;
+  for (let i = 1; i < WARP.length; i++) if (t <= WARP[i][0]) { const [n0, r0] = WARP[i - 1], [n1, r1] = WARP[i]; return r0 + (r1 - r0) * (t - n0) / (n1 - n0); }
+  const [n, r] = WARP[WARP.length - 1]; return r + (t - n);
+}
+const O = hex('#FF852E'), O2 = hex('#FFB070'), ST = hex('#526978'), STL = hex('#8FB0C4'), YE = hex('#FFD050'), RD = hex('#FF4545'), GN = hex('#66E3A0');
+const W = [242, 238, 232], INK = [13, 14, 17], WOOD = hex('#3A2616'), PANEL = [20, 24, 30];
+
+/* ---------------- beats (robot word times) */
+const T = {
+  ropes: 0.74, snap: 1.02, falling: 2.36, grabs: 3.38, rails: 3.90,
+  y1854: 4.64, otis: 6.38, automatic: 7.0, rope1: 8.24, spring: 8.90, bent: 9.08, catches: 10.22, back: 10.56,
+  broke: 11.68, straightened: 12.68, catches2: 13.98, teeth: 14.54, rails2: 15.12, failure: 15.88, fired: 16.62, brake: 17.16, failsafe: 18.04,
+  follow: 19.04, thin: 19.66, moves: 20.54, wheel: 22.10, governor: 22.80, fast: 24.08, weights: 25.06, outward: 25.46, lock: 25.98,
+  keeps: 27.24, stopped: 28.60, pulls: 29.08, lever: 29.54, wedges: 30.44, rails3: 31.72, doorstop: 33.08, door: 33.90, squeeze: 34.50, friction: 36.06, slows: 36.42,
+  cut: 37.64, rope2: 38.20, y1945: 38.88, bomber: 40.38, hit: 40.56, empire: 41.00, debris: 42.68, cut2: 43.04, car6: 43.54, lifting: 44.26, govrope: 45.62,
+  worked: 46.74, nothing: 47.44, triggered: 47.66, fell: 48.74, floors: 49.52, betty: 50.82, survived: 51.74,
+  newer: 52.64, remove: 53.28, sensor: 54.72, electronics: 55.32, trigger: 55.90, wedges2: 56.48, follow2: 57.70,
+};
+const DS = [32.0, 34.38]; // doorstop set
+
+/* ---------------- the car's height over time: piecewise-linear velocity per era */
+const ERAS = [
+  { a: 0, k: [[T.snap, 0], [T.grabs, -380], [3.95, 0]] },                          // 0 hook
+  { a: 4.6, k: [[T.broke, 0], [11.85, -40], [12.0, 0]] },                          // 1 1854
+  { a: 18.84, k: [[18.84, -22], [23.3, -22], [T.lock, -110], [26.5, -3], [34.38, -3], [34.38, -60], [36.9, 0]] }, // 2 modern (slow motion after the lock)
+  { a: 38.74, k: [[48.6, 0], [49.2, -520]] },                                       // 3 1945
+  { a: 52.64, k: [[52.64, -50], [T.wedges2, -50], [57.34, 0]] },                    // 4 electronic
+];
+function integ(keys, t) {
+  let z = 0;
+  for (let i = 0; i < keys.length; i++) {
+    const [t0, v0] = keys[i]; if (t <= t0) break;
+    const nx = keys[i + 1];
+    if (!nx) { z += v0 * (t - t0); break; }
+    const [t1, v1] = nx; if (t1 <= t0) continue;
+    const te = Math.min(t, t1), vt = v0 + (v1 - v0) * (te - t0) / (t1 - t0);
+    z += (v0 + vt) / 2 * (te - t0);
+    if (t < t1) break;
+  }
+  return z;
+}
+const eraOf = (t) => { let e = 0; ERAS.forEach((E, i) => { if (t >= E.a) e = i; }); return e; };
+const carZ = (t) => integ(ERAS[eraOf(t)].k, t);
+const carV = (t) => (carZ(t + 0.01) - carZ(t - 0.01)) / 0.02;
+
+// lever rise (clamp held by the stopped rope while the car keeps going down), wedge lift, squeeze, held
+function rel(t) {
+  const E = eraOf(t);
+  if (E === 0) return key1(t, [[2.6, 0], [3.3, 13]]);
+  if (E === 2) return t < 26.5 ? 0 : clamp(carZ(26.5) - carZ(t), 0, 13);
+  return 0;
+}
+const sinTh = (t) => Math.min(0.5, rel(t) / 26);
+function lift(t) { const E = eraOf(t); if (E === 4) return 6.9 * ep(t, T.trigger, T.wedges2, ease.inOut); return Math.min(6.9, 14 * sinTh(t)); }
+function squeeze(t) { const E = eraOf(t); return E === 0 ? ep(t, T.grabs, 3.6) : E === 2 ? ep(t, 34.4, 35.0) : E === 4 ? ep(t, 56.5, 56.8) : 0; }
+function held(t) { const E = eraOf(t); return (E === 0 && t > 3.95) || (E === 2 && t > 36.9) || (E === 4 && t > 57.34); }
+function govPos(t) { const E = eraOf(t); return E === 0 ? carZ(Math.min(t, 2.6)) : E === 2 ? carZ(Math.min(t, T.lock)) : E === 4 ? carZ(t) : 0; }
+
+/* ---------------- camera (trk: focus z rides with the car; at: frozen at the car's height at that time) */
+const SHOTS = [
+  // hook: roof and ropes, the snap, the fall, the grab
+  { t: 0, d: 0, f: [0, 0, 100], trk: 1, s: 5.0, a: -0.55, e: 0.26, sy: 560 },
+  { t: 0.05, d: 0.95, f: [0, 0, 112], trk: 1, s: 5.4 },
+  { t: 1.0, d: 0, f: [0, 0, 112], trk: 0 },
+  { t: 1.14, d: 0.6, f: [0, 0, 50], trk: 1, s: 3.4, a: -0.5, e: 0.2, sy: 470 },
+  { t: 2.0, d: 0, f: [10, 0, 40], trk: 1, s: 2.5, a: -0.4, e: 0.12, sy: 440 },
+  { t: 2.74, d: 0.55, f: [40, 0, 10], trk: 1, s: 5.2, a: -1.2, e: 0.14, sy: 420 },
+  { t: T.rails, d: 0.45, f: [12, 0, 42], trk: 1, s: 2.5, a: -0.55, e: 0.2, sy: 450 },
+  // 1854: same floor rim, the old hoist builds around it
+  { t: 4.6, d: 1.6, f: [0, 0, 70], trk: 1, s: 2.2, a: -0.6, e: 0.26, sy: 470 },
+  { t: 6.6, d: 0.9, f: [0, 0, 120], trk: 1, s: 3.0, a: -0.25, e: 0.09, sy: 440 },
+  { t: T.rope1, d: 0.8, f: [0, 0, 92], trk: 0, s: 6.0, a: -0.05, e: 0.03, sy: 420 },
+  { t: 9.1, d: 0.9, f: [0, 0, 91], trk: 0, s: 6.5 },
+  { t: 10.0, d: 1.5, f: [6, 0, 90], trk: 0, s: 6.4, a: -0.12 },
+  { t: 13.3, d: 0, f: [34, 0, 80], trk: 0, s: 12, a: -0.12, e: 0.14, sy: 420 },
+  { t: 15.74, d: 0, f: [0, 0, 60], trk: 0, s: 3.2, a: -0.6, e: 0.2, sy: 480 },
+  { t: 16.5, d: 1.1, f: [0, 0, 80], trk: 0, s: 2.1, a: -0.65, e: 0.22, sy: 520 },
+  // modern: the thin rope, the wheel, overspeed, the lock
+  { t: 18.84, d: 0, f: [50, -20, 66], trk: 1, s: 4.2, a: -0.6, e: 0.17, sy: 430 },
+  { t: 19.2, d: 1.6, f: [60, -20, 74], trk: 1, s: 4.0 },
+  { t: 20.8, d: 1.3, f: [68, -20, 376], trk: 0, s: 3.4, a: -0.15, e: 0.02, sy: 430 },
+  { t: 23.3, d: 0, f: [30, -10, 52], trk: 1, s: 2.8, a: -0.45, e: 0.06, sy: 480 },
+  { t: 25.0, d: 0, f: [68, -20, 372], trk: 0, s: 8.0, a: -0.1, e: 0.03, sy: 420 },
+  // the stopped rope pulls the lever: world-fixed, then ride with the car
+  { t: 26.64, d: 0, f: [44, -20, 66], trk: 1, at: 26.64, s: 5.4, a: -0.35, e: 0.05, sy: 430 },
+  { t: T.stopped, d: 0.35, f: [44, -20, 70], trk: 1, s: 5.8 },
+  { t: 29.8, d: 0, f: [47, 0, 7], trk: 1, s: 11, a: -1.45, e: 0.05, sy: 420 },
+  // doorstop set
+  { t: DS[0], d: 0, f: [1014, 0, 22], trk: 0, s: 4.5, a: -0.04, e: 0.12, sy: 420 },
+  { t: DS[1], d: 0, f: [47, 0, 7], trk: 1, s: 10, a: -1.4, e: 0.05, sy: 420 },
+  { t: 34.5, d: 1.4, f: [47, 0, 7], trk: 1, s: 11 },
+  { t: 35.9, d: 0.6, f: [15, 0, 45], trk: 1, s: 2.4, a: -0.55, e: 0.2, sy: 460 },
+  // cut that thin rope
+  { t: 37.56, d: 0, f: [56, -20, 140], trk: 1, s: 4.6, a: -0.3, e: 0.05, sy: 430 },
+  // 1945: the building, the cut ropes, the untriggered wedges, the fall
+  { t: 38.74, d: 0, f: [0, 0, 40], trk: 1, s: 3.6, a: -0.55, e: 0.14, sy: 450 },
+  { t: 38.8, d: 1.7, f: [0, 0, -250], trk: 0, s: 0.6, a: -0.55, e: 0.14, sy: 470 },
+  { t: 40.8, d: 1.8, f: [0, 0, -40], trk: 0, s: 1.05, a: -0.25, e: 0.06, sy: 450 },
+  { t: T.debris, d: 0, f: [0, 0, 110], trk: 1, s: 3.6, a: -0.55, e: 0.2, sy: 470 },
+  { t: 43.1, d: 1.4, f: [0, 0, 80], trk: 1, s: 3.8 },
+  { t: 44.6, d: 0, f: [56, -20, 120], trk: 1, s: 4.8, a: -0.3, e: 0.05, sy: 440 },
+  { t: 46.24, d: 0, f: [47, 0, 7], trk: 1, s: 10, a: -1.4, e: 0.05, sy: 420 },
+  { t: T.nothing, d: 0.45, f: [40, -10, 34], trk: 1, s: 5.0, a: -0.9, e: 0.08, sy: 440 },
+  { t: 48.6, d: 0, f: [0, 0, 40], trk: 1, s: 2.6, a: -0.4, e: 0.04, sy: 460 },
+  { t: 50.4, d: 2.0, f: [0, 0, 40], trk: 1, s: 1.9 },
+  // newer systems: clean car, sensor → electronics → wedges
+  { t: 52.64, d: 0, f: [15, -5, 45], trk: 1, s: 2.6, a: -0.62, e: 0.2, sy: 460 },
+  { t: 52.7, d: 2.1, f: [18, -5, 45], trk: 1, s: 2.8, a: -0.45 },
+  { t: 54.8, d: 0, f: [34, -20, 42], trk: 1, s: 5.6, a: -0.5, e: 0.1, sy: 430 },
+  { t: 56.2, d: 0.9, f: [15, 0, 45], trk: 1, s: 2.4, a: -0.55, e: 0.2, sy: 470 },
+  { t: T.follow2, d: 3.0, f: [10, 0, 50], trk: 1, s: 1.9, a: -0.62, e: 0.26, sy: 520 },
+];
+const KICKS = [[T.snap, 0.05], [T.grabs, 0.08], [T.broke, 0.05], [12.0, 0.06], [T.brake, 0.04], [T.failsafe, 0.05], [T.lock, 0.06], [T.pulls, 0.04], [30.8, 0.05], [T.squeeze, 0.04],
+  [T.cut, 0.06], [T.hit, 0.04], [T.cut2, 0.06], [T.govrope, 0.06], [T.fell, 0.07], [56.6, 0.06]];
+const SHAKES = [[T.snap, 4, 0.3], [T.grabs, 6, 0.45], [12.0, 4, 0.35], [T.lock, 3, 0.3], [30.8, 3, 0.3], [T.cut, 3, 0.3], [T.hit, 5, 0.5], [T.cut2, 4, 0.4], [T.fell, 5, 0.6], [56.6, 4, 0.4]];
+function camAt2(t) {
+  const eff = (k) => [k.f[0], k.f[1], k.f[2] + (k.trk ? carZ(k.at ?? t) : 0)];
+  let cur = { ...SHOTS[0], f: eff(SHOTS[0]) };
+  for (let i = 1; i < SHOTS.length; i++) {
+    const k = SHOTS[i];
+    if (t < k.t) break;
+    const p = k.d ? ease.inOut(prog(t, k.t, k.t + k.d)) : 1;
+    const tf = eff(k), tg = { ...cur, ...k };
+    cur = { f: [0, 1, 2].map((j) => lerp(cur.f[j], tf[j], p)), s: lerp(cur.s, tg.s, p), a: lerp(cur.a, tg.a, p), e: lerp(cur.e, tg.e, p), sy: lerp(cur.sy, tg.sy, p) };
+  }
+  let kick = 0;
+  for (const [t0, amp] of KICKS) { const dt = t - t0; if (dt > 0 && dt < 1.2) kick += amp * (dt < 0.05 ? dt / 0.05 : Math.exp(-(dt - 0.05) * 6)); }
+  let shx = 0, shy = 0;
+  for (const [t0, amp, dur] of SHAKES) { const dt = t - t0; if (dt > 0 && dt < dur) { const k = amp * (1 - dt / dur); shx += k * Math.sin(t * 91); shy += k * Math.cos(t * 67); } }
+  cam.f = cur.f; cam.s = cur.s * (1 + kick); cam.a = cur.a + 0.02 * Math.sin(t * 0.21); cam.e = cur.e; cam.sx = 270 + shx; cam.sy = cur.sy + shy;
+  camApply();
+}
+
+/* ---------------- drawing helpers */
+function wbox(x, y, z, w, d, h, edge, o = {}) {
+  box(x, y, z, w, d, h, o.fill || INK, { op: o.op, edge: rgba(edge, 1, o.ea ?? 0.9), lw: o.lw || 1, gl: o.glow ? [rgba(edge, 1, o.glow), 14] : null, front: o.front, side: o.side, top: o.top, dz: o.dz, layer: o.layer });
+}
+function seg(a, b, col, lw = 1, o = {}) {
+  add(o.layer ?? 1, D((a[0] + b[0]) / 2, (a[1] + b[1]) / 2, (a[2] + b[2]) / 2) + (o.dz || 0), () => {
+    g.save(); if (o.glow) glow(o.glow, o.blur || 6);
+    g.strokeStyle = col; g.lineWidth = lw * Math.max(0.6, Math.min(2.6, cam.s * 0.7)); g.lineCap = 'round';
+    g.beginPath(); g.moveTo(...P(...a)); g.lineTo(...P(...b)); g.stroke(); g.restore();
+  });
+}
+function pline(pts, col, lw = 1, o = {}) {
+  if (pts.length < 2) return;
+  const m = pts[Math.floor(pts.length / 2)];
+  add(o.layer ?? 1, (o.depth ?? D(...m)) + (o.dz || 0), () => {
+    g.save(); if (o.glow) glow(o.glow, o.blur || 6);
+    g.strokeStyle = col; g.lineWidth = lw * Math.max(0.6, Math.min(2.6, cam.s * 0.7)); g.lineCap = 'round'; g.lineJoin = 'round';
+    g.beginPath(); pts.forEach((p, i) => (i ? g.lineTo(...P(...p)) : g.moveTo(...P(...p)))); if (o.close) g.closePath();
+    if (o.fill) { g.fillStyle = o.fill; g.fill(); }
+    if (col) g.stroke(); g.restore();
+  });
+}
+function spark(p, a = 1, r = 3, col = O) {
+  if (a <= 0.01) return;
+  add(2, D(...p) - 6, () => { const c = P(...p), R = r * Math.max(1, cam.s * 0.6); g.save(); g.globalCompositeOperation = 'lighter'; const rg = g.createRadialGradient(c[0], c[1], 0, c[0], c[1], R * 4); rg.addColorStop(0, `rgba(255,236,210,${a})`); rg.addColorStop(0.3, rgba(col, 1, 0.6 * a)); rg.addColorStop(1, rgba(col, 1, 0)); g.fillStyle = rg; g.beginPath(); g.arc(c[0], c[1], R * 4, 0, Math.PI * 2); g.fill(); g.restore(); });
+}
+const circ = (c, r, n = 28, ph = 0) => Array.from({ length: n + 1 }, (_, i) => { const a = ph + (i / n) * Math.PI * 2; return [c[0] + Math.cos(a) * r, c[1], c[2] + Math.sin(a) * r]; });
+
+/* ---------------- shaft: rails, brackets, floor frames */
+function rails(zc, op, kind) {
+  if (op <= 0.01) return;
+  const z0 = zc - 380, h = 820;
+  for (const s of [-1, 1]) {
+    if (kind === 'steel') {
+      wbox(s * 35.5, 0, z0, 9, 3, h, STL, { fill: [26, 32, 38], op, ea: 0.55, lw: 0.8 });
+      wbox(s * 41.5, 0, z0, 3, 12, h, STL, { fill: [22, 27, 33], op, ea: 0.4, lw: 0.8 });
+    } else {
+      wbox(s * 43, 0, z0, 10, 14, h, O2, { fill: WOOD, op, ea: 0.35, lw: 0.8 });
+    }
+  }
+}
+function shaftMarks(zc, op, step, col = ST) {
+  if (op <= 0.01) return;
+  const k0 = Math.floor((zc - 360) / step), k1 = Math.ceil((zc + 400) / step);
+  for (let k = k0; k <= k1; k++) {
+    const z = k * step;
+    pline([[-58, -42, z], [58, -42, z], [58, 42, z], [-58, 42, z]], rgba(col, 1, 0.28 * op), 0.6, { close: true, layer: 0, depth: 1e5 });
+  }
+  const b0 = Math.floor((zc - 360) / 60), b1 = Math.ceil((zc + 400) / 60);
+  for (let k = b0; k <= b1; k++) for (const s of [-1, 1]) wbox(s * 46, 0, k * 60, 6, 16, 3, STL, { fill: [20, 24, 28], op: op * 0.8, ea: 0.35 });
+}
+
+/* ---------------- the car */
+function car(z0, o) {
+  wbox(0, 0, z0, 60, 60, 5, O, { fill: [34, 22, 14], glow: 0.55, lw: 1.6 });
+  for (const [x, y] of [[-28.5, -28.5], [28.5, -28.5], [-28.5, 28.5], [28.5, 28.5]]) {
+    const hero = x < 0 && y < 0;
+    wbox(x, y, z0 + 5, 3, 3, 75, O, { fill: hero ? [70, 40, 20] : INK, ea: hero ? 1 : 0.55, glow: hero ? 0.7 : 0, lw: hero ? 1.4 : 0.9 });
+  }
+  wbox(0, 0, z0 + 80, 68, 7, 5, O, { fill: [26, 20, 16], ea: 0.75 });
+  const pa = o.pan ?? 0;
+  if (pa > 0.01) {
+    const ed = { fill: PANEL, op: pa, ea: 0.35, lw: 0.7 };
+    wbox(0, 28.5, z0 + 5, 54, 2, 73, O, ed);
+    wbox(-28.5, 0, z0 + 5, 2, 54, 73, O, ed);
+    wbox(28.5, 0, z0 + 5, 2, 54, 73, O, { ...ed, dz: 2 });
+    wbox(0, 0, z0 + 78, 60, 60, 2, O, { ...ed, ea: 0.45 });
+  }
+}
+// safety housings on both rails; the right one can be shown as a cut-away section
+function housings(z0, t, op) {
+  if (op <= 0.01) return;
+  const L = lift(t), hd = held(t), slide = L >= 6.8 && !hd;
+  const col = hd ? GN : O, gl = slide ? 0.6 + 0.4 * Math.sin(t * 40) : hd ? 0.5 : 0;
+  for (const s of [-1, 1]) wbox(s * 40, 0, z0 - 4, 14, 14, 22, col, { fill: [24, 20, 18], op, ea: 0.9, glow: gl, lw: 1.2, dz: -3 });
+  // cross shaft under the floor
+  seg([40, -10, z0 - 2 + L * 0.3], [-40, -10, z0 - 2 + L * 0.3], rgba(O, 1, 0.5 * op), 0.8);
+}
+// rail + wedge + inclined backing ramp, drawn flat in a face frame F (u across the blade, v up)
+function section(F, sc, L, sq, op, hd, t) {
+  if (op <= 0.01) return;
+  add(2, -1e5, () => {
+    g.save(); g.globalAlpha = op;
+    const q = (u, v) => fpt(F, u * sc, v * sc);
+    const pg = (pts, fill, stroke, lw = 1.2, gl) => { if (gl) glow(gl, 10); poly(pts.map(([u, v]) => q(u, v)), fill, stroke, lw); noGlow(); };
+    pg([[-15, -7], [15, -7], [15, 25], [-15, 25]], 'rgba(8,10,13,0.94)', rgba(O, 1, 0.35), 1);
+    pg([[-1.5, -9], [1.5, -9], [1.5, 27], [-1.5, 27]], rgba([34, 42, 50]), rgba(STL, 1.1, 0.95), 1.2);
+    const rampU = (v) => 9.5 - 0.35 * (v + 2) + 0.7 * sq;
+    const c = 4 + L, ui = Math.max(1.5, rampU(c) - 3), contact = L >= 6.8;
+    for (const s of [-1, 1]) {
+      pg([[s * rampU(-2), -2], [s * rampU(16), 16], [s * (11.2 + 0.7 * sq), 16], [s * (11.2 + 0.7 * sq), -2]], rgba([40, 30, 24]), rgba(O, 1, 0.75), 1.1);
+      // springs behind the ramp
+      for (const vz of [2, 11]) {
+        const u0 = 11.2 + 0.7 * sq, u1 = 14, n = 6, pts = [];
+        for (let i = 0; i <= n; i++) pts.push([s * lerp(u0, u1, i / n), vz + (i % 2 ? 1.2 : -1.2) * (i && i < n ? 1 : 0)]);
+        g.beginPath(); pts.forEach(([u, v], i) => { const p = q(u, v); i ? g.lineTo(...p) : g.moveTo(...p); }); g.strokeStyle = rgba(O2, 1, 0.6); g.lineWidth = 1; g.stroke();
+      }
+      const wc = contact ? (hd ? GN : O2) : O;
+      pg([[s * ui, c - 5], [s * rampU(c - 5), c - 5], [s * rampU(c + 5), c + 5], [s * ui, c + 5]], rgba(contact ? (hd ? [30, 70, 50] : [120, 60, 20]) : [70, 40, 20]), rgba(wc, 1.1, 1), 1.4, contact ? rgba(wc, 1, 0.9) : null);
+      if (contact) {
+        const a = hd ? 0.9 : 0.6 + 0.4 * Math.sin(t * 40);
+        glow(rgba(hd ? GN : O, 1, 1), 12); g.strokeStyle = rgba(hd ? GN : [255, 200, 140], 1, a); g.lineWidth = 2.4;
+        g.beginPath(); g.moveTo(...q(s * 1.5, c - 5)); g.lineTo(...q(s * 1.5, c + 5)); g.stroke(); noGlow();
+      }
+    }
+    g.restore();
+  });
+}
+// governor loop: top sheave, bottom tension sheave, two runs; inner run clamps to the car's lever
+const GX = 68, GY = -20, GTOP = 380, GBOT = -700, GR = 12;
+function governor(t, z0, op, o = {}) {
+  if (op <= 0.01) return;
+  const sh = o.shift || 0, X = GX + sh, p = govPos(t);
+  const zc = cam.f[2], lo = Math.max(GBOT, zc - 420), hi = Math.min(GTOP, zc + 420);
+  const rc = rgba(O, 1.1, op), rw = 1.1;
+  const clampZ = z0 + 65 + 26 * sinTh(t);
+  // inner run (with an optional cut), return run
+  const cutZ = o.cutZ, cutT = o.cutT;
+  if (cutT != null && t > cutT) {
+    const k = ep(t, cutT, cutT + 0.6, ease.out);
+    seg([X - GR, GY, cutZ + 3 + 40 * k], [X - GR, GY, hi], rc, rw, { glow: rgba(O, 1, 0.5 * op) });
+    const top = Math.min(cutZ - 3, clampZ + 90 * (1 - 0.65 * k) * (o.fall ? 0.25 + 0.75 : 1));
+    const mid = [X - GR + 10 * k, GY - 4 * k, (clampZ + top) / 2];
+    pline([[X - GR, GY, clampZ], mid, [X - GR + 16 * k, GY - 6 * k, o.fall ? clampZ + 70 : top]], rc, rw);
+    seg([X - GR, GY, lo], [X - GR, GY, clampZ], rgba(O, 1, op * (o.fall ? 0 : 1)), rw);
+    spark([X - GR, GY, cutZ + 3 + 40 * k], 0.9 * (1 - k * 0.7), 3, RD); spark([X - GR, GY, cutZ - 3], 0.7 * (1 - k * 0.7), 2.5, RD);
+  } else seg([X - GR, GY, lo], [X - GR, GY, hi], rc, rw, { glow: rgba(O, 1, 0.5 * op) });
+  seg([X + GR, GY, lo], [X + GR, GY, hi], rgba(O, 0.9, op * 0.8), rw);
+  // moving marks show the rope travelling with the car (and stopping when gripped)
+  const step = 22;
+  for (const [x, dir] of [[X - GR, 1], [X + GR, -1]]) {
+    const off = ((dir * p) % step + step) % step;
+    for (let z = Math.floor(lo / step) * step; z < hi; z += step) {
+      const zz = z + off; if (zz < lo || zz > hi) continue;
+      if (cutT != null && t > cutT && x < X && zz > clampZ) continue;
+      seg([x - 1.6, GY, zz], [x + 1.6, GY, zz], rgba(O2, 1.1, op * 0.9), 0.9);
+    }
+  }
+  // sheaves
+  const phi = -p / GR;
+  for (const [cz, big] of [[GTOP, 1], [GBOT, 0]]) {
+    if (cz < zc - 470 || cz > zc + 470) continue;
+    pline(circ([X, GY, cz], GR), rgba(O, 1.1, op), 1.2, { glow: rgba(O, 1, 0.6 * op), close: true, fill: rgba([20, 16, 14], 1, op) });
+    for (let i = 0; i < 3; i++) { const a = phi + (i * Math.PI * 2) / 3; seg([X, GY - 0.5, cz], [X + Math.cos(a) * GR, GY - 0.5, cz + Math.sin(a) * GR], rgba(O2, 1, op * 0.7), 0.8); }
+    if (big) {
+      wbox(X, GY + 6, cz - 20, 40, 4, 40, ST, { fill: [16, 19, 23], op: op * 0.9, ea: 0.4, dz: 6 });
+      // flyweights swing out on overspeed
+      const sw = o.swing || 0, r = 5 + 4.5 * sw;
+      for (const s of [0, Math.PI]) {
+        const a = phi * 1 + s, px = X + Math.cos(a) * r, pz = cz + Math.sin(a) * r;
+        seg([X, GY - 2, cz], [px, GY - 2, pz], rgba(YE, 1, op * (0.5 + 0.5 * sw)), 0.9);
+        wbox(px, GY - 2, pz - 2, 4, 3, 4, sw > 0.2 ? YE : O2, { fill: [50, 40, 20], op, glow: sw * 0.8, dz: -4 });
+      }
+      // rope gripper beside the inner run
+      const cl = o.grip || 0;
+      for (const s of [-1, 1]) wbox(X - GR + s * (6.5 - 3.6 * cl), GY, cz - 34, 4, 6, 8, cl > 0.5 ? YE : ST, { fill: [26, 26, 24], op, ea: 0.9, glow: cl * 0.6 });
+    } else wbox(X, GY, cz - GR - 14, 14, 8, 10, ST, { fill: [18, 21, 25], op: op * 0.8, ea: 0.4 });
+  }
+}
+// lever on the car's right wall, pull rod down to the wedges; or (newer) an electric actuator
+function lever(t, z0, op, mode) {
+  if (op <= 0.01) return;
+  const st = sinTh(t), ct = Math.sqrt(1 - st * st), L = lift(t);
+  const pv = [30, GY, z0 + 65], end = [30 + 26 * ct, GY, z0 + 65 + 26 * st];
+  if (mode !== 'elec') {
+    const hot = st > 0.05;
+    pline([pv, end], rgba(hot ? O2 : O, 1.1, op), 2.2, { glow: hot ? rgba(O, 1, 0.8 * op) : null, dz: -6 });
+    spark(pv, 0.5 * op, 1.6, O);
+    wbox(56, GY, z0 + 62 + 26 * st, 5, 5, 6, hot ? YE : O, { fill: [40, 30, 18], op, ea: 1, glow: hot ? 0.6 : 0, dz: -8 });
+    const at = [30 + 14 * ct, GY, z0 + 65 + 14 * st], bot = [42, GY, z0 + 24 + L];
+    pline([at, bot], rgba(O, 1, op), 1.2, { dz: -6 });
+    pline([bot, [41, -9, z0 + 24 + L], [41, -3, z0 + 9 + L]], rgba(O, 1, op * 0.9), 1.1, { dz: -6 });
+  } else {
+    const on = ep(t, T.trigger, T.trigger + 0.2);
+    wbox(42, GY, z0 + 34, 7, 7, 13, on > 0.5 ? YE : O, { fill: [30, 26, 20], op, ea: 1, glow: on * 0.7, dz: -8 });
+    const bot = [42, GY, z0 + 24 + L];
+    pline([[42, GY, z0 + 34], bot], rgba(YE, 1, op), 1.6, { dz: -6 });
+    pline([bot, [41, -9, z0 + 24 + L], [41, -3, z0 + 9 + L]], rgba(O, 1, op * 0.9), 1.1, { dz: -6 });
+  }
+}
+// three lifting ropes; snapTime cuts them at height Zs
+function liftRopes(t, z0, op, snapT, Zs, falling) {
+  if (op <= 0.01) return;
+  const top = z0 + 700;
+  for (let i = 0; i < 3; i++) {
+    const x = (i - 1) * 7, a0 = [x, 0, z0 + 85];
+    if (snapT == null || t < snapT) { seg(a0, [x, 0, top], rgba(STL, 1.1, op), 1.1, { glow: rgba(STL, 1, 0.35 * op) }); continue; }
+    const k = ep(t, snapT, snapT + 0.6, ease.out), dt = t - snapT;
+    const zs = Zs + i * 4;
+    seg([x, 0, zs + 4 + 110 * k], [x, 0, zs + 900], rgba(STL, 1.1, op * (1 - 0.5 * k)), 1.1);
+    const sway = 7 * Math.sin(dt * 9 + i * 2) * Math.exp(-dt * 1.4);
+    const len = (zs - (carZ(snapT) + 85) - 2) * (falling ? 1 : 1 - 0.7 * k);
+    const curl = falling ? 0 : 14 * k * (i - 1 || 0.6);
+    pline([a0, [x + sway * 0.5 + curl * 0.5, -2, z0 + 85 + len * 0.5], [x + sway + curl, -4, z0 + 85 + Math.max(4, len)]], rgba(RD, 1, op * 0.95), 1.1, { glow: rgba(RD, 1, 0.5 * op) });
+    if (dt < 0.8) { spark([x, 0, zs], (1 - dt / 0.8) * op, 3, RD); spark([x, 0, zs + 4 + 110 * k], (1 - dt / 0.8) * op, 2.4, RD); }
+  }
+}
+
+/* ---------------- 1854: wooden guides with ratchet teeth, leaf spring, two catches */
+const SH0 = 77.6; // tooth shoulders sit at SH0 + 9k
+function otis(t, z0, op) {
+  if (op <= 0.01) return;
+  const zc = z0;
+  for (let k = Math.floor((zc - 140 - SH0) / 9); k <= Math.ceil((zc + 220 - SH0) / 9); k++) {
+    const s0 = SH0 + 9 * k;
+    for (const s of [-1, 1]) pline([[s * 38, -7.4, s0], [s * 33, -7.4, s0], [s * 38, -7.4, s0 - 7]], rgba(O2, 1, 0.7 * op), 0.7, { close: true, fill: rgba([70, 46, 26], 1, op), dz: -3 });
+  }
+  const bow = 12 * (1 - ep(t, T.broke, T.broke + 0.3, ease.out)), ext = 7 * (1 - bow / 12), E = 24 + ext;
+  const hot = window01(t, T.catches - 0.2, T.back + 0.5, 0.2) + window01(t, T.catches2 - 0.2, T.rails2 + 0.3, 0.2);
+  for (let i = 0; i < 4; i++) {
+    const Ei = E * (1 - 0.16 * i), pts = [];
+    for (let j = 0; j <= 20; j++) { const x = lerp(-Ei, Ei, j / 20); pts.push([x, -1, z0 + 88 - 1.3 * i + bow * (1 - (x / E) ** 2)]); }
+    pline(pts, rgba(i ? O : O2, 1.1, op), i ? 1.1 : 1.6, { glow: i ? null : rgba(O, 1, 0.7 * op), dz: -5 });
+  }
+  for (const s of [-1, 1]) {
+    wbox(s * (E + 1), 0, z0 + 84, 10, 5, 4, hot > 0.1 ? YE : O, { fill: [60, 36, 18], op, ea: 1, glow: 0.4 + 0.5 * hot, lw: 1.3, dz: -6 });
+    wbox(s * 22, 0, z0 + 85, 3, 6, 3, O, { op, ea: 0.6 });
+  }
+  // crosshead + hoist rope
+  const ch = 260 + 60 * (1 - op);
+  wbox(0, 0, ch, 104, 12, 8, O2, { fill: WOOD, op, ea: 0.6 });
+  pline(circ([0, -7, ch - 5], 6), rgba(O, 1, op), 1, { close: true });
+  const rc = rgba(STL, 1.15, op), top = z0 + 88 + bow;
+  if (t < T.broke) { seg([0, -1, top], [0, -1, ch - 5], rc, 1.2, { glow: rgba(STL, 1, 0.4 * op) }); seg([0, -7, ch + 1], [0, -7, ch + 400], rc, 1.2); }
+  else {
+    const k = ep(t, T.broke, T.broke + 0.5, ease.out), mid = (ch + 100) / 2;
+    seg([0, -7, ch + 1], [0, -7, ch + 400], rgba(STL, 1, op * 0.7), 1.2);
+    seg([0, -1, mid + 6 + 60 * k], [0, -1, ch - 5], rgba(RD, 1, op), 1.2);
+    pline([[0, -1, top], [10 * k, -2, top + (mid - top) * (1 - 0.7 * k) * 0.5], [22 * k, -3, top + 4 + (mid - top) * (1 - 0.85 * k)]], rgba(RD, 1, op), 1.2, { glow: rgba(RD, 1, 0.5 * op) });
+    const dt = t - T.broke; if (dt < 0.9) { spark([0, -1, mid], (1 - dt / 0.9) * op, 3.4, RD); }
+  }
+}
+
+/* ---------------- 1945: stepped tower around the shaft */
+const MASS = [[240, 180, -640, 300], [200, 150, -340, 220], [160, 120, -120, 150], [110, 85, 30, 80], [60, 50, 110, 40], [10, 10, 150, 70]];
+function building(t, op) {
+  if (op <= 0.01) return;
+  MASS.forEach(([w, d, z, h], i) => {
+    const k = ep(t, 39.3 + 0.18 * i, 39.9 + 0.18 * i, ease.out), a = op * k;
+    if (a <= 0.01) return;
+    const zz = z + 60 * (1 - k);
+    box(0, 0, zz, w, d, h, [22, 24, 30], { layer: 0, op: a, edge: rgba(O, 1, 0.7), lw: 0.9, gl: [rgba(O, 1, 0.35), 8], dz: 0,
+      front: (F, fw, fh) => {
+        for (let v = 20; v < fh; v += 20) fpath(F, [[4, v], [fw - 4, v]], rgba(O, 1, 0.08), 0.25);
+        if (w > 20) { fquad(F, fw / 2 - 24, 0, fw / 2 + 24, fh, 'rgba(4,5,7,0.95)'); fpath(F, [[fw / 2 - 24, 0], [fw / 2 - 24, fh]], rgba(O, 1, 0.5), 0.35); fpath(F, [[fw / 2 + 24, 0], [fw / 2 + 24, fh]], rgba(O, 1, 0.5), 0.35); }
+      } });
+  });
+  if (t > T.hit) {
+    const dt = t - T.hit, c = [-60, -61, -10];
+    ripple(t, T.hit, c[0], c[1], c[2], RD, 50, 0.9, 2);
+    spark(c, op * (0.5 + 0.5 * Math.exp(-dt * 3)), 4, RD);
+  }
+}
+function debris(t, z0, op) {
+  const dt = t - T.debris; if (dt < 0 || dt > 2.2) return;
+  for (let i = 0; i < 9; i++) {
+    const d0 = dt - rnd(i, 5) * 0.5; if (d0 < 0) continue;
+    const x = -40 + rnd(i, 6) * 80, y = -30 + rnd(i, 7) * 50, z = z0 + 420 - 180 * d0 - 220 * d0 * d0;
+    if (z < z0 + 82) continue;
+    const s = 3 + rnd(i, 8) * 4;
+    wbox(x, y, z, s, s, s * 0.7, RD, { fill: [40, 26, 22], op: op, ea: 0.8, glow: 0.4 });
+  }
+}
+
+/* ---------------- newer systems: speed sensor → electronics → actuator */
+function electronic(t, z0, op) {
+  if (op <= 0.01) return;
+  const sOn = ep(t, T.sensor, T.sensor + 0.3), cOn = ep(t, T.electronics, T.electronics + 0.2);
+  const sen = [37, -10, z0 + 50], ctl = [20, -34, z0 + 56], act = [42, GY, z0 + 47];
+  wbox(sen[0], sen[1], sen[2], 6, 5, 8, YE, { fill: [40, 34, 18], op: op * Math.max(0.3, sOn), ea: 1, glow: sOn * 0.6, dz: -6 });
+  if (sOn > 0.5) for (let i = 0; i < 3; i++) { const ph = (t * 2 + i / 3) % 1; seg([sen[0] - 3 - ph * 2.5, sen[1], sen[2] + 4 - 3 + i * 3], [sen[0] - 3 - ph * 2.5, sen[1] + 3, sen[2] + 4 - 3 + i * 3], rgba(YE, 1, (1 - ph) * op), 0.8); }
+  wbox(ctl[0], ctl[1], ctl[2], 12, 4, 14, cOn > 0.5 ? YE : O, { fill: [26, 22, 18], op: op * Math.max(0.35, sOn), ea: 1, glow: cOn * 0.7, dz: -6,
+    front: (F, w, h) => { for (let i = 0; i < 3; i++) fquad(F, 2, h - 3 - i * 3.5, 2 + (w - 4) * (i === 1 ? 0.6 : 0.85), h - 4.6 - i * 3.5, rgba(cOn > 0.5 ? YE : O, 1, 0.5 + 0.5 * cOn)); } });
+  const cable = [[sen[0], sen[1] - 2.5, sen[2] + 4], [30, -24, z0 + 54], [ctl[0] + 6, ctl[1] + 2, ctl[2] + 7], [34, -30, z0 + 60], [act[0], act[1], act[2]]];
+  pline(cable, rgba(O, 1, 0.5 * op * Math.max(0.3, sOn)), 0.8, { dz: -5 });
+  const dt = t - T.electronics;
+  if (dt > 0 && dt < 0.7) for (let i = 0; i < 3; i++) { const q = clamp(dt / 0.55 - i * 0.12); if (q > 0 && q < 1) orb(along(cable, q), YE, op, 2.2); }
+}
+
+/* ---------------- doorstop comparison */
+function doorstop(t) {
+  const X = 980;
+  wbox(X, 0, 0, 56, 34, 3, O2, { fill: [30, 24, 20], ea: 0.5 });
+  wbox(X - 4, 0, 6, 38, 5, 50, O, { fill: [22, 20, 20], ea: 0.8, front: (F, w, h) => { fquad(F, w - 8, h * 0.48, w - 4, h * 0.52, rgba(O2, 1, 0.9)); } });
+  const k = ep(t, T.doorstop - 0.25, T.door - 0.1, ease.inOut), tip = lerp(1030, 990.5, k);
+  const tri = (y) => [[tip, y, 3], [tip + 16, y, 3], [tip + 16, y, 8.7]];
+  const hot = k > 0.95;
+  pline(tri(-5), rgba(hot ? O2 : O, 1.1, 1), 1.1, { close: true, fill: rgba(hot ? [120, 60, 20] : [70, 40, 20]), dz: -10, glow: hot ? rgba(O, 1, 0.8) : null });
+  pline([[tip, -5, 3], [tip, 5, 3]], rgba(O, 1, 0.6), 0.8);
+  pline([[tip + 16, -5, 8.7], [tip + 16, 5, 8.7]], rgba(O, 1, 0.6), 0.8);
+  // arrow: sideways in
+  if (k < 0.98) seg([tip + 26, -6, 5], [tip + 20, -6, 5], rgba(O2, 1, 0.8), 1);
+  // same wedge, turned upright against a rail
+  const L = 6.9 * ep(t, T.doorstop - 0.25, T.door - 0.1, ease.inOut);
+  section({ o: [1050, -4, 6], u: [1, 0, 0], v: [0, 0, 1] }, 1.7, L, 0, 1, false, t);
+}
+
+/* ---------------- overlays */
+const CHIPS = [
+  [10.05, 11.4, '1854 · OTIS', O], [T.lock, 26.55, 'ROPE LOCKED', YE], [T.stopped, 29.8, 'LEVER ↑', O], [T.wedges, 31.9, 'WEDGE ↑', O],
+  [32.1, 34.14, 'SAME WEDGE PRINCIPLE', O2], [36.9, 37.45, 'HELD', GN], [T.y1945, 40.75, '1945', O], [T.empire, 42.6, 'EMPIRE STATE BUILDING', O],
+  [T.car6, 44.5, 'CAR 6', O], [T.govrope, 46.15, 'GOVERNOR ROPE CUT', RD], [T.nothing, 48.38, 'NOT TRIGGERED', RD], [57.1, 57.6, 'HELD', GN],
+];
+function chip(t) {
+  const e = $('chip'); let cur = null;
+  for (const c of CHIPS) if (t >= c[0] && t < c[1]) cur = c;
+  if (!cur) { e.style.display = 'none'; return; }
+  const p = popIn(t, cur[0], cur[1], 0.25);
+  if (e._k !== cur[2]) { e._k = cur[2]; e.textContent = cur[2]; e.style.borderColor = rgba(cur[3], 1, 0.7); e.style.color = rgba(cur[3], 1.15); e.style.boxShadow = `0 10px 30px rgba(0,0,0,0.6), 0 0 18px ${rgba(cur[3], 1, 0.25)}`; }
+  vis(e, p.a, `translate(-50%, ${p.y}px) scale(${p.s})`); e.style.display = p.a > 0.001 ? 'block' : 'none';
+}
+function gauge(t) {
+  const a = window01(t, 23.3, 25.7, 0.2); if (a <= 0.01) return;
+  const v = clamp(Math.abs(carV(t)) / 110), cx = 270, cy = 200, R = 50;
+  g.save(); g.globalAlpha = a; g.lineCap = 'round';
+  g.fillStyle = 'rgba(10,11,13,0.9)'; g.beginPath(); g.roundRect(cx - 76, cy - 72, 152, 94, 12); g.fill();
+  g.strokeStyle = rgba(O, 1, 0.4); g.lineWidth = 1; g.stroke();
+  g.lineWidth = 7; g.strokeStyle = 'rgba(255,255,255,0.12)'; g.beginPath(); g.arc(cx, cy, R, Math.PI, Math.PI * 1.7); g.stroke();
+  g.strokeStyle = rgba(YE, 1, 0.9); g.beginPath(); g.arc(cx, cy, R, Math.PI * 1.7, Math.PI * 2); g.stroke();
+  const an = Math.PI + Math.PI * v, col = v > 0.7 ? YE : O;
+  glow(rgba(col), 10); g.strokeStyle = rgba(col, 1.1); g.lineWidth = 3; g.beginPath(); g.moveTo(cx, cy); g.lineTo(cx + Math.cos(an) * (R - 8), cy + Math.sin(an) * (R - 8)); g.stroke(); noGlow();
+  g.fillStyle = rgba(col, 1.1); g.beginPath(); g.arc(cx, cy, 4, 0, Math.PI * 2); g.fill();
+  g.font = '800 11px Mono'; g.textAlign = 'center'; g.fillStyle = v > 0.7 ? rgba(YE, 1.1) : '#b9b0a6'; g.fillText(v > 0.7 ? 'TOO FAST' : 'SPEED', cx, cy + 14);
+  g.restore();
+}
+function counter(t) {
+  const e = $('ctr'), a = window01(t, T.fell, 50.75, 0.15);
+  e.style.display = a > 0.01 ? 'block' : 'none'; e.style.opacity = a;
+  const n = Math.round(75 * ep(t, T.fell, 50.7, ease.inOut));
+  $('ctrn').textContent = String(n).padStart(2, '0');
+}
+function bcard(t) {
+  const e = $('bcard'), a = window01(t, T.betty - 0.05, 52.55, 0.25);
+  e.style.display = a > 0.01 ? 'block' : 'none'; e.style.opacity = a;
+  const html = t < T.survived ? '<div class="k">OPERATOR</div>Betty Lou Oliver' : '<div class="k">OPERATOR</div>Betty Lou Oliver<br><i>survived.</i>';
+  if (e._h !== html) { e._h = html; e.innerHTML = html; }
+  e.style.transform = `translateY(${(1 - ep(t, T.betty - 0.05, T.betty + 0.4, ease.out)) * 10}px)`;
+}
+const TAP = 58.4;
+function endCard(t) {
+  const e = $('endc'), p = popIn(t, T.follow2 - 0.05, DURATION + 1, 0.3);
+  vis(e, p.a, `translateY(${p.y}px) scale(${p.s})`); e.style.display = p.a > 0.001 ? 'block' : 'none';
+  const fb = $('fb'), done = t > TAP;
+  if (fb._d !== done) { fb._d = done; fb.textContent = done ? 'Following ✓' : 'Follow'; fb.style.background = done ? '#2a2521' : ''; fb.style.color = done ? '#F2EEE8' : ''; }
+  fb.style.transform = `scale(${1 - 0.08 * window01(t, TAP - 0.08, TAP + 0.1, 0.06)})`;
+}
+
+/* ---------------- captions: one plain line, a few key words coloured; nothing before 10 s */
+const HL = { spring: '#FFB070', catches: '#FF852E', straightened: '#FF852E', teeth: '#FF852E', fired: '#FF852E', brake: '#FF852E', 'fail-safe': '#66E3A0',
+  thin: '#FF852E', governor: '#FFD050', fast: '#FFD050', lock: '#FFD050', lever: '#FF852E', wedges: '#FF852E', doorstop: '#FFB070', friction: '#FF852E',
+  cut: '#FF4545', bomber: '#FF4545', nothing: '#FF4545', triggered: '#FF4545', fell: '#FF4545', survived: '#66E3A0', sensor: '#FFD050', electronics: '#FFD050', follow: '#FF852E' };
+const CAP_FROM = 10.0;
+const CHUNKS = [];
+(() => {
+  const ws = CAPW.map(([s, a, b]) => ({ s, a, b }));
+  const WEAK = new Set(['a', 'an', 'the', 'are', 'on', 'in', 'it', 'and', 'at', 'is', 'of', 'to', 'for', 'with', 'by', 'its', 'has', 'that', 'so', 'but']);
+  let cur = [];
+  const flushC = () => {
+    if (!cur.length) return;
+    const carry = [];
+    while (carry.length < 2 && cur.length >= 2 && !/[.,?:!]$/.test(cur[cur.length - 1].s) && WEAK.has(cur[cur.length - 1].s.toLowerCase())) carry.unshift(cur.pop());
+    CHUNKS.push(cur); cur = carry;
+  };
+  ws.forEach((w) => {
+    const prev = cur[cur.length - 1];
+    const len = cur.reduce((n, x) => n + x.s.length + 1, 0);
+    if (prev && (/[.?:!]$/.test(prev.s) || (/,$/.test(prev.s) && cur.length >= 3) || cur.length >= 4 || len + w.s.length > 24 || w.a - prev.b > 0.6)) flushC();
+    cur.push(w);
+  });
+  flushC();
+  for (let i = CHUNKS.length - 1; i > 0; i--) {
+    const c = CHUNKS[i], p = CHUNKS[i - 1], len = [...p, ...c].reduce((n, x) => n + x.s.length + 1, 0);
+    if (c.length <= 2 && p.length + c.length <= 5 && !/[.?!]$/.test(p[p.length - 1].s) && len <= 30) { p.push(...c); CHUNKS.splice(i, 1); }
+  }
+})();
+CHUNKS.forEach((c, ci) => {
+  const bx = div($('cap'), 'box'); c.box = bx;
+  c.els = c.map((w) => {
+    const s = document.createElement('span'); s.className = 'w';
+    s.textContent = w.s.replace(/[.,:;]+$/, '');
+    const col = HL[w.s.toLowerCase().replace(/[.,?:!]/g, '')];
+    if (col) s.style.color = col;
+    bx.appendChild(s); return s;
+  });
+  c.t0 = c[0].a - 0.04; c.t1 = CHUNKS[ci + 1] ? Math.min(CHUNKS[ci + 1][0].a - 0.04, c[c.length - 1].b + 0.9) : DURATION;
+});
+function caps(t) {
+  for (const c of CHUNKS) {
+    const on = t >= CAP_FROM && t >= c.t0 && t < c.t1;
+    c.box.style.display = on ? 'flex' : 'none';
+    if (!on) continue;
+    c.els.forEach((s, i) => { s.style.opacity = t < CAP_FROM + 0.05 ? 1 : prog(t, c[i].a - 0.04, c[i].a + 0.06); });
+  }
+}
+function slam(id, t, a, b) {
+  const e = $(id), on = t > a && t < b;
+  e.style.display = on ? 'block' : 'none';
+  if (!on) return;
+  const i = ease.outExpo(prog(t, a, a + 0.16)), o = ep(t, b - 0.25, b, ease.in);
+  e.style.opacity = Math.min(1, prog(t, a, a + 0.06)) * (1 - o);
+  e.style.transform = `scale(${lerp(1.18, 1, i)}) translateY(${o * -10}px)`;
+  const ec = (t - a) < 0.12 ? 5 : 0;
+  e.querySelector('.t').style.textShadow = ec ? `${ec}px 0 rgba(255,133,46,0.55), ${-ec}px 0 rgba(102,227,160,0.55)` : 'none';
+}
+
+/* ---------------- background */
+function bg(t) {
+  g.setTransform(2, 0, 0, 2, 0, 0);
+  g.fillStyle = '#080A0D'; g.fillRect(0, 0, 540, 960);
+  g.save(); g.globalCompositeOperation = 'lighter';
+  const rg = g.createRadialGradient(270, 420, 0, 270, 420, 460); rg.addColorStop(0, 'rgba(255,133,46,0.06)'); rg.addColorStop(1, 'rgba(255,133,46,0)');
+  g.fillStyle = rg; g.fillRect(0, 0, 540, 960);
+  const vz = Math.abs(carV(t)) * 0.4;
+  for (let i = 0; i < 50; i++) { const x = (rnd(i, 9) * 540 + t * (3 + rnd(i, 3) * 6)) % 540, y = (rnd(i, 8) * 960 - t * (3 + rnd(i, 2) * 6) - carZ(t) * 0.25 * (0.4 + rnd(i, 4)) + 96000) % 960; g.fillStyle = `rgba(255,200,160,${0.04 + rnd(i, 7) * 0.1})`; g.fillRect(x, y, 1.2, 1.2 + Math.min(14, vz * 0.05)); }
+  g.restore();
+}
+
+/* ---------------- render */
+window.ready = async () => { $('grain').style.background = `url(${grainURL(256, 0.06, 5)})`; await Promise.all([...document.fonts].map((f) => f.load().catch(() => {}))); };
+window.render = function (tr) {
+  const t = toRef(tr);
+  t_ = t;
+  camAt2(t);
+  bg(t);
+  g.setTransform(2, 0, 0, 2, 0, 0);
+  const used = new Set();
+  const Lc = (k, txt, wp, dx, dy, a, b, col = '#FF852E') => { used.add(k); callout(k, txt, wp, dx, dy, window01(t, a, b, 0.15), col); };
+  const E = eraOf(t), z0 = carZ(t);
+
+  if (t >= DS[0] && t < DS[1]) {
+    doorstop(t);
+  } else {
+    const h = E === 1 ? ep(t, 4.6, 5.8) : E === 2 ? 1 - ep(t, 18.84, 19.7) : 0, m = 1 - h;
+    const secOp = clamp((-cam.a - 1.05) / 0.25);
+    const inB = E === 3;
+    // shaft
+    rails(z0, m, 'steel'); rails(z0, h, 'wood');
+    shaftMarks(z0, inB ? 0.8 : m, inB ? 40 : 180, inB ? O : ST);
+    if (inB) building(t, clamp((2.4 - cam.s) / 0.8));
+    // car
+    const pan = E === 0 ? 0.85 : E === 1 ? 0.5 * (1 - h) : E === 2 ? 0.45 + 0.4 * (1 - m) * 0 : E === 3 ? 0.85 : 0.6;
+    car(z0, { pan: pan * m });
+    otis(t, z0, h);
+    housings(z0, t, m);
+    section({ o: [48, 0, z0], u: [0, 1, 0], v: [0, 0, 1] }, 1, lift(t), squeeze(t), secOp * m, held(t), t);
+    // governor + lever
+    const gop = E === 4 ? 1 - ep(t, T.remove, T.remove + 0.7) : 1;
+    const go = { swing: E === 2 ? ep(t, T.weights, T.outward, ease.out) : E === 0 ? ep(t, 2.2, 2.5) : 0, grip: E === 2 ? ep(t, T.lock, T.lock + 0.12) : E === 0 ? ep(t, 2.5, 2.6) : 0, shift: E === 4 ? 40 * ep(t, T.remove, T.remove + 0.7, ease.in) : 0 };
+    if (E === 2 && t > T.cut) Object.assign(go, { cutT: T.cut, cutZ: carZ(T.cut) + 150 });
+    if (E === 3 && t > T.govrope) Object.assign(go, { cutT: T.govrope, cutZ: 150, fall: t > 48.6 });
+    governor(t, z0, m * gop, go);
+    lever(t, z0, m * (E === 4 ? 0 : 1), 'gov');
+    if (E === 4) { lever(t, z0, ep(t, T.sensor, T.sensor + 0.3), 'elec'); electronic(t, z0, 1); }
+    // lifting ropes
+    if (E === 0) liftRopes(t, z0, 1, T.snap, 155, true);
+    else if (E === 3) { liftRopes(t, z0, 1, T.cut2, 145, false); debris(t, z0, 1); }
+    else liftRopes(t, z0, m, null);
+    // callouts
+    if (E === 1) Lc('catch', 'CATCH', [33, 0, z0 + 86], 46, -70, T.catches2, T.rails2 + 0.3);
+    if (E === 2) {
+      Lc('grope', 'GOVERNOR ROPE', [GX - GR, GY, z0 + 110], 50, -50, T.thin, 20.8);
+      Lc('gov', 'GOVERNOR', [GX - GR, GY, GTOP + 4], -70, -70, T.wheel, 23.0);
+    }
+    if (E === 3) Lc('car6', 'CAR 6', [-30, -30, z0 + 80], -60, -50, T.car6, 44.5, '#FFB070');
+    if (E === 4) Lc('sens', 'SPEED SENSOR', [37, -12, z0 + 54], 60, -60, T.sensor, 55.4, '#FFD050');
+  }
+  flush();
+  for (const k in LB) if (!used.has(k)) { LB[k].style.display = 'none'; if (LN[k]) LN[k].style.display = 'none'; }
+  gauge(t);
+  chip(t); counter(t); bcard(t); endCard(t);
+  caps(tr); // CAPW is on the current voice's clock
+  slam('slFS', t, T.failsafe - 0.02, 18.8);
+  $('dim').style.opacity = t > 50.3 && t < T.newer ? 0.86 * ep(t, 50.3, 51.0) : 0;
+  let fl = 0;
+  for (const [t0, a] of [[T.snap, 0.14], [T.grabs, 0.2], [12.0, 0.15], [T.failsafe, 0.1], [T.lock, 0.1], [30.8, 0.1], [T.cut, 0.12], [T.hit, 0.18], [T.cut2, 0.14], [T.fell, 0.14], [T.newer, 0.08], [56.6, 0.12]]) { const dt = t - t0; if (dt > 0 && dt < 0.5) fl = Math.max(fl, a * Math.exp(-dt * 9)); }
+  $('flash').style.opacity = fl;
+  $('stage').style.opacity = 1 - ep(tr, DURATION - 0.35, DURATION) * 0.85;
+};
+</script>
+<script src="lib/play.js"></script>
+</body>
+</html>

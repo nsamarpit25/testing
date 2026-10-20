@@ -1,0 +1,233 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- Opening variant H: the everyday analogy. Machines are houses on a street, the payments service is a little character that moves house,
+     and the caller is a phone with the old address saved as a contact. Calling an old number is something everyone has done. Hook C, first 10 s. -->
+<link rel="stylesheet" href="fonts.css">
+<style>
+:root { --bg: #0B1022; --ink: #EEF1F8; --mut: #6E7AA0; --cy: #22D3EE; --or: #FF8A3D; --gr: #4ADE80; --rd: #FF3B5C; --ye: #FACC15; --vi: #A78BFA; }
+html, body { margin: 0; background: #000; }
+#stage { position: relative; width: 540px; height: 960px; overflow: hidden; background: linear-gradient(#141c3a 0%, #0d1328 38%, #0a0f20 100%); font-family: Inter, sans-serif; color: var(--ink); }
+#stars { position: absolute; inset: 0 0 60% 0; }
+#grain { position: absolute; inset: -40px; opacity: 0.5; mix-blend-mode: overlay; pointer-events: none; }
+#wrap { position: absolute; inset: 0; transform-origin: 50% 30%; }
+.tagk { position: absolute; left: 24px; top: 42px; font: 800 10px/1 Mono; letter-spacing: 1.6px; color: var(--or); border: 1.5px solid var(--or); border-radius: 5px; padding: 5px 8px; }
+.handle { position: absolute; right: 24px; top: 46px; font: 600 10px/1 Mono; letter-spacing: 1px; color: var(--mut); }
+/* street */
+#ground { position: absolute; left: 0; right: 0; top: 318px; height: 2px; background: #2a3560; }
+.house { position: absolute; top: 170px; width: 128px; height: 148px; }
+.house .roof { position: absolute; left: -8px; right: -8px; top: 0; height: 52px; background: #26305a; clip-path: polygon(50% 0, 100% 100%, 0 100%); }
+.house .body { position: absolute; left: 0; right: 0; top: 52px; bottom: 0; background: linear-gradient(#1a2348, #141b38); border: 1.5px solid #2c3866; border-bottom: none; box-sizing: border-box; }
+.house .win { position: absolute; top: 16px; width: 26px; height: 22px; border-radius: 3px; background: #0c1126; border: 1.5px solid #2c3866; }
+.house .door { position: absolute; left: 50%; margin-left: -17px; bottom: 0; width: 34px; height: 48px; border-radius: 6px 6px 0 0; background: #0c1126; border: 1.5px solid #2c3866; border-bottom: none; }
+.house .nm { position: absolute; left: 0; right: 0; top: 160px; text-align: center; font: 600 9.5px/1 Mono; letter-spacing: 1.2px; color: var(--mut); }
+.plate { position: absolute; top: 340px; width: 140px; text-align: center; font: 800 15px/1 Mono; }
+.plate .v { position: relative; display: inline-block; padding: 6px 9px; border-radius: 7px; background: #141b38; border: 1.5px solid #2c3866; }
+.plate .v:after { content: ''; position: absolute; left: 4px; right: 4px; top: 50%; height: 2.5px; background: var(--rd); transform-origin: 0 50%; transform: scaleX(var(--k, 0)); }
+/* the payments character */
+#pay { position: absolute; width: 56px; height: 56px; margin: -56px 0 0 -28px; }
+#pay .bd { position: absolute; inset: 0; border-radius: 50% 50% 46% 46%; background: radial-gradient(circle at 35% 30%, #FFB27F, #FF8A3D 55%, #d4601f); box-shadow: 0 0 26px rgba(255,138,61,0.55); }
+#pay .e { position: absolute; top: 20px; width: 8px; height: 11px; border-radius: 50%; background: #2a1206; }
+#pay .e.x { width: 12px; height: 12px; border-radius: 0; background: none; }
+#pay .e.x:before, #pay .e.x:after { content: ''; position: absolute; left: 5px; top: -1px; width: 2.5px; height: 14px; background: #2a1206; transform: rotate(45deg); }
+#pay .e.x:after { transform: rotate(-45deg); }
+#pay .tag { position: absolute; left: 50%; top: -16px; transform: translateX(-50%); font: 800 10px/1 Mono; letter-spacing: 0.6px; color: #FFD2B3; white-space: nowrap; }
+#poof { position: absolute; width: 10px; height: 10px; border-radius: 50%; border: 2.5px solid var(--rd); opacity: 0; margin: -5px 0 0 -5px; }
+.bub { position: absolute; font: 800 10px/1 Mono; letter-spacing: 1px; border-radius: 20px; padding: 6px 10px; white-space: nowrap; opacity: 0; }
+.bub:after { content: ''; position: absolute; left: 50%; bottom: -5px; margin-left: -5px; border: 5px solid transparent; border-bottom: none; border-top-color: inherit; }
+#moving { position: absolute; left: 0; top: 0; overflow: visible; }
+/* phone */
+#phone { position: absolute; left: 140px; top: 486px; width: 260px; height: 452px; border-radius: 40px; background: #05070f; border: 2px solid #323d66; box-shadow: 0 30px 60px rgba(0,0,0,0.6), inset 0 0 0 6px #10152a; }
+#scr { position: absolute; left: 9px; right: 9px; top: 9px; bottom: 9px; border-radius: 32px; background: #F3F4F9; overflow: hidden; color: #141826; }
+#scr .notch { position: absolute; left: 50%; top: 10px; margin-left: -38px; width: 76px; height: 20px; border-radius: 12px; background: #05070f; z-index: 3; }
+.sc { position: absolute; inset: 0; padding: 44px 18px 0; box-sizing: border-box; display: none; }
+.sc h4 { margin: 0 0 14px; font: 900 22px/1 Inter; letter-spacing: -0.6px; }
+.card { background: #fff; border-radius: 18px; padding: 14px; box-shadow: 0 6px 18px rgba(20,24,38,0.08); }
+.av { width: 54px; height: 54px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #FFB27F, #FF8A3D 55%, #d4601f); display: flex; align-items: center; justify-content: center; font: 900 22px/1 Inter; color: #fff; }
+.lbl { font: 700 9px/1 Mono; letter-spacing: 1.4px; color: #8a90a6; }
+.big { font: 800 22px/1 Mono; letter-spacing: -0.5px; }
+#savedIp { position: relative; display: inline-block; padding: 3px 4px; margin-left: -4px; border-radius: 6px; }
+.btn { display: flex; align-items: center; justify-content: center; gap: 8px; height: 44px; border-radius: 22px; font: 800 15px/1 Inter; }
+#ringA, #ringB { position: absolute; left: 50%; top: 150px; width: 84px; height: 84px; margin: -42px 0 0 -42px; border-radius: 50%; border: 2px solid var(--gr); opacity: 0; }
+#tries { display: flex; gap: 8px; justify-content: center; margin-top: 20px; }
+#tries i { width: 30px; height: 30px; border-radius: 50%; background: #e3e6ef; display: flex; align-items: center; justify-content: center; font: 900 15px/1 Inter; font-style: normal; color: #fff; }
+#search { display: flex; align-items: center; gap: 8px; height: 42px; border-radius: 14px; background: #fff; padding: 0 12px; box-shadow: 0 6px 18px rgba(20,24,38,0.08); font: 600 14px/1 Inter; }
+#cursor { display: inline-block; width: 2px; height: 18px; background: #2b6cff; }
+.bigq { margin-top: 18px; height: 150px; border-radius: 18px; border: 2px dashed #c9cede; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; color: #8a90a6; font: 700 11px/1.4 Mono; letter-spacing: 0.6px; text-align: center; }
+.bigq b { font: 900 64px/1 Inter; color: #2b6cff; }
+/* signal from the phone to the old house */
+#sig { position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none; }
+.x { position: absolute; font: 900 34px/1 Inter; color: var(--rd); text-shadow: 0 0 18px rgba(255,59,92,0.8); opacity: 0; }
+#analog { position: absolute; left: 50%; top: 448px; transform: translateX(-50%); white-space: nowrap; font: 700 13px/1 Inter; background: #151d3c; border: 1.5px solid #2c3866; border-radius: 30px; padding: 8px 14px; opacity: 0; }
+#analog em { font-family: Instrument; font-style: italic; font-weight: 400; font-size: 17px; color: var(--ye); }
+/* captions (house style) */
+#cap { position: absolute; left: 16px; right: 16px; top: 380px; height: 64px; pointer-events: none; }
+#cap .box { display: none; position: absolute; inset: 0; justify-content: center; align-items: center; white-space: nowrap; font-weight: 900; font-size: 37px; line-height: 1; letter-spacing: -1.1px; }
+#cap .w { display: inline-block; margin: 0 7px; color: #fff; -webkit-text-stroke: 7px #04060f; paint-order: stroke fill; text-shadow: 0 4px 0 #04060f, 0 0 26px rgba(0,0,0,0.75); transform-origin: 50% 85%; }
+#flash { position: absolute; inset: 0; background: var(--rd); opacity: 0; mix-blend-mode: screen; pointer-events: none; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <canvas id="stars" width="540" height="384"></canvas>
+  <div id="wrap">
+    <div class="tagk">SYSTEM DESIGN · 10</div>
+    <div class="handle">@how.its.engineered</div>
+    <div id="ground"></div>
+    <div class="house" id="h0" style="left:30px"><div class="roof"></div><div class="body"><div class="win" style="left:14px"></div><div class="win" style="right:14px"></div><div class="door"></div></div><div class="nm">machine-1</div></div>
+    <div class="house" id="h1" style="left:206px"><div class="roof"></div><div class="body"><div class="win" style="left:14px"></div><div class="win" style="right:14px"></div><div class="door"></div></div><div class="nm">machine-2</div></div>
+    <div class="house" id="h2" style="left:382px"><div class="roof"></div><div class="body"><div class="win" style="left:14px"></div><div class="win" style="right:14px"></div><div class="door"></div></div><div class="nm">machine-3</div></div>
+    <div class="plate" id="p0" style="left:24px"><span class="v" style="color:#FFB27F">10.0.0.7</span></div>
+    <div class="plate" id="p2" style="left:376px;opacity:0"><span class="v" id="p2v" style="color:var(--gr)">10.0.4.23</span></div>
+    <svg id="moving" width="540" height="960"></svg>
+    <div id="poof"></div>
+    <div id="pay"><div class="bd"></div><i class="e" id="e0" style="left:15px"></i><i class="e" id="e1" style="right:15px"></i><div class="tag">payments</div></div>
+    <div class="bub" id="bCrash" style="color:#fff;background:var(--rd);border-color:var(--rd)">CRASHED</div>
+    <div class="bub" id="bSame" style="color:#06210f;background:var(--gr);border-color:var(--gr)">SAME APP ✓</div>
+    <div class="bub" id="bEmpty" style="color:#c9d0ea;background:#252f58;border-color:#252f58">NOBODY HOME</div>
+    <div class="x" id="x0">✕</div><div class="x" id="x1">✕</div><div class="x" id="x2">✕</div>
+    <div id="cap"></div>
+    <div id="analog">like calling a friend's <em>old number</em></div>
+    <svg id="sig" width="540" height="960"></svg>
+    <div id="phone"><div id="scr"><div class="notch"></div>
+      <div class="sc" id="s0">
+        <h4>Contacts</h4>
+        <div class="card">
+          <div style="display:flex;gap:12px;align-items:center"><div class="av">P</div><div><div style="font:800 18px/1 Inter">payments</div><div class="lbl" style="margin-top:6px">SERVICE · ORDERS USES IT</div></div></div>
+          <div class="lbl" style="margin-top:16px">SAVED ADDRESS</div>
+          <div class="big" style="margin-top:7px"><span id="savedIp">10.0.0.7</span></div>
+          <div class="lbl" id="savedNote" style="margin-top:8px;color:#b0b5c7">saved when it started</div>
+        </div>
+        <div class="btn" id="callBtn" style="margin-top:16px;background:#22c55e;color:#fff">✆ Call</div>
+      </div>
+      <div class="sc" id="s1" style="text-align:center;background:linear-gradient(#1b2340,#0f1530);color:#fff">
+        <div class="lbl" style="margin-top:8px;color:#8b95bd">ORDERS IS CALLING</div>
+        <div style="font:900 24px/1 Inter;margin-top:10px">payments</div>
+        <div class="big" style="margin-top:8px;font-size:17px;color:#FFB27F">10.0.0.7</div>
+        <div id="ringA"></div><div id="ringB"></div>
+        <div class="av" style="margin:50px auto 0;width:70px;height:70px;font-size:28px">P</div>
+        <div id="tries"><i></i><i></i><i></i></div>
+        <div id="callSt" style="margin-top:14px;font:700 12px/1 Mono;color:#8b95bd">ringing…</div>
+      </div>
+      <div class="sc" id="s2" style="text-align:center;background:#FF3B5C;color:#fff">
+        <div style="font:900 70px/1 Inter;margin-top:56px">✕</div>
+        <div style="font:900 30px/1 Inter;margin-top:16px;letter-spacing:-1px">Call failed</div>
+        <div style="font:700 12px/1.5 Mono;margin-top:12px;opacity:.9">no one at 10.0.0.7<br>3 of 3 attempts</div>
+      </div>
+      <div class="sc" id="s3">
+        <div id="search"><span style="color:#8a90a6">⌕</span><span id="qText"></span><span id="cursor"></span></div>
+        <div class="bigq"><b>?</b>who knows the<br>new address?</div>
+      </div>
+    </div></div>
+  </div>
+  <div id="flash"></div>
+  <div id="grain"></div>
+</div>
+<script src="../../../tools/lib.js"></script>
+<script src="hook.js"></script>
+<script>
+const $ = (id) => document.getElementById(id);
+const DOOR = [94, 270, 446], GROUND = 318;
+const SIG = $('sig');
+// signal arc: phone top -> machine-1 door
+const arc = el('path', { d: `M 250 490 C 230 410, 120 400, 100 300`, fill: 'none', stroke: '#22D3EE', 'stroke-width': 2.5, 'stroke-dasharray': '1 9', 'stroke-linecap': 'round', opacity: 0 }, SIG);
+const waves = [0, 1, 2].map(() => el('path', { fill: 'none', stroke: '#22D3EE', 'stroke-width': 3, 'stroke-linecap': 'round', opacity: 0 }, SIG));
+const rings = [0, 1, 2].map(() => el('circle', { r: 0, fill: 'none', stroke: '#FF3B5C', 'stroke-width': 2, opacity: 0 }, SIG));
+const qArc = el('path', { d: `M 290 490 C 320 410, 420 400, 446 300`, fill: 'none', stroke: '#FACC15', 'stroke-width': 2, 'stroke-dasharray': '6 7', opacity: 0 }, SIG);
+const qm = el('text', { x: 392, y: 400, 'text-anchor': 'middle', 'font-family': 'Inter', 'font-weight': 900, 'font-size': 36, fill: '#FACC15', opacity: 0 }, SIG); qm.textContent = '?';
+// moving-house trail
+const trail = el('path', { d: `M ${DOOR[0]} ${GROUND - 30} Q 270 110, ${DOOR[2]} ${GROUND - 30}`, fill: 'none', stroke: '#FF8A3D', 'stroke-width': 2, 'stroke-dasharray': '4 7', opacity: 0 }, $('moving'));
+let arcL = 0, trailL = 0;
+const KEY = { service: '#FF8A3D', restarted: '#FF3B5C', same: '#4ADE80', code: '#4ADE80', new: '#FACC15', address: '#FACC15', failed: '#FF3B5C', find: '#22D3EE' };
+const caps = popCaptions($('cap'), (w, a) => (w === 'it' && a > 8 ? '#22D3EE' : KEY[w] || null));
+window.ready = () => {
+  $('grain').style.background = `url(${grainURL(256, 0.08, 5)})`;
+  arcL = arc.getTotalLength(); trailL = trail.getTotalLength();
+  trail.setAttribute('stroke-dasharray', `4 7`);
+  const c = $('stars').getContext('2d');
+  for (let i = 0; i < 70; i++) { c.fillStyle = `rgba(200,210,255,${0.15 + 0.5 * rndH(i, 2)})`; c.beginPath(); c.arc(rndH(i, 3) * 540, rndH(i, 4) * 300, 0.6 + rndH(i, 5) * 1.2, 0, 7); c.fill(); }
+};
+const show = (id, on) => { $(id).style.display = on ? 'block' : 'none'; };
+function bub(id, x, y, a) { const b = $(id); b.style.opacity = a; b.style.left = x + 'px'; b.style.top = y + 'px'; b.style.transform = `translate(-50%, ${(1 - a) * 8}px) scale(${0.8 + 0.2 * a})`; }
+window.render = function (t) {
+  if (!arcL) window.ready();
+  const kick = (a, s) => (t >= a ? s * Math.exp(-(t - a) * 6) : 0);
+  const sc = 1 + 0.005 * t + kick(B.crash, 0.035) + kick(B.respawn, 0.02) + kick(B.failed, 0.05);
+  const sh = t >= B.failed && t < B.failed + 0.35 ? (rndH(2, Math.floor(t * 60)) - 0.5) * 12 * (1 - (t - B.failed) / 0.35) : 0;
+  $('wrap').style.transform = `translate(${sh}px, 0) scale(${sc})`;
+  // the character: home -> crash -> poof -> pops up at machine-3
+  const P = $('pay');
+  let px = DOOR[0], py = GROUND - 2, pa = ep(t, 0.05, 0.3), ps = 0.6 + 0.4 * ep(t, 0.05, 0.35, ease.back), rot = 0;
+  const crashing = t >= B.crash && t < B.gone;
+  if (crashing) { px += (rndH(7, Math.floor(t * 40)) - 0.5) * 8; rot = (rndH(8, Math.floor(t * 40)) - 0.5) * 18; }
+  if (t >= B.gone && t < B.respawn) { const g = ep(t, B.gone, B.gone + 0.22, ease.in); ps = 1 - g; pa = 1 - g; }
+  if (t >= B.respawn) { const k = ep(t, B.respawn, B.respawn + 0.5, ease.inOut); const tp = trail.getPointAtLength(trailL * k); px = tp.x; py = tp.y + 30 * (k > 0.98 ? 1 : k); pa = 1; ps = 1; if (k >= 1) py = GROUND - 2 - Math.abs(Math.sin((t - B.respawn - 0.5) * 9)) * 10 * Math.exp(-(t - B.respawn - 0.5) * 4); }
+  else if (t < B.crash) py -= Math.abs(Math.sin(t * 6)) * 5;
+  P.style.left = px + 'px'; P.style.top = py + 'px'; P.style.opacity = pa; P.style.transform = `scale(${ps}) rotate(${rot}deg)`;
+  const hurt = crashing;
+  P.querySelector('.bd').style.background = hurt ? 'radial-gradient(circle at 35% 30%, #ff8fa1, #FF3B5C 55%, #b81d3a)' : '';
+  P.querySelector('.bd').style.boxShadow = hurt ? '0 0 28px rgba(255,59,92,0.7)' : '';
+  ['e0', 'e1'].forEach((e) => { $(e).className = 'e' + (hurt ? ' x' : ''); });
+  trail.setAttribute('opacity', window01(t, B.respawn, B.newip + 0.4, 0.2) * 0.7);
+  trail.setAttribute('stroke-dashoffset', -t * 20);
+  { const k = prog(t, B.gone, B.gone + 0.45); const p = $('poof'); p.style.left = DOOR[0] + 'px'; p.style.top = (GROUND - 30) + 'px'; p.style.opacity = t >= B.gone ? 1 - k : 0; p.style.transform = `scale(${1 + 9 * ease.out(k)})`; }
+  bub('bCrash', DOOR[0], GROUND - 118, window01(t, B.crash, B.gone + 0.15, 0.1));
+  bub('bSame', DOOR[2], GROUND - 118, window01(t, B.same + 0.05, B.newip + 0.2, 0.15));
+  bub('bEmpty', DOOR[0], GROUND - 128, t > B.hits[0] ? ep(t, B.hits[0], B.hits[0] + 0.2, ease.back) * (1 - ep(t, B.q, B.q + 0.3)) : 0);
+  // windows: lit where payments lives
+  [0, 1, 2].forEach((i) => {
+    const lit = (i === 0 && t < B.gone) || (i === 2 && t >= B.respawn + 0.3);
+    $('h' + i).querySelectorAll('.win').forEach((w) => { w.style.background = lit ? (hurt && i === 0 ? '#FF3B5C' : '#FFB27F') : ''; w.style.boxShadow = lit ? '0 0 14px rgba(255,178,127,0.7)' : ''; });
+  });
+  // address plates
+  $('p2').style.opacity = ep(t, B.newip - 0.1, B.newip + 0.1); $('p2v').textContent = ipAt(t);
+  $('p0').querySelector('.v').style.setProperty('--k', ep(t, B.ipDone, B.ipDone + 0.25));
+  $('p0').style.opacity = t > B.ipDone ? 0.55 : 1;
+  // phone screens
+  const scr = t < B.calls ? 0 : t < B.failed ? 1 : t < B.q ? 2 : 3;
+  [0, 1, 2, 3].forEach((i) => show('s' + i, i === scr));
+  const pin = ep(t, 0.1, 0.55, ease.back);
+  $('phone').style.transform = `translateY(${(1 - pin) * 120 + (t >= B.failed && t < B.failed + 0.4 ? (rndH(4, Math.floor(t * 50)) - 0.5) * 10 : 0)}px) rotate(${t >= B.failed && t < B.failed + 0.4 ? (rndH(6, Math.floor(t * 50)) - 0.5) * 4 : 0}deg)`;
+  // stale contact: highlight once the service has moved
+  const stale = ep(t, B.ipDone, B.ipDone + 0.25);
+  $('savedIp').style.background = stale ? `rgba(250,204,21,${0.45 * stale})` : '';
+  $('savedNote').textContent = t > B.ipDone ? '⚠ never updated' : 'saved when it started';
+  $('savedNote').style.color = t > B.ipDone ? '#c28a00' : '';
+  $('callBtn').style.transform = `scale(${1 - 0.08 * window01(t, B.calls - 0.25, B.calls, 0.1)})`;
+  // calling: rings + three tries, each one flies to the empty house
+  ['ringA', 'ringB'].forEach((r, i) => { const k = ((t - B.calls) * 1.3 + i * 0.5) % 1; $(r).style.opacity = scr === 1 ? (1 - k) * 0.8 : 0; $(r).style.transform = `scale(${1 + 1.2 * k})`; $(r).style.borderColor = t > B.hits[0] ? '#FF3B5C' : ''; });
+  const nh = B.hits.filter((h) => t >= h).length;
+  $('tries').querySelectorAll('i').forEach((d, i) => { d.style.background = i < nh ? '#FF3B5C' : ''; d.textContent = i < nh ? '✕' : ''; });
+  $('callSt').textContent = nh ? `no answer · try ${Math.min(3, nh + 1)}/3` : 'ringing…';
+  arc.setAttribute('opacity', window01(t, B.calls, B.failed + 0.3, 0.15) * 0.8);
+  arc.setAttribute('stroke-dashoffset', t * 24);
+  B.hits.forEach((h, i) => {
+    const s = h - 0.4, k = prog(t, s, h);
+    const w = waves[i];
+    if (t >= s && t < h + 0.02) {
+      const p = arc.getPointAtLength(arcL * ease.inOut(k)), q = arc.getPointAtLength(Math.max(0, arcL * ease.inOut(k) - 6));
+      const ang = Math.atan2(p.y - q.y, p.x - q.x), nx = -Math.sin(ang) * 11, ny = Math.cos(ang) * 11;
+      w.setAttribute('d', `M ${p.x + nx} ${p.y + ny} Q ${p.x + Math.cos(ang) * 8} ${p.y + Math.sin(ang) * 8} ${p.x - nx} ${p.y - ny}`);
+      w.setAttribute('opacity', 1);
+    } else w.setAttribute('opacity', 0);
+    const r = prog(t, h, h + 0.5);
+    rings[i].setAttribute('cx', DOOR[0]); rings[i].setAttribute('cy', GROUND - 26); rings[i].setAttribute('r', 8 + 56 * ease.out(r)); rings[i].setAttribute('opacity', t >= h ? 1 - r : 0);
+    const x = $('x' + i), xs = ep(t, h, h + 0.18, ease.back);
+    x.style.left = [44, 124, 84][i] + 'px'; x.style.top = [262, 262, 238][i] + 'px';
+    x.style.opacity = t >= h ? 1 - 0.7 * ep(t, B.q, B.q + 0.3) : 0; x.style.transform = `scale(${0.3 + 0.7 * xs}) rotate(${(i - 1) * 14}deg)`;
+  });
+  $('flash').style.opacity = (t >= B.failed ? 0.3 * Math.exp(-(t - B.failed) * 9) : 0) + (t >= B.crash ? 0.16 * Math.exp(-(t - B.crash) * 9) : 0);
+  // question: search screen + a dashed path to where payments really is
+  const Q = 'where is payments now';
+  $('qText').textContent = Q.slice(0, Math.floor(clamp((t - B.q - 0.1) * 22, 0, Q.length)));
+  $('cursor').style.opacity = Math.floor(t * 3) % 2 ? 1 : 0.15;
+  qArc.setAttribute('opacity', ep(t, B.q + 0.3, B.q + 0.8)); qArc.setAttribute('stroke-dashoffset', -t * 20);
+  { const k = ep(t, B.find - 0.2, B.find + 0.1, ease.back); qm.setAttribute('opacity', k); qm.setAttribute('transform', `translate(392 388) scale(${0.4 + 0.6 * k + 0.06 * Math.sin(t * 6)}) translate(-392 -388)`); }
+  { const a = ep(t, B.q + 0.2, B.q + 0.55, ease.back); $('analog').style.opacity = a; $('analog').style.transform = `translateX(-50%) translateY(${(1 - a) * 10}px)`; }
+  caps(t);
+};
+</script>
+<script src="play.js"></script>
+</body>
+</html>

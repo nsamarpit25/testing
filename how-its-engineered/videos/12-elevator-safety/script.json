@@ -1,0 +1,103 @@
+{
+ "topic": "Why Elevators Can't Fall",
+ "lines": [
+  [
+   {
+    "say": "If an elevator's ropes snap, what actually stops it? Not the ropes. The rails.",
+    "show": "If an elevator's *ropes snap,* what actually stops it? Not the ropes. [The rails.]"
+   }
+  ],
+  [
+   {
+    "say": "Early lifts were a platform on one rope. Rope breaks, and nothing's left holding it.",
+    "show": "Early lifts were a platform on *one rope.* Rope breaks, and [nothing's left holding it.]"
+   }
+  ],
+  [
+   {
+    "say": "Eighteen fifty-four. Elisha Otis flips it around. The rope's pull keeps a spring bent, and the spring holds two catches in.",
+    "show": "1854. Elisha Otis flips it around. The *rope's pull* keeps a spring bent, and the spring holds two *catches* in."
+   },
+   {
+    "say": "Rope breaks? The pull is gone, the spring snaps straight, and the catches jam into teeth on the rails.",
+    "show": "Rope breaks? The pull is gone, the spring snaps straight, and the catches jam into [teeth on the rails.]"
+   },
+   {
+    "say": "The failure itself fires the brake. Engineers call that fail-safe.",
+    "show": "The failure itself fires the brake. Engineers call that [fail-safe.]"
+   }
+  ],
+  [
+   {
+    "say": "Modern lifts hang on several steel ropes, not one. They loop over a grooved motor wheel to a counterweight, so the motor only lifts the difference.",
+    "show": "Modern lifts hang on several *steel ropes,* not one. They loop over a motor wheel to a [counterweight,] so the motor only lifts the difference."
+   }
+  ],
+  [
+   {
+    "say": "The motor's brake is fail-safe too. Springs squeeze it shut. Electricity pulls it open. Power cut? It clamps by itself.",
+    "show": "The motor's brake is fail-safe too. *Springs* squeeze it shut. *Electricity* pulls it open. Power cut? It [clamps by itself.]"
+   }
+  ],
+  [
+   {
+    "say": "But what if the car just goes too fast? Up top sits a governor: a wheel driven by a thin rope loop that moves with the car.",
+    "show": "But what if the car just goes *too fast?* Up top sits a [governor:] a wheel driven by a thin *rope loop* that moves with the car."
+   },
+   {
+    "say": "Spin it faster, and weights inside swing out. First, they flip a switch that cuts the power. Still too fast? They lock the rope.",
+    "show": "Spin it faster, and *weights* inside swing out. First, they flip a switch that *cuts the power.* Still too fast? They [lock the rope.]"
+   }
+  ],
+  [
+   {
+    "say": "Now the rope stops, but the car keeps going. That pulls a lever on the car, and wedges slide up between the car and the rails. Friction drags it to a stop.",
+    "show": "Now the rope stops, but the car keeps going. That pulls a *lever* on the car, and [wedges] slide up between the car and the rails. Friction drags it to a stop."
+   }
+  ],
+  [
+   {
+    "say": "Fast lifts use wedges that grip gradually, so you're slowed, not slammed. And buffers in the pit catch the rest.",
+    "show": "Fast lifts use wedges that grip *gradually,* so you're [slowed, not slammed.] And *buffers* in the pit catch the rest."
+   }
+  ],
+  [
+   {
+    "say": "The weak spot? Everything waits on that thin rope.",
+    "show": "The weak spot? Everything waits on [that thin rope.]"
+   },
+   {
+    "say": "In nineteen forty-five, a bomber hit the Empire State Building. Falling debris cut car six's ropes, governor rope included.",
+    "show": "In 1945, a *bomber* hit the Empire State Building. Falling debris cut car 6's ropes, [governor rope included.]"
+   },
+   {
+    "say": "The wedges were fine. Nothing pulled them. Car six fell seventy-five floors. Its operator, Betty Lou Oliver, survived.",
+    "show": "The wedges were *fine.* Nothing pulled them. Car 6 fell [75 floors.] Its operator, Betty Lou Oliver, *survived.*"
+   }
+  ],
+  [
+   {
+    "say": "So the safety gear moved to the far side of the shaft, away from harm.",
+    "show": "So the safety gear moved to the [far side of the shaft,] away from harm."
+   }
+  ],
+  [
+   {
+    "say": "Newer codes added more: a brake for a car shooting upward, and a stop if it moves with the doors open.",
+    "show": "Newer codes added more: a brake for a car *shooting upward,* and a stop if it moves with [the doors open.]"
+   }
+  ],
+  [
+   {
+    "say": "And the latest systems drop the rope completely. A sensor reads the speed, and electronics fire the wedges directly. No rope left to cut.",
+    "show": "And the latest systems *drop the rope* completely. A *sensor* reads the speed, and electronics fire the wedges directly. [No rope left to cut.]"
+   }
+  ],
+  [
+   {
+    "say": "Every machine you trust has layers like this. Follow for more videos like this.",
+    "show": "Every machine you trust has layers like this. [Follow] for more videos like this."
+   }
+  ]
+ ]
+}

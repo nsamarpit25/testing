@@ -1,0 +1,14 @@
+# Rendered videos and other outputs live on the `media` branch, not on main.
+claude-talk-v2/output/
+*.pcm
+*.mp4
+*.mov
+*.blend1
+
+.venv/
+node_modules/
+__pycache__/
+.DS_Store
+.env
+.env.*
+!.env.example

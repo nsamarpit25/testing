@@ -1,0 +1,239 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- Cover for 05 Reverse Proxies (neon style). Render: node tools/render.mjs videos/05-reverse-proxies/cover.html /dev/null --stills 0 --outdir media/05-reverse-proxies -->
+<style>
+@font-face { font-family: Inter; src: url(../../node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2) format('woff2'); font-weight: 100 900; }
+@font-face { font-family: Mono; src: url(../../node_modules/@fontsource/jetbrains-mono/files/jetbrains-mono-latin-500-normal.woff2) format('woff2'); font-weight: 500; }
+:root { --acc: #2EE6D6; --warn: #FF375F; }
+html, body { margin: 0; background: #000; }
+#stage { position: relative; width: 540px; height: 960px; overflow: hidden; background: #000; font-family: Inter, sans-serif; color: #fff; }
+#vignette { position: absolute; inset: 0; background: radial-gradient(110% 70% at 50% 58%, rgba(46,230,214,0.09), rgba(0,0,0,0) 62%); }
+svg.full { position: absolute; inset: 0; overflow: visible; }
+#kicker { position: absolute; top: 168px; left: 0; right: 0; text-align: center; font-family: Mono; font-weight: 500; font-size: 13px; letter-spacing: 3.5px; color: #a3a3a3; }
+#title { position: absolute; top: 192px; left: 0; right: 0; text-align: center; font-size: 60px; font-weight: 800; letter-spacing: -2.2px; }
+#title span { color: var(--acc); }
+#sub { position: absolute; top: 282px; left: 0; right: 0; text-align: center; font-size: 21px; color: #a3a3a3; letter-spacing: -0.2px; }
+#sub b { color: #fff; }
+.lbl { position: absolute; transform: translate(-50%, -50%); font-family: Mono; font-weight: 500; font-size: 11px; letter-spacing: 1px; white-space: nowrap; }
+.lbl.acc { color: #000; background: var(--acc); border-radius: 6px; padding: 3px 7px; letter-spacing: 0.5px; }
+.lbl.warn { color: #fff; background: var(--warn); border-radius: 6px; padding: 3px 7px; letter-spacing: 0.5px; }
+.lbl.dim { color: #8a8a8a; letter-spacing: 1.6px; font-size: 10px; }
+#handle { position: absolute; bottom: 150px; left: 0; right: 0; display: flex; justify-content: center; align-items: center; gap: 8px; font-weight: 700; font-size: 11px; letter-spacing: 0.8px; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="vignette"></div>
+  <svg class="full" id="scene" width="540" height="960" viewBox="0 0 540 960">
+    <defs><filter id="bloom" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+    <g id="sceneG" filter="url(#bloom)"></g>
+  </svg>
+  <svg class="full" id="fx" width="540" height="960" viewBox="0 0 540 960"></svg>
+  <div id="labels"></div>
+  <div id="kicker">SYSTEM DESIGN · 05</div>
+  <div id="title">Reverse <span>Proxy</span></div>
+  <div id="sub">Why hackers can't find <b>Instagram's servers</b></div>
+  <div id="handle">
+    <svg width="18" height="18" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="6" fill="none" stroke="#fff" stroke-width="2"/><circle cx="12" cy="12" r="4.6" fill="none" stroke="#fff" stroke-width="2"/><circle cx="17.6" cy="6.4" r="1.3" fill="#fff"/></svg>
+    <div>@HOW.ITS.ENGINEERED</div>
+  </div>
+</div>
+<script src="../../tools/lib.js"></script>
+<script src="../../tools/iso.js"></script>
+<script>
+const $ = (id) => document.getElementById(id);
+const ACC = '#2EE6D6', WARN = '#FF375F';
+const mk = (line, text = line, dot = line) => ({ line, top: '#000', s1: '#000', s2: '#000', text, dot });
+const ROLES = { def: mk('#fff'), server: mk('#fff'), proxy: mk(ACC), wall: mk(ACC), warn: mk(WARN) };
+ISO.layer = $('sceneG');
+const FX = $('fx');
+window.DURATION = 1;
+const TAP = -10;
+
+// layout (tighter than the video so it all fits the 3:4 grid crop)
+const PH = [0, 205], PX = [0, -30], WALL_Y = -46;
+const SVX = [-180, -108, -36, 36, 108, 180], SVY = -205;
+const DOOR = [0, PX[1] + 40, 30];
+const HKC = [[-245, 125, [-165, WALL_Y + 7, 28]], [250, 75, [160, WALL_Y + 7, 34]]];
+
+// ---------- shared with video.html ----------
+// ---------- helpers ----------
+const hash = (n) => { const x = Math.sin(n * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
+const flipV = (F) => ({ o: add3(F.o, F.v), u: F.u, v: mul3(F.v, -1) });
+const circ = (p, r) => `M${p[0] - r} ${p[1]}a${r} ${r} 0 1 0 ${2 * r} 0a${r} ${r} 0 1 0 ${-2 * r} 0`;
+const fx = (tag, attrs, parent = FX) => el(tag, attrs, parent);
+function fcircle(o, F, a, b, r, opt = {}) {
+  const lu = len3(F.u), lv = len3(F.v), pts = [];
+  for (let i = 0; i < 28; i++) { const q = (i / 28) * Math.PI * 2; pts.push(fp(F, a + (r * Math.cos(q)) / lu, b + (r * Math.sin(q)) / lv)); }
+  push(o, path2(pts), { w: 0.9, ...opt });
+}
+function box3(o, x, y, z, w, d, h, opt = {}) {
+  const c = Math.cos(CAM.yaw), s = Math.sin(CAM.yaw);
+  const vis = (nx, ny) => (nx * c - ny * s) + (nx * s + ny * c) > 0.001;
+  const F = {};
+  for (const [k, oo, u, v, nx, ny] of [
+    ['px', [x + w, y, z], [0, d, 0], [0, 0, h], 1, 0], ['nx', [x, y, z], [0, d, 0], [0, 0, h], -1, 0],
+    ['py', [x, y + d, z], [w, 0, 0], [0, 0, h], 0, 1], ['ny', [x, y, z], [w, 0, 0], [0, 0, h], 0, -1]]) {
+    if (!vis(nx, ny)) continue;
+    F[k] = { o: oo, u, v };
+    fpoly(o, F[k], 0, 0, 1, 1, { w: 1, face: k, ...opt });
+  }
+  F.top = { o: [x, y, z + h], u: [w, 0, 0], v: [0, d, 0] };
+  fpoly(o, F.top, 0, 0, 1, 1, { w: 1, face: 'top', ...opt });
+  return F;
+}
+// emit with a role's colours (def / server / proxy / wall / warn)
+function emitT(o, D, op = 1, role = 'def') {
+  const R = ROLES[role] || ROLES.def;
+  for (const it of o.items) {
+    if (it.face) it.fill = it.fill ?? R.top;
+    else if (it.fill === undefined || it.fill === '#000') it.fill = R.top;
+    else if (it.fill === '#fff' && it.stroke === 'none') it.fill = R.dot;
+    if (it.stroke === undefined) it.stroke = R.line;
+  }
+  for (const tx of o.texts) if (tx.fill === undefined) tx.fill = R.text;
+  emit(o, D, op);
+}
+function rack3(o, x, y, z, w, d, h) {
+  const F = box3(o, x, y, z, w, d, h);
+  if (F.py) {
+    const R = F.py;
+    fpoly(o, R, 0.07, 0.03, 0.86, 0.94, { fill: 'none', w: 0.6 });
+    for (let k = 0; k < 10; k++) {
+      const b = 0.07 + k * 0.088;
+      fline(o, R, 0.1, b, 0.9, b, { w: 0.55, op: 0.8 });
+      fpoly(o, R, 0.15, b + 0.02, 0.32, 0.045, { fill: 'none', w: 0.55 });
+    }
+  }
+  if (F.px) for (let k = 0; k < 8; k++) fline(o, F.px, 0.15 + k * 0.095, 0.1, 0.15 + k * 0.095, 0.9, { w: 0.5, op: 0.6 });
+  fpoly(o, F.top, 0.12, 0.14, 0.76, 0.72, { fill: 'none', w: 0.6 });
+  return F;
+}
+function person(o, x, y, t = 0, walk = 0, hat = false) {
+  const bob = walk * Math.abs(Math.sin(t * 13)) * 3;
+  cylinder(o, x, y, 4 + bob, 7, 22, 0);
+  push(o, circ(P(x, y, 36 + bob), 6 * CAM.scale), { fill: '#000', w: 1 });
+  if (hat) cylinder(o, x, y, 41 + bob, 5, 8, 0);
+}
+// ---------- objects ----------
+function heartPts(F, a, b, r) {
+  const lu = len3(F.u), lv = len3(F.v), pts = [];
+  for (let i = 0; i < 32; i++) {
+    const q = (i / 32) * Math.PI * 2;
+    const hx = Math.pow(Math.sin(q), 3), hy = -(13 * Math.cos(q) - 5 * Math.cos(2 * q) - 2 * Math.cos(3 * q) - Math.cos(4 * q)) / 16;
+    pts.push(fp(F, a + (r * hx) / lu, b + (r * hy) / lv));
+  }
+  return pts;
+}
+function phoneObj(t, like, c = PH) {
+  const [cx, cy] = c, o = Obj();
+  const T = box3(o, cx - 55, cy - 85, 0, 110, 170, 5);
+  tileDots(o, T.top, 6, 9);
+  const F = box3(o, cx - 30, cy - 58, 5, 60, 116, 7), Sc = F.top;
+  fpoly(o, Sc, 0.08, 0.05, 0.84, 0.9, { fill: 'none' });
+  fline(o, Sc, 0.38, 0.09, 0.62, 0.09, { w: 1.2 });
+  ftext(o, Sc, 0.15, 0.165, 'Instagram', 6.2, { weight: 800, anchor: 'start' });
+  fcircle(o, Sc, 0.8, 0.165, 2.6, { fill: 'none', w: 0.8 });
+  fpoly(o, Sc, 0.14, 0.23, 0.72, 0.37, { fill: 'none', w: 0.9 });
+  push(o, path2([fp(Sc, 0.16, 0.56), fp(Sc, 0.36, 0.38), fp(Sc, 0.48, 0.48), fp(Sc, 0.62, 0.33), fp(Sc, 0.84, 0.56)], false), { fill: 'none', w: 0.8 });
+  fcircle(o, Sc, 0.7, 0.3, 3.4, { fill: 'none', w: 0.8 });
+  const pp = like > 0 && c === PH ? 1 + 0.45 * Math.sin(Math.PI * clamp(prog(t, TAP, TAP + 0.35))) : 1;
+  push(o, path2(heartPts(Sc, 0.2, 0.66, 4.2 * pp)), like > 0 ? { fill: WARN, fillOp: like, stroke: WARN, w: 1.1 } : { fill: 'none', w: 1 });
+  fcircle(o, Sc, 0.36, 0.66, 3.6, { fill: 'none', w: 0.9 });
+  push(o, path2([fp(Sc, 0.47, 0.63), fp(Sc, 0.57, 0.66), fp(Sc, 0.47, 0.69)]), { fill: 'none', w: 0.9 });
+  ftext(o, Sc, 0.15, 0.755, like > 0.5 ? '1,205 likes' : '1,204 likes', 4.6, { weight: 700, anchor: 'start' });
+  fline(o, Sc, 0.15, 0.82, 0.78, 0.82, { w: 0.7, op: 0.5 });
+  fline(o, Sc, 0.15, 0.87, 0.6, 0.87, { w: 0.7, op: 0.5 });
+  return o;
+}
+function serverObj(i, t, x = SVX[i], y = SVY) {
+  const o = Obj();
+  const F = rack3(o, x - 24, y - 20, 4, 48, 40, 104);
+  if (F.py) for (let k = 0; k < 10; k++) if (Math.sin(t * (5 + i) + k * 1.9) > -0.1) fdot(o, F.py, 0.8, 0.07 + k * 0.088 + 0.04, 1.4, { fillOp: 0.9 });
+  return o;
+}
+function wallObj(h) {
+  const o = Obj();
+  for (const [x0, x1] of [[-430, -78], [78, 430]]) {
+    const F = box3(o, x0, WALL_Y - 7, 0, x1 - x0, 14, h);
+    if (F.py && h > 12) for (let k = 1; k < 3; k++) fline(o, F.py, 0, k / 3, 1, k / 3, { w: 0.5, op: 0.5 });
+    if (F.py && h > 12) for (let k = 1; k < 14; k++) fline(o, F.py, k / 14, (k % 2) / 3, k / 14, (k % 2) / 3 + 1 / 3, { w: 0.5, op: 0.45 });
+  }
+  return o;
+}
+function proxyObj(t, glow, c = PX) {
+  const [cx, cy] = c, o = Obj();
+  const T = box3(o, cx - 78, cy - 52, 0, 156, 104, 4);
+  tileDots(o, T.top, 7, 4);
+  const B = box3(o, cx - 52, cy - 36, 4, 104, 72, 56);
+  if (B.py) {
+    const D = B.py;
+    fpoly(o, D, 0.05, 0.1, 0.9, 0.8, { fill: 'none', w: 0.6, op: 0.7 });
+    fpoly(o, D, 0.38, 0.0, 0.24, 0.66, { fill: 'none', w: 1.1 });
+    for (let k = 1; k < 5; k++) fline(o, D, 0.38 + k * 0.048, 0.0, 0.38 + k * 0.048, 0.66, { w: 0.7 });
+    for (let k = 0; k < 4; k++) fdot(o, D, 0.1 + k * 0.055, 0.78, 1.3, { fillOp: Math.sin(t * 7 + k * 2) > 0 ? 1 : 0.3 });
+    ftext(o, flipV(D), 0.81, 0.25, 'PROXY', 7, { font: 'Mono', weight: 500 });
+  }
+  if (B.px) for (let k = 0; k < 5; k++) fpoly(o, B.px, 0.12 + k * 0.16, 0.3, 0.1, 0.3, { fill: 'none', w: 0.6 });
+  const Tp = B.top, sh = [[0.5, 0.18], [0.66, 0.27], [0.64, 0.58], [0.5, 0.8], [0.36, 0.58], [0.34, 0.27]];
+  push(o, path2(sh.map(([a, b]) => fp(Tp, a, b))), { fill: glow > 0.02 ? ACC : 'none', fillOp: 0.25 * glow, w: 1.3 });
+  push(o, path2([fp(Tp, 0.43, 0.48), fp(Tp, 0.49, 0.58), fp(Tp, 0.59, 0.36)], false), { fill: 'none', w: 1.6 });
+  return o;
+}
+
+// ---------- cover ----------
+const labels = $('labels');
+function label(text, w, cls = '') {
+  const p = P(...w), d = document.createElement('div');
+  d.className = 'lbl ' + cls; d.innerHTML = text;
+  d.style.left = p[0] + 'px'; d.style.top = p[1] + 'px'; labels.appendChild(d);
+}
+window.render = () => {
+  ISO.layer.textContent = ''; FX.textContent = ''; labels.textContent = '';
+  CAM.scale = 0.64; CAM.yaw = -0.7;
+  aim([0, -10, 30], 270, 575);
+  // crowd of users in front
+  for (let i = 0; i < 240; i++) {
+    const x = (hash(i * 1.7 + 0.3) * 2 - 1) * 400, y = 70 + hash(i * 2.3 + 0.9) * 300;
+    if (Math.abs(x) < 85 && Math.abs(y - PH[1]) < 115) continue;
+    if (HKC.some(([hx, hy]) => Math.hypot(x - hx, y - hy) < 40)) continue;
+    const p = P(x, y, 0);
+    el('circle', { cx: p[0], cy: p[1], r: 1.1, fill: '#fff', 'fill-opacity': 0.2 + 0.45 * hash(i + 4.4) }, ISO.layer);
+  }
+  // private side: floor + dimmed servers
+  { const o = Obj(); const T = box3(o, -235, -250, 0, 470, 95, 4); tileDots(o, T.top, 12, 3); emitT(o, 1, 0.45, 'server'); }
+  [...SVX.keys()].sort((a, b) => depth(SVX[a], SVY) - depth(SVX[b], SVY)).forEach((i) => emitT(serverObj(i, 0.7), 1, 0.42, 'server'));
+  emitT(wallObj(46), 1, 1, 'wall');
+  emitT(proxyObj(1.3, 1), 1, 1, 'proxy');
+  // your request: phone -> proxy door
+  const A = [PH[0], PH[1] - 85, 6];
+  el('path', { d: path2([P(...A), P(...DOOR)], false), stroke: ACC, 'stroke-width': 1, 'stroke-dasharray': '3 5', fill: 'none', 'stroke-opacity': 0.9 }, ISO.layer);
+  for (const k of [0.4, 0.75]) {
+    const q = [lerp(A[0], DOOR[0], k), lerp(A[1], DOOR[1], k), lerp(A[2], DOOR[2], k) + Math.sin(k * Math.PI) * 30], o = Obj();
+    const Fb = box3(o, q[0] - 5, q[1] - 5, q[2], 10, 10, 10, { stroke: ACC, fill: '#000' });
+    fpoly(o, Fb.top, 0.25, 0.25, 0.5, 0.5, { fill: ACC, stroke: 'none' });
+    emit(o, 1, 1);
+  }
+  // hackers: their scans stop at the wall
+  for (const [hx, hy, tg] of HKC) {
+    const o = Obj(); person(o, hx, hy, 0); emitT(o, 1, 1, 'warn');
+    const a = P(hx, hy, 24), b = P(...tg);
+    el('rect', { x: a[0] - 6, y: a[1] - 2, width: 12, height: 7, rx: 1, fill: '#000', stroke: WARN, 'stroke-width': 1 }, FX);
+    el('line', { x1: a[0], y1: a[1], x2: b[0], y2: b[1], stroke: WARN, 'stroke-width': 1.1, 'stroke-dasharray': '3 4', 'stroke-opacity': 0.8 }, FX);
+    for (let i = 0; i < 7; i++) {
+      const ang = (i / 7) * Math.PI * 2 + 0.3, d = 6 + hash(i + hx) * 7;
+      el('line', { x1: b[0] + Math.cos(ang) * d, y1: b[1] + Math.sin(ang) * d, x2: b[0] + Math.cos(ang) * (d + 5), y2: b[1] + Math.sin(ang) * (d + 5), stroke: WARN, 'stroke-width': 1.4 }, FX);
+    }
+    el('circle', { cx: b[0], cy: b[1], r: 3, fill: 'none', stroke: WARN, 'stroke-width': 1.3 }, FX);
+  }
+  emitT(phoneObj(0, 1), 1, 1, 'def');
+  label('REVERSE PROXY', [PX[0], PX[1], 112], 'acc');
+  label('HIDDEN SERVERS', [0, SVY, 150], 'dim');
+  label('HACKER', [HKC[0][0], HKC[0][1], 66], 'warn');
+};
+window.render(0);
+</script>
+</body>
+</html>

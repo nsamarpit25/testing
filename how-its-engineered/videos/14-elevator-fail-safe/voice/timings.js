@@ -1,0 +1,139 @@
+window.TIMINGS=[
+ {
+  "li": 0,
+  "pi": 0,
+  "say": "If the elevator ropes snap, what stops you falling?",
+  "show": "If the elevator *ropes snap*, what stops you falling?",
+  "start": 0.0,
+  "end": 2.82
+ },
+ {
+  "li": 0,
+  "pi": 1,
+  "say": "The car grabs the rails.",
+  "show": "The car grabs [the rails.]",
+  "start": 3.38,
+  "end": 4.74
+ },
+ {
+  "li": 1,
+  "pi": 0,
+  "say": "In eighteen fifty-four, Elisha Otis made that automatic.",
+  "show": "In *1854*, *Elisha Otis* made that automatic.",
+  "start": 5.22,
+  "end": 7.94
+ },
+ {
+  "li": 1,
+  "pi": 1,
+  "say": "The lifting rope kept a spring bent, holding two catches back.",
+  "show": "The lifting rope kept a *spring* bent, holding two *catches* back.",
+  "start": 8.38,
+  "end": 11.64
+ },
+ {
+  "li": 1,
+  "pi": 2,
+  "say": "If the rope broke, the spring straightened, pushing the catches into teeth on the rails.",
+  "show": "If the rope broke, the spring *straightened*, pushing the catches into *teeth* on the rails.",
+  "start": 11.92,
+  "end": 16.1
+ },
+ {
+  "li": 1,
+  "pi": 3,
+  "say": "The failure itself fired the brake. That's fail-safe.",
+  "show": "The failure itself *fired the brake*. That's [fail-safe.]",
+  "start": 16.46,
+  "end": 19.66
+ },
+ {
+  "li": 2,
+  "pi": 0,
+  "say": "Now follow this thin rope. It moves with the car, turning a wheel called the governor.",
+  "show": "Now follow this *thin rope*. It moves with the car, turning a wheel called the *governor*.",
+  "start": 20.18,
+  "end": 24.52
+ },
+ {
+  "li": 2,
+  "pi": 1,
+  "say": "If the car goes too fast, weights swing outward and lock that rope.",
+  "show": "If the car goes *too fast*, weights swing outward and *lock* that rope.",
+  "start": 24.92,
+  "end": 28.36
+ },
+ {
+  "li": 3,
+  "pi": 0,
+  "say": "The car keeps moving, so the stopped rope pulls a lever.",
+  "show": "The car keeps moving, so the stopped rope pulls a *lever*.",
+  "start": 28.36,
+  "end": 31.94
+ },
+ {
+  "li": 3,
+  "pi": 1,
+  "say": "That pulls wedges between the car and rails, like pushing a doorstop under a door.",
+  "show": "That pulls *wedges* between the car and rails, like pushing a *doorstop* under a door.",
+  "start": 32.54,
+  "end": 36.5
+ },
+ {
+  "li": 3,
+  "pi": 2,
+  "say": "They squeeze against the rails, and friction slows the car.",
+  "show": "They squeeze against the rails, and [friction] slows the car.",
+  "start": 37.0,
+  "end": 39.5
+ },
+ {
+  "li": 4,
+  "pi": 0,
+  "say": "But cut that thin rope?",
+  "show": "But *cut* that thin rope?",
+  "start": 40.12,
+  "end": 41.4
+ },
+ {
+  "li": 4,
+  "pi": 1,
+  "say": "In nineteen forty-five, a bomber hit the Empire State Building. Falling debris cut car six's lifting ropes, and its governor rope.",
+  "show": "In *1945*, a *bomber* hit the *Empire State Building*. Falling debris cut car 6's lifting ropes, and its *governor rope*.",
+  "start": 41.88,
+  "end": 48.2
+ },
+ {
+  "li": 4,
+  "pi": 2,
+  "say": "Its wedges worked. Nothing triggered them.",
+  "show": "Its wedges worked. [Nothing triggered them.]",
+  "start": 48.56,
+  "end": 50.5
+ },
+ {
+  "li": 4,
+  "pi": 3,
+  "say": "It fell seventy-five floors. Operator Betty Lou Oliver survived.",
+  "show": "It fell *75 floors*. Operator *Betty Lou Oliver* survived.",
+  "start": 50.82,
+  "end": 54.58
+ },
+ {
+  "li": 5,
+  "pi": 0,
+  "say": "Newer systems remove that rope: a speed sensor and electronics trigger the wedges directly.",
+  "show": "Newer systems remove that rope: a *speed sensor* and *electronics* trigger the wedges directly.",
+  "start": 54.58,
+  "end": 59.6
+ },
+ {
+  "li": 5,
+  "pi": 1,
+  "say": "Follow for more of how things are engineered.",
+  "show": "[Follow] for more of how things are engineered.",
+  "start": 60.18,
+  "end": 61.66
+ }
+];
+window.WORDS=[[" If", 0.0, 0.34], [" the", 0.34, 0.54], [" elevator", 0.54, 0.9], [" ropes", 0.9, 1.18], [" snap,", 1.18, 1.6], [" what", 1.92, 2.04], [" stops", 2.04, 2.34], [" you", 2.34, 2.48], [" falling?", 2.48, 2.82], [" The", 3.38, 3.5], [" car", 3.5, 3.76], [" grabs", 3.76, 4.2], [" the", 4.2, 4.46], [" rails.", 4.46, 4.74], [" In", 5.22, 5.32], [" 1854,", 5.32, 6.2], [" Elisha", 6.38, 6.74], [" Otis", 6.74, 6.98], [" made", 6.98, 7.2], [" that", 7.2, 7.42], [" automatic.", 7.42, 7.94], [" The", 8.38, 8.52], [" lifting", 8.52, 8.78], [" rope", 8.78, 9.04], [" kept", 9.04, 9.3], [" a", 9.3, 9.52], [" spring", 9.52, 9.8], [" bent,", 9.8, 10.18], [" holding", 10.44, 10.68], [" two", 10.68, 10.94], [" catches", 10.94, 11.28], [" back.", 11.28, 11.64], [" If", 11.92, 12.16], [" the", 12.16, 12.3], [" rope", 12.3, 12.46], [" broke,", 12.46, 12.74], [" the", 13.06, 13.16], [" spring", 13.16, 13.4], [" straightened,", 13.4, 14.1], [" pushing", 14.22, 14.44], [" the", 14.44, 14.64], [" catches", 14.64, 14.88], [" into", 14.88, 15.16], [" teeth", 15.16, 15.5], [" on", 15.5, 15.72], [" the", 15.72, 15.86], [" rails.", 15.86, 16.1], [" The", 16.46, 16.68], [" failure", 16.68, 16.94], [" itself", 16.94, 17.42], [" fired", 17.42, 17.9], [" the", 17.9, 18.1], [" brake.", 18.1, 18.32], [" That's", 18.7, 19.22], [" failsafe.", 19.22, 19.66], [" Now", 20.18, 20.34], [" follow", 20.34, 20.7], [" this", 20.7, 20.96], [" thin", 20.96, 21.22], [" rope.", 21.22, 21.56], [" It", 21.96, 22.12], [" moves", 22.12, 22.38], [" with", 22.38, 22.58], [" the", 22.58, 22.74], [" car,", 22.74, 23.0], [" turning", 23.14, 23.4], [" a", 23.4, 23.62], [" wheel", 23.62, 23.76], [" called", 23.76, 24.1], [" the", 24.1, 24.32], [" governor.", 24.32, 24.52], [" If", 24.92, 25.14], [" the", 25.14, 25.28], [" car", 25.28, 25.4], [" goes", 25.4, 25.6], [" too", 25.6, 25.82], [" fast,", 25.82, 26.2], [" weights", 26.44, 26.62], [" swing", 26.62, 26.94], [" outward", 26.94, 27.34], [" and", 27.34, 27.64], [" lock", 27.64, 27.88], [" that", 27.88, 28.1], [" rope.", 28.1, 28.36], [" The", 28.36, 29.08], [" car", 29.08, 29.32], [" keeps", 29.32, 29.62], [" moving,", 29.62, 29.98], [" so", 30.34, 30.4], [" the", 30.4, 30.6], [" stopped", 30.6, 30.84], [" rope", 30.84, 31.18], [" pulls", 31.18, 31.54], [" a", 31.54, 31.74], [" lever.", 31.74, 31.94], [" That", 32.54, 32.62], [" pulls", 32.62, 32.86], [" wedges", 32.86, 33.22], [" between", 33.22, 33.5], [" the", 33.5, 33.7], [" car", 33.7, 33.96], [" and", 33.96, 34.22], [" rails,", 34.22, 34.6], [" like", 34.88, 34.98], [" pushing", 34.98, 35.3], [" a", 35.3, 35.5], [" doorstop", 35.5, 35.9], [" under", 35.9, 36.14], [" a", 36.14, 36.3], [" door.", 36.3, 36.5], [" They", 37.0, 37.12], [" squeeze", 37.12, 37.42], [" against", 37.42, 37.7], [" the", 37.7, 37.84], [" rails", 37.84, 38.08], [" and", 38.08, 38.32], [" friction", 38.32, 38.66], [" slows", 38.66, 39.04], [" the", 39.04, 39.26], [" car.", 39.26, 39.5], [" But", 40.12, 40.24], [" cut", 40.24, 40.52], [" that", 40.52, 40.74], [" thin", 40.74, 41.04], [" rope?", 41.04, 41.4], [" In", 41.88, 41.96], [" 1945,", 41.96, 42.68], [" a", 42.92, 43.1], [" bomber", 43.1, 43.28], [" hit", 43.28, 43.48], [" the", 43.48, 43.66], [" Empire", 43.66, 43.92], [" State", 43.92, 44.2], [" Building.", 44.2, 44.52], [" Falling", 44.88, 45.06], [" debris", 45.06, 45.4], [" cut", 45.4, 45.68], [" Car", 45.68, 45.96], [" 6's", 45.96, 46.4], [" lifting", 46.4, 46.68], [" ropes", 46.68, 46.98], [" and", 46.98, 47.38], [" its", 47.38, 47.64], [" governor", 47.64, 47.9], [" rope.", 47.9, 48.2], [" Its", 48.56, 48.72], [" wedges", 48.72, 49.1], [" worked.", 49.1, 49.46], [" Nothing", 49.76, 49.98], [" triggered", 49.98, 50.28], [" them.", 50.28, 50.5], [" It", 50.82, 50.96], [" fell", 50.96, 51.14], [" 75", 51.14, 51.84], [" floors.", 51.84, 52.38], [" Operator", 52.9, 53.22], [" Betty", 53.22, 53.54], [" Lou", 53.54, 53.72], [" Oliver", 53.72, 54.0], [" survived.", 54.0, 54.58], [" Newer", 54.58, 55.52], [" systems", 55.52, 55.78], [" remove", 55.78, 56.12], [" that", 56.12, 56.36], [" rope.", 56.36, 56.62], [" A", 57.04, 57.08], [" speed", 57.08, 57.3], [" sensor", 57.3, 57.62], [" and", 57.62, 57.82], [" electronics", 57.82, 58.34], [" trigger", 58.34, 58.68], [" the", 58.68, 58.86], [" wedges", 58.86, 59.16], [" directly.", 59.16, 59.6], [" Follow", 60.18, 60.32], [" for", 60.32, 60.5], [" more", 60.5, 60.68], [" of", 60.68, 60.86], [" how", 60.86, 61.02], [" things", 61.02, 61.2], [" are", 61.2, 61.36], [" engineered.", 61.36, 61.66]];

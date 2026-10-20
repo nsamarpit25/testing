@@ -1,0 +1,47 @@
+{
+ "topic": "Pub/Sub",
+ "lines": [
+  [
+   {"say": "You hit post.", "show": "You hit *post.*"},
+   {"say": "Two million followers need a notification.", "show": "*Two million* followers need a notification."},
+   {"say": "And your post button... just keeps spinning.", "show": "And your post button... [just keeps spinning.]"}
+  ],
+  [
+   {"say": "Here's why. Your post service does every job itself.", "show": "Here's why. Your post service does every job *itself.*"},
+   {"say": "Notify followers. Send emails. Update feeds. One after another.", "show": "Notify followers. Send emails. Update feeds. *One after another.*"}
+  ],
+  [
+   {"say": "Spot the problem?", "show": "Spot the *problem?*"}
+  ],
+  [
+   {"say": "If email is slow, your post waits.", "show": "If email is *slow,* your post *waits.*"},
+   {"say": "And every new feature means rewriting the post service. Again.", "show": "And every new feature means [rewriting the post service.] *Again.*"}
+  ],
+  [
+   {"say": "A message queue won't fix it. It hands each message to just one worker.", "show": "A message queue won't fix it. It hands each message to just *one* worker."}
+  ],
+  [
+   {"say": "The fix? Pub sub.", "show": "The fix? [Pub/Sub.]"},
+   {"say": "The post service publishes one message to a topic, and it's done. The button stops spinning.", "show": "The post service *publishes* one message to a *topic,* and it's done. The button [stops spinning.]"}
+  ],
+  [
+   {"say": "Every feature subscribes to that topic. Each one gets its own copy, all at the same time.", "show": "Every feature *subscribes* to that topic. Each one gets its *own copy,* all at the same time."}
+  ],
+  [
+   {"say": "Like a radio station: it broadcasts once, and every radio tuned in hears it.", "show": "Like a *radio station:* it broadcasts *once,* and every radio tuned in *hears it.*"}
+  ],
+  [
+   {"say": "New feature? Just subscribe it. The post service never changes.", "show": "New feature? Just *subscribe* it. The post service [never changes.]"}
+  ],
+  [
+   {"say": "So those two million followers? One publish. Everyone notified.", "show": "So those *two million* followers? *One publish.* [Everyone notified.]"}
+  ],
+  [
+   {"say": "That's Google Cloud Pub sub and Amazon S-N-S.", "show": "That's *Google Cloud Pub/Sub* and *Amazon SNS.*"}
+  ],
+  [
+   {"say": "Haven't seen message queues? That reel's on my profile.", "show": "Haven't seen *message queues?* That reel's on my profile."},
+   {"say": "If you're a vibe coder, follow for the system design your AI skipped.", "show": "If you're a *vibe coder,* follow for the system design your *AI skipped.*"}
+  ]
+ ]
+}

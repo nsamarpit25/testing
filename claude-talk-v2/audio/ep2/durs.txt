@@ -1,0 +1,17 @@
+01 cleo 4.588
+02 claude 1.393
+03 cleo 2.123
+04 claude 2.510
+05 cleo 1.200
+06 claude 1.380
+07 cleo 4.673
+08 claude 2.937
+09 cleo 5.888
+10 claude 2.841
+11 cleo 5.036
+12 cleo 2.878
+13 claude 4.442
+14 claude 2.437
+15 claude 4.024
+16 cleo 2.903
+17 claude 2.227

@@ -1,0 +1,23 @@
+{"topic": "Canary Releases", "lines": [
+ [{"say": "You ship an update.", "show": "You ship an *update.*"},
+  {"say": "It crashes the app.", "show": "It [crashes the app.]"},
+  {"say": "And ninety-nine percent of your users never notice.", "show": "And *99%* of your users [never notice.]"}],
+ [{"say": "The usual way? Push it to everyone at once.", "show": "The usual way? Push it to *everyone* at once."},
+  {"say": "Every phone gets it in minutes.", "show": "*Every* phone gets it in *minutes.*"}],
+ [{"say": "Spot the problem?", "show": "Spot the *problem?*"}],
+ [{"say": "One bug, and every phone crashes.", "show": "One bug, and [every phone crashes.]"},
+  {"say": "Everyone is your tester.", "show": "*Everyone* is your tester."},
+  {"say": "By the time you undo it, the damage is done.", "show": "By the time you undo it, the damage is [done.]"}],
+ [{"say": "The fix? Canary releases.", "show": "The fix? [Canary releases.]"},
+  {"say": "Send the new version to just one percent of users first.", "show": "Send the new version to just *1%* of users first."}],
+ [{"say": "Then watch. Crashes, errors, slow screens.", "show": "Then *watch.* Crashes, errors, slow screens."},
+  {"say": "If the numbers spike, it rolls back automatically.", "show": "If the numbers *spike,* it [rolls back automatically.]"}],
+ [{"say": "Numbers look good? Go to five percent, then twenty-five, then everyone.", "show": "Numbers look *good?* Go to *5%,* then *25%,* then [everyone.]"}],
+ [{"say": "Like a new dish in a restaurant.", "show": "Like a *new dish* in a restaurant."},
+  {"say": "Serve it to one table first. If it comes back, the rest of the room never tastes it.", "show": "Serve it to *one table* first. If it comes back, the rest of the room [never tastes it.]"}],
+ [{"say": "A bug can still ship. It just hits one in a hundred people, for two minutes.", "show": "A bug can still ship. It just hits *1 in 100* people, for [2 minutes.]"}],
+ [{"say": "Ship to a few. Then everyone.", "show": "Ship to a *few.* Then [everyone.]"}],
+ [{"say": "That's Argo Rollouts and AWS CodeDeploy.", "show": "That's *Argo Rollouts* and *AWS CodeDeploy.*"}],
+ [{"say": "Haven't seen CI/CD? That reel's on my profile.", "show": "Haven't seen *CI/CD?* That reel's on my profile."},
+  {"say": "If you're a vibe coder, follow for the system design your AI skipped.", "show": "If you're a *vibe coder,* follow for the system design your *AI skipped.*"}]
+]}

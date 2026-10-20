@@ -1,0 +1,18 @@
+If an elevator's ropes snap, what actually stops it? Not the ropes. The rails. 🛗
+
+1854: Elisha Otis made the failure fire the brake. Rope breaks, a spring snaps straight, and catches jam into teeth on the rails. That's fail-safe.
+
+Today it's layers:
+🪢 Several steel ropes, not one, plus a counterweight
+🧲 A motor brake that springs shut when the power cuts
+⚙️ A governor up top: too fast, it cuts power, then locks its rope
+🔩 That rope pulls wedges up against the rails. Friction stops the car
+🛟 Buffers in the pit catch the rest
+
+In 1945 a bomber hit the Empire State Building and cut car 6's ropes, governor rope included. It fell 75 floors. Betty Lou Oliver survived.
+
+Every machine you trust has layers like this.
+
+Would you still ride the elevator after knowing this? Comment below 👇
+
+#engineering #howitworks #mechanicalengineering #elevator #science

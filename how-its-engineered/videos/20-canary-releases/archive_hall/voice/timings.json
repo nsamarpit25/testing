@@ -1,0 +1,170 @@
+[
+ {
+  "li": 0,
+  "pi": 0,
+  "say": "You ship an update.",
+  "show": "You ship an *update.*",
+  "start": 0.0,
+  "end": 0.96
+ },
+ {
+  "li": 0,
+  "pi": 1,
+  "say": "It crashes the app.",
+  "show": "It [crashes the app.]",
+  "start": 1.16,
+  "end": 2.04
+ },
+ {
+  "li": 0,
+  "pi": 2,
+  "say": "And ninety-nine percent of your users never notice.",
+  "show": "And *99%* of your users [never notice.]",
+  "start": 2.24,
+  "end": 4.3
+ },
+ {
+  "li": 1,
+  "pi": 0,
+  "say": "The usual way? Push it to everyone at once.",
+  "show": "The usual way? Push it to *everyone* at once.",
+  "start": 4.76,
+  "end": 6.82
+ },
+ {
+  "li": 1,
+  "pi": 1,
+  "say": "Every phone gets it in minutes.",
+  "show": "*Every* phone gets it in *minutes.*",
+  "start": 7.12,
+  "end": 8.4
+ },
+ {
+  "li": 2,
+  "pi": 0,
+  "say": "Spot the problem?",
+  "show": "Spot the *problem?*",
+  "start": 8.7,
+  "end": 9.32
+ },
+ {
+  "li": 3,
+  "pi": 0,
+  "say": "One bug, and every phone crashes.",
+  "show": "One bug, and [every phone crashes.]",
+  "start": 9.72,
+  "end": 11.38
+ },
+ {
+  "li": 3,
+  "pi": 1,
+  "say": "Everyone is your tester.",
+  "show": "*Everyone* is your tester.",
+  "start": 11.72,
+  "end": 12.92
+ },
+ {
+  "li": 3,
+  "pi": 2,
+  "say": "By the time you undo it, the damage is done.",
+  "show": "By the time you undo it, the damage is [done.]",
+  "start": 13.06,
+  "end": 15.14
+ },
+ {
+  "li": 4,
+  "pi": 0,
+  "say": "The fix? Canary releases.",
+  "show": "The fix? [Canary releases.]",
+  "start": 15.56,
+  "end": 17.0
+ },
+ {
+  "li": 4,
+  "pi": 1,
+  "say": "Send the new version to just one percent of users first.",
+  "show": "Send the new version to just *1%* of users first.",
+  "start": 17.6,
+  "end": 20.08
+ },
+ {
+  "li": 5,
+  "pi": 0,
+  "say": "Then watch. Crashes, errors, slow screens.",
+  "show": "Then *watch.* Crashes, errors, slow screens.",
+  "start": 20.46,
+  "end": 23.1
+ },
+ {
+  "li": 5,
+  "pi": 1,
+  "say": "If the numbers spike, it rolls back automatically.",
+  "show": "If the numbers *spike,* it [rolls back automatically.]",
+  "start": 23.34,
+  "end": 25.68
+ },
+ {
+  "li": 6,
+  "pi": 0,
+  "say": "Numbers look good? Go to five percent, then twenty-five, then everyone.",
+  "show": "Numbers look *good?* Go to *5%,* then *25%,* then [everyone.]",
+  "start": 26.16,
+  "end": 29.46
+ },
+ {
+  "li": 7,
+  "pi": 0,
+  "say": "Like a new dish in a restaurant.",
+  "show": "Like a *new dish* in a restaurant.",
+  "start": 29.46,
+  "end": 30.92
+ },
+ {
+  "li": 7,
+  "pi": 1,
+  "say": "Serve it to one table first. If it comes back, the rest of the room never tastes it.",
+  "show": "Serve it to *one table* first. If it comes back, the rest of the room [never tastes it.]",
+  "start": 31.2,
+  "end": 35.24
+ },
+ {
+  "li": 8,
+  "pi": 0,
+  "say": "A bug can still ship. It just hits one in a hundred people, for two minutes.",
+  "show": "A bug can still ship. It just hits *1 in 100* people, for [2 minutes.]",
+  "start": 35.66,
+  "end": 39.14
+ },
+ {
+  "li": 9,
+  "pi": 0,
+  "say": "Ship to a few. Then everyone.",
+  "show": "Ship to a *few.* Then [everyone.]",
+  "start": 39.74,
+  "end": 41.24
+ },
+ {
+  "li": 10,
+  "pi": 0,
+  "say": "That's Argo Rollouts and AWS CodeDeploy.",
+  "show": "That's *Argo Rollouts* and *AWS CodeDeploy.*",
+  "start": 41.6,
+  "end": 43.66
+ },
+ {
+  "li": 11,
+  "pi": 0,
+  "say": "Haven't seen CI/CD? That reel's on my profile.",
+  "show": "Haven't seen *CI/CD?* That reel's on my profile.",
+  "start": 44.28,
+  "end": 46.28
+ },
+ {
+  "li": 11,
+  "pi": 1,
+  "say": "If you're a vibe coder, follow for the system design your AI skipped.",
+  "show": "If you're a *vibe coder,* follow for the system design your *AI skipped.*",
+  "start": 46.58,
+  "end": 49.48
+ }
+]

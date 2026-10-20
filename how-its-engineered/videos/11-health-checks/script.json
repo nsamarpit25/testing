@@ -1,0 +1,38 @@
+{
+ "topic": "Health Checks",
+ "lines": [
+  [
+   {"say": "Your app froze at three A-M.", "show": "Your app *froze* at 3 AM."},
+   {"say": "Still running. Not answering anyone.", "show": "Still running. *Not answering anyone.*"},
+   {"say": "And something restarted it before anyone woke up.", "show": "And something [restarted it] before anyone woke up."},
+   {"say": "How did it know?", "show": "How did it *know?*"}
+  ],
+  [
+   {"say": "The trap? Running isn't the same as working.", "show": "The trap? *Running* isn't the same as *working.*"},
+   {"say": "A frozen app still looks alive. Nothing crashed, so nothing restarts it.", "show": "A frozen app still *looks alive.* Nothing crashed, so [nothing restarts it.]"}
+  ],
+  [
+   {"say": "The fix? Keep asking it: are you okay?", "show": "The fix? Keep asking it: *are you okay?*"},
+   {"say": "Like a nurse checking your pulse.", "show": "Like a nurse checking your *pulse.*"},
+   {"say": "That's a health check.", "show": "That's a [health check.]"}
+  ],
+  [
+   {"say": "Check one: alive?", "show": "Check one: [alive?]"},
+   {"say": "Every few seconds, it calls your app's health page. Three misses in a row? It restarts the app.", "show": "Every few seconds, it calls your app's *health page.* Three misses in a row? [Restart.]"}
+  ],
+  [
+   {"say": "Check two: ready?", "show": "Check two: [ready?]"},
+   {"say": "A copy that's still starting up says: not yet. Traffic skips it until it is. Like a shop's closed sign.", "show": "A copy still starting up says: *not yet.* Traffic [skips it] until it is. Like a shop's *closed sign.*"}
+  ],
+  [
+   {"say": "So that three A-M freeze? Three missed pulses, one restart, and it was back before anyone woke up.", "show": "So that *3 AM freeze?* Three missed pulses, one restart, and it was [back] before anyone woke up."}
+  ],
+  [
+   {"say": "In Kubernetes, these are called liveness and readiness probes. Just a few lines in your config.", "show": "In *Kubernetes,* these are [liveness and readiness probes.] Just a few lines in your config."}
+  ],
+  [
+   {"say": "New to Kubernetes? That reel is on my profile.", "show": "New to Kubernetes? That reel is *on my profile.*"},
+   {"say": "Follow for the rest of the series.", "show": "[Follow] for the rest of the series."}
+  ]
+ ]
+}

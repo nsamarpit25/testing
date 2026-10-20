@@ -1,0 +1,269 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+@font-face{font-family:G;font-weight:500;src:url(../themes/inter/package/files/inter-latin-500-normal.woff2)}
+@font-face{font-family:G;font-weight:600;src:url(../themes/inter/package/files/inter-latin-600-normal.woff2)}
+@font-face{font-family:G;font-weight:700;src:url(../themes/inter/package/files/inter-latin-700-normal.woff2)}
+@font-face{font-family:G;font-weight:800;src:url(../themes/inter/package/files/inter-latin-800-normal.woff2)}
+@font-face{font-family:M;font-weight:500;src:url(../v3/fontsource-jetbrains-mono-5.0.20/package/files/jetbrains-mono-latin-500-normal.woff2)}
+@font-face{font-family:M;font-weight:700;src:url(../v3/fontsource-jetbrains-mono-5.0.20/package/files/jetbrains-mono-latin-700-normal.woff2)}
+:root{--bg:#F5F5F7;--fg:#1D1D1F;--mut:#86868B;--line:#D2D2D7;--cy:#0071E3;--li:#34C759;--rd:#FF3B30;--vi:#0071E3;--am:#0071E3;--sh:0 10px 40px rgba(0,0,0,.08)}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:540px;height:960px;overflow:hidden;background:var(--bg);color:var(--fg);font-family:G,sans-serif}
+#bgglow{position:absolute;inset:-200px;background:radial-gradient(500px 500px at 50% 40%,#fff,transparent 70%)}
+#grid{display:none}
+.sc{position:absolute;inset:0;opacity:0}
+.abs{position:absolute}
+.tag{position:absolute;left:50%;top:64px;transform:translateX(-50%);font-weight:700;font-size:13px;letter-spacing:1.6px;white-space:nowrap;text-transform:uppercase}
+.title{position:absolute;left:0;right:0;top:100px;text-align:center;font-weight:800;font-size:40px;line-height:1.08;letter-spacing:-1.3px}
+.mono{font-family:M}
+#prog{position:absolute;left:36px;right:36px;top:30px;display:flex;gap:6px}
+#prog div{flex:1;height:3px;border-radius:2px;background:#DEDEE3;overflow:hidden}
+#prog i{display:block;height:100%;width:0;background:var(--fg)}
+#plab{display:none}
+#brand{position:absolute;left:0;right:0;bottom:30px;text-align:center;font-size:12px;font-weight:600;color:var(--mut);letter-spacing:.4px}
+#cap{position:absolute;left:24px;right:24px;top:780px;text-align:center;font-weight:800;font-size:33px;line-height:1.15;letter-spacing:-.7px}
+#cap span{display:inline-block;margin:0 5px}
+.phone{position:absolute;width:56px;height:96px;border-radius:14px;border:1.5px solid var(--line);background:#fff;box-shadow:var(--sh)}
+.phone::after{content:"";position:absolute;left:20px;right:20px;top:7px;height:4px;border-radius:2px;background:var(--line)}
+.server{position:absolute;width:76px}
+.server b{display:block;height:28px;border-radius:8px;border:1.5px solid var(--line);background:#fff;margin-bottom:6px;position:relative;box-shadow:0 4px 14px rgba(0,0,0,.05)}
+.server b::before{content:"";position:absolute;left:9px;top:9px;width:8px;height:8px;border-radius:50%;background:var(--led,var(--li))}
+.server b::after{content:"";position:absolute;left:24px;right:9px;top:12px;height:3px;border-radius:2px;background:#E5E5EA}
+.gate{position:absolute;width:3px;border-radius:2px;background:var(--cy)}
+.pk{position:absolute;width:40px;height:20px;border-radius:10px;background:var(--cy);font-family:G;font-weight:700;font-size:9px;letter-spacing:.5px;color:#fff;display:flex;align-items:center;justify-content:center;opacity:0;box-shadow:0 4px 12px rgba(0,113,227,.3)}
+.pk.red{background:var(--rd);box-shadow:0 4px 12px rgba(255,59,48,.35)}
+.lbl{font-size:11px;font-weight:700;color:var(--mut);letter-spacing:1.3px;text-transform:uppercase}
+.big{font-weight:800;letter-spacing:-2px}
+.coin{position:absolute;width:44px;height:44px;border-radius:50%;background:var(--li);box-shadow:0 6px 16px rgba(52,199,89,.35);display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-size:17px}
+.slot{position:absolute;width:52px;height:52px;border-radius:50%;border:2px dashed #D2D2D7}
+.card{position:absolute;border-radius:22px;background:#fff;box-shadow:var(--sh);border:1.5px solid transparent}
+.blk{position:absolute;font-weight:800;font-size:12px;color:var(--rd);letter-spacing:1.6px}
+
+.db{position:absolute;width:74px;height:86px}
+.dbl{font-size:11px;font-weight:700;color:var(--mut);letter-spacing:1.3px;text-transform:uppercase;position:absolute}
+.cachebox{position:absolute;width:86px;height:70px;border-radius:16px;background:#fff;border:2px solid var(--li);box-shadow:0 8px 24px rgba(52,199,89,.25);display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:800;font-size:11px;letter-spacing:1.4px;color:var(--li)}
+.avatar{width:54px;height:54px;border-radius:50%;position:relative;overflow:hidden}
+.avatar::before{content:"";position:absolute;left:17px;top:10px;width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,.9)}
+.avatar::after{content:"";position:absolute;left:9px;top:33px;width:36px;height:30px;border-radius:18px 18px 0 0;background:rgba(255,255,255,.9)}
+.pill{display:inline-block;padding:6px 14px;border-radius:999px;font-weight:800;font-size:14px}
+.stat{font-weight:800;letter-spacing:-1.5px}
+.tag{left:0!important;right:0!important;text-align:center}</style></head><body>
+<div id="bgglow"></div>
+
+<!-- S0 hook -->
+<div class="sc" id="s0">
+  <div class="tag" style="color:var(--mut)">Caching · explained</div>
+  <div class="title" id="s0t" style="font-size:37px;top:100px"><span>Loads in</span> <span style="color:var(--cy)">&lt; 1 second.</span><br><span>Server is</span> <span style="color:var(--rd)">9,000 km</span> <span>away.</span></div>
+  <div class="abs" id="s0ph" style="left:58px;top:290px;width:150px;height:270px;border-radius:26px;background:#fff;box-shadow:var(--sh);border:1.5px solid var(--line);overflow:hidden">
+    <div style="position:absolute;left:52px;right:52px;top:9px;height:5px;border-radius:3px;background:var(--line)"></div>
+    <div id="s0feed" style="position:absolute;left:12px;right:12px;top:28px"></div>
+  </div>
+  <div class="abs" id="s0sw" style="left:58px;top:576px;width:150px;text-align:center"><span class="stat" id="s0ms" style="font-size:30px;color:var(--li)">0.0s</span></div>
+  <svg class="abs" id="s0line" style="left:208px;top:400px" width="200" height="40"><path id="s0path" d="M6 20 H194" stroke="var(--mut)" stroke-width="3" stroke-dasharray="8 8" fill="none"/></svg>
+  <div class="abs" id="s0km" style="left:208px;top:368px;width:200px;text-align:center;font-weight:800;color:var(--rd);font-size:15px">9,000 km</div>
+  <div class="server" id="s0srv" style="left:420px;top:368px"><b></b><b></b><b></b></div>
+  <div class="abs" id="s0q" style="left:0;right:0;top:640px;text-align:center;font-weight:800;font-size:72px;color:var(--cy);opacity:0">?</div>
+</div>
+
+<!-- S1 title -->
+<div class="sc" id="s1">
+  <div class="tag" id="s1q" style="color:var(--mut)">One word</div>
+  <div class="title" id="s1t" style="top:300px;font-size:76px;letter-spacing:-3px"></div>
+  <div class="abs" id="s1d" style="left:0;right:0;top:400px;text-align:center;font-size:21px;font-weight:500;color:var(--mut)">keep a <span style="color:var(--li);font-weight:700">copy</span> close to you</div>
+</div>
+
+<!-- S2 slow way -->
+<div class="sc" id="s2">
+  <div class="tag" style="color:var(--rd)">The slow way</div>
+  <div class="title" style="top:92px;font-size:34px">Ask the database.<br>Every. Single. Time.</div>
+  <div class="card" id="s2c" style="left:120px;top:210px;width:300px;height:130px">
+    <div class="lbl" style="position:absolute;left:22px;top:20px">Trips to database</div>
+    <div class="stat" id="s2n" style="position:absolute;left:22px;top:44px;font-size:56px;color:var(--rd)">0</div>
+    <div class="lbl" style="position:absolute;right:22px;top:20px">Each trip</div>
+    <div class="stat" style="position:absolute;right:22px;top:52px;font-size:30px;color:var(--fg)">800 ms</div>
+  </div>
+  <div class="abs" id="s2lane" style="left:40px;top:430px;width:460px;height:200px"></div>
+</div>
+
+<!-- S3 cache -->
+<div class="sc" id="s3">
+  <div class="tag" style="color:var(--li)">The trick</div>
+  <div class="title" style="top:92px;font-size:34px">Keep a copy nearby</div>
+  <div class="card" style="left:40px;top:190px;width:215px;height:120px"><div class="lbl" style="position:absolute;left:20px;top:18px">1st visit</div><div class="stat" id="s3a" style="position:absolute;left:20px;top:44px;font-size:40px;color:var(--rd)">—</div><div class="lbl" id="s3al" style="position:absolute;left:20px;top:92px;color:var(--rd)"></div></div>
+  <div class="card" id="s3bc" style="left:285px;top:190px;width:215px;height:120px"><div class="lbl" style="position:absolute;left:20px;top:18px">2nd visit</div><div class="stat" id="s3b" style="position:absolute;left:20px;top:44px;font-size:40px;color:var(--li)">—</div><div class="lbl" id="s3bl" style="position:absolute;left:20px;top:92px;color:var(--li)"></div></div>
+  <div class="abs" id="s3lane" style="left:40px;top:430px;width:460px;height:200px"></div>
+</div>
+
+<!-- S4 catch -->
+<div class="sc" id="s4">
+  <div class="title" id="s4t" style="top:300px;font-size:54px;color:var(--rd)">THE CATCH</div>
+  <div class="abs" id="s4d" style="left:0;right:0;top:372px;text-align:center;font-size:22px;font-weight:600;color:var(--mut)">Can you spot it?</div>
+</div>
+
+<!-- S5 stale -->
+<div class="sc" id="s5">
+  <div class="tag" style="color:var(--rd)">Stale data</div>
+  <div class="title" style="top:92px;font-size:34px">New photo.<br>Old photo for friends.</div>
+  <div class="card" style="left:40px;top:220px;width:200px;height:250px;text-align:center">
+    <div class="lbl" style="margin-top:20px">Database</div>
+    <div style="display:flex;justify-content:center;margin-top:28px"><div class="avatar" id="s5db" style="width:96px;height:96px;transform:scale(1)"></div></div>
+    <div class="pill" id="s5new" style="margin-top:24px;background:rgba(52,199,89,.12);color:var(--li);opacity:0">NEW PHOTO</div>
+  </div>
+  <div class="card" id="s5fc" style="left:300px;top:220px;width:200px;height:250px;text-align:center">
+    <div class="lbl" style="margin-top:20px">Friend sees (cache)</div>
+    <div style="display:flex;justify-content:center;margin-top:28px"><div class="avatar" id="s5fr" style="width:96px;height:96px;background:var(--cy)"></div></div>
+    <div class="pill" id="s5old" style="margin-top:24px;background:rgba(255,59,48,.1);color:var(--rd);opacity:0">OLD PHOTO</div>
+  </div>
+  <div class="abs" id="s5lie" style="left:0;right:0;top:530px;text-align:center;opacity:0"><span class="pill" style="font-size:20px;background:var(--rd);color:#fff;padding:10px 22px">The cache is lying</span></div>
+</div>
+
+<!-- S6 fix -->
+<div class="sc" id="s6">
+  <div class="tag" style="color:var(--li)">The fix</div>
+  <div class="title" style="top:92px;font-size:34px">Copies expire</div>
+  <div class="card" id="s6c" style="left:90px;top:190px;width:360px;height:180px">
+    <div class="lbl" style="position:absolute;left:24px;top:22px">Cached copy</div>
+    <div class="lbl" style="position:absolute;left:24px;top:48px;color:var(--fg);text-transform:none;letter-spacing:0;font-size:15px">Expiry timer</div>
+    <div class="stat" id="s6tm" style="position:absolute;left:24px;top:76px;font-size:52px">10:00</div>
+    <div class="lbl" style="position:absolute;left:24px;top:142px">e.g. 10 minutes</div>
+    <svg width="96" height="96" style="position:absolute;right:26px;top:42px"><circle cx="48" cy="48" r="40" fill="none" stroke="#E5E5EA" stroke-width="9"/><circle id="s6arc" cx="48" cy="48" r="40" fill="none" stroke="var(--li)" stroke-width="9" stroke-linecap="round" stroke-dasharray="251.3" stroke-dashoffset="0" transform="rotate(-90 48 48)"/></svg>
+    <div class="pill" id="s6ref" style="position:absolute;right:20px;bottom:16px;background:rgba(52,199,89,.12);color:var(--li);opacity:0">REFRESHED</div>
+  </div>
+  <div class="abs" id="s6steps" style="left:60px;top:410px;width:420px"></div>
+</div>
+
+<!-- S7 outro -->
+<div class="sc" id="s7">
+  <div class="title" style="top:100px;font-size:36px" id="s7t">Speed or freshness?</div>
+  <div class="card" id="s7a" style="left:40px;top:190px;width:460px;height:130px">
+    <div style="position:absolute;left:24px;top:22px;font-size:12px;letter-spacing:2px;font-weight:700;color:var(--cy)">CACHE</div>
+    <div style="position:absolute;left:24px;top:48px;font-size:30px;font-weight:800">Fast</div>
+    <div style="position:absolute;left:24px;top:90px;font-size:17px;color:var(--mut)">when it can be</div>
+  </div>
+  <div class="card" id="s7b" style="left:40px;top:340px;width:460px;height:130px;border-color:var(--li)">
+    <div style="position:absolute;left:24px;top:22px;font-size:12px;letter-spacing:2px;font-weight:700;color:var(--li)">EXPIRY + DELETE</div>
+    <div style="position:absolute;left:24px;top:48px;font-size:30px;font-weight:800">Fresh</div>
+    <div style="position:absolute;left:24px;top:90px;font-size:17px;color:var(--mut)">when it has to be</div>
+  </div>
+  <div class="abs" id="s7f" style="left:0;right:0;top:520px;text-align:center"><span style="display:inline-block;padding:12px 26px;border-radius:999px;background:var(--fg);color:#fff;font-weight:700;font-size:18px">Comment below</span><div class="lbl" style="margin-top:14px">Follow @how.its.engineered</div></div>
+</div>
+
+<div id="prog"><div><i></i></div><div><i></i></div><div><i></i></div><div><i></i></div></div>
+<div id="brand">@how.its.engineered</div>
+<div id="cap"></div>
+
+<script>
+const C=[{"li": 0, "show": "Your Instagram feed loads in under a second...", "start": 0, "end": 2.726}, {"li": 0, "show": "but the server is thousands of kilometres away.", "start": 3.176, "end": 5.515}, {"li": 0, "show": "So how?", "start": 5.815, "end": 6.539}, {"li": 1, "show": "One word.", "start": 7.089, "end": 7.581}, {"li": 1, "show": "Caching.", "start": 7.881, "end": 8.601}, {"li": 2, "show": "Here's the slow way.", "start": 9.151, "end": 10.426}, {"li": 2, "show": "Every time you open the app, it asks the database.", "start": 10.726, "end": 13.701}, {"li": 2, "show": "Again. And again.", "start": 14.001, "end": 15.479}, {"li": 2, "show": "Every single time.", "start": 15.779, "end": 17.846}, {"li": 3, "show": "Now imagine keeping a copy...", "start": 18.396, "end": 20.136}, {"li": 3, "show": "right next to you.", "start": 20.586, "end": 21.424}, {"li": 3, "show": "First visit? Slow.", "start": 21.724, "end": 23.2}, {"li": 3, "show": "Second visit? Instant!", "start": 23.5, "end": 25.366}, {"li": 4, "show": "But wait...", "start": 25.916, "end": 26.69}, {"li": 4, "show": "can you spot the problem?", "start": 27.14, "end": 28.519}, {"li": 5, "show": "You change your profile picture.", "start": 29.419, "end": 31.043}, {"li": 5, "show": "But your friends...", "start": 31.343, "end": 32.21}, {"li": 5, "show": "still see the old one.", "start": 32.66, "end": 33.937}, {"li": 6, "show": "That's stale data.", "start": 34.487, "end": 35.723}, {"li": 6, "show": "The cache is lying to you.", "start": 36.023, "end": 37.693}, {"li": 7, "show": "So smart apps give every copy an expiry timer.", "start": 38.243, "end": 41.472}, {"li": 7, "show": "For example, ten minutes.", "start": 41.772, "end": 44.249}, {"li": 7, "show": "Then it refreshes.", "start": 44.549, "end": 45.404}, {"li": 8, "show": "And when something really changes?", "start": 45.954, "end": 47.659}, {"li": 8, "show": "Delete the copy.", "start": 47.959, "end": 49.116}, {"li": 8, "show": "Fetch the fresh one.", "start": 49.416, "end": 50.481}, {"li": 9, "show": "Fast when it can be.", "start": 51.031, "end": 52.182}, {"li": 9, "show": "Fresh when it has to be.", "start": 52.482, "end": 53.854}, {"li": 10, "show": "Would you pick speed, or freshness?", "start": 54.404, "end": 56.707}, {"li": 10, "show": "Comment below.", "start": 57.007, "end": 57.828}, {"li": 10, "show": "And follow for more!", "start": 58.128, "end": 59.6}], END=61.2;
+const $=s=>document.querySelector(s);
+const cl=(x,a=0,b=1)=>Math.min(b,Math.max(a,x)),P=(t,t0,d)=>cl((t-t0)/d);
+const eo=x=>1-Math.pow(1-x,3),eio=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
+const bk=x=>{const c1=1.9,c3=c1+1;return 1+c3*Math.pow(x-1,3)+c1*Math.pow(x-1,2)};
+const lerp=(a,b,u)=>a+(b-a)*u;
+const PS=(li,pi=0)=>C.filter(c=>c.li===li)[pi].start;
+const S=li=>PS(li,0);
+function enter(el,t,t0,{dy=26,d=.45,sc=false}={}){const u=P(t,t0,d);el.style.opacity=u;el.style.transform=sc?`scale(${lerp(.6,1,bk(u))})`:`translateY(${(1-eo(u))*dy}px)`}
+
+// --- shared drawing bits
+const DBSVG=`<svg width="74" height="86" viewBox="0 0 74 86"><ellipse cx="37" cy="14" rx="33" ry="11" fill="#fff" stroke="#D2D2D7" stroke-width="2"/><path d="M4 14 V70 C4 77 70 77 70 70 V14" fill="#fff" stroke="#D2D2D7" stroke-width="2"/><path d="M4 33 C4 40 70 40 70 33 M4 52 C4 59 70 59 70 52" fill="none" stroke="#D2D2D7" stroke-width="2"/><ellipse cx="37" cy="14" rx="33" ry="11" fill="#EEF4FF" stroke="#0071E3" stroke-width="2"/></svg>`;
+function lane(id,{cache=false,n=8}={}){
+  const el=document.getElementById(id);
+  el.insertAdjacentHTML('beforeend',`<div class="phone" style="left:0;top:52px"></div><div class="lbl" style="position:absolute;left:8px;top:156px">YOU</div>
+   <div class="db" style="left:386px;top:52px">${DBSVG}</div><div class="lbl" style="position:absolute;left:378px;top:156px">DATABASE</div>
+   <svg style="position:absolute;left:70px;top:96px" width="300" height="10"><path d="M0 5 H300" stroke="#D2D2D7" stroke-width="2" stroke-dasharray="6 7"/></svg>
+   <div class="lbl dist" style="position:absolute;left:180px;top:74px;color:var(--rd)">far away</div>
+   ${cache?'<div class="cachebox" style="left:92px;top:66px;opacity:0">CACHE<div class="cdot" style="margin-top:6px;width:30px;height:16px;border-radius:8px;background:var(--li);opacity:0"></div></div><div class="lbl clbl" style="position:absolute;left:100px;top:146px;color:var(--li);opacity:0">NEARBY</div>':''}`);
+  const pks=[];for(let i=0;i<n;i++){const p=document.createElement('div');p.className='pk';p.textContent='REQ';el.appendChild(p);pks.push(p)}
+  return {el,pks};
+}
+// round-trip packet: out to x1 then back
+function trip(p,t,t0,{x0=64,x1=360,y=92,dur=1.2,color=null}={}){
+  const lt=t-t0;if(lt<0||lt>dur){p.style.opacity=0;return lt>dur?'done':null}
+  const half=dur/2;let x;
+  if(lt<half){x=lerp(x0,x1,eio(lt/half));p.textContent='REQ';p.style.background=color||'var(--cy)'}
+  else{x=lerp(x1,x0,eio((lt-half)/half));p.textContent='DATA';p.style.background=color||'var(--li)'}
+  p.style.opacity=1;p.style.transform=`translate(${x}px,${y}px)`;return lt>=half?'back':'out';
+}
+const L2=lane('s2lane'),L3=lane('s3lane',{cache:true});
+
+// S0 feed skeleton
+const feed=$('#s0feed');for(let i=0;i<3;i++)feed.insertAdjacentHTML('beforeend',`<div class="fp" style="height:62px;border-radius:10px;background:#EEF0F4;margin-bottom:10px;position:relative;overflow:hidden"><div class="fi" style="position:absolute;inset:0;background:linear-gradient(135deg,${['#6AB7FF','#FFB86B','#7EE3A0'][i]},${['#0071E3','#FF7A59','#34C759'][i]});opacity:0"></div></div><div style="height:7px;width:${[70,50,60][i]}%;border-radius:4px;background:#EEF0F4;margin:-4px 0 12px"></div>`);
+$('#s1t').innerHTML=[...'CACHING'].map(c=>`<span style="display:inline-block">${c}</span>`).join('');
+// S6 steps
+const steps=['Data changes','Delete the copy','Fetch the fresh one'];
+$('#s6steps').innerHTML=steps.map((s,i)=>`<div class="card st" style="position:relative;height:56px;margin-bottom:12px;display:flex;align-items:center;gap:14px;padding:0 18px"><span style="width:30px;height:30px;border-radius:50%;background:${i===1?'var(--rd)':i===2?'var(--li)':'var(--cy)'};color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center">${i+1}</span><b style="font-size:19px">${s}</b></div>`).join('');
+
+const SC=[
+ {id:'s0',a:()=>0,b:()=>S(1)-.1,ch:0},{id:'s1',a:()=>S(1)-.1,b:()=>S(2)-.1,ch:0},
+ {id:'s2',a:()=>S(2)-.1,b:()=>S(3)-.1,ch:1},{id:'s3',a:()=>S(3)-.1,b:()=>S(4)-.1,ch:1},
+ {id:'s4',a:()=>S(4)-.1,b:()=>S(5)-.1,ch:2},{id:'s5',a:()=>S(5)-.1,b:()=>S(7)-.1,ch:2},
+ {id:'s6',a:()=>S(7)-.1,b:()=>S(9)-.1,ch:3},{id:'s7',a:()=>S(9)-.1,b:()=>END+1,ch:3}];
+const chStart=[0,S(2)-.1,S(4)-.1,S(7)-.1,END];
+
+const draw={
+ s0(t){
+  enter(document.querySelector('#s0 .tag'),t,0);
+  [...$('#s0t').children].filter(e=>e.tagName==='SPAN').forEach((s,i)=>{const u=P(t,[.05,.3,PS(0,1)-.1,PS(0,1)+.15,PS(0,1)+.4][i],.4);s.style.display='inline-block';s.style.opacity=u;s.style.transform=`translateY(${(1-eo(u))*20}px)`});
+  const ph=$('#s0ph');ph.style.opacity=P(t,.1,.3);ph.style.transform=`translateY(${(1-eo(P(t,.1,.5)))*40}px)`;
+  const ld=P(t,.5,.8);document.querySelectorAll('#s0 .fi').forEach((f,i)=>f.style.opacity=P(t,.55+i*.2,.25));
+  $('#s0ms').textContent=(Math.min(ld,1)*0.8).toFixed(1)+'s';
+  const far=P(t,PS(0,1)-.1,.6);['#s0line','#s0km','#s0srv'].forEach(s=>$(s).style.opacity=far);
+  $('#s0path').style.strokeDashoffset=-t*30;
+  const q=$('#s0q');const u=P(t,PS(0,2),.4);q.style.opacity=u;q.style.transform=`scale(${lerp(.4,1,bk(u))})`;
+ },
+ s1(t){const a=S(1);enter($('#s1q'),t,a);
+  [...$('#s1t').children].forEach((s,i)=>{const u=P(t,PS(1,1)-.05+i*.04,.45);s.style.opacity=u;s.style.transform=`translateY(${(1-bk(u))*30}px)`});
+  enter($('#s1d'),t,PS(1,1)+.6);},
+ s2(t){const a=S(2);enter(document.querySelector('#s2 .tag'),t,a);enter(document.querySelector('#s2 .title'),t,a+.1);enter($('#s2c'),t,a+.2);
+  L2.el.style.opacity=P(t,a+.2,.4);
+  const fires=[PS(2,1),PS(2,2),PS(2,2)+.7,PS(2,3)];let n=0;
+  fires.forEach((f,i)=>{const r=trip(L2.pks[i],t,f,{dur:1.3,color:null});if(t>=f)n=i+1});
+  $('#s2n').textContent=n;
+  const ln=L2.el.querySelector('.dist');ln.style.opacity=.6+.4*Math.sin(t*6);},
+ s3(t){const a=S(3);enter(document.querySelector('#s3 .tag'),t,a);enter(document.querySelector('#s3 .title'),t,a+.1);
+  L3.el.style.opacity=P(t,a+.1,.4);
+  const cb=L3.el.querySelector('.cachebox'),cl2=L3.el.querySelector('.clbl');const u=P(t,PS(3,1)-.1,.4);cb.style.opacity=u;cb.style.transform=`scale(${lerp(.5,1,bk(u))})`;cl2.style.opacity=u;
+  const v1=PS(3,2),v2=PS(3,3);
+  const r1=trip(L3.pks[0],t,v1,{dur:1.3});
+  L3.el.querySelector('.cdot').style.opacity=t>=v1+1.0?1:0;
+  trip(L3.pks[1],t,v2+.1,{x1:120,dur:.45});
+  enter(document.querySelectorAll('#s3 .card')[0],t,v1-.1);enter($('#s3bc'),t,v2-.1);
+  $('#s3a').textContent=t>=v1+.6?'800 ms':'—';$('#s3al').textContent=t>=v1+.6?'Slow':'';
+  $('#s3b').textContent=t>=v2+.35?'5 ms':'—';$('#s3bl').textContent=t>=v2+.35?'Instant!':'';
+  const g=t>=v2+.35?1-P(t,v2+.35,.8):0;$('#s3bc').style.boxShadow=`var(--sh), 0 0 0 ${5*g}px rgba(52,199,89,${.4*g})`;},
+ s4(t){const a=S(4);const tt=$('#s4t');const u=P(t,a,.35);tt.style.opacity=u;const g=t<a+.5?Math.sin(t*120)*5:0;tt.style.transform=`translateX(${g}px) scale(${lerp(1.3,1,eo(u))})`;enter($('#s4d'),t,PS(4,1));},
+ s5(t){const a=S(5);enter(document.querySelector('#s5 .tag'),t,a);enter(document.querySelector('#s5 .title'),t,a+.1);
+  document.querySelectorAll('#s5 .card').forEach((c,i)=>enter(c,t,a+.2+i*.15));
+  const ch=PS(5,0)+.6;const db=$('#s5db');db.style.background=t>=ch?'var(--li)':'var(--cy)';db.style.transform=`scale(${t>=ch?lerp(1.25,1,eo(P(t,ch,.4))):1})`;
+  $('#s5new').style.opacity=P(t,ch,.3);$('#s5old').style.opacity=P(t,PS(5,2),.3);
+  const fc=$('#s5fc');const w=t>=PS(5,2)?1:0;fc.style.borderColor=w?'var(--rd)':'transparent';
+  const lie=$('#s5lie');const lu=P(t,PS(6,1),.4);lie.style.opacity=lu;lie.style.transform=`scale(${lerp(.6,1,bk(lu))})`;},
+ s6(t){const a=S(7);enter(document.querySelector('#s6 .tag'),t,a);enter(document.querySelector('#s6 .title'),t,a+.1);enter($('#s6c'),t,a+.2);
+  const t0=PS(7,0)+1.0,t1=PS(7,2)+.2;const f=P(t,t0,t1-t0);const rem=Math.round(600*(1-f));
+  $('#s6tm').textContent=t>=t1+.4?'10:00':`${Math.floor(rem/60)}:${String(rem%60).padStart(2,'0')}`;
+  $('#s6arc').style.strokeDashoffset=t>=t1+.4?0:251.3*f;
+  $('#s6ref').style.opacity=t>=t1&&t<S(8)?1:0;
+  document.querySelectorAll('#s6 .st').forEach((s,i)=>enter(s,t,PS(8,i)-.1,{dy:30}));},
+ s7(t){const a=S(9);enter($('#s7a'),t,PS(9,0)-.05,{dy:40});enter($('#s7b'),t,PS(9,1)-.05,{dy:40});enter($('#s7t'),t,PS(10,0)-.1);enter($('#s7f'),t,PS(10,1)-.05,{sc:true});}
+};
+
+// captions
+const SP={'5':1,'10':1};
+function syl(w){const c=w.replace(/[^\w']/g,'').toLowerCase();const g=c.replace(/e$/,'').match(/[aeiouy]+/g);return Math.max(1,g?g.length:1)}
+const W=[];C.forEach((s,si)=>{const w=s.show.replace(/\.\.\./g,'').split(/\s+/).filter(Boolean);const wt=w.map(x=>syl(x)+.4);const tot=wt.reduce((a,b)=>a+b,0);let t=s.start;w.forEach((x,i)=>{const d=(s.end-s.start)*wt[i]/tot;W.push({w:x,s:t,e:t+d,si});t+=d})});
+const CH=[];let cur=[];W.forEach((w,i)=>{cur.push(i);const nx=W[i+1];if(cur.length>=3||!nx||nx.si!==w.si||/[.,?!]$/.test(w.w)){CH.push(cur);cur=[]}});
+const KEY=/^(cach|database|copy|instant|slow|stale|lying|expiry|timer|fresh|delete|speed|problem|old|refresh)/i;
+window.render=function(t){
+  SC.forEach(s=>{const el=document.getElementById(s.id);const A=s.a(),B=s.b();const on=t>=A&&t<B;
+    const fi=P(t,A,.25),fo=1-P(t,B-.2,.2);el.style.opacity=on?Math.min(fi,fo):0;el.style.visibility=on?'visible':'hidden';
+    el.style.transform=on?`scale(${lerp(1.03,1,eo(fi))})`:'none';if(on)draw[s.id](t)});
+  document.querySelectorAll('#prog i').forEach((b,i)=>{b.style.width=P(t,chStart[i],chStart[i+1]-chStart[i])*100+'%'});
+  let wi=-1;for(let i=0;i<W.length;i++)if(t>=W[i].s-.03)wi=i;
+  const cap=$('#cap');if(wi<0||t>C[C.length-1].end+.6){cap.innerHTML='';return}
+  const ch=CH.find(c=>c.includes(wi));
+  cap.innerHTML=ch.map(j=>{if(j>wi)return '';const w=W[j].w.replace(/[.,]$/,'');const isK=KEY.test(w)||/\d/.test(w);
+    const u=P(t,W[j].s,.18);const sc=j===wi?lerp(.7,1,bk(u)):1;
+    return `<span style="color:${isK?'var(--cy)':'var(--fg)'};transform:scale(${sc}) translateY(${(1-eo(u))*10}px)">${w}</span>`}).join('');
+};
+render(0);
+</script></body></html>

@@ -1,0 +1,14 @@
+You tapped Pay twice. So why were you only charged once? 🤔
+
+Slow network → the reply gets lost → your app retries.
+Without a safeguard, that's two charges.
+
+The fix: idempotency.
+Every payment gets a unique ID. The server checks: seen this ID before?
+Yes → send back the same answer. No second charge.
+
+Same request, many times. Same result, once.
+
+Where else have you seen this? Comment below 👇
+
+#systemdesign #softwareengineering #backend #idempotency #coding #programming #techexplained

@@ -1,0 +1,15 @@
+One service in your food app forgot to check the login. Now anyone can see everyone's orders. 💥
+
+Your app isn't one program. It's small services: users, menu, payments, delivery. If your phone calls each one directly, every service has to check your login on its own. Miss one, and the door's wide open.
+
+The fix? One front door. An API gateway. Like airport check-in: nobody boards without passing it.
+🪪 Check ID: it checks your login once, then passes your ID along
+🚦 Count: one user spams refresh? Blocked. Everyone else stays fast
+🔀 Route: one tap on Order goes to 4 services, and it stitches the answers together
+
+A gateway is a reverse proxy that understands your API.
+Kong and Amazon API Gateway run it for real companies.
+
+Have you ever shipped an endpoint with no auth check? Be honest 👇
+
+#coding #programming #softwareengineer #webdevelopment #backend

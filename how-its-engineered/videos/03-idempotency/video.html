@@ -1,0 +1,1051 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+@font-face { font-family: Inter; src: url(../../node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2) format('woff2'); font-weight: 100 900; }
+@font-face { font-family: Mono; src: url(../../node_modules/@fontsource/jetbrains-mono/files/jetbrains-mono-latin-400-normal.woff2) format('woff2'); font-weight: 400; }
+@font-face { font-family: Mono; src: url(../../node_modules/@fontsource/jetbrains-mono/files/jetbrains-mono-latin-500-normal.woff2) format('woff2'); font-weight: 500; }
+html, body { margin: 0; background: #000; }
+#stage { position: relative; width: 540px; height: 960px; overflow: hidden; background: #000; font-family: Inter, sans-serif; color: #fff; }
+#world { position: absolute; inset: 0; transform-origin: 50% 55%; -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,0.12) 70px, rgba(0,0,0,0.5) 190px, #000 270px); mask-image: linear-gradient(to bottom, rgba(0,0,0,0.12) 70px, rgba(0,0,0,0.5) 190px, #000 270px); }
+#vignette { position: absolute; inset: 0; background: radial-gradient(110% 75% at 50% 52%, rgba(255,255,255,0.05), rgba(0,0,0,0) 62%); }
+#bg { position: absolute; inset: 0; width: 540px; height: 960px; }
+svg.full { position: absolute; inset: 0; overflow: visible; }
+#dim { position: absolute; inset: 0; pointer-events: none; }
+#flash { position: absolute; inset: 0; pointer-events: none; opacity: 0; }
+#lb { position: absolute; inset: 0; pointer-events: none; }
+#lb i { position: absolute; left: 0; right: 0; height: 0; background: #000; }
+#grain { position: absolute; inset: -40px; pointer-events: none; opacity: 0.55; mix-blend-mode: screen; }
+#bar { position: absolute; top: 26px; left: 32px; right: 32px; display: flex; gap: 6px; }
+#bar div { flex: 1; height: 2.5px; border-radius: 2px; background: rgba(255,255,255,0.16); overflow: hidden; }
+#bar i { display: block; height: 100%; background: rgba(255,255,255,0.85); width: 0; }
+#caps { position: absolute; left: 0; right: 0; top: 150px; text-align: center; }
+.cap { position: absolute; left: 0; right: 0; padding: 0 30px; }
+.cap-line { font-size: 24px; line-height: 33px; font-weight: 400; color: #a3a3a3; letter-spacing: -0.2px; }
+.w { display: inline-block; margin: 0 3px; }
+.key { color: #fff; font-weight: 700; }
+.pill { background: rgba(255,255,255,0.14); border-radius: 9px; padding: 0 9px; }
+#chapter { position: absolute; left: 32px; top: 236px; font-family: Mono; font-size: 10px; letter-spacing: 2px; color: #8a8a8a; display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+#chapter b { display: inline-block; width: 6px; height: 6px; background: #fff; border-radius: 1px; }
+#handle { position: absolute; right: 32px; top: 232px; display: flex; flex-direction: column; align-items: flex-end; gap: 6px; font-weight: 700; font-size: 8.5px; letter-spacing: 0.6px; }
+.lbl { position: absolute; transform: translate(-50%, -50%); font-family: Mono; font-size: 10px; letter-spacing: 1.5px; color: #c4c4c4; white-space: nowrap; }
+.lbl.big { font-size: 12.5px; letter-spacing: 0.3px; color: #fff; font-weight: 500; }
+.lbl.huge { font-family: Inter; font-size: 30px; font-weight: 800; letter-spacing: -0.5px; color: #fff; }
+.lbl.red { color: #FF453A; } .lbl.green { color: #32D74B; }
+.lbl.tag { font-size: 11px; letter-spacing: 0.5px; color: #000; background: #fff; border-radius: 6px; padding: 3px 7px; font-weight: 500; }
+.lbl.tag.green { background: #32D74B; color: #000; }
+.lbl.tag.red { background: #FF453A; color: #000; }
+.lbl.out { background: rgba(0,0,0,0.85); border: 1px solid rgba(255,255,255,0.45); border-radius: 6px; padding: 3px 7px; color: #fff; font-size: 10.5px; letter-spacing: 0.6px; }
+.card { position: absolute; border: 1px solid rgba(255,255,255,0.5); border-radius: 12px; background: rgba(0,0,0,0.92); font-family: Mono; box-sizing: border-box; font-size: 12.5px; }
+.card .hd { font-size: 9.5px; letter-spacing: 1.6px; color: #8a8a8a; display: flex; justify-content: space-between; }
+.row { display: flex; justify-content: space-between; align-items: center; padding: 7px 9px; border-radius: 7px; margin-top: 6px; }
+.dim { color: #8a8a8a; } .g { color: #32D74B; } .r { color: #FF453A; }
+.cur { display: inline-block; width: 7px; height: 14px; background: #fff; vertical-align: -2px; margin-left: 2px; }
+#title { position: absolute; left: 0; right: 0; top: 590px; text-align: center; }
+#title .t { font-size: 58px; font-weight: 800; letter-spacing: -2.2px; }
+#title .ph { font-family: Mono; font-size: 13px; letter-spacing: 3px; color: #a3a3a3; margin-top: 10px; }
+#title .chip { display: inline-block; margin-top: 18px; font-family: Mono; font-size: 12px; padding: 7px 12px; border: 1px solid rgba(255,255,255,0.4); border-radius: 18px; }
+#cursor { position: absolute; left: 0; top: 0; width: 18px; height: 24px; }
+.sheet { position: absolute; left: 20px; right: 20px; border-radius: 20px; background: #0d0d0d; border: 1px solid rgba(255,255,255,0.18); font-family: Inter; }
+.btn { display: inline-flex; align-items: center; justify-content: center; border-radius: 9px; font-weight: 700; font-size: 13px; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="world">
+    <div id="vignette"></div>
+    <canvas id="bg" width="1080" height="1920"></canvas>
+    <svg class="full" id="scene" width="540" height="960" viewBox="0 0 540 960"></svg>
+    <svg class="full" id="fx" width="540" height="960" viewBox="0 0 540 960"></svg>
+    <div id="labels"></div>
+  </div>
+  <div id="lb"><i style="top:0"></i><i style="bottom:0"></i></div>
+  <div id="dim"></div>
+  <div id="ui"></div>
+  <div id="title"></div>
+  <div id="flash"></div>
+  <div id="chapter"><b></b><span></span></div>
+  <div id="handle">
+    <svg width="17" height="17" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="6" fill="none" stroke="#fff" stroke-width="2"/><circle cx="12" cy="12" r="4.6" fill="none" stroke="#fff" stroke-width="2"/><circle cx="17.6" cy="6.4" r="1.3" fill="#fff"/></svg>
+    <div>@HOW.ITS.ENGINEERED</div>
+  </div>
+  <div id="bar"><div><i></i></div><div><i></i></div><div><i></i></div><div><i></i></div><div><i></i></div></div>
+  <div id="caps"></div>
+  <div id="grain"></div>
+  <svg id="cursor" viewBox="0 0 18 24"><path d="M2 2 L2 19 L6.5 15 L9.5 22 L12.5 20.7 L9.6 14 L15.5 14 Z" fill="#fff" stroke="#000" stroke-width="1.4" stroke-linejoin="round"/></svg>
+</div>
+<script src="../../tools/lib.js"></script>
+<script src="../../tools/iso.js"></script>
+<script src="voice_puck/timings.js"></script>
+<script>
+const $ = (id) => document.getElementById(id);
+ISO.layer = $('scene');
+const FX = $('fx');
+const BG = $('bg').getContext('2d');
+const WD = window.WORDS || [];
+// v2 script has 11 lines; the approved one-take (v1) has 10 — remap v1 onto the v2 layout
+const V2 = window.TIMINGS.some((e) => e.li === 10);
+const TM = (() => {
+  const T = window.TIMINGS;
+  if (V2) return T;
+  const o = (li, pi) => T.find((e) => e.li === li && e.pi === pi);
+  const merge = (a, b, li, pi) => ({ li, pi, start: a.start, end: b.end, show: a.show + ' ' + b.show });
+  const out = T.filter((e) => e.li < 6);
+  out.push(merge(o(6, 0), o(6, 1), 6, 0));
+  out.push({ li: 6, pi: 1, start: o(6, 1).end - 0.85, end: o(6, 2).start - 0.05, show: '', virtual: true });
+  out.push(merge(o(6, 2), o(6, 3), 6, 2));
+  out.push({ ...o(6, 4), li: 6, pi: 3 });
+  T.filter((e) => e.li === 7).forEach((e) => out.push(e));
+  const r = o(8, 0).start;
+  out.push({ li: 8, pi: 0, start: r, end: r, show: '', virtual: true }, { li: 8, pi: 1, start: r, end: r, show: '', virtual: true });
+  T.filter((e) => e.li >= 8).forEach((e) => out.push({ ...e, li: e.li + 1 }));
+  return out;
+})();
+const ph = (li, pi = 0) => TM.find((e) => e.li === li && e.pi === pi);
+const S = (li, pi = 0) => ph(li, pi).start, E = (li, pi = 0) => ph(li, pi).end;
+const nrm = (s) => s.toLowerCase().replace(/[^a-z0-9]/g, '');
+// start time of the first spoken word `w` at/after time `after` (falls back to fb)
+const W = (w, after, fb) => { const x = WD.find((e) => e[1] >= after - 0.05 && nrm(e[0]).startsWith(w)); return x && x[1] < after + 4 ? x[1] : (fb ?? after); };
+const END = E(10, 2) + 1.6;
+window.DURATION = Math.ceil(END * 30) / 30;
+const RED = '#FF453A', GREEN = '#32D74B';
+
+const SPOKEN = TM.filter((e) => !e.virtual);
+const caps = makeCaptions($('caps'), SPOKEN.map((e, i) => ({
+  t: e.start, dur: Math.max(0.35, e.end - e.start), text: e.show,
+  end: i + 1 < SPOKEN.length ? SPOKEN[i + 1].start - 0.02 : END - 0.3,
+})));
+$('grain').style.backgroundImage = `url(${grainURL(256, 0.07, 11)})`;
+
+// ---------- small helpers ----------
+const life = (t, a, b, fi = 0.35, fo = 0.25) => Math.max(0, Math.min(ep(t, a, a + fi), 1 - ep(t, b - fo, b)));
+const hash = (n) => { const x = Math.sin(n * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
+const at = (A, B, k) => [lerp(A[0], B[0], k), lerp(A[1], B[1], k)];
+const flipV = (F) => ({ o: add3(F.o, F.v), u: F.u, v: mul3(F.v, -1) });
+const seg = (o, a, b, opt = {}) => push(o, path2([P(...a), P(...b)], false), { w: 0.8, fill: 'none', ...opt });
+function fcircle(o, F, a, b, r, opt = {}) {
+  const lu = len3(F.u), lv = len3(F.v), pts = [];
+  for (let i = 0; i < 28; i++) { const q = (i / 28) * Math.PI * 2; pts.push(fp(F, a + (r * Math.cos(q)) / lu, b + (r * Math.sin(q)) / lv)); }
+  push(o, path2(pts), { w: 0.9, ...opt });
+}
+// front half of a horizontal ring (for glowing bands on cylinders)
+function frontArc(cx, cy, z, r) {
+  const c = Math.cos(CAM.yaw), s = Math.sin(CAM.yaw), phi = Math.atan2(c - s, c + s), pts = [];
+  for (let i = 0; i <= 24; i++) { const a = phi - Math.PI / 2 + (i / 24) * Math.PI; pts.push(P(cx + r * Math.cos(a), cy + r * Math.sin(a), z)); }
+  return path2(pts, false);
+}
+function scramble(str, p, seed = 1) {
+  const H = '0123456789ABCDEF'; let out = '';
+  for (let i = 0; i < str.length; i++) {
+    const c = str[i];
+    if (c === '-' || c === ' ' || c === ':') { out += c; continue; }
+    const settle = (i / str.length) * 0.75;
+    if (p >= settle + 0.25) out += c;
+    else out += H[Math.floor(hash(i * 7.3 + Math.floor(p * 40) * 3.1 + seed) * 16)];
+  }
+  return out;
+}
+const fx = (tag, attrs, parent = FX) => el(tag, attrs, parent);
+const labels = $('labels');
+function label(text, x, y, op, cls = '', extra = '') {
+  if (op <= 0.01) return;
+  const d = document.createElement('div');
+  d.className = 'lbl ' + cls; d.innerHTML = text;
+  d.style.left = x + 'px'; d.style.top = y + 'px'; d.style.opacity = Math.min(1, op);
+  if (extra) d.style.cssText += extra;
+  labels.appendChild(d);
+}
+const popScale = (t, t0, k = 0.45, d = 0.3) => `transform:translate(-50%,-50%) scale(${1 + k * (1 - ep(t, t0, t0 + d))})`;
+function card(a, style, inner, cls = 'card') {
+  if (a <= 0.001) return '';
+  const e = ease.back(clamp(a)), o = clamp(a * 1.5);
+  return `<div class="${cls}" style="${style};opacity:${o};transform:translateY(${(1 - e) * 18}px) scale(${lerp(0.92, 1, e)});filter:blur(${(1 - clamp(a * 1.3)) * 6}px)">${inner}</div>`;
+}
+function ripple(t, t0, p, col = '#fff', R = 34) {
+  const k = prog(t, t0, t0 + 0.55);
+  if (k <= 0 || k >= 1) return;
+  fx('circle', { cx: p[0], cy: p[1], r: 4 + ease.out(k) * R, fill: 'none', stroke: col, 'stroke-width': 1.6 * (1 - k) + 0.3, 'stroke-opacity': 1 - k });
+}
+function isoRing(t, t0, w, col = '#fff', R = 90, dur = 0.8) {
+  const k = prog(t, t0, t0 + dur);
+  if (k <= 0 || k >= 1) return;
+  const r = 10 + ease.out(k) * R, pts = [];
+  for (let i = 0; i <= 40; i++) { const q = (i / 40) * Math.PI * 2; pts.push(P(w[0] + r * Math.cos(q), w[1] + r * Math.sin(q), w[2] || 0)); }
+  fx('path', { d: path2(pts), fill: 'none', stroke: col, 'stroke-width': 1.4, 'stroke-opacity': (1 - k) * 0.9 });
+}
+function pop(t, t0, p, text, cls = 'big', dur = 1.1) {
+  const k = prog(t, t0, t0 + dur);
+  if (k <= 0 || k >= 1) return;
+  label(text, p[0], p[1] - ease.out(k) * 34, Math.min(ep(t, t0, t0 + 0.12), 1 - prog(k, 0.6, 1)), cls, `transform:translate(-50%,-50%) scale(${lerp(1.35, 1, ease.out(clamp(k * 4)))})`);
+}
+function shards(t, t0, p, col = RED, n = 9, R = 1) {
+  const k = prog(t, t0, t0 + 0.7);
+  if (k <= 0 || k >= 1) return;
+  for (let i = 0; i < n; i++) {
+    const a = (i / n) * Math.PI * 2 + hash(i) * 0.6, d = 6 + ease.out(k) * (26 + hash(i + 3) * 26) * R, L = 6 * (1 - k) + 2;
+    const x = p[0] + Math.cos(a) * d, y = p[1] + Math.sin(a) * d + k * k * 14;
+    fx('line', { x1: x, y1: y, x2: x + Math.cos(a + 1) * L, y2: y + Math.sin(a + 1) * L, stroke: col, 'stroke-width': 1.4, 'stroke-opacity': 1 - k });
+  }
+}
+// sparkle burst (4-point stars)
+function sparkle(t, t0, p, col = '#fff', R = 30) {
+  const k = prog(t, t0, t0 + 0.6);
+  if (k <= 0 || k >= 1) return;
+  for (let i = 0; i < 6; i++) {
+    const a = (i / 6) * Math.PI * 2 + 0.4, d = ease.out(k) * R * (0.7 + hash(i + 11) * 0.6), s = 5 * (1 - k);
+    const x = p[0] + Math.cos(a) * d, y = p[1] + Math.sin(a) * d;
+    fx('path', { d: `M${x} ${y - s}L${x + s * 0.25} ${y}L${x} ${y + s}L${x - s * 0.25} ${y}ZM${x - s} ${y}L${x} ${y + s * 0.25}L${x + s} ${y}L${x} ${y - s * 0.25}Z`, fill: col, 'fill-opacity': 1 - k });
+  }
+}
+
+// ---------- world layout ----------
+const PH = [0, 170], SV = [0, -170], CS = [112, 132], VT = [-122, -214], DB = [132, -268], TW = [-178, 26];
+const CLOUD = [0, 0, 175], EL = [640, -60], ST = [-660, -150];
+const BTN = [PH[0], PH[1] - 58 + 0.745 * 116, 12];
+const EBTN = [EL[0] - 85 + 0.76 * 170, EL[1] - 26, 5 + 0.46 * 178];
+const SVTOP = [SV[0], SV[1], 140], DBTOP = [DB[0], DB[1], 104], VTTOP = [VT[0], VT[1], 62];
+const RING = [90, 30, -30, -90, -150, 150].map((a) => [Math.round(340 * Math.cos(a * Math.PI / 180)), Math.round(SV[1] + 340 * Math.sin(a * Math.PI / 180))]);
+
+function phoneObj(st, c = PH) {
+  const [cx, cy] = c, o = Obj();
+  const T = box(o, cx - 55, cy - 85, 0, 110, 170, 5);
+  tileDots(o, T.top, 6, 9);
+  const F = box(o, cx - 30, cy - 58, 5, 60, 116, 7), Sc = F.top;
+  fpoly(o, Sc, 0.08, 0.05, 0.84, 0.9, { fill: 'none' });
+  fline(o, Sc, 0.38, 0.1, 0.62, 0.1, { w: 1.2 });
+  ftext(o, Sc, 0.5, 0.2, 'Coffee Shop', 5.5, { weight: 500, op: 0.7 });
+  const m = st.mode || 'pay', press = st.press || 0;
+  if (m === 'pay') {
+    ftext(o, Sc, 0.5, 0.33, '$50.00', 13, { weight: 800 });
+    if (st.id) ftext(o, Sc, 0.5, 0.47, st.id, 4.4, { font: 'Mono', weight: 500, fill: GREEN });
+    else { fline(o, Sc, 0.22, 0.46, 0.78, 0.46, { op: 0.5 }); fline(o, Sc, 0.22, 0.53, 0.62, 0.53, { op: 0.5 }); }
+    fpoly(o, Sc, 0.16, 0.68, 0.68, 0.13, { fill: press > 0.02 ? '#fff' : 'none', fillOp: press, w: 1 });
+    ftext(o, Sc, 0.5, 0.745, 'PAY $50', 6.6, { fill: press > 0.5 ? '#000' : '#fff', weight: 800, ls: 0.4 });
+  } else if (m === 'spin') {
+    ftext(o, Sc, 0.5, 0.33, '$50.00', 13, { weight: 800, op: 0.45 });
+    for (let k = 0; k < 10; k++) {
+      const a = (k / 10) * Math.PI * 2, lit = ((k - st.t * 14) % 10 + 10) % 10 / 10;
+      fdot(o, Sc, 0.5 + (9 * Math.cos(a)) / 60, 0.58 + (9 * Math.sin(a)) / 116, 1.15, { fillOp: 0.15 + 0.85 * lit });
+    }
+    ftext(o, Sc, 0.5, 0.78, st.slow ? 'Waiting for network…' : 'Processing…', 4.6, { weight: 500, op: 0.8 });
+  } else if (m === 'timeout') {
+    ftext(o, Sc, 0.5, 0.33, '$50.00', 13, { weight: 800, op: 0.4 });
+    ftext(o, Sc, 0.5, 0.5, 'Request timed out', 5, { weight: 700, fill: RED });
+    fpoly(o, Sc, 0.16, 0.68, 0.68, 0.13, { fill: press > 0.02 ? '#fff' : 'none', fillOp: press, w: 1 });
+    ftext(o, Sc, 0.5, 0.745, 'TRY AGAIN', 6.2, { fill: press > 0.5 ? '#000' : '#fff', weight: 800, ls: 0.4 });
+  } else if (m === 'done') {
+    fcircle(o, Sc, 0.5, 0.42, 11, { stroke: GREEN, fill: 'none', w: 1.4 });
+    fline(o, Sc, 0.42, 0.43, 0.48, 0.47, { stroke: GREEN, w: 1.6 });
+    fline(o, Sc, 0.48, 0.47, 0.6, 0.37, { stroke: GREEN, w: 1.6 });
+    ftext(o, Sc, 0.5, 0.64, 'Paid · $50.00', 6, { weight: 800, fill: GREEN });
+    ftext(o, Sc, 0.5, 0.76, st.note || 'charged once', 4.6, { weight: 500, op: 0.75 });
+  }
+  if (F.px) { fline(o, F.px, 0.25, 0.5, 0.4, 0.5, { w: 1.1 }); fline(o, F.px, 0.5, 0.5, 0.58, 0.5, { w: 1.1 }); }
+  return o;
+}
+function serverObj(t, flash = 0, col = '#fff') {
+  const [cx, cy] = SV, o = Obj();
+  const T = box(o, cx - 80, cy - 72, 0, 160, 144, 5);
+  tileDots(o, T.top, 8, 7);
+  const racks = [rack(o, cx - 68, cy - 60, 5, 58, 52, 132), rack(o, cx - 6, cy - 60, 5, 58, 52, 132)];
+  racks.forEach((F, s) => {
+    if (!F.py) return;
+    for (let k = 0; k < 12; k++) {
+      const blink = Math.sin(t * (5 + s) + k * 1.9 + s * 2.3) > 0.35 ? 1 : 0;
+      const v = Math.max(blink * 0.5, flash * (0.5 + 0.5 * Math.sin(t * 40 + k)));
+      if (v > 0.05) fdot(o, F.py, 0.8, 0.06 + k * 0.074 + 0.036, 1.7, { fill: flash > 0.05 ? col : '#fff', fillOp: v });
+    }
+  });
+  return o;
+}
+// one coin (flat cylinder) with a $ on top
+function coin(o, x, y, z, glyph = true, col) {
+  cylinder(o, x, y, z, 15, 5, 0);
+  if (col) o.items.slice(-2).forEach((it) => (it.stroke = col));
+  if (glyph) ftext(o, { o: [x - 15, y - 15, z + 5], u: [30, 0, 0], v: [0, 30, 0] }, 0.5, 0.5, '$', 13, { weight: 800, fill: col || '#fff' });
+}
+function coinStack(n, lift = 0) {
+  const o = Obj();
+  const T = box(o, CS[0] - 26, CS[1] - 26, 0, 52, 52, 3);
+  for (let i = 0; i < n; i++) coin(o, CS[0], CS[1], 3 + i * 6 + (i === n - 1 ? lift : 0), i === n - 1);
+  return o;
+}
+function vaultObj(pulse) {
+  const [cx, cy] = VT, o = Obj();
+  const F = box(o, cx - 32, cy - 32, 0, 64, 64, 58);
+  for (const k of ['px', 'py']) {
+    if (!F[k]) continue;
+    fpoly(o, F[k], 0.08, 0.1, 0.84, 0.8, { fill: 'none', w: 0.7 });
+    fcircle(o, F[k], 0.5, 0.5, 15, { fill: 'none', stroke: pulse > 0.05 ? GREEN : '#fff', op: 1, w: 1.1 });
+    fcircle(o, F[k], 0.5, 0.5, 4, { fill: 'none', w: 0.9 });
+    for (let s = 0; s < 3; s++) { const a = s * 2.1 + pulse * 3; fline(o, F[k], 0.5 + 0.07 * Math.cos(a), 0.5 + 0.07 * Math.sin(a), 0.5 + 0.2 * Math.cos(a), 0.5 + 0.2 * Math.sin(a), { w: 0.8 }); }
+  }
+  fpoly(o, F.top, 0.3, 0.44, 0.4, 0.12, { fill: '#fff', fillOp: 0.25 + 0.75 * pulse, stroke: 'none' });
+  return o;
+}
+function dbObj(t, pulse, col, rows) {
+  const [cx, cy] = DB, o = Obj();
+  const T = box(o, cx - 46, cy - 46, 0, 92, 92, 4);
+  tileDots(o, T.top, 5, 5);
+  cylinder(o, cx, cy, 4, 36, 98, 3);
+  const top = { o: [cx - 26, cy - 26, 102], u: [52, 0, 0], v: [0, 52, 0] };
+  ftext(o, top, 0.5, 0.35, 'SEEN', 7, { weight: 800, font: 'Mono', op: 0.85 });
+  ftext(o, top, 0.5, 0.62, rows, 6.5, { weight: 500, font: 'Mono', fill: pulse > 0.05 ? col : '#fff', op: 0.85 });
+  for (let b = 1; b <= 3; b++) if (pulse > 0.02) push(o, frontArc(cx, cy, 4 + (98 * b) / 4, 36), { fill: 'none', stroke: col, w: 2, op: pulse });
+  return o;
+}
+function towerObj(t, bars) {
+  const [cx, cy] = TW, o = Obj();
+  box(o, cx - 26, cy - 26, 0, 52, 52, 4);
+  const H = 190, b = 20, tp = 5;
+  const leg = (sx, sy, z) => [cx + sx * lerp(b, tp, z / H), cy + sy * lerp(b, tp, z / H), z];
+  const L = [[-1, -1], [1, -1], [1, 1], [-1, 1]];
+  L.forEach(([sx, sy]) => seg(o, leg(sx, sy, 4), leg(sx, sy, H), { w: 1.1 }));
+  for (let k = 0; k < 6; k++) {
+    const z0 = 4 + k * 30, z1 = z0 + 30;
+    for (let i = 0; i < 4; i++) {
+      const A = L[i], B = L[(i + 1) % 4];
+      seg(o, leg(...A, z1), leg(...B, z1), { w: 0.6, op: 0.8 });
+      seg(o, leg(...A, z0), leg(...B, Math.min(H, z1)), { w: 0.5, op: 0.55 });
+    }
+  }
+  box(o, cx - 12, cy - 4, H - 50, 6, 8, 26); box(o, cx + 6, cy - 4, H - 70, 6, 8, 26);
+  seg(o, [cx, cy, H], [cx, cy, H + 30], { w: 1.2 });
+  return o;
+}
+function elevatorObj(open, lit, flash, floor, carZ) {
+  const [cx, cy] = EL, o = Obj();
+  const T = box(o, cx - 120, cy - 60, 0, 240, 130, 5);
+  tileDots(o, T.top, 10, 6);
+  // shaft tower above the doors
+  const Sh = box(o, cx - 85 + 0.1 * 170, cy - 42, 183, 0.54 * 170, 16, 380);
+  if (Sh.py) {
+    const Wd = flipV(Sh.py);
+    fpoly(o, Sh.py, 0.18, 0.02, 0.64, 0.96, { fill: 'none', w: 0.8 });
+    for (let k = 1; k < 4; k++) fline(o, Sh.py, 0, k / 4, 1, k / 4, { w: 0.6, op: 0.7 });
+    for (let k = 0; k < 4; k++) ftext(o, Wd, 0.09, 1 - (k + 0.5) / 4, String(k + 2), 9, { weight: 700, op: carZ > 0 && Math.abs(carZ - (183 + k * 95 + 47)) < 48 ? 1 : 0.35 });
+    if (carZ > 183) {
+      const b = (carZ - 183 - 34) / 380;
+      fpoly(o, Sh.py, 0.24, clamp(b, 0, 0.98), 0.52, 68 / 380, { fill: '#fff', fillOp: 0.85, stroke: '#fff', w: 1 });
+      fline(o, Sh.py, 0.5, clamp(b + 68 / 380), 0.5, 0.99, { w: 0.6 });
+    }
+  }
+  const F = box(o, cx - 85, cy - 42, 5, 170, 16, 178);
+  if (F.px) for (let k = 0; k < 6; k++) fline(o, F.px, 0.3, 0.15 + k * 0.13, 0.7, 0.15 + k * 0.13, { op: 0.5, w: 0.5 });
+  if (!F.py) return o;
+  const Wl = F.py, Wd = flipV(Wl);
+  fpoly(o, Wl, 0.1, 0, 0.54, 0.82, { fill: 'none', w: 1 });
+  if (open > 0.01) {
+    const half = 0.25 * open;
+    fpoly(o, Wl, 0.37 - half, 0.005, 2 * half, 0.8, { fill: '#fff', fillOp: 0.22 * open, stroke: 'none' });
+    for (let k = 1; k < 6; k++) fline(o, Wl, 0.37 - half + (2 * half * k) / 6, 0.02, 0.37 - half + (2 * half * k) / 6, 0.78, { op: 0.25 * open, w: 0.5 });
+  }
+  const dw = 0.25 * (1 - open);
+  if (dw > 0.004) {
+    fpoly(o, Wl, 0.12, 0.005, dw, 0.8, { fill: '#000', w: 0.9 });
+    fpoly(o, Wl, 0.62 - dw, 0.005, dw, 0.8, { fill: '#000', w: 0.9 });
+  }
+  fpoly(o, Wl, 0.29, 0.86, 0.16, 0.08, { fill: 'none', w: 0.8 });
+  ftext(o, Wd, 0.37, 0.1, floor, 9, { weight: 700, fill: open > 0.05 ? GREEN : '#fff' });
+  fpoly(o, Wl, 0.72, 0.36, 0.08, 0.2, { fill: 'none', w: 0.8 });
+  fcircle(o, Wl, 0.76, 0.46, 4.6, { fill: lit ? '#fff' : '#000', fillOp: lit ? lerp(0.55, 1, flash) : 1, w: 1 });
+  return o;
+}
+// datacenter rows + the big request slab
+function dcObj(t, hl) {
+  const [cx, cy] = ST, o = Obj();
+  const T = box(o, cx - 200, cy - 170, 0, 400, 360, 5);
+  tileDots(o, T.top, 14, 12);
+  for (let j = 0; j < 2; j++) for (let i = 0; i < 4; i++) {
+    const F = rack(o, cx - 170 + i * 88, cy - 150 + j * 90, 5, 56, 46, 118);
+    if (F.py) for (let k = 0; k < 12; k++) if (Math.sin(t * (4 + i) + k * 2.1 + j * 1.3 + i) > 0.4) fdot(o, F.py, 0.8, 0.06 + k * 0.074 + 0.036, 1.6, { fillOp: 0.8 });
+  }
+  const Sl = box(o, cx - 130, cy + 140, 5, 260, 10, 168);
+  if (Sl.py) {
+    const R = flipV(Sl.py);
+    fpoly(o, Sl.py, 0.04, 0.05, 0.92, 0.9, { fill: 'none', w: 0.6, op: 0.7 });
+    if (hl > 0) fpoly(o, R, 0.05, 0.33, 0.9 * hl, 0.15, { fill: GREEN, fillOp: 0.9, stroke: 'none' });
+    const lines = [['POST /v1/charges', 0.18, '#fff'], ['Idempotency-Key: 7F3A-91C2', 0.405, hl > 0.5 ? '#000' : GREEN], ['amount: 5000', 0.6, '#fff'], ['currency: usd', 0.76, '#fff']];
+    for (const [s, b, c] of lines) ftext(o, R, 0.08, b, s, 12, { anchor: 'start', font: 'Mono', weight: 500, fill: c, op: 0.95 });
+  }
+  return o;
+}
+// floating key: drawn on a vertical plane that spins around z
+function keyObj(c, z, ang, sc = 1, col = GREEN) {
+  const o = Obj(), w = 64 * sc, h = 26 * sc;
+  const ux = Math.cos(ang), uy = Math.sin(ang);
+  const F = { o: [c[0] - ux * w / 2, c[1] - uy * w / 2, z], u: [ux * w, uy * w, 0], v: [0, 0, h] };
+  fcircle(o, F, 0.17, 0.5, 11 * sc, { fill: '#000', stroke: col, w: 1.6 });
+  fcircle(o, F, 0.17, 0.5, 4.5 * sc, { fill: '#000', stroke: col, w: 1.2 });
+  fpoly(o, F, 0.33, 0.42, 0.62, 0.16, { fill: '#000', stroke: col, w: 1.4 });
+  fpoly(o, F, 0.78, 0.18, 0.06, 0.24, { fill: '#000', stroke: col, w: 1.2 });
+  fpoly(o, F, 0.88, 0.22, 0.06, 0.2, { fill: '#000', stroke: col, w: 1.2 });
+  return o;
+}
+
+// ---------- coins: stack resets per chapter; each charge flies one coin to the vault ----------
+const RESETS = [0, S(2, 0), S(4, 0), S(5, 0), S(9, 0)];
+const CF = []; // coin flights {t0, dur}
+const coinFly = (t0, dur = 0.9) => CF.push({ t0, dur });
+const stackN = (t) => { const r = Math.max(...RESETS.filter((x) => x <= t)); return 5 - CF.filter((c) => c.t0 >= r && c.t0 <= t).length; };
+function drawCoinFlights(t, op) {
+  for (const c of CF) {
+    const k = prog(t, c.t0, c.t0 + c.dur);
+    if (k <= 0 || k >= 1) continue;
+    const r = Math.max(...RESETS.filter((x) => x <= c.t0));
+    const n = 5 - CF.filter((q) => q.t0 >= r && q.t0 < c.t0).length;
+    const A = [CS[0], CS[1], 3 + (n - 1) * 6], B = VTTOP;
+    for (let g = 3; g >= 0; g--) {
+      const kk = ease.inOut(clamp(k - g * 0.04));
+      const x = lerp(A[0], B[0], kk), y = lerp(A[1], B[1], kk), z = lerp(A[2], B[2], kk) + Math.sin(kk * Math.PI) * 170;
+      const o = Obj(); coin(o, x, y, z, g === 0); emit(o, 1, op * (g === 0 ? 1 : 0.28 - g * 0.07));
+    }
+  }
+}
+
+// ---------- packets: from/to are world xy ----------
+const FL = [];
+const fly = (t0, dur, from, to, text, kind = 'w') => FL.push({ t0, dur, from, to, text, kind });
+// hook
+const HOOK_DONE = 1.85;
+fly(1.0, 0.75, PH, SV, '');
+coinFly(HOOK_DONE + 0.1, 1.0);
+// simple way
+const A1 = S(2, 1) + 0.35;
+fly(A1, 1.35, PH, SV, 'charge $50');
+coinFly(S(2, 2) + 0.15);
+const EV = [S(2, 3) + 0.15, S(2, 3) + 0.5, S(2, 3) + 0.85];
+EV.forEach((x) => { fly(x, 0.6, PH, SV, ''); coinFly(x + 0.6, 0.75); });
+// failure
+const F1 = S(4, 0) + 0.2, F1A = V2 ? S(4, 1) + 0.1 : E(4, 0) + 0.1;
+fly(F1, F1A - F1, PH, SV, 'charge $50', 'slow');
+coinFly(F1A + 0.2);
+const LOST = V2 ? W('lost', S(4, 1), S(4, 1) + 1.6) : W('comes', S(4, 1), S(4, 1) + 0.6) + 0.1;
+fly(F1A + 0.25, 2 * (LOST - F1A - 0.25), SV, PH, 'OK ✓', 'lost');
+const TAP2 = S(4, 3) + 0.42, F2A = S(4, 4) + 0.3;
+fly(TAP2 + 0.05, F2A - TAP2 - 0.05, PH, SV, 'charge $50 · again');
+coinFly(S(4, 5) - 0.05, 0.8);
+// fix
+const K1 = S(5, 2) + 0.55, K1A = S(6, 0) + 0.55;
+fly(K1, K1A - K1, PH, SV, 'charge $50 · 7F3A', 'key');
+const NO = S(6, 1), CHG = V2 ? W('charge', S(6, 1), S(6, 1) + 0.45) : NO + 0.2, WRITE = V2 ? W('write', S(6, 1), S(6, 1) + 1.3) : NO + 0.5;
+coinFly(CHG + 0.05);
+const R2 = E(6, 1) - 0.85, YES = S(6, 2);
+fly(R2, YES - R2 + 0.02, PH, SV, 'retry · 7F3A', 'key');
+const SAME = W('same', S(6, 2), S(6, 2) + 1.0);
+fly(SAME - 0.35, 1.1, SV, PH, 'same answer ✓', 'g');
+// recap: one request from every phone, all the same ID
+const RC = RING.map((p, i) => S(9, 0) + 0.15 + i * 0.2);
+RING.forEach((p, i) => fly(RC[i], 0.75, p, SV, i === 0 ? '7F3A' : '', 'key'));
+coinFly(RC[0] + 0.8, 0.9);
+RING.forEach((p, i) => fly(S(9, 1) + 0.05, 0.8, SV, p, i === 0 ? 'same result ✓' : '', 'g'));
+
+const arrivals = FL.filter((f) => f.to === SV).map((f) => f.t0 + f.dur);
+function drawPackets(t, vis) {
+  for (const f of FL) {
+    const k = prog(t, f.t0, f.t0 + f.dur);
+    if (k <= 0 || (k >= 1 && f.kind !== 'lost')) continue;
+    let kk = f.kind === 'slow' ? k * (0.85 + 0.15 * Math.sin(k * 20)) : ease.inOut(k), op = vis;
+    if (f.kind === 'lost') { kk = ease.out(clamp(k * 2)) * 0.5; op *= 1 - prog(t, LOST, LOST + 0.08); }
+    const ka = (q) => at(f.from, f.to, lerp(f.from === PH || RING.includes(f.from) ? 0.2 : 0.2, 0.8, q));
+    const col = f.kind === 'g' ? GREEN : null;
+    if (f.kind !== 'slow') for (let g = 3; g >= 1; g--) {
+      const kg = clamp(kk - g * 0.035); if (kg <= 0) continue;
+      const q = ka(kg), o = Obj();
+      box(o, q[0] - 6, q[1] - 6, 7, 12, 12, 12, col ? { stroke: col } : {});
+      emit(o, 1, op * (0.32 - g * 0.09));
+    }
+    if (op > 0.01) {
+      const q = ka(kk), o = Obj();
+      const Fb = box(o, q[0] - 6, q[1] - 6, 7, 12, 12, 12, col ? { stroke: col } : {});
+      fpoly(o, Fb.top, 0.25, 0.25, 0.5, 0.5, { fill: col || (f.kind === 'key' ? GREEN : '#fff'), stroke: 'none' });
+      emit(o, 1, op);
+      if (f.kind === 'key') emit(keyObj(q, 26, t * 3, 0.42), 1, op);
+      if (f.text) { const lp = P(q[0], q[1], f.kind === 'key' ? 52 : 38); label(f.text, lp[0], lp[1], op * ep(t, f.t0, f.t0 + 0.2), f.kind === 'g' || f.kind === 'key' ? 'big green' : 'big'); }
+    }
+  }
+}
+
+// ---------- camera shots: each shot moves from a→b; a new shot is a hard cut unless a is null (continue) ----------
+const V = (f, s, y, p, sy = 540, r = 0, sx = 270) => ({ f, s, y, p, sy, r, sx });
+const SH = [];
+const shot = (t, a, b, kick = false, fn = ease.inOut) => SH.push({ t, a, b, kick, fn });
+const L7 = S(7, 0);
+shot(0, V([0, 182, 12], 2.55, -0.5, 52, 520), V([0, 178, 12], 2.75, -0.22, 46, 520));
+shot(S(0, 1) - 0.05, V([75, 135, 24], 1.75, 0.62, 24, 600), V([75, 135, 24], 1.9, 0.36, 30, 600));
+shot(S(1, 0) - 0.12, V([0, 0, 30], 0.7, 0.4, 50, 540), V([0, 0, 30], 0.75, 0.9, 55, 540));
+shot(S(2, 0) - 0.08, V([0, -30, 30], 0.5, 0.9, 78, 500), V([0, -20, 30], 0.82, 0.18, 36, 500), true, ease.outExpo);
+shot(S(2, 1) - 0.05, V([0, 70, 30], 1.2, -0.78, 15, 520), V([0, -40, 40], 1.08, -0.62, 18, 500), true);
+shot(S(2, 2) - 0.05, V([-50, -190, 60], 1.4, 0.3, 26, 510), V([-50, -190, 60], 1.55, 0.18, 28, 510));
+shot(S(2, 3) - 0.05, V([0, -60, 50], 0.78, -0.4, 38, 500), V([0, -60, 50], 0.78, 0.32, 40, 500), true);
+shot(S(3, 0) - 0.05, V([0, -30, 40], 0.8, 0.0, 62, 520), V([0, -30, 40], 0.88, 0.22, 66, 520));
+shot(S(4, 0) - 0.1, V([-50, 30, 95], 0.92, -0.62, 12, 560), V([-40, 20, 95], 0.98, -0.42, 14, 560), true);
+shot(F1A - 0.45, V([-50, -170, 70], 1.35, 0.4, 24, 560), V([0, -30, 90], 1.2, 0.1, 20, 560));
+shot(LOST - 0.35, V([0, 0, 60], 1.7, -0.15, 10, 600, -3), V([0, 10, 60], 1.85, -0.05, 12, 600, -4));
+shot(S(4, 2) - 0.1, V([0, 172, 12], 2.0, -0.28, 48, 540), V([0, 172, 12], 2.2, -0.14, 50, 540));
+shot(S(4, 4) - 0.1, V([0, 0, 30], 0.9, 0.08, 36, 470), V([0, 0, 30], 0.95, 0.2, 38, 470), true);
+shot(S(4, 5) - 0.05, V([0, -40, 60], 1.05, -0.25, 30, 460, -6), V([0, -40, 60], 1.12, -0.32, 30, 460, -8));
+shot(S(5, 0) - 0.02, V([40, -60, 40], 0.85, -1.0, 50, 520), V([40, -60, 40], 0.9, 0.12, 40, 520), true, ease.outExpo);
+shot(S(5, 1) - 0.05, V([0, 170, 50], 1.7, -0.25, 30, 610), V([0, 170, 50], 1.85, 0.08, 32, 610), true);
+shot(S(5, 2) - 0.05, V([0, 90, 30], 1.2, -0.72, 18, 500), V([0, -20, 40], 1.1, -0.6, 20, 500));
+shot(S(6, 0) - 0.05, V([60, -220, 70], 1.3, 0.12, 26, 600, 0, 340), V([60, -220, 70], 1.42, 0.22, 26, 600, 0, 340), true);
+shot(NO - 0.05, V([20, -150, 50], 0.95, 0.25, 32, 580, 0, 250), V([20, -150, 50], 1.0, 0.1, 32, 580, 0, 250));
+shot(YES - 0.08, V([60, -215, 90], 1.55, 0.3, 14, 620, 0, 345), V([60, -215, 90], 1.62, 0.36, 15, 620, 0, 345), true);
+shot(SAME - 0.15, null, V([0, 0, 40], 0.95, 0.05, 36, 480));
+shot(S(6, 3) - 0.05, null, V([0, 0, 40], 0.9, -0.12, 40, 480));
+shot(L7 - 0.1, null, V([EL[0], EL[1], 220], 0.95, 0.32, 6, 640), false, ease.inOut);
+shot(L7 + 1.0, null, V([EL[0], EL[1], 200], 0.98, 0.22, 9, 630), false, (k) => k);
+shot(S(7, 1) - 0.05, V(EBTN, 2.6, 0.14, 12, 560), V(EBTN, 2.75, 0.1, 12, 560), true);
+shot(S(7, 1) + 0.75, V([EL[0], EL[1] - 30, 430], 1.25, 0.3, 4, 560), V([EL[0], EL[1] - 30, 260], 1.3, 0.2, 6, 560), false, (k) => k);
+shot(E(7, 1) - 0.2, V(EBTN, 2.85, 0.04, 14, 560), V(EBTN, 2.9, 0.0, 14, 560));
+shot(S(7, 2) - 0.05, V([EL[0], EL[1], 150], 0.8, -0.24, 18, 560), V([EL[0], EL[1], 150], 0.86, -0.1, 18, 560), true);
+if (V2) shot(S(8, 0) - 0.05, V([ST[0], ST[1], 40], 0.48, 1.0, 72, 520), V([ST[0], ST[1] + 60, 50], 0.8, 0.38, 30, 520), true, ease.outExpo);
+if (V2) shot(S(8, 1) - 0.05, V([ST[0], ST[1] + 150, 105], 1.45, 0.24, 12, 430), V([ST[0], ST[1] + 150, 105], 1.65, 0.14, 12, 430), true);
+shot(S(9, 0) - 0.05, V([0, -170, 30], 0.48, -0.1, 64, 470), V([0, -170, 30], 0.5, 0.5, 58, 470), true);
+shot(S(10, 0) - 0.05, null, V([0, -170, 30], 0.4, 1.1, 66, 330));
+shot(END + 1, null, V([0, -170, 30], 0.4, 1.1, 66, 330));
+// fill in continued shots (a = state of the previous shot at its end)
+SH.forEach((s, i) => { if (!s.a) s.a = SH[i - 1].b; });
+const CUTS = SH.filter((s) => s.kick).map((s) => s.t);
+function camera(t) {
+  let i = 0; while (i < SH.length - 2 && t >= SH[i + 1].t) i++;
+  const s = SH[i], k = s.fn(prog(t, s.t, SH[i + 1].t)), a = s.a, b = s.b;
+  CAM.scale = lerp(a.s, b.s, k);
+  CAM.yaw = lerp(a.y, b.y, k) + 0.025 * Math.sin(t * 0.55);
+  CAM.pitch = (lerp(a.p, b.p, k) + 1.2 * Math.sin(t * 0.37)) * Math.PI / 180;
+  aim([lerp(a.f[0], b.f[0], k), lerp(a.f[1], b.f[1], k), lerp(a.f[2], b.f[2], k)], lerp(a.sx, b.sx, k), lerp(a.sy, b.sy, k));
+  return lerp(a.r, b.r, k);
+}
+
+// ---------- cursor ----------
+const tapsHook = [0.55, 0.92], tapAgain = [TAP2];
+const tapsElev = (() => { const r = [S(7, 1) + 0.15]; for (let i = 0; i < 9; i++) r.push(lerp(S(7, 1) + 0.6, E(7, 1) + 0.05, i / 8)); return r; })();
+const IN_POS = [190, 860], POST_POS = [470, 860], FOLLOW_POS = [440, 552];
+const tapPost = S(10, 1) + 0.25, tapFollow = S(10, 2) + 0.45;
+const tapsCTA = [S(10, 0) + 0.75, tapPost, tapFollow];
+function cursorAt(t) {
+  const btn = () => P(...BTN), eb = () => P(...EBTN);
+  const tracks = [
+    [[0.1, () => [600, 1000]], [0.42, btn], [1.15, btn], [1.8, () => [640, 1000]]],
+    [[TAP2 - 0.5, () => [-40, 1000]], [TAP2 - 0.1, btn], [TAP2 + 0.35, btn], [TAP2 + 0.8, () => [-60, 1020]]],
+    [[S(7, 1) - 0.4, () => [620, 900]], [S(7, 1) + 0.08, eb], [S(7, 1) + 0.74, eb], [S(7, 1) + 0.75, () => [700, 1100]], [E(7, 1) - 0.21, () => [700, 1100]], [E(7, 1) - 0.2, eb], [S(7, 2) + 0.2, eb], [S(7, 2) + 0.7, () => [640, 1000]]],
+    [[S(10, 0) + 0.2, () => [600, 1000]], [S(10, 0) + 0.7, () => IN_POS], [tapPost - 0.3, () => IN_POS], [tapPost - 0.02, () => POST_POS], [tapFollow - 0.35, () => POST_POS], [tapFollow - 0.02, () => FOLLOW_POS], [END, () => FOLLOW_POS]],
+  ];
+  for (const Tk of tracks) {
+    if (t < Tk[0][0] || t > Tk[Tk.length - 1][0]) continue;
+    for (let i = 0; i < Tk.length - 1; i++) if (t >= Tk[i][0] && t <= Tk[i + 1][0]) {
+      const k = ease.inOut(prog(t, Tk[i][0], Tk[i + 1][0])), a = Tk[i][1](), b = Tk[i + 1][1]();
+      return [lerp(a[0], b[0], k), lerp(a[1], b[1], k)];
+    }
+  }
+  return null;
+}
+const pressAmt = (t, taps) => Math.max(0, ...taps.map((x) => window01(t, x, x + 0.18, 0.05)));
+
+// ---------- 2D overlays ----------
+function wifiArcs(p, bars, col, op, sc = 1) {
+  if (op <= 0) return;
+  const g = el('g', { transform: `translate(${p[0]} ${p[1]}) scale(${sc})`, opacity: op }, FX);
+  el('circle', { cx: 0, cy: 0, r: 2.6, fill: col }, g);
+  for (let i = 1; i <= 3; i++) {
+    const r = 7 + i * 7, a = 0.8;
+    el('path', { d: `M ${-r * Math.sin(a)} ${-r * Math.cos(a)} A ${r} ${r} 0 0 1 ${r * Math.sin(a)} ${-r * Math.cos(a)}`, fill: 'none', stroke: col, 'stroke-width': 2.4, 'stroke-linecap': 'round', 'stroke-opacity': i <= bars ? 1 : 0.15 }, g);
+  }
+}
+function retryIcon(t, p, op) {
+  if (op <= 0) return;
+  const g = el('g', { transform: `translate(${p[0]} ${p[1]}) rotate(${t * 360})`, opacity: op }, FX);
+  el('path', { d: 'M 0 -12 A 12 12 0 1 1 -11.4 -3.7', fill: 'none', stroke: '#fff', 'stroke-width': 2, 'stroke-linecap': 'round' }, g);
+  el('path', { d: 'M -15 -9 L -11.4 -3.7 L -5.6 -6.2', fill: 'none', stroke: '#fff', 'stroke-width': 2, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, g);
+}
+function magnifier(p, op) {
+  const g = el('g', { transform: `translate(${p[0]} ${p[1]})`, opacity: op }, FX);
+  el('circle', { cx: 0, cy: 0, r: 40, fill: 'rgba(255,255,255,0.05)', stroke: '#fff', 'stroke-width': 2.2 }, g);
+  el('path', { d: 'M -22 -18 A 28 28 0 0 1 -6 -30', fill: 'none', stroke: '#fff', 'stroke-width': 1.4, 'stroke-opacity': 0.6, 'stroke-linecap': 'round' }, g);
+  el('line', { x1: 29, y1: 29, x2: 62, y2: 62, stroke: '#fff', 'stroke-width': 7, 'stroke-linecap': 'round' }, g);
+  el('line', { x1: 29, y1: 29, x2: 62, y2: 62, stroke: '#000', 'stroke-width': 3.6, 'stroke-linecap': 'round' }, g);
+}
+// storm cloud (union of circles), rain, lightning
+const PUFFS = [[-46, 6, 22], [-20, -10, 30], [14, -16, 34], [44, -2, 25], [62, 12, 16], [-62, 16, 14], [0, 12, 26], [30, 14, 20]];
+function cloud(t, form, op) {
+  if (op <= 0 || form <= 0) return;
+  const c = P(...CLOUD), sc = CAM.scale * 0.95;
+  const g = el('g', { transform: `translate(${c[0]} ${c[1]}) scale(${sc})`, opacity: op }, FX);
+  const drift = (i) => [Math.sin(t * 0.9 + i) * 2, Math.cos(t * 0.7 + i * 2) * 1.5];
+  PUFFS.forEach(([x, y, r], i) => { const f = ease.back(clamp(form * 1.6 - i * 0.08)); if (f > 0) { const d = drift(i); el('circle', { cx: x + d[0], cy: y + d[1], r: r * f, fill: 'none', stroke: '#fff', 'stroke-width': 2.6 / sc }, g); } });
+  PUFFS.forEach(([x, y, r], i) => { const f = ease.back(clamp(form * 1.6 - i * 0.08)); if (f > 0) { const d = drift(i); el('circle', { cx: x + d[0], cy: y + d[1], r: Math.max(0, r * f - 1.2 / sc), fill: '#000' }, g); } });
+  // rain
+  for (let i = 0; i < 26; i++) {
+    const x = -66 + hash(i + 3) * 132, ph2 = (hash(i) + t * 1.6) % 1, y = 26 + ph2 * 120;
+    el('line', { x1: x - ph2 * 6, y1: y, x2: x - ph2 * 6 - 3, y2: y + 11, stroke: '#fff', 'stroke-width': 1 / sc, 'stroke-opacity': 0.5 * (1 - ph2) * form }, g);
+  }
+}
+function lightning(t, t0, to, seed = 1) {
+  const k = prog(t, t0, t0 + 0.35);
+  if (k <= 0 || k >= 1) return 0;
+  const a = P(CLOUD[0] + 6, CLOUD[1], CLOUD[2] - 18), b = to, pts = [a];
+  for (let i = 1; i < 8; i++) { const q = i / 8; pts.push([lerp(a[0], b[0], q) + (hash(i * 3.1 + seed) - 0.5) * 34 * CAM.scale, lerp(a[1], b[1], q)]); }
+  pts.push(b);
+  const fl = k < 0.5 ? (Math.floor(k * 16) % 2 ? 0.5 : 1) : 1 - prog(k, 0.5, 1);
+  const d = path2(pts, false);
+  fx('path', { d, fill: 'none', stroke: '#fff', 'stroke-width': 7, 'stroke-opacity': 0.18 * fl, 'stroke-linejoin': 'round' });
+  fx('path', { d, fill: 'none', stroke: '#fff', 'stroke-width': 2.2, 'stroke-opacity': fl, 'stroke-linejoin': 'round' });
+  return fl;
+}
+// dashed beam between two screen points with a travelling light
+function beam(t, A, B, col, op) {
+  if (op <= 0) return;
+  fx('line', { x1: A[0], y1: A[1], x2: B[0], y2: B[1], stroke: col, 'stroke-width': 1.4, 'stroke-dasharray': '4 5', 'stroke-dashoffset': -t * 40, 'stroke-opacity': op });
+  const k = (t * 1.8) % 1, p = at(A, B, k);
+  fx('circle', { cx: p[0], cy: p[1], r: 3.2, fill: col, 'fill-opacity': op });
+}
+// countdown ring
+function countdown(t, p, k, op) {
+  if (op <= 0) return;
+  const R = 22, c = 2 * Math.PI * R, col = k > 0.7 ? RED : '#fff';
+  const g = el('g', { transform: `translate(${p[0]} ${p[1]})`, opacity: op }, FX);
+  el('circle', { cx: 0, cy: 0, r: R + 6, fill: 'rgba(0,0,0,0.85)', stroke: 'rgba(255,255,255,0.25)', 'stroke-width': 1 }, g);
+  el('circle', { cx: 0, cy: 0, r: R, fill: 'none', stroke: col, 'stroke-width': 3, 'stroke-dasharray': `${c * (1 - k)} ${c}`, transform: 'rotate(-90)', 'stroke-linecap': 'round' }, g);
+  const tx = el('text', { x: 0, y: 4, 'text-anchor': 'middle', 'font-family': 'Mono', 'font-size': 11, fill: col }, g);
+  tx.textContent = Math.max(0, Math.ceil((1 - k) * 5)) + 's';
+}
+
+// ---------- canvas: ground grid, dust motes, particle torus ----------
+const DUST = Array.from({ length: 90 }, (_, i) => [hash(i + 1.3) * 1700 - 900, hash(i + 7.7) * 1300 - 800, 20 + hash(i + 3.9) * 360, hash(i + 5.5)]);
+const NPT = 380;
+const PT = Array.from({ length: NPT }, (_, i) => ({ u: (i * 0.61803) % 1 * Math.PI * 2, v: hash(i + 0.5) * Math.PI * 2, sx: hash(i + 9.1) * 700 - 80, sy: hash(i + 4.7) * 1000 - 20, d: hash(i + 2.2) * 0.35 }));
+function drawBG(t, focus, gridOp, torusS) {
+  const g = BG; g.setTransform(2, 0, 0, 2, 0, 0); g.clearRect(0, 0, 540, 960);
+  // ground dots, snapped to a 60-unit world grid around the focus
+  if (gridOp > 0) {
+    const gx = Math.round(focus[0] / 60) * 60, gy = Math.round(focus[1] / 60) * 60, N = 13;
+    for (let i = -N; i <= N; i++) for (let j = -N; j <= N; j++) {
+      const x = gx + i * 60, y = gy + j * 60, p = P(x, y, 0);
+      if (p[0] < -10 || p[0] > 550 || p[1] < -10 || p[1] > 970) continue;
+      const fade = 1 - clamp((Math.hypot(x - focus[0], y - focus[1]) - 300) / 500);
+      if (fade <= 0) continue;
+      g.fillStyle = `rgba(255,255,255,${0.16 * fade * gridOp})`;
+      const r = Math.min(1.6, 0.5 + CAM.scale * 0.45);
+      g.fillRect(p[0] - r / 2, p[1] - r / 2, r, r);
+    }
+  }
+  // dust (world space → parallax with every camera move)
+  for (const [x, y, z, s] of DUST) {
+    const p = P(x + Math.sin(t * 0.3 + s * 9) * 20, y + Math.cos(t * 0.25 + s * 7) * 20, z + Math.sin(t * 0.5 + s * 5) * 10);
+    if (p[0] < -5 || p[0] > 545 || p[1] < -5 || p[1] > 965) continue;
+    g.fillStyle = `rgba(255,255,255,${(0.1 + s * 0.25) * gridOp})`;
+    g.beginPath(); g.arc(p[0], p[1], 0.6 + s * 1.2 * Math.min(1.6, CAM.scale), 0, 7); g.fill();
+  }
+  // torus
+  const [form, burst, op] = torusS;
+  if (op > 0) {
+    const R = 128, r = 32, rz = t * 0.7, tilt = 1.08, CX = 270, CY = 430;
+    for (const q of PT) {
+      const x = (R + r * Math.cos(q.v)) * Math.cos(q.u + rz), y = (R + r * Math.cos(q.v)) * Math.sin(q.u + rz), z = r * Math.sin(q.v);
+      const y2 = y * Math.cos(tilt) - z * Math.sin(tilt), z2 = y * Math.sin(tilt) + z * Math.cos(tilt);
+      const f = ease.inOut(clamp((form - q.d) / 0.65));
+      let px = lerp(q.sx, CX + x, f), py = lerp(q.sy, CY + y2, f);
+      if (burst > 0) { const b = ease.in(burst); px += (px - CX) * b * 2.2; py += (py - CY) * b * 2.2; }
+      const dep = (z2 + R) / (2 * R);
+      g.fillStyle = `rgba(255,255,255,${op * (0.18 + 0.82 * dep) * (1 - burst)})`;
+      g.beginPath(); g.arc(px, py, 0.6 + dep * 1.4, 0, 7); g.fill();
+    }
+  }
+}
+
+// ---------- HTML cards ----------
+function notifCard(t) {
+  const a = life(t, S(0, 1) + 0.05, S(1, 0) + 0.15);
+  if (a <= 0) return '';
+  return card(a, 'left:58px;top:268px;width:424px;padding:12px 14px;border-radius:18px;font-family:Inter;display:flex;gap:12px;align-items:center;background:rgba(28,28,30,0.96);border-color:rgba(255,255,255,0.18)',
+    `<div style="width:38px;height:38px;border-radius:10px;background:#fff;color:#000;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:20px">$</div>
+     <div style="flex:1"><div style="display:flex;justify-content:space-between;font-size:11px;color:#8a8a8a"><span>BANK</span><span>now</span></div>
+     <div style="font-size:14px;font-weight:700;margin-top:2px">Charged $50.00 · Coffee Shop</div>
+     <div style="font-size:12px;color:#32D74B;margin-top:1px">1 charge · not 2</div></div>`);
+}
+function codeCard(t) {
+  const a = life(t, S(2, 1) + 0.05, S(3, 0) + 0.1);
+  if (a <= 0) return '';
+  const cmd = 'POST /charge  {"amount": 50}';
+  const typed = cmd.slice(0, Math.floor(prog(t, S(2, 1) + 0.15, S(2, 1) + 0.9) * cmd.length));
+  const blink = Math.floor(t * 2.4) % 2 === 0;
+  const srv = t >= S(2, 2) - 0.05;
+  const hl = Math.max(0, ...arrivals.filter((v) => v < S(3, 0)).map((v) => window01(t, v, v + 0.35, 0.05)));
+  let h = `<div class="hd"><span>${srv ? 'server.js' : 'app → request'}</span><span>${srv ? '● live' : ''}</span></div><div style="margin-top:9px;line-height:22px">`;
+  if (!srv) h += `<span class="dim">&gt;</span> ${typed}${blink ? '<span class="cur"></span>' : ''}`;
+  else h += `<span class="dim">on</span> request <span class="dim">=&gt;</span><br>&nbsp;&nbsp;<span style="background:rgba(255,255,255,${0.08 + hl * 0.5});padding:1px 5px;border-radius:4px">charge(<span class="r">$50</span>)</span> <span class="dim">// every time</span>`;
+  return card(a, 'left:32px;top:700px;width:300px;padding:13px 15px', h + '</div>');
+}
+function chargesCounter(t) {
+  const a = life(t, S(2, 2) - 0.1, S(3, 0) + 0.1);
+  if (a <= 0) return '';
+  const hits = arrivals.filter((v) => v > S(2, 0) && v < S(3, 0) && t >= v);
+  const n = hits.length, last = hits.pop() || 0;
+  const s = 1 + 0.35 * (1 - ep(t, last, last + 0.3));
+  return card(a, 'left:350px;top:700px;width:158px;padding:13px 15px', `<div class="hd"><span>CHARGES</span></div><div style="font-family:Inter;font-size:40px;font-weight:800;margin-top:4px;transform:scale(${s});transform-origin:left center">${n}</div><div class="dim" style="font-size:10px">−$${n * 50}.00</div>`);
+}
+function requestsCard(t) {
+  const a = life(t, S(4, 4) - 0.05, S(4, 5) - 0.05);
+  if (a <= 0) return '';
+  const n = t >= F2A ? 2 : 1, s = 1 + 0.4 * (1 - ep(t, F2A, F2A + 0.3));
+  return card(a, 'left:150px;top:700px;width:240px;padding:13px 15px;text-align:center', `<div class="hd" style="justify-content:center"><span>REQUESTS SENT</span></div><div style="font-family:Inter;font-size:48px;font-weight:800;transform:scale(${s})">${n}</div><div class="dim" style="font-size:10px">same payment · twice</div>`);
+}
+function bankCard(t) {
+  const a1 = life(t, S(4, 5) - 0.05, S(5, 0) + 0.2);
+  const a2 = life(t, S(6, 3) - 0.1, L7 + 0.2);
+  const a = Math.max(a1, a2);
+  if (a <= 0) return '';
+  const fail = a1 > 0;
+  const rowIn = (t0) => `opacity:${ep(t, t0, t0 + 0.2)};transform:translateX(${(1 - ep(t, t0, t0 + 0.3)) * 24}px)`;
+  let rows;
+  if (fail) {
+    const t0 = S(4, 5) - 0.05;
+    rows = `<div class="row" style="background:rgba(255,69,58,0.1);${rowIn(t0)}"><span>Coffee Shop</span><span class="r">−$50.00</span></div>
+      <div class="row" style="background:rgba(255,69,58,0.18);${rowIn(t0 + 0.2)}"><span>Coffee Shop</span><span class="r">−$50.00</span></div>
+      <div class="row" style="${rowIn(t0 + 0.45)};border-top:1px dashed rgba(255,255,255,0.25);border-radius:0;margin-top:9px"><span>TOTAL</span><span class="r" style="font-weight:500;font-size:15px">−$100.00 ✕</span></div>`;
+  } else {
+    const t0 = S(6, 3) - 0.1;
+    rows = `<div class="row" style="background:rgba(255,255,255,0.08);${rowIn(t0)}"><span>Coffee Shop</span><span>−$50.00</span></div>
+      <div class="row" style="${rowIn(t0 + 0.2)}"><span class="dim" style="text-decoration:line-through">Coffee Shop · retry</span><span class="g">$0.00 ✓</span></div>
+      <div class="row" style="${rowIn(t0 + 0.45)};border-top:1px dashed rgba(255,255,255,0.25);border-radius:0;margin-top:9px"><span>TOTAL</span><span class="g" style="font-weight:500;font-size:15px">−$50.00 ✓</span></div>`;
+  }
+  return card(a, `left:70px;top:690px;width:400px;padding:13px 15px;border-color:${fail ? 'rgba(255,69,58,0.8)' : 'rgba(50,215,75,0.8)'}`, `<div class="hd"><span>BANK · RECENT ACTIVITY</span><span>${fail ? '<span class="r">2 CHARGES</span>' : '<span class="g">1 CHARGE</span>'}</span></div>${rows}`);
+}
+function idCard(t) {
+  const a = life(t, S(5, 1) + 0.1, S(5, 2) + 0.5);
+  if (a <= 0) return '';
+  const id = scramble('7F3A-91C2', prog(t, S(5, 1) + 0.2, S(5, 1) + 1.2), 3);
+  return card(a, 'left:95px;top:268px;width:350px;padding:12px 15px;text-align:center;border-color:rgba(50,215,75,0.8)',
+    `<div class="hd" style="justify-content:center"><span>PAYMENT ID · UNIQUE</span></div><div style="font-size:30px;font-weight:500;letter-spacing:2px;margin-top:4px" class="g">${id}</div>`);
+}
+function receiptCard(t) {
+  const a = life(t, S(5, 2) - 0.05, S(6, 0) + 0.05, 0.2);
+  if (a <= 0) return '';
+  const pr = ep(t, S(5, 2), S(5, 2) + 0.8, ease.inOut);
+  let bars = ''; for (let i = 0; i < 34; i++) bars += `<i style="display:inline-block;width:${1 + Math.floor(hash(i) * 3)}px;height:30px;background:#000;margin-right:${1 + Math.floor(hash(i + 7) * 3)}px"></i>`;
+  return `<div style="position:absolute;left:150px;top:700px;width:240px;height:${pr * 190}px;overflow:hidden;opacity:${clamp(a * 2)}">
+    <div style="position:absolute;bottom:0;left:0;right:0;height:190px;background:#f2f2f2;color:#000;font-family:Mono;font-size:11px;padding:12px 14px;box-sizing:border-box;border-radius:4px 4px 0 0">
+      <div style="text-align:center;font-weight:500;letter-spacing:2px">RECEIPT</div>
+      <div style="text-align:center;font-size:18px;font-weight:500;margin-top:6px">No. 7F3A-91C2</div>
+      <div style="display:flex;justify-content:space-between;margin-top:12px"><span>Coffee Shop</span><span>$50.00</span></div>
+      <div style="border-top:1px dashed #000;margin:8px 0"></div>
+      <div style="text-align:center">${bars}</div>
+    </div></div>`;
+}
+const LEDGER = ['1B07-44AE', '9C2D-0F13', '55E1-A7B0', 'D04C-3B68'];
+function ledgerCard(t) {
+  const a = life(t, S(6, 0) + 0.2, S(6, 3) + 0.1);
+  if (a <= 0) return '';
+  const scan = (t0, t1) => { const k = prog(t, t0, t1); return k > 0 && k < 1 ? Math.floor(ease.inOut(k) * 5) : -1; };
+  const s1 = scan(K1A - 0.05, NO - 0.05), saved = t >= WRITE + 0.35, s2 = scan(YES - 0.25, YES + 0.15), seen = t >= YES + 0.15;
+  const ids = saved ? ['7F3A-91C2', ...LEDGER] : LEDGER;
+  const ins = ep(t, WRITE + 0.35, WRITE + 0.7);
+  const rows = ids.map((id, i) => {
+    let bg = 'transparent', right = '<span class="dim">·</span>', cls = '';
+    if (i === (saved ? s2 : s1)) bg = 'rgba(255,255,255,0.16)';
+    if (saved && i === 0) {
+      cls = ' class="g"'; right = seen ? '<span class="g">✓ SEEN</span>' : '<span class="g">saved</span>';
+      bg = seen ? `rgba(50,215,75,${0.16 + 0.14 * (1 - ep(t, YES + 0.15, YES + 0.6))})` : `rgba(50,215,75,${0.1 * ins})`;
+      return `<div class="row" style="background:${bg};margin-top:4px;padding:6px 9px;opacity:${ins};transform:translateX(${(1 - ins) * -30}px)"><span${cls}>${id}</span>${right}</div>`;
+    }
+    return `<div class="row" style="background:${bg};margin-top:4px;padding:6px 9px"><span>${id}</span>${right}</div>`;
+  }).join('');
+  let q = '<span></span>';
+  if (s1 >= 0) q = '<span>look up 7F3A…</span>';
+  else if (t >= NO - 0.05 && !saved) q = '<span class="r">NOT FOUND</span>';
+  else if (saved && !seen && s2 < 0) q = '<span class="g">WRITTEN</span>';
+  else if (s2 >= 0) q = '<span>look up 7F3A…</span>';
+  else if (seen) q = '<span class="g">MATCH</span>';
+  return card(a, 'left:32px;top:266px;width:236px;padding:12px 13px', `<div class="hd"><span>SEEN IDS</span>${q}</div>${rows}`);
+}
+function stripeCard(t) {
+  if (!V2) return '';
+  const a = life(t, S(8, 1) - 0.15, S(9, 0) + 0.05);
+  if (a <= 0) return '';
+  const hk = ep(t, HDR, HDR + 0.45);
+  const lines = [`<span class="dim">POST</span> /v1/charges`, `<span style="background:rgba(50,215,75,${0.9 * hk});color:${hk > 0.5 ? '#000' : '#32D74B'};padding:1px 4px;border-radius:4px;box-shadow:0 0 ${18 * hk}px rgba(50,215,75,${0.6 * hk})">Idempotency-Key: 7F3A-91C2</span>`, `<span class="dim">amount=</span>5000`];
+  const n = Math.floor(prog(t, S(8, 1) - 0.1, S(8, 1) + 0.4) * 3.99);
+  return card(a, 'left:40px;top:690px;width:460px;padding:14px 16px', `<div class="hd"><span>HTTP REQUEST</span><span>api</span></div><div style="margin-top:8px;line-height:24px;font-size:14px">${lines.slice(0, n).join('<br>')}</div>`);
+}
+const HDR = W('idempotency', S(8, 1), S(8, 1) + 0.9);
+function resultCard(t) {
+  const a = life(t, S(9, 1) + 0.4, S(10, 0) + 0.1);
+  if (a <= 0) return '';
+  const f = 'f( f(x) ) = f(x)';
+  const ty = f.slice(0, Math.floor(prog(t, S(9, 1) + 0.7, S(9, 1) + 1.4) * f.length));
+  return card(a, 'left:85px;top:700px;width:370px;padding:14px 16px;text-align:center;border-color:rgba(50,215,75,0.85)',
+    `<div class="hd" style="justify-content:center"><span>6 REQUESTS → 1 RESULT</span></div><div style="font-family:Inter;font-size:24px;font-weight:800;margin-top:6px" class="g">charged once ✓</div><div style="margin-top:8px;font-size:15px">${ty}<span class="dim">${ty.length < f.length ? '▍' : ''}</span></div>`);
+}
+function ctaSheet(t) {
+  const up = ep(t, S(10, 0), S(10, 0) + 0.5, ease.outExpo);
+  if (up <= 0) return '';
+  const txt = 'API retries';
+  const typed = txt.slice(0, Math.floor(prog(t, S(10, 0) + 0.85, S(10, 1) - 0.1) * txt.length));
+  const posted = t >= tapPost + 0.05, followed = t >= tapFollow + 0.05;
+  const blink = Math.floor(t * 2.4) % 2 === 0;
+  const fol = followed ? 1 + 0.2 * (1 - ep(t, tapFollow, tapFollow + 0.35)) : 1;
+  const comment = posted ? `<div style="display:flex;gap:10px;align-items:flex-start;padding:10px 0;opacity:${ep(t, tapPost, tapPost + 0.25)};transform:translateY(${(1 - ep(t, tapPost, tapPost + 0.3)) * 10}px)">
+      <div style="width:30px;height:30px;border-radius:50%;background:#333"></div>
+      <div><div style="font-size:12px;font-weight:700">you <span style="color:#8a8a8a;font-weight:400">now</span></div><div style="font-size:14px;margin-top:2px">API retries</div></div></div>`
+    : `<div style="text-align:center;padding:26px 0;color:#fff"><div style="font-weight:700;font-size:16px">No comments yet</div><div style="color:#8a8a8a;font-size:12px;margin-top:4px">Start the conversation.</div></div>`;
+  return `<div class="sheet" style="top:${lerp(960, 470, up)}px;height:520px;padding:16px 18px;box-sizing:border-box">
+    <div style="width:36px;height:4px;border-radius:2px;background:#444;margin:0 auto 12px"></div>
+    <div style="display:flex;align-items:center;gap:12px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,0.1)">
+      <div style="width:46px;height:46px;border-radius:50%;border:1.5px solid #fff;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="6" fill="none" stroke="#fff" stroke-width="2"/><circle cx="12" cy="12" r="4.6" fill="none" stroke="#fff" stroke-width="2"/><circle cx="17.6" cy="6.4" r="1.3" fill="#fff"/></svg></div>
+      <div style="flex:1"><div style="font-weight:700;font-size:14px">how.its.engineered</div><div style="color:#8a8a8a;font-size:11px">System design, explained</div></div>
+      <div class="btn" style="width:96px;height:32px;transform:scale(${fol});${followed ? 'background:#262626;color:#fff' : 'background:#fff;color:#000'}">${followed ? 'Following ✓' : 'Follow'}</div>
+    </div>
+    <div style="text-align:center;font-weight:700;font-size:13px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.1)">Comments</div>
+    ${comment}
+    <div style="position:absolute;left:14px;right:14px;top:368px;height:48px;border-radius:24px;border:1px solid rgba(255,255,255,0.3);display:flex;align-items:center;padding:0 8px 0 16px;gap:10px">
+      <div style="flex:1;font-size:14px;color:${typed || posted ? '#fff' : '#8a8a8a'}">${posted ? 'Add a comment…' : typed || 'Add a comment…'}${!posted && typed && blink ? '<span style="display:inline-block;width:2px;height:16px;background:#fff;vertical-align:-3px;margin-left:1px"></span>' : ''}</div>
+      <div class="btn" style="height:32px;padding:0 14px;border-radius:16px;${typed.length === txt.length && !posted ? 'background:#fff;color:#000' : 'color:#8a8a8a'}">Post</div>
+    </div></div>`;
+}
+
+// ---------- chapters + progress ----------
+const CH = [[S(2, 0), S(3, 0), '01  THE SIMPLE WAY'], [S(3, 0), S(5, 0), '02  THE PROBLEM'], [S(5, 0), L7, '03  THE FIX'], [L7, S(9, 0), '04  IN REAL LIFE'], [S(9, 0), S(10, 0), '05  RECAP']];
+const BK = [0, S(3, 0), S(5, 0), L7, S(9, 0), END];
+
+window.render = function (t) {
+  ISO.layer.textContent = ''; FX.textContent = ''; labels.textContent = '';
+  const roll = camera(t);
+  const cp = cursorAt(t);
+  if (cp) CAM.yaw += clamp((cp[0] - 270) / 270, -1, 1) * 0.04;
+  const kick = Math.min(1, ...CUTS.map((c) => (t >= c && t < c + 0.45 ? lerp(0.45, 1, ep(t, c, c + 0.45)) : 1)));
+
+  // ---- visibility ----
+  const L9 = S(9, 0);
+  const worldOp = 1 - 0.88 * window01(t, S(1, 0) - 0.1, S(2, 0) - 0.08, 0.3) - 0.7 * ep(t, S(10, 0), S(10, 0) + 0.5);
+  const phoneD = Math.min(kick, prog(t, -0.6, 0.4));
+  const coinsD = Math.min(kick, prog(t, 0.0, 0.8));
+  const servD = Math.min(kick, prog(t, S(2, 0) - 0.05, S(2, 0) + 1.0));
+  const vaultD = Math.min(kick, prog(t, S(2, 0) + 0.25, S(2, 0) + 1.1));
+  const towerD = Math.min(kick, prog(t, S(4, 0) - 0.1, S(4, 0) + 0.9)) * (1 - prog(t, S(5, 0) - 0.1, S(5, 0) + 0.25));
+  const dbD = Math.min(kick, prog(t, S(5, 0) + 0.05, S(5, 0) + 0.9));
+  const elevD = prog(t, L7 + 0.1, L7 + 0.9) * (1 - prog(t, L9 - 0.1, L9 + 0.2));
+  const dcD = V2 ? prog(t, S(8, 0) - 0.1, S(8, 0) + 1.0) * (1 - prog(t, L9, L9 + 0.3)) : 0;
+  const ringD = Math.min(kick, prog(t, L9 - 0.05, L9 + 0.7));
+  const cloudF = prog(t, S(4, 0) + 0.1, S(4, 0) + 1.0), cloudOp = 1 - prog(t, S(5, 0) - 0.1, S(5, 0) + 0.2);
+
+  // ---- phone state ----
+  const pressHook = pressAmt(t, tapsHook), pressAgain = pressAmt(t, tapAgain);
+  const idStr = scramble('ID 7F3A-91C2', prog(t, S(5, 1) + 0.3, S(5, 1) + 1.2), 5);
+  let pst = { mode: 'pay', press: pressHook, t };
+  if (t >= 1.0 && t < HOOK_DONE) pst = { mode: 'spin', t };
+  else if (t >= HOOK_DONE && t < S(2, 0)) pst = { mode: 'done', t, note: 'charged once' };
+  else if (t >= A1 && t < S(2, 2) + 0.4) pst = { mode: 'spin', t };
+  else if (t >= S(2, 2) + 0.4 && t < S(3, 0)) pst = { mode: 'done', t, note: 'charged $50' };
+  else if (t >= F1 && t < S(4, 2) + 0.05) pst = { mode: 'spin', t, slow: true };
+  else if (t >= S(4, 2) + 0.05 && t < TAP2 + 0.15) pst = { mode: 'timeout', press: pressAgain, t };
+  else if (t >= TAP2 + 0.15 && t < S(5, 0)) pst = { mode: 'spin', t };
+  else if (t >= S(5, 1) + 0.25 && t < K1) pst = { mode: 'pay', t, id: idStr };
+  else if (t >= K1 && t < SAME + 0.75) pst = { mode: 'spin', t };
+  else if (t >= SAME + 0.75 && t < L9) pst = { mode: 'done', t, note: 'same answer' };
+  else if (t >= L9 && t < S(9, 1) + 0.8) pst = { mode: 'pay', t, id: 'ID 7F3A-91C2' };
+  else if (t >= S(9, 1) + 0.8) pst = { mode: 'done', t, note: 'same result' };
+
+  // server flash
+  let sflash = 0, scol = '#fff';
+  for (const v of arrivals) sflash = Math.max(sflash, t < v ? 0 : 1 - prog(t, v, v + 0.45));
+  if (t > S(4, 0) && t < S(5, 0)) scol = RED;
+  if (t > S(5, 0)) scol = GREEN;
+  // db pulse
+  const dbHits = [NO - 0.1, WRITE + 0.3, YES, ...RC.map((x) => x + 0.8)];
+  let dbP = 0; for (const h of dbHits) dbP = Math.max(dbP, t < h ? 0 : 1 - prog(t, h, h + 0.6));
+  const dbCol = t < WRITE + 0.3 && t > NO - 0.2 ? RED : GREEN;
+  const vaultP = Math.max(0, ...CF.map((c) => (t < c.t0 + c.dur ? 0 : 1 - prog(t, c.t0 + c.dur, c.t0 + c.dur + 0.5))));
+
+  // ---- background canvas ----
+  const torusS = [prog(t, S(1, 0) - 0.15, S(1, 1) + 0.2), prog(t, S(2, 0) - 0.4, S(2, 0) - 0.05), window01(t, S(1, 0) - 0.15, S(2, 0) - 0.05, 0.3)];
+  // focus for grid = world point under screen centre (approx via inverse of the ground projection)
+  const gf = groundAt(270, 560);
+  drawBG(t, gf, Math.max(0.15, worldOp), torusS);
+
+  // ---- wire ----
+  const pathK = Math.min(prog(t, S(2, 0) + 0.4, S(2, 0) + 1.1), phoneD, servD);
+  if (pathK > 0 && worldOp > 0.05 && t < L9) {
+    const slow = window01(t, S(4, 0), S(5, 0), 0.3);
+    const a = at(PH, SV, 0.25), b = at(PH, SV, lerp(0.25, 0.75, pathK));
+    const jit = slow > 0 ? (q) => [q[0] + Math.sin(t * 30) * 2 * slow, q[1]] : (q) => q;
+    el('path', { d: path2([P(...jit(a), 5), P(...jit(b), 5)], false), stroke: slow > 0.5 ? RED : t > S(5, 0) ? GREEN : '#fff', 'stroke-width': 1.1, 'stroke-dasharray': '3 6', 'stroke-dashoffset': -t * lerp(26, 5, slow), 'stroke-opacity': 0.65 * worldOp, fill: 'none' }, ISO.layer);
+  }
+  if (ringD > 0) RING.slice(1).forEach((p) => {
+    const a = at(p, SV, 0.25), b = at(p, SV, lerp(0.25, 0.75, ringD));
+    el('path', { d: path2([P(...a, 5), P(...b, 5)], false), stroke: GREEN, 'stroke-width': 1, 'stroke-dasharray': '3 6', 'stroke-dashoffset': -t * 26, 'stroke-opacity': 0.5 * worldOp, fill: 'none' }, ISO.layer);
+  });
+  if (t >= L9 && phoneD > 0) { const a = at(PH, SV, 0.25), b = at(PH, SV, 0.75); el('path', { d: path2([P(...a, 5), P(...b, 5)], false), stroke: GREEN, 'stroke-width': 1, 'stroke-dasharray': '3 6', 'stroke-dashoffset': -t * 26, 'stroke-opacity': 0.5 * worldOp, fill: 'none' }, ISO.layer); }
+
+  // ---- objects (depth sorted) ----
+  const objs = [];
+  const add = (c, D, f, op = worldOp) => { if (D > 0 && op > 0.02) objs.push({ c, f: () => emit(f(), D, op) }); };
+  add(SV, servD, () => serverObj(t, sflash, scol));
+  add(PH, phoneD, () => phoneObj(pst));
+  const lift = t > YES && t < YES + 0.9 ? Math.sin(prog(t, YES, YES + 0.9) * Math.PI) * 14 : 0;
+  add(CS, Math.min(coinsD, phoneD), () => coinStack(stackN(t), lift));
+  add(VT, vaultD, () => vaultObj(vaultP));
+  add(TW, towerD, () => towerObj(t));
+  add(DB, dbD, () => dbObj(t, dbP, dbCol, t >= WRITE + 0.3 ? (t > L9 ? '7F3A ✓' : '7F3A') : '—'));
+  if (elevD > 0) {
+    const lit = t >= tapsElev[0] && t < S(7, 2) + 1.4;
+    const open = ep(t, S(7, 2) + 0.35, S(7, 2) + 1.2, ease.inOut);
+    const ck = ep(t, tapsElev[0] + 0.1, S(7, 2) + 0.3, ease.inOut);
+    const carZ = lerp(183 + 3 * 95 + 47, 100, ck);
+    const fl = Math.min(5, Math.max(1, Math.round((carZ - 100) / 95) + 1));
+    add(EL, elevD, () => elevatorObj(open, lit, pressAmt(t, tapsElev), lit || open > 0 ? String(fl) : '·', carZ), 1);
+  }
+  add(ST, dcD, () => dcObj(t, ep(t, HDR, HDR + 0.5)), 1);
+  RING.slice(1).forEach((p, i) => add(p, ringD, () => phoneObj(t >= S(9, 1) + 0.8 ? { mode: 'done', t, note: 'same result' } : { mode: 'pay', t, id: 'ID 7F3A-91C2', press: window01(t, RC[i + 1] - 0.1, RC[i + 1] + 0.1, 0.05) }, p)));
+  objs.sort((a, b) => depth(...a.c) - depth(...b.c)).forEach((o) => o.f());
+
+  // key: forms above phone, spins, then dives into the packet
+  const kForm = ep(t, S(5, 1) + 0.1, S(5, 1) + 0.8, ease.back), kGone = prog(t, K1 - 0.25, K1 + 0.05);
+  if (kForm > 0 && kGone < 1) {
+    const z = lerp(70, 115, ease.out(kForm)) + Math.sin(t * 2.4) * 5 - ease.in(kGone) * 100;
+    emit(keyObj(PH, z, t * 2.2, lerp(1.6, 0.5, kGone)), clamp(kForm * 1.2), 1 - kGone * 0.6);
+  }
+  if (worldOp > 0.05) { drawPackets(t, worldOp); drawCoinFlights(t, worldOp); }
+  // "write the ID down": a record block flies server → db
+  { const k = prog(t, WRITE, WRITE + 0.6); if (k > 0 && k < 1) { const kk = ease.inOut(k); const x = lerp(SV[0], DB[0], kk), y = lerp(SV[1], DB[1], kk), z = lerp(140, 104, kk) + Math.sin(kk * Math.PI) * 60; const o = Obj(); const F = box(o, x - 14, y - 9, z, 28, 18, 5, { stroke: GREEN }); ftext(o, F.top, 0.5, 0.5, '7F3A', 6.5, { font: 'Mono', weight: 500, fill: GREEN }); emit(o, 1); } }
+
+  // ---- world-pinned fx + labels ----
+  const btnP = P(...BTN), svTop = P(...SVTOP), dbTop = P(...DBTOP), vtTop = P(...VTTOP), csTop = P(CS[0], CS[1], 40);
+  tapsHook.concat(tapAgain).forEach((x) => ripple(t, x, btnP));
+  tapsElev.forEach((x) => ripple(t, x, P(...EBTN), '#fff', 26));
+  const nHook = tapsHook.filter((x) => t >= x).length;
+  label(`×${nHook}`, btnP[0] + 52, btnP[1] - 30, (nHook > 0 ? 1 : 0) * (1 - ep(t, S(0, 1), S(0, 1) + 0.3)), 'huge', popScale(t, tapsHook[nHook - 1] || 0, 0.4, 0.25));
+  for (const v of arrivals) {
+    if (v < S(1, 0)) continue;
+    if (v < S(3, 0)) { pop(t, v, svTop, 'charge!', 'big'); isoRing(t, v, [SV[0], SV[1], 5]); }
+    else if (v < S(5, 0)) { pop(t, v, svTop, 'charge!', 'big red'); isoRing(t, v, [SV[0], SV[1], 5], RED); }
+    else if (v < L9) isoRing(t, v, [SV[0], SV[1], 5], GREEN);
+    else { pop(t, v, svTop, 'seen ✓', 'big green', 0.7); isoRing(t, v, [SV[0], SV[1], 5], GREEN, 70, 0.5); }
+  }
+  for (const c of CF) {
+    const land = c.t0 + c.dur;
+    pop(t, c.t0, csTop, '−$50', c.t0 > S(4, 0) && c.t0 < S(5, 0) ? 'big red' : 'big', 0.9);
+    sparkle(t, land, vtTop, c.t0 > S(4, 0) && c.t0 < S(5, 0) ? RED : '#fff');
+    pop(t, land, P(VT[0], VT[1], 80), '+$50', 'big', 0.8);
+  }
+  const wide = window01(t, S(2, 0) + 0.6, S(2, 2), 0.3);
+  const yp = P(PH[0] + 55, PH[1] + 85, 0), sp = P(SV[0] + 80, SV[1] + 72, 0), vp = P(VT[0] - 32, VT[1] + 32, 0), cp2 = P(CS[0] + 26, CS[1] + 26, 0);
+  label('YOUR APP', yp[0], yp[1] + 14, wide * worldOp);
+  label('PAYMENT SERVER', sp[0] - 6, sp[1] + 14, wide * worldOp);
+  label('COFFEE SHOP', vp[0], vp[1] + 14, wide * worldOp);
+  label('YOUR MONEY', cp2[0] + 6, cp2[1] + 14, wide * worldOp);
+  // failure: tower signal, cloud, lightning, countdown
+  const twTop = P(TW[0], TW[1], 230);
+  const bars = Math.max(1, 3 - Math.floor(prog(t, S(4, 0) + 0.3, S(4, 0) + 1.1) * 3));
+  wifiArcs(twTop, bars, bars === 1 ? RED : '#fff', life(t, S(4, 0) + 0.1, S(5, 0) - 0.1, 0.3) * towerD, Math.min(1.4, CAM.scale));
+  cloud(t, cloudF, cloudOp * worldOp);
+  const mid = P(...at(PH, SV, 0.5), 13);
+  const bolt = lightning(t, LOST - 0.04, mid, 2);
+  lightning(t, S(4, 0) + 0.9, P(-60, 30, 0), 7);
+  shards(t, LOST, mid, RED, 14, 1.4);
+  const midL = P(...at(PH, SV, 0.5), 0);
+  label('SLOW NETWORK', midL[0] - 96, midL[1] + 8, life(t, S(4, 0) + 0.5, S(4, 1) + 0.2), 'red');
+  label('✕ REPLY LOST', mid[0], mid[1] - 40, life(t, LOST + 0.1, S(4, 2) + 0.3), 'tag red', popScale(t, LOST + 0.1, 0.4, 0.25));
+  label('YOU WERE CHARGED', svTop[0], svTop[1] - 30, life(t, F1A + 0.05, LOST - 0.3, 0.2), 'tag red');
+  const scr = P(PH[0], PH[1], 12);
+  countdown(t, [scr[0] + 62 * CAM.scale, scr[1] - 46 * CAM.scale], prog(t, S(4, 1), S(4, 2)), life(t, S(4, 1) + 0.1, S(4, 2) + 0.4, 0.2));
+  retryIcon(t, P(PH[0] - 40, PH[1] - 40, 60), life(t, S(4, 2) + 0.05, S(4, 3) + 0.1, 0.2));
+  label('AUTO-RETRY', P(PH[0] - 40, PH[1] - 40, 60)[0], P(PH[0] - 40, PH[1] - 40, 60)[1] + 30, life(t, S(4, 2) + 0.1, S(4, 3) + 0.1, 0.2), 'out');
+  label('OR', btnP[0] - 70, btnP[1] - 40, life(t, S(4, 3) + 0.1, S(4, 4), 0.2), 'tag');
+  label('2 COINS GONE', csTop[0], csTop[1] - 40, life(t, S(4, 5) + 0.3, S(5, 0) + 0.1, 0.15), 'tag red', popScale(t, S(4, 5) + 0.3));
+  // hook
+  label('1 charge ✓', btnP[0], btnP[1] + 46, life(t, HOOK_DONE + 0.1, S(1, 0)), 'tag green');
+  // fix: check beam + verdicts
+  const beamOp = Math.max(life(t, K1A, NO + 0.1, 0.15, 0.15), life(t, YES - 0.3, YES + 0.3, 0.1, 0.15), ...RC.map((x) => life(t, x + 0.75, x + 1.05, 0.05, 0.1)));
+  beam(t, P(SV[0] + 60, SV[1] + 20, 120), P(DB[0], DB[1], 104), t > YES - 0.4 ? GREEN : '#fff', beamOp * dbD);
+  label('seen this ID?', svTop[0], svTop[1] - 34, life(t, K1A, NO, 0.2, 0.1), 'tag');
+  label('NO → CHARGE', svTop[0], svTop[1] - 34, life(t, NO, WRITE + 0.2, 0.12, 0.15), 'tag', popScale(t, NO));
+  label('WRITE 7F3A', dbTop[0], dbTop[1] - 34, life(t, WRITE + 0.3, E(6, 1) + 0.1, 0.12, 0.2), 'tag green', popScale(t, WRITE + 0.3));
+  label('YES ✓', svTop[0], svTop[1] - 34, life(t, YES, SAME + 0.2, 0.1), 'huge green', popScale(t, YES, 0.5));
+  label('NO CHARGE', csTop[0], csTop[1] - 34, life(t, YES + 0.15, YES + 1.1, 0.12, 0.2), 'tag green');
+  label('NO SECOND CHARGE', svTop[0], svTop[1] - 34, life(t, S(6, 3), L7 + 0.1), 'tag green');
+  isoRing(t, YES, [SV[0], SV[1], 5], GREEN, 130, 1.0);
+  isoRing(t, S(6, 3), [PH[0], PH[1], 5], GREEN, 110, 1.0);
+  sparkle(t, WRITE + 0.6, dbTop, GREEN, 36);
+  // elevator
+  const eb = P(...EBTN), nE = tapsElev.filter((x) => t >= x).length;
+  label(`×${nE}`, eb[0] + 44, eb[1] - 18, (nE > 0 ? 1 : 0) * (1 - ep(t, S(7, 2) + 0.4, S(7, 2) + 0.7)), 'huge', popScale(t, tapsElev[nE - 1] || 0, 0.45, 0.2));
+  const door = P(EL[0] - 85 + 0.37 * 170, EL[1] - 26, 0);
+  label('DING · ARRIVES ONCE', door[0], door[1] + 26, life(t, S(7, 2) + 1.0, S(8, 0) + 0.1), 'tag green');
+  if (elevD > 0) isoRing(t, S(7, 2) + 1.0, [EL[0] - 85 + 0.37 * 170, EL[1] - 10, 5], GREEN, 90, 1.0);
+  // stripe
+  label('ONE EXTRA HEADER', P(ST[0], ST[1] + 150, 200)[0], P(ST[0], ST[1] + 150, 200)[1], life(t, HDR + 0.2, S(9, 0)), 'tag green');
+  // recap
+  if (ringD > 0) { RC.forEach((x) => ripple(t, x - 0.05, P(...RING[RC.indexOf(x)], 12), '#fff', 26)); }
+  label('6 × SAME ID', svTop[0], svTop[1] - 60, life(t, RC[2], S(9, 1)), 'tag');
+  label('1 CHARGE ✓', svTop[0], svTop[1] - 60, life(t, S(9, 1), S(10, 0) + 0.2), 'tag green', popScale(t, S(9, 1)));
+  isoRing(t, S(9, 1) + 0.05, [SV[0], SV[1], 5], GREEN, 360, 1.2);
+
+  // ---- title scene ----
+  const tp = torusS[2];
+  if (tp > 0) {
+    const word = 'Idempotency', k = prog(t, S(1, 1) - 0.05, S(1, 1) + 0.6);
+    const shown = word.split('').map((c, i) => `<span style="display:inline-block;opacity:${ep(k, i / word.length * 0.7, i / word.length * 0.7 + 0.3)};transform:translateY(${(1 - ep(k, i / word.length * 0.7, i / word.length * 0.7 + 0.3, ease.back)) * 24}px);filter:blur(${(1 - ep(k, i / word.length * 0.7, i / word.length * 0.7 + 0.3)) * 8}px)">${c}</span>`).join('');
+    const p2 = ep(t, S(1, 1) + 0.5, S(1, 1) + 0.8), p3 = ep(t, S(1, 1) + 0.75, S(1, 1) + 1.05, ease.back);
+    const one = life(t, S(1, 0) - 0.05, S(1, 1) - 0.05, 0.2, 0.15);
+    $('title').innerHTML = `<div style="position:absolute;left:0;right:0;top:-170px;font-family:Mono;font-size:14px;letter-spacing:6px;color:#a3a3a3;opacity:${one}">ONE WORD</div><div class="t">${shown}</div><div class="ph" style="opacity:${p2}">eye · dem · POH · ten · see</div><div class="chip" style="opacity:${clamp(p3)};transform:scale(${lerp(0.8, 1, p3)})">same request → same result</div>`;
+    $('title').style.opacity = tp; $('title').style.display = '';
+  } else $('title').style.display = 'none';
+
+  // ---- problem: spotlight + magnifier ----
+  const pr = window01(t, S(3, 0) - 0.05, S(4, 0) - 0.1, 0.3);
+  if (pr > 0) {
+    const k = ease.inOut(prog(t, S(3, 0), S(3, 1) + 0.6));
+    const A = P(PH[0], PH[1], 20), B = P(SV[0], SV[1], 60), C = P(...at(PH, SV, 0.5), 10);
+    const m = k < 0.6 ? [lerp(A[0], B[0], k / 0.6), lerp(A[1], B[1], k / 0.6)] : [lerp(B[0], C[0], (k - 0.6) / 0.4), lerp(B[1], C[1], (k - 0.6) / 0.4)];
+    $('dim').style.background = `radial-gradient(circle at ${m[0]}px ${m[1]}px, rgba(0,0,0,0) 0 46px, rgba(0,0,0,${0.78 * pr}) 120px)`;
+    magnifier(m, pr);
+    const q = ep(t, S(3, 1) + 0.6, S(3, 1) + 0.9, ease.back);
+    if (q > 0) label('?', C[0], C[1] - 4, pr * q, 'huge red', `font-size:${44 + 6 * Math.sin(t * 9)}px`);
+  } else $('dim').style.background = 'none';
+
+  // ---- HTML cards ----
+  $('ui').innerHTML = notifCard(t) + codeCard(t) + chargesCounter(t) + requestsCard(t) + bankCard(t) + idCard(t) + receiptCard(t) + ledgerCard(t) + stripeCard(t) + resultCard(t) + ctaSheet(t);
+
+  // ---- flashes, shake, roll, letterbox ----
+  const red = window01(t, S(4, 5), S(4, 5) + 0.5, 0.06), green = Math.max(window01(t, YES, YES + 0.4, 0.05), window01(t, S(6, 3), S(6, 3) + 0.5, 0.06), window01(t, S(9, 1), S(9, 1) + 0.45, 0.05));
+  const white = Math.max(bolt * 0.3, ...CH.map((c) => window01(t, c[0] - 0.04, c[0] + 0.14, 0.04) * 0.22));
+  const fl = $('flash');
+  if (white > Math.max(red, green)) { fl.style.background = 'radial-gradient(circle at 50% 30%, rgba(255,255,255,0.55), rgba(255,255,255,0.08) 70%)'; fl.style.opacity = white; }
+  else { fl.style.background = red > green ? `radial-gradient(circle at 50% 55%, rgba(255,69,58,0.32), rgba(255,69,58,0.06) 70%)` : `radial-gradient(circle at 50% 55%, rgba(50,215,75,0.25), rgba(50,215,75,0.04) 70%)`; fl.style.opacity = Math.max(red, green); }
+  const shk = (t0, a, d) => (t >= t0 ? a * (1 - prog(t, t0, t0 + d)) : 0);
+  const sh = Math.max(shk(S(4, 5), 1, 0.45), shk(YES, 0.5, 0.25), shk(LOST, 0.8, 0.35), shk(S(2, 2) + 0.15, 0.25, 0.2));
+  const whip = Math.max(window01(t, S(5, 0) - 0.02, S(5, 0) + 0.32, 0.12), window01(t, S(8, 0) - 0.05, S(8, 0) + 0.3, 0.12));
+  $('world').style.transform = `translate(${Math.sin(t * 63) * 7 * sh}px, ${Math.cos(t * 51) * 5 * sh}px) rotate(${Math.sin(t * 47) * 0.6 * sh + roll}deg) scale(${1 + Math.abs(roll) * 0.012})`;
+  $('world').style.filter = whip > 0.01 ? `blur(${whip * 7}px)` : 'none';
+  const lbh = 46 * window01(t, S(4, 5) - 0.05, S(5, 0), 0.15);
+  document.querySelectorAll('#lb i').forEach((n) => (n.style.height = lbh + 'px'));
+
+  // ---- chrome ----
+  const ch = CH.find((c) => t >= c[0] && t < c[1]);
+  $('chapter').style.opacity = ch ? life(t, ch[0], ch[1], 0.3, 0.2) * (Math.floor(t * 3) % 6 === 0 && t - ch[0] < 1 ? 0.4 : 1) : 0;
+  if (ch) $('chapter').querySelector('span').textContent = ch[2];
+  $('handle').style.opacity = ep(t, 0.4, 1.0) * (1 - ep(t, S(10, 0), S(10, 0) + 0.3)) * (1 - window01(t, S(5, 1), S(6, 0), 0.25)) * (1 - window01(t, S(0, 1), S(1, 0), 0.2)) * (1 - window01(t, S(6, 0), S(6, 3), 0.2));
+  document.querySelectorAll('#bar i').forEach((n, i) => { n.style.width = prog(t, BK[i], BK[i + 1]) * 100 + '%'; });
+  $('grain').style.transform = `translate(${Math.floor(hash(Math.floor(t * 24)) * 40) - 20}px, ${Math.floor(hash(Math.floor(t * 24) + 5) * 40) - 20}px)`;
+
+  const cur = $('cursor');
+  if (cp) {
+    const pr2 = Math.max(pressHook, pressAgain, pressAmt(t, tapsElev), pressAmt(t, tapsCTA));
+    cur.style.display = ''; cur.style.transform = `translate(${cp[0] - 2}px, ${cp[1] - 2}px) scale(${1 - 0.2 * pr2})`;
+  } else cur.style.display = 'none';
+  tapsCTA.forEach((x, i) => ripple(t, x, i === 0 ? IN_POS : i === 1 ? POST_POS : FOLLOW_POS));
+
+  caps.render(t);
+  $('stage').style.opacity = 1 - ep(t, END - 0.35, END);
+};
+// world point on the ground (z=0) under a screen point
+function groundAt(sx, sy) {
+  const a = raw(1, 0, 0), b = raw(0, 1, 0), dx = (sx - CAM.ox) / CAM.scale, dy = (sy - CAM.oy) / CAM.scale;
+  const det = a[0] * b[1] - a[1] * b[0];
+  return [(dx * b[1] - dy * b[0]) / det, (a[0] * dy - a[1] * dx) / det];
+}
+window.render(0);
+</script>
+</body>
+</html>

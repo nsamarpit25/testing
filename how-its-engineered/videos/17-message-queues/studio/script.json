@@ -1,0 +1,33 @@
+{
+ "topic": "Message Queues",
+ "lines": [
+  [
+   {"say": "You hit buy. The order service calls payment directly, and you wait.", "show": "You hit *buy.* The order service calls *payment* directly, and you *wait.*"}
+  ],
+  [
+   {"say": "Black Friday. Payment slows down, orders pile up, the app crashes.", "show": "*Black Friday.* Payment *slows down,* orders *pile up,* the [app crashes.]"}
+  ],
+  [
+   {"say": "The fix? A message queue in the middle.", "show": "The fix? A [message queue] in the middle."}
+  ],
+  [
+   {"say": "Order drops your order in the queue, and instantly says: received.", "show": "Order *drops* your order in the queue, and instantly says: *received.*"}
+  ],
+  [
+   {"say": "Payment becomes a worker, pulling orders out at its own pace.", "show": "Payment becomes a *worker,* pulling orders out at its *own pace.*"},
+   {"say": "Traffic spikes? The line just grows. Nothing crashes.", "show": "Traffic spikes? The line just *grows.* [Nothing crashes.]"}
+  ],
+  [
+   {"say": "Too slow? Add more workers. They all share one queue.", "show": "Too slow? Add *more workers.* They all share *one queue.*"}
+  ],
+  [
+   {"say": "Worker dies mid-order? The queue only deletes an order once a worker says done,", "show": "Worker *dies* mid-order? The queue only deletes an order once a worker says *done,*"},
+   {"say": "so it goes right back in line.", "show": "so it goes [right back in line.]"}
+  ],
+  [
+   {"say": "That's RabbitMQ and Amazon S-Q-S.", "show": "That's *RabbitMQ* and *Amazon SQS.*"},
+   {"say": "Haven't seen retries? That reel's on my profile.", "show": "Haven't seen *retries?* That reel's on my profile."},
+   {"say": "If you're a vibe coder, follow for the system design your AI skipped.", "show": "If you're a *vibe coder,* follow for the system design your *AI skipped.*"}
+  ]
+ ]
+}

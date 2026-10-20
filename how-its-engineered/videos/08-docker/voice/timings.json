@@ -1,0 +1,202 @@
+[
+ {
+  "li": 0,
+  "pi": 0,
+  "say": "Your app works perfectly on your laptop.",
+  "show": "Your app works *perfectly* on your laptop.",
+  "start": 0.0,
+  "end": 2.14
+ },
+ {
+  "li": 0,
+  "pi": 1,
+  "say": "You put it on a server, and it crashes.",
+  "show": "You put it on a server, and it [crashes.]",
+  "start": 2.46,
+  "end": 4.34
+ },
+ {
+  "li": 0,
+  "pi": 2,
+  "say": "Same code.",
+  "show": "*Same code.*",
+  "start": 4.8,
+  "end": 5.2
+ },
+ {
+  "li": 1,
+  "pi": 0,
+  "say": "The code isn't the problem.",
+  "show": "The code isn't the problem.",
+  "start": 5.8,
+  "end": 6.84
+ },
+ {
+  "li": 1,
+  "pi": 1,
+  "say": "Everything around it is.",
+  "show": "[Everything around it] is.",
+  "start": 7.26,
+  "end": 8.36
+ },
+ {
+  "li": 2,
+  "pi": 0,
+  "say": "Your laptop runs Node eighteen. The server runs Node sixteen.",
+  "show": "Your laptop runs *Node 18.* The server runs *Node 16.*",
+  "start": 8.8,
+  "end": 11.66
+ },
+ {
+  "li": 2,
+  "pi": 1,
+  "say": "You installed a library months ago, and forgot.",
+  "show": "You installed a library months ago, and *forgot.*",
+  "start": 12.6,
+  "end": 14.62
+ },
+ {
+  "li": 2,
+  "pi": 2,
+  "say": "The server never got it.",
+  "show": "The server *never got it.*",
+  "start": 15.16,
+  "end": 16.44
+ },
+ {
+  "li": 3,
+  "pi": 0,
+  "say": "The fix? Don't send just the code.",
+  "show": "The fix? Don't send *just the code.*",
+  "start": 16.92,
+  "end": 18.96
+ },
+ {
+  "li": 3,
+  "pi": 1,
+  "say": "Send the whole machine.",
+  "show": "Send [the whole machine.]",
+  "start": 19.28,
+  "end": 20.12
+ },
+ {
+  "li": 3,
+  "pi": 2,
+  "say": "That's Docker.",
+  "show": "That's *Docker.*",
+  "start": 20.66,
+  "end": 21.3
+ },
+ {
+  "li": 4,
+  "pi": 0,
+  "say": "Think of a shipping container. Same box on a truck, a ship, a train.",
+  "show": "Think of a *shipping container.* Same box on a truck, a ship, a train.",
+  "start": 21.92,
+  "end": 25.5
+ },
+ {
+  "li": 4,
+  "pi": 1,
+  "say": "What's inside never changes.",
+  "show": "What's inside [never changes.]",
+  "start": 25.8,
+  "end": 26.98
+ },
+ {
+  "li": 5,
+  "pi": 0,
+  "say": "Step one: recipe.",
+  "show": "Step one: [recipe.]",
+  "start": 27.78,
+  "end": 28.9
+ },
+ {
+  "li": 5,
+  "pi": 1,
+  "say": "You write a Docker file: which Node, which libraries, which files.",
+  "show": "You write a *Dockerfile:* which Node, which libraries, which files.",
+  "start": 28.9,
+  "end": 32.52
+ },
+ {
+  "li": 6,
+  "pi": 0,
+  "say": "Step two: build.",
+  "show": "Step two: [build.]",
+  "start": 33.1,
+  "end": 34.14
+ },
+ {
+  "li": 6,
+  "pi": 1,
+  "say": "Docker freezes it into an image, a snapshot of everything your app needs.",
+  "show": "Docker freezes it into an *image,* a snapshot of everything your app needs.",
+  "start": 34.62,
+  "end": 38.2
+ },
+ {
+  "li": 7,
+  "pi": 0,
+  "say": "Step three: run.",
+  "show": "Step three: [run.]",
+  "start": 38.74,
+  "end": 39.62
+ },
+ {
+  "li": 7,
+  "pi": 1,
+  "say": "That image runs anywhere as a container.",
+  "show": "That image runs anywhere as a *container.*",
+  "start": 40.04,
+  "end": 41.84
+ },
+ {
+  "li": 7,
+  "pi": 2,
+  "say": "Laptop, server, your teammate's P-C. Identical.",
+  "show": "Laptop, server, your teammate's PC. *Identical.*",
+  "start": 42.24,
+  "end": 44.98
+ },
+ {
+  "li": 8,
+  "pi": 0,
+  "say": "So that crash?",
+  "show": "So that *crash?*",
+  "start": 45.48,
+  "end": 46.3
+ },
+ {
+  "li": 8,
+  "pi": 1,
+  "say": "The server now runs the exact box you tested. Node eighteen included.",
+  "show": "The server now runs the *exact box* you tested. [Node 18 included.]",
+  "start": 46.7,
+  "end": 50.16
+ },
+ {
+  "li": 9,
+  "pi": 0,
+  "say": "The image is the box. The container is the box, running.",
+  "show": "The *image* is the box. The *container* is the box, [running.]",
+  "start": 50.82,
+  "end": 53.78
+ },
+ {
+  "li": 10,
+  "pi": 0,
+  "say": "Follow, because next: your container crashes at three A-M.",
+  "show": "Follow, because next: your container *crashes at 3 AM.*",
+  "start": 54.5,
+  "end": 57.18
+ },
+ {
+  "li": 10,
+  "pi": 1,
+  "say": "Who restarts it while you sleep?",
+  "show": "Who [restarts it] while you sleep?",
+  "start": 57.18,
+  "end": 58.72
+ }
+]

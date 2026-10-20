@@ -1,0 +1,47 @@
+{
+ "topic": "Canary Releases",
+ "lines": [
+  [
+   {"say": "July twenty twenty-four. One update went out to eight and a half million computers.", "show": "July 2024. One update went out to *8.5 million* computers."},
+   {"say": "Airports. Banks. Hospitals.", "show": "Airports. Banks. Hospitals."},
+   {"say": "Blue screen.", "show": "[Blue screen.]"}
+  ],
+  [
+   {"say": "All of them, at the same time.", "show": "All of them, at the [same time.]"},
+   {"say": "Flights grounded. Hospitals back on paper.", "show": "Flights *grounded.* Hospitals back on *paper.*"}
+  ],
+  [
+   {"say": "Now, what if it had gone to just a few computers first?", "show": "Now, what if it had gone to just *a few* computers first?"}
+  ],
+  [
+   {"say": "Coal miners had a trick for this.", "show": "Coal miners had a trick for this."},
+   {"say": "They took a canary down the mine.", "show": "They took a *canary* down the mine."},
+   {"say": "Poison gas hits the tiny bird first. It stops singing, and everyone gets out.", "show": "Poison gas hits the tiny bird *first.* It stops singing, and everyone [gets out.]"}
+  ],
+  [
+   {"say": "Software does the same. It's called a canary release.", "show": "Software does the same. It's called a *canary release.*"},
+   {"say": "The new version goes to just one percent of computers first.", "show": "The new version goes to just *1%* of computers first."}
+  ],
+  [
+   {"say": "Then you watch. Crashes, errors, reboots.", "show": "Then you *watch.* Crashes, errors, reboots."},
+   {"say": "Something spikes? It rolls back automatically.", "show": "Something spikes? It [rolls back] automatically."},
+   {"say": "The other ninety-nine percent never see it.", "show": "The other *99%* never see it."}
+  ],
+  [
+   {"say": "Looks healthy? Five percent. Then twenty-five. Then everyone.", "show": "Looks healthy? *5%.* Then *25.* Then [everyone.]"}
+  ],
+  [
+   {"say": "After the outage, CrowdStrike promised exactly this:", "show": "After the outage, *CrowdStrike* promised exactly this:"},
+   {"say": "updates in stages, starting with a canary.", "show": "updates in stages, starting with a [canary.]"}
+  ],
+  [
+   {"say": "Same bad file. One percent, for a few minutes. Not the whole world.", "show": "Same bad file. *1%*, for a few minutes. Not the [whole world.]"}
+  ],
+  [
+   {"say": "That's Argo Rollouts and AWS CodeDeploy.", "show": "That's *Argo Rollouts* and *AWS CodeDeploy.*"}
+  ],
+  [
+   {"say": "If you're a vibe coder, follow for the system design your AI skipped.", "show": "If you're a vibe coder, follow for the system design your AI [skipped.]"}
+  ]
+ ]
+}

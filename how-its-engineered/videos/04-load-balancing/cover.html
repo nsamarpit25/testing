@@ -1,0 +1,133 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+@font-face { font-family: Inter; src: url(../../node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2) format('woff2'); font-weight: 100 900; }
+@font-face { font-family: Mono; src: url(../../node_modules/@fontsource/jetbrains-mono/files/jetbrains-mono-latin-500-normal.woff2) format('woff2'); font-weight: 500; }
+html, body { margin: 0; background: #000; }
+#stage { position: relative; width: 540px; height: 960px; overflow: hidden; background: #000; font-family: Inter, sans-serif; color: #fff; }
+#vignette { position: absolute; inset: 0; background: radial-gradient(120% 80% at 50% 50%, rgba(255,255,255,0.04), rgba(0,0,0,0) 60%); }
+svg.full { position: absolute; inset: 0; }
+#kicker { position: absolute; top: 168px; left: 0; right: 0; text-align: center; font-family: Mono; font-weight: 500; font-size: 13px; letter-spacing: 3.5px; color: #a3a3a3; }
+#title { position: absolute; top: 192px; left: 0; right: 0; text-align: center; font-size: 60px; font-weight: 800; letter-spacing: -2.2px; }
+#sub { position: absolute; top: 282px; left: 0; right: 0; text-align: center; font-size: 21px; color: #a3a3a3; letter-spacing: -0.2px; }
+#sub b { color: #fff; }
+.lbl { position: absolute; transform: translate(-50%, -50%); font-family: Mono; font-weight: 500; font-size: 12px; letter-spacing: 1px; white-space: nowrap; }
+#handle { position: absolute; bottom: 150px; left: 0; right: 0; display: flex; justify-content: center; align-items: center; gap: 8px; font-weight: 700; font-size: 11px; letter-spacing: 0.8px; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="vignette"></div>
+  <svg class="full" id="scene" width="540" height="960" viewBox="0 0 540 960"></svg>
+  <div id="labels"></div>
+  <div id="kicker">SYSTEM DESIGN · 04</div>
+  <div id="title">Load Balancing</div>
+  <div id="sub">How Netflix survives <b>10M people pressing Play</b></div>
+  <div id="handle">
+    <svg width="18" height="18" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="6" fill="none" stroke="#fff" stroke-width="2"/><circle cx="12" cy="12" r="4.6" fill="none" stroke="#fff" stroke-width="2"/><circle cx="17.6" cy="6.4" r="1.3" fill="#fff"/></svg>
+    <div>@HOW.ITS.ENGINEERED</div>
+  </div>
+</div>
+<script src="../../tools/lib.js"></script>
+<script src="../../tools/iso.js"></script>
+<script>
+const $ = (id) => document.getElementById(id);
+ISO.layer = $('scene');
+window.DURATION = 1;
+const RED = '#FF453A', GREEN = '#32D74B';
+const hash = (n) => { const x = Math.sin(n * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
+const PH = [0, 250], LB = [0, -20];
+const XS = [-300, -150, 0, 150, 300];
+const SVP = XS.map((x) => [x, -210]);
+const LOAD = [0.55, 0.45, 0.6, 0.5, 0.4];
+const flipV = (F) => ({ o: add3(F.o, F.v), u: F.u, v: mul3(F.v, -1) });
+function fcircle(o, F, a, b, r, opt = {}) {
+  const lu = len3(F.u), lv = len3(F.v), pts = [];
+  for (let i = 0; i < 28; i++) { const q = (i / 28) * Math.PI * 2; pts.push(fp(F, a + (r * Math.cos(q)) / lu, b + (r * Math.sin(q)) / lv)); }
+  push(o, path2(pts), { w: 0.9, ...opt });
+}
+function phoneObj() {
+  const [cx, cy] = PH, o = Obj();
+  const T = box(o, cx - 55, cy - 85, 0, 110, 170, 5);
+  tileDots(o, T.top, 6, 9);
+  const F = box(o, cx - 30, cy - 58, 5, 60, 116, 7), Sc = F.top;
+  fpoly(o, Sc, 0.08, 0.05, 0.84, 0.9, { fill: 'none' });
+  fline(o, Sc, 0.38, 0.1, 0.62, 0.1, { w: 1.2 });
+  ftext(o, Sc, 0.5, 0.19, 'TONIGHT · 9 PM', 4.4, { weight: 600, op: 0.7, ls: 0.4 });
+  ftext(o, Sc, 0.5, 0.27, 'The Finale', 8.2, { weight: 800 });
+  fcircle(o, Sc, 0.5, 0.47, 13, { fill: 'none', w: 1.2 });
+  push(o, path2([fp(Sc, 0.43, 0.43), fp(Sc, 0.43, 0.51), fp(Sc, 0.6, 0.47)]), { fill: '#fff', stroke: '#fff', w: 0.8 });
+  fpoly(o, Sc, 0.16, 0.69, 0.68, 0.13, { fill: '#fff', fillOp: 1, w: 1 });
+  ftext(o, Sc, 0.5, 0.755, 'PLAY', 6.6, { fill: '#000', weight: 800, ls: 0.6 });
+  if (F.px) { fline(o, F.px, 0.25, 0.5, 0.4, 0.5, { w: 1.1 }); fline(o, F.px, 0.5, 0.5, 0.58, 0.5, { w: 1.1 }); }
+  return o;
+}
+function serverObj(i) {
+  const [cx, cy] = SVP[i], o = Obj();
+  const T = box(o, cx - 42, cy - 38, 0, 84, 76, 4);
+  tileDots(o, T.top, 4, 4);
+  const F = rack(o, cx - 26, cy - 22, 4, 52, 44, 118);
+  if (F.py) {
+    const n = Math.round(12 * LOAD[i]);
+    for (let k = 0; k < n; k++) fdot(o, F.py, 0.8, 0.06 + k * 0.074 + 0.036, 1.7, { fill: GREEN, fillOp: 0.9 });
+  }
+  return o;
+}
+function lbObj() {
+  const [cx, cy] = LB, o = Obj();
+  const T = box(o, cx - 66, cy - 56, 0, 132, 112, 4);
+  tileDots(o, T.top, 6, 5);
+  const B = box(o, cx - 45, cy - 35, 4, 90, 70, 36);
+  if (B.py) {
+    const D = B.py;
+    fpoly(o, D, 0.06, 0.12, 0.88, 0.76, { fill: 'none', w: 0.6, op: 0.7 });
+    fpoly(o, D, 0.4, 0.0, 0.2, 0.74, { fill: 'none', w: 1 });
+    for (let k = 0; k < 4; k++) fdot(o, D, 0.12 + k * 0.06, 0.62, 1.3, { fillOp: k % 2 ? 0.3 : 1 });
+    ftext(o, flipV(D), 0.8, 0.45, 'LB', 9, { font: 'Mono', weight: 500 });
+  }
+  if (B.px) for (let k = 0; k < 5; k++) fpoly(o, B.px, 0.12 + k * 0.16, 0.3, 0.1, 0.22, { fill: 'none', w: 0.6 });
+  const Tp = B.top, sx = 90, sy = 70;
+  fcircle(o, Tp, 0.5, 0.5, 24, { fill: 'none', w: 1.1 });
+  fcircle(o, Tp, 0.5, 0.5, 30, { fill: 'none', w: 0.5, op: 0.5 });
+  for (let i = 0; i < 5; i++) {
+    const a = Math.atan2(SVP[i][1] - cy, SVP[i][0] - cx);
+    fdot(o, Tp, 0.5 + (Math.cos(a) * 27) / sx, 0.5 + (Math.sin(a) * 27) / sy, 1.4, { fillOp: 0.7 });
+  }
+  const ang = Math.atan2(SVP[3][1] - cy, SVP[3][0] - cx);
+  fline(o, Tp, 0.5, 0.5, 0.5 + (Math.cos(ang) * 22) / sx, 0.5 + (Math.sin(ang) * 22) / sy, { w: 2.4, stroke: GREEN });
+  fcircle(o, Tp, 0.5, 0.5, 3.5, { fill: '#fff', w: 0.8 });
+  return o;
+}
+const dash = (A, B, op = 0.6, col = '#fff') => el('path', { d: path2([A, B], false), stroke: col, 'stroke-width': 0.9, 'stroke-dasharray': '3 5', 'stroke-opacity': op, fill: 'none' }, ISO.layer);
+function label(text, x, y, color) {
+  const d = document.createElement('div'); d.className = 'lbl'; d.textContent = text;
+  d.style.left = x + 'px'; d.style.top = y + 'px'; d.style.color = color; $('labels').appendChild(d);
+}
+window.render = () => {
+  ISO.layer.textContent = ''; $('labels').textContent = '';
+  CAM.scale = 0.54; CAM.yaw = -0.74;
+  aim([0, 0, 30], 270, 590);
+  // crowd of dots behind the phone
+  for (let i = 0; i < 260; i++) {
+    const x = (hash(i * 1.7 + 0.3) * 2 - 1) * 380, y = 130 + hash(i * 2.3 + 0.9) * 230;
+    if (Math.abs(x) < 82 && Math.abs(y - PH[1]) < 112) continue;
+    const p = P(x, y, 0);
+    el('circle', { cx: p[0], cy: p[1], r: 1.1, fill: '#fff', 'fill-opacity': 0.25 + 0.5 * hash(i + 4.4) }, ISO.layer);
+  }
+  dash(P(PH[0], PH[1] - 85, 5), P(LB[0], LB[1] + 56, 5), 0.7);
+  for (let i = 0; i < 5; i++) dash(P(LB[0], LB[1] - 35, 40), P(SVP[i][0], SVP[i][1] + 38, 5), i === 3 ? 0.9 : 0.45, i === 3 ? GREEN : '#fff');
+  for (let i = 0; i < 5; i++) emit(serverObj(i), 1);
+  emit(lbObj(), 1);
+  emit(phoneObj(), 1);
+  for (const k of [0.35, 0.65]) { const o = Obj(); packet(o, lerp(PH[0], LB[0], k), lerp(PH[1] - 85, LB[1] + 56, k), 7); emit(o, 1); }
+  { const o = Obj(); packet(o, lerp(LB[0], SVP[3][0], 0.55), lerp(LB[1], SVP[3][1] + 38, 0.55), 7); emit(o, 1); }
+  const l = P(LB[0] + 66, LB[1] + 56, 0);
+  label('LOAD BALANCER', l[0] + 52, l[1] + 4, '#a3a3a3');
+  const p = P(PH[0] + 55, PH[1] + 85, 0);
+  label('10,000,000 × PLAY', p[0] - 30, p[1] + 22, '#a3a3a3');
+};
+</script>
+</body>
+</html>

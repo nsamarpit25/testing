@@ -1,0 +1,18 @@
+Your phone thinks it's talking to Instagram's servers. It's not. 🤔
+
+It's talking to a middleman: a reverse proxy.
+
+Without one, every server sits on the open internet. Hackers only need to find one weak one.
+With one, the servers hide behind a wall. Only the proxy has a public address.
+
+And it does a lot more than guard the door:
+🔒 Unlocks HTTPS once, so the servers don't have to
+⚡ Keeps popular pages ready, so most requests never reach a server
+🧭 Reads the path: /api goes here, images go there
+🛡️ Stops floods of bad traffic at the door
+
+Nginx and Cloudflare do this for millions of websites.
+
+Nginx or Cloudflare: which one have you used? Comment below 👇
+
+#systemdesign #softwareengineering #backend #reverseproxy #coding #programming #techexplained

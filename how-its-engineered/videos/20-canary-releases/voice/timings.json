@@ -1,0 +1,162 @@
+[
+ {
+  "li": 0,
+  "pi": 0,
+  "say": "July twenty twenty-four. One update went out to eight and a half million computers.",
+  "show": "July 2024. One update went out to *8.5 million* computers.",
+  "start": 0.0,
+  "end": 5.08
+ },
+ {
+  "li": 0,
+  "pi": 1,
+  "say": "Airports. Banks. Hospitals.",
+  "show": "Airports. Banks. Hospitals.",
+  "start": 5.66,
+  "end": 7.36
+ },
+ {
+  "li": 0,
+  "pi": 2,
+  "say": "Blue screen.",
+  "show": "[Blue screen.]",
+  "start": 7.96,
+  "end": 8.4
+ },
+ {
+  "li": 1,
+  "pi": 0,
+  "say": "All of them, at the same time.",
+  "show": "All of them, at the [same time.]",
+  "start": 8.98,
+  "end": 10.7
+ },
+ {
+  "li": 1,
+  "pi": 1,
+  "say": "Flights grounded. Hospitals back on paper.",
+  "show": "Flights *grounded.* Hospitals back on *paper.*",
+  "start": 11.22,
+  "end": 13.3
+ },
+ {
+  "li": 2,
+  "pi": 0,
+  "say": "Now, what if it had gone to just a few computers first?",
+  "show": "Now, what if it had gone to just *a few* computers first?",
+  "start": 13.96,
+  "end": 16.36
+ },
+ {
+  "li": 3,
+  "pi": 0,
+  "say": "Coal miners had a trick for this.",
+  "show": "Coal miners had a trick for this.",
+  "start": 16.96,
+  "end": 18.18
+ },
+ {
+  "li": 3,
+  "pi": 1,
+  "say": "They took a canary down the mine.",
+  "show": "They took a *canary* down the mine.",
+  "start": 18.48,
+  "end": 19.88
+ },
+ {
+  "li": 3,
+  "pi": 2,
+  "say": "Poison gas hits the tiny bird first. It stops singing, and everyone gets out.",
+  "show": "Poison gas hits the tiny bird *first.* It stops singing, and everyone [gets out.]",
+  "start": 20.32,
+  "end": 24.6
+ },
+ {
+  "li": 4,
+  "pi": 0,
+  "say": "Software does the same. It's called a canary release.",
+  "show": "Software does the same. It's called a *canary release.*",
+  "start": 25.22,
+  "end": 27.86
+ },
+ {
+  "li": 4,
+  "pi": 1,
+  "say": "The new version goes to just one percent of computers first.",
+  "show": "The new version goes to just *1%* of computers first.",
+  "start": 27.86,
+  "end": 31.28
+ },
+ {
+  "li": 5,
+  "pi": 0,
+  "say": "Then you watch. Crashes, errors, reboots.",
+  "show": "Then you *watch.* Crashes, errors, reboots.",
+  "start": 31.8,
+  "end": 34.26
+ },
+ {
+  "li": 5,
+  "pi": 1,
+  "say": "Something spikes? It rolls back automatically.",
+  "show": "Something spikes? It [rolls back] automatically.",
+  "start": 34.66,
+  "end": 37.0
+ },
+ {
+  "li": 5,
+  "pi": 2,
+  "say": "The other ninety-nine percent never see it.",
+  "show": "The other *99%* never see it.",
+  "start": 37.38,
+  "end": 39.42
+ },
+ {
+  "li": 6,
+  "pi": 0,
+  "say": "Looks healthy? Five percent. Then twenty-five. Then everyone.",
+  "show": "Looks healthy? *5%.* Then *25.* Then [everyone.]",
+  "start": 39.72,
+  "end": 43.38
+ },
+ {
+  "li": 7,
+  "pi": 0,
+  "say": "After the outage, CrowdStrike promised exactly this:",
+  "show": "After the outage, *CrowdStrike* promised exactly this:",
+  "start": 44.12,
+  "end": 46.82
+ },
+ {
+  "li": 7,
+  "pi": 1,
+  "say": "updates in stages, starting with a canary.",
+  "show": "updates in stages, starting with a [canary.]",
+  "start": 47.26,
+  "end": 49.42
+ },
+ {
+  "li": 8,
+  "pi": 0,
+  "say": "Same bad file. One percent, for a few minutes. Not the whole world.",
+  "show": "Same bad file. *1%*, for a few minutes. Not the [whole world.]",
+  "start": 49.96,
+  "end": 53.6
+ },
+ {
+  "li": 9,
+  "pi": 0,
+  "say": "That's Argo Rollouts and AWS CodeDeploy.",
+  "show": "That's *Argo Rollouts* and *AWS CodeDeploy.*",
+  "start": 54.08,
+  "end": 56.76
+ },
+ {
+  "li": 10,
+  "pi": 0,
+  "say": "If you're a vibe coder, follow for the system design your AI skipped.",
+  "show": "If you're a vibe coder, follow for the system design your AI [skipped.]",
+  "start": 56.76,
+  "end": 60.52
+ }
+]

@@ -1,0 +1,178 @@
+[
+ {
+  "li": 0,
+  "pi": 0,
+  "say": "Your checkout froze for eight seconds.",
+  "show": "Your *checkout* froze for [8 seconds.]",
+  "start": 0.0,
+  "end": 2.22
+ },
+ {
+  "li": 0,
+  "pi": 1,
+  "say": "Not on the payment.",
+  "show": "Not on the *payment.*",
+  "start": 2.56,
+  "end": 3.28
+ },
+ {
+  "li": 0,
+  "pi": 2,
+  "say": "On the receipt email.",
+  "show": "On the *receipt email.*",
+  "start": 3.44,
+  "end": 4.58
+ },
+ {
+  "li": 1,
+  "pi": 0,
+  "say": "After every order, checkout calls email, then the warehouse, then rewards. One by one.",
+  "show": "After every order, checkout calls *email,* then the *warehouse,* then *rewards.* [One by one.]",
+  "start": 5.3,
+  "end": 11.08
+ },
+ {
+  "li": 1,
+  "pi": 1,
+  "say": "Email slow? Checkout waits.",
+  "show": "Email *slow?* Checkout [waits.]",
+  "start": 11.62,
+  "end": 13.38
+ },
+ {
+  "li": 1,
+  "pi": 2,
+  "say": "Email down? The order fails.",
+  "show": "Email *down?* The order [fails.]",
+  "start": 13.84,
+  "end": 15.64
+ },
+ {
+  "li": 2,
+  "pi": 0,
+  "say": "The fix? Don't call them. Announce it.",
+  "show": "The fix? Don't *call* them. [Announce it.]",
+  "start": 16.44,
+  "end": 19.1
+ },
+ {
+  "li": 2,
+  "pi": 1,
+  "say": "That's pub sub.",
+  "show": "That's [Pub/Sub.]",
+  "start": 19.6,
+  "end": 20.48
+ },
+ {
+  "li": 3,
+  "pi": 0,
+  "say": "Like subscribing to a channel: the creator uploads once, and every subscriber gets it.",
+  "show": "Like *subscribing* to a channel: the creator uploads [once,] and *every subscriber* gets it.",
+  "start": 21.24,
+  "end": 26.28
+ },
+ {
+  "li": 4,
+  "pi": 0,
+  "say": "Step one: publish.",
+  "show": "Step one: [publish.]",
+  "start": 26.28,
+  "end": 27.96
+ },
+ {
+  "li": 4,
+  "pi": 1,
+  "say": "Checkout sends one message, order placed, to a topic. And it's done.",
+  "show": "Checkout sends *one message,* order placed, to a *topic.* And it's [done.]",
+  "start": 28.8,
+  "end": 32.9
+ },
+ {
+  "li": 5,
+  "pi": 0,
+  "say": "Step two: subscribe.",
+  "show": "Step two: [subscribe.]",
+  "start": 33.82,
+  "end": 35.1
+ },
+ {
+  "li": 5,
+  "pi": 1,
+  "say": "Email, warehouse and rewards each subscribe to that topic.",
+  "show": "*Email,* *warehouse* and *rewards* each subscribe to that *topic.*",
+  "start": 36.0,
+  "end": 39.22
+ },
+ {
+  "li": 6,
+  "pi": 0,
+  "say": "Step three: deliver.",
+  "show": "Step three: [deliver.]",
+  "start": 39.86,
+  "end": 41.1
+ },
+ {
+  "li": 6,
+  "pi": 1,
+  "say": "Each one gets its own copy.",
+  "show": "Each one gets its *own copy.*",
+  "start": 41.88,
+  "end": 43.5
+ },
+ {
+  "li": 6,
+  "pi": 2,
+  "say": "Email slow? Only email waits.",
+  "show": "Email slow? [Only email] waits.",
+  "start": 44.08,
+  "end": 46.32
+ },
+ {
+  "li": 7,
+  "pi": 0,
+  "say": "Need text messages too? Add a subscriber.",
+  "show": "Need *text messages* too? [Add a subscriber.]",
+  "start": 47.14,
+  "end": 49.66
+ },
+ {
+  "li": 7,
+  "pi": 1,
+  "say": "Checkout never changes. It doesn't even know who's listening.",
+  "show": "Checkout *never changes.* It doesn't even know [who's listening.]",
+  "start": 50.38,
+  "end": 53.4
+ },
+ {
+  "li": 8,
+  "pi": 0,
+  "say": "So that frozen checkout? Done the moment the order is saved.",
+  "show": "So that *frozen checkout?* Done the moment the order is [saved.]",
+  "start": 54.24,
+  "end": 57.44
+ },
+ {
+  "li": 9,
+  "pi": 0,
+  "say": "Google Cloud Pub Sub and Kafka both work like this.",
+  "show": "*Google Cloud Pub/Sub* and *Kafka* both work like this.",
+  "start": 58.2,
+  "end": 61.02
+ },
+ {
+  "li": 10,
+  "pi": 0,
+  "say": "Seen one slow service take down a whole app? That reel's on my profile.",
+  "show": "Seen one slow service take down a *whole app?* That reel's on my profile.",
+  "start": 61.66,
+  "end": 65.16
+ },
+ {
+  "li": 10,
+  "pi": 1,
+  "say": "Follow for the rest of the series.",
+  "show": "[Follow] for the rest of the series.",
+  "start": 65.6,
+  "end": 66.86
+ }
+]

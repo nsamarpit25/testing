@@ -1,0 +1,342 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+@font-face { font-family: Inter; src: url(../../node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2) format('woff2'); font-weight: 100 900; }
+@font-face { font-family: Mono; src: url(../../node_modules/@fontsource/jetbrains-mono/files/jetbrains-mono-latin-400-normal.woff2) format('woff2'); font-weight: 400; }
+@font-face { font-family: Mono; src: url(../../node_modules/@fontsource/jetbrains-mono/files/jetbrains-mono-latin-500-normal.woff2) format('woff2'); font-weight: 500; }
+html, body { margin: 0; background: #000; }
+#stage { position: relative; width: 540px; height: 960px; overflow: hidden; background: #000; font-family: Inter, sans-serif; color: #fff; }
+#vignette { position: absolute; inset: 0; background: radial-gradient(120% 80% at 50% 50%, rgba(255,255,255,0.035), rgba(0,0,0,0) 60%); }
+svg.full { position: absolute; inset: 0; }
+#dim { position: absolute; inset: 0; background: #000; opacity: 0; }
+#bar { position: absolute; top: 26px; left: 32px; right: 32px; display: flex; gap: 6px; }
+#bar div { flex: 1; height: 2.5px; border-radius: 2px; background: rgba(255,255,255,0.16); overflow: hidden; }
+#bar i { display: block; height: 100%; background: rgba(255,255,255,0.85); width: 0; }
+#caps { position: absolute; left: 0; right: 0; top: 150px; text-align: center; }
+.cap { position: absolute; left: 0; right: 0; padding: 0 30px; }
+.cap-line { font-size: 24px; line-height: 33px; font-weight: 400; color: #a3a3a3; letter-spacing: -0.2px; }
+.w { display: inline-block; margin: 0 3px; }
+.key { color: #fff; font-weight: 700; }
+.pill { background: rgba(255,255,255,0.14); border-radius: 9px; padding: 0 9px; }
+.lbl { position: absolute; transform: translate(-50%, -50%); font-family: Mono; font-size: 10px; letter-spacing: 1.5px; color: #c4c4c4; white-space: nowrap; }
+.lbl.big { font-size: 12.5px; letter-spacing: 0.3px; color: #fff; font-weight: 500; }
+.lbl.red { color: #FF453A; } .lbl.green { color: #32D74B; }
+.lbl.tag { font-size: 11px; letter-spacing: 0.5px; color: #000; background: #fff; border-radius: 6px; padding: 3px 7px; font-weight: 500; }
+#handle { position: absolute; left: 388px; top: 250px; display: flex; flex-direction: column; align-items: flex-end; gap: 6px; font-weight: 700; font-size: 8.5px; letter-spacing: 0.6px; }
+.card { position: absolute; border: 1px solid rgba(255,255,255,0.55); border-radius: 9px; background: #000; font-family: Mono; box-sizing: border-box; }
+#receipts .card { width: 184px; height: 46px; padding: 0 14px; display: flex; align-items: center; justify-content: space-between; font-size: 12px; }
+#receipts .card.red { border-color: #FF453A; color: #FF453A; }
+#receipts .sub { position: absolute; font-family: Mono; font-size: 11px; letter-spacing: 1px; }
+#ledger { left: 32px; top: 262px; width: 196px; padding: 12px 14px; font-size: 12px; }
+#ledger .row { display: flex; justify-content: space-between; margin-top: 8px; padding: 6px 8px; border-radius: 6px; }
+#term { left: 56px; width: 428px; top: 636px; padding: 16px 18px; font-size: 14.5px; line-height: 24px; }
+.dim { color: #8a8a8a; }
+.cur { display: inline-block; width: 8px; height: 15px; background: #fff; vertical-align: -2px; margin-left: 2px; }
+#comment { left: 56px; width: 428px; top: 812px; height: 54px; border-radius: 27px; font-family: Inter; display: flex; align-items: center; padding: 0 8px 0 10px; gap: 12px; font-size: 15px; }
+#cursor { position: absolute; left: 0; top: 0; width: 18px; height: 24px; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="vignette"></div>
+  <svg class="full" id="scene" width="540" height="960" viewBox="0 0 540 960"></svg>
+  <div id="dim"></div>
+  <div id="labels"></div>
+  <div id="receipts"></div>
+  <div class="card" id="ledger"></div>
+  <div class="card" id="term"></div>
+  <div class="card" id="comment"></div>
+  <div id="handle">
+    <svg width="17" height="17" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="6" fill="none" stroke="#fff" stroke-width="2"/><circle cx="12" cy="12" r="4.6" fill="none" stroke="#fff" stroke-width="2"/><circle cx="17.6" cy="6.4" r="1.3" fill="#fff"/></svg>
+    <div>@HOW.ITS.ENGINEERED</div>
+  </div>
+  <div id="bar"><div><i></i></div><div><i></i></div><div><i></i></div><div><i></i></div></div>
+  <div id="caps"></div>
+  <svg id="cursor" viewBox="0 0 18 24"><path d="M2 2 L2 19 L6.5 15 L9.5 22 L12.5 20.7 L9.6 14 L15.5 14 Z" fill="#fff" stroke="#000" stroke-width="1.4" stroke-linejoin="round"/></svg>
+</div>
+<script src="../../tools/lib.js"></script>
+<script src="../../tools/iso.js"></script>
+<script src="timings.js"></script>
+<script>
+const $ = (id) => document.getElementById(id);
+ISO.layer = $('scene');
+const TM = window.TIMINGS;
+const ph = (li, pi = 0) => TM.find((e) => e.li === li && e.pi === pi);
+const S = (li, pi = 0) => ph(li, pi).start, E = (li, pi = 0) => ph(li, pi).end;
+const END = TM[TM.length - 1].end + 1.3;
+window.DURATION = Math.ceil(END * 30) / 30;
+
+const caps = makeCaptions($('caps'), TM.map((e, i) => ({
+  t: e.start, dur: e.end - e.start, text: e.show,
+  end: i + 1 < TM.length ? TM[i + 1].start - 0.02 : END - 0.3,
+})));
+
+// ---------- world ----------
+const PH = [0, 150], SV = [0, -150], EL = [0, 0];
+const at = (A, B, k) => [lerp(A[0], B[0], k), lerp(A[1], B[1], k)];
+const BTN = [0, 150 - 58 + 0.745 * 116, 12];            // PAY button centre (world)
+const flipV = (F) => ({ o: add3(F.o, F.v), u: F.u, v: mul3(F.v, -1) });
+function fcircle(o, F, a, b, r, opt = {}) {
+  const lu = len3(F.u), lv = len3(F.v), pts = [];
+  for (let i = 0; i < 28; i++) { const q = (i / 28) * Math.PI * 2; pts.push(fp(F, a + (r * Math.cos(q)) / lu, b + (r * Math.sin(q)) / lv)); }
+  push(o, path2(pts), { w: 0.9, ...opt });
+}
+
+function phoneObj(press, glowId) {
+  const [cx, cy] = PH, o = Obj();
+  const T = box(o, cx - 55, cy - 85, 0, 110, 170, 5);
+  tileDots(o, T.top, 6, 9);
+  const F = box(o, cx - 30, cy - 58, 5, 60, 116, 7), Sc = F.top;
+  fpoly(o, Sc, 0.08, 0.05, 0.84, 0.9, { fill: 'none' });
+  fline(o, Sc, 0.38, 0.1, 0.62, 0.1, { w: 1.2 });
+  ftext(o, Sc, 0.5, 0.2, 'Coffee Shop', 5.5, { weight: 500, op: 0.7 });
+  ftext(o, Sc, 0.5, 0.33, '$50.00', 13, { weight: 800 });
+  fline(o, Sc, 0.22, 0.46, 0.78, 0.46, { op: 0.5 });
+  fline(o, Sc, 0.22, 0.53, 0.62, 0.53, { op: 0.5 });
+  fpoly(o, Sc, 0.16, 0.68, 0.68, 0.13, { fill: press > 0.02 ? '#fff' : 'none', fillOp: press, w: 1 });
+  ftext(o, Sc, 0.5, 0.745, 'PAY $50', 6.6, { fill: press > 0.5 ? '#000' : '#fff', weight: 800, ls: 0.4 });
+  if (F.px) { fline(o, F.px, 0.25, 0.5, 0.4, 0.5, { w: 1.1 }); fline(o, F.px, 0.5, 0.5, 0.58, 0.5, { w: 1.1 }); }
+  return o;
+}
+function serverObj() {
+  const [cx, cy] = SV, o = Obj();
+  const T = box(o, cx - 80, cy - 72, 0, 160, 144, 5);
+  tileDots(o, T.top, 8, 7);
+  rack(o, cx - 68, cy - 60, 5, 58, 52, 132);
+  rack(o, cx - 6, cy - 60, 5, 58, 52, 132);
+  return o;
+}
+function elevatorObj(open, lit, flash) {
+  const [cx, cy] = EL, o = Obj();
+  const T = box(o, cx - 95, cy - 50, 0, 190, 110, 5);
+  tileDots(o, T.top, 9, 5);
+  const F = box(o, cx - 85, cy - 42, 5, 170, 16, 178);
+  const W = F.py, Wd = flipV(W);
+  // floor in front of doors + door frame
+  fpoly(o, W, 0.1, 0, 0.54, 0.82, { fill: 'none', w: 1 });
+  if (open > 0.01) {
+    const half = 0.25 * open;
+    fpoly(o, W, 0.37 - half, 0.005, 2 * half, 0.8, { fill: '#fff', fillOp: 0.16 * open, stroke: 'none' });
+    for (let k = 1; k < 4; k++) fline(o, W, 0.37 - half + (2 * half * k) / 4, 0.02, 0.37 - half + (2 * half * k) / 4, 0.78, { op: 0.25 * open, w: 0.5 });
+  }
+  const dw = 0.25 * (1 - open);
+  if (dw > 0.004) {
+    fpoly(o, W, 0.12, 0.005, dw, 0.8, { fill: '#000', w: 0.9 });
+    fpoly(o, W, 0.62 - dw, 0.005, dw, 0.8, { fill: '#000', w: 0.9 });
+    fline(o, W, 0.12 + dw * 0.5, 0.25, 0.12 + dw * 0.5, 0.55, { op: 0.4, w: 0.5 });
+    fline(o, W, 0.62 - dw * 0.5, 0.25, 0.62 - dw * 0.5, 0.55, { op: 0.4, w: 0.5 });
+  }
+  // floor indicator
+  fpoly(o, W, 0.29, 0.86, 0.16, 0.08, { fill: 'none', w: 0.8 });
+  ftext(o, Wd, 0.37, 0.1, open > 0.05 ? '1' : lit ? '▼' : '·', 9, { weight: 700 });
+  // call button panel
+  fpoly(o, W, 0.72, 0.36, 0.08, 0.2, { fill: 'none', w: 0.8 });
+  fcircle(o, W, 0.76, 0.46, 4.6, { fill: lit ? '#fff' : '#000', fillOp: lit ? lerp(0.55, 1, flash) : 1, w: 1 });
+  if (F.px) for (let k = 0; k < 6; k++) fline(o, F.px, 0.3, 0.15 + k * 0.13, 0.7, 0.15 + k * 0.13, { op: 0.5, w: 0.5 });
+  fpoly(o, F.top, 0.05, 0.2, 0.9, 0.6, { fill: 'none', w: 0.5, op: 0.6 });
+  return o;
+}
+
+// ---------- labels ----------
+const labels = $('labels');
+function label(text, x, y, op, cls = '') {
+  if (op <= 0.01) return;
+  const d = document.createElement('div');
+  d.className = 'lbl ' + cls; d.textContent = text;
+  d.style.left = x + 'px'; d.style.top = y + 'px'; d.style.opacity = op;
+  labels.appendChild(d);
+}
+// packet travelling along PH->SV; k from a to b over [t0, t0+dur]
+function travel(t, t0, dur, a, b, text, cls = 'big', lost = false) {
+  const k = prog(t, t0, t0 + dur);
+  if (k <= 0 || k >= 1 && !lost) return;
+  let kk = ease.inOut(k), op = 1;
+  if (lost) { kk = ease.out(clamp(k * 1.6)) * 0.5; op = 1 - prog(k, 0.55, 0.85); }
+  if (op <= 0) return;
+  const q = at(PH, SV, lerp(a, b, kk));
+  const o = Obj(); packet(o, q[0], q[1], 7); emit(o, 1, op);
+  const lp = P(q[0], q[1], 34);
+  label(text, lp[0], lp[1], op * ep(t, t0, t0 + 0.2), cls);
+}
+
+// ---------- cursor ----------
+const tapsPhone = () => [S(0, 0) + 0.45, S(0, 0) + 0.95, S(4, 3) + 0.55];
+const tapsElev = () => { const a = S(7, 1) + 0.15, b0 = S(7, 1) + 0.95, b1 = E(7, 1) + 0.15, r = [a]; for (let i = 0; i < 9; i++) r.push(lerp(b0, b1, i / 8)); return r; };
+function btnScreen() { return P(...BTN); }
+function elevBtnScreen() { return P(EL[0] - 85 + 0.76 * 170, EL[1] - 42 + 16, 5 + 0.46 * 178); }
+function cursorAt(t) {
+  const tracks = [
+    [[0.2, () => [560, 960]], [S(0, 0) + 0.3, btnScreen], [S(1, 0) + 0.1, btnScreen], [S(1, 0) + 0.8, () => [600, 980]]],
+    [[S(4, 3) - 0.15, () => [-30, 980]], [S(4, 3) + 0.4, btnScreen], [S(4, 4), btnScreen], [S(4, 4) + 0.6, () => [-40, 1000]]],
+    [[S(7, 0) + 1.0, () => [600, 900]], [S(7, 1) - 0.05, elevBtnScreen], [S(7, 2) + 0.5, elevBtnScreen], [S(7, 2) + 1.2, () => [620, 960]]],
+  ];
+  for (const K of tracks) {
+    if (t < K[0][0] || t > K[K.length - 1][0]) continue;
+    for (let i = 0; i < K.length - 1; i++) {
+      if (t >= K[i][0] && t <= K[i + 1][0]) {
+        const k = ease.inOut(prog(t, K[i][0], K[i + 1][0])), a = K[i][1](), b = K[i + 1][1]();
+        return [lerp(a[0], b[0], k), lerp(a[1], b[1], k)];
+      }
+    }
+  }
+  return null;
+}
+const pressAmt = (t, taps) => Math.max(0, ...taps.map((x) => window01(t, x, x + 0.2, 0.06)));
+
+// ---------- camera keyframes ----------
+function camera(t) {
+  const K = [
+    [0, [0, 150, 10], 1.6, 560],
+    [S(2, 0) - 0.3, [0, 150, 10], 1.72, 560],
+    [S(2, 0) + 0.9, [0, 0, 30], 0.95, 575],
+    [S(7, 0) + 0.2, [0, 0, 30], 0.98, 575],
+    [S(7, 0) + 1.2, [0, 0, 92], 1.3, 590],
+    [S(8, 0) + 0.1, [0, 0, 92], 1.34, 590],
+    [S(8, 0) + 1.0, [0, 0, 30], 0.78, 445],
+    [END, [0, 0, 30], 0.8, 445],
+  ];
+  let i = 0; while (i < K.length - 2 && t > K[i + 1][0]) i++;
+  const [ta, fa, sa, ya] = K[i], [tb, fb, sb, yb] = K[i + 1], k = ease.inOut(prog(t, ta, tb));
+  CAM.scale = lerp(sa, sb, k);
+  const focus = [lerp(fa[0], fb[0], k), lerp(fa[1], fb[1], k), lerp(fa[2], fb[2], k)];
+  return { focus, sy: lerp(ya, yb, k) };
+}
+
+function receiptsHTML(t) {
+  const items = [];
+  const card = (txt, amt, a, top, red = false) => {
+    if (a <= 0) return;
+    items.push(`<div class="card${red ? ' red' : ''}" style="left:322px; top:${top}px; opacity:${clamp(a * 2)}; transform:translateY(${(1 - ease.back(clamp(a))) * 16}px) scale(${lerp(0.94, 1, clamp(a))})"><span>${txt}</span><span style="font-weight:500">${amt}</span></div>`);
+  };
+  const life = (a, b) => ep(t, a, a + 0.35) * (1 - ep(t, b - 0.25, b));
+  card('CHARGED', '−$50', life(S(2, 2), S(3, 0) + 0.2), 664);
+  card('CHARGED', '−$50', life(S(4, 1) - 0.1, S(5, 0) + 0.3), 664);
+  card('CHARGED AGAIN', '−$50', life(S(4, 5), S(5, 0) + 0.3), 718, true);
+  const tot = life(S(4, 5) + 0.3, S(5, 0) + 0.3);
+  if (tot > 0) items.push(`<div class="sub" style="left:330px; top:778px; color:#FF453A; opacity:${tot}">TOTAL −$100 ✕</div>`);
+  card('CHARGED', '−$50', life(S(5, 2) + 1.0, S(7, 0) + 0.3), 664);
+  const once = life(S(6, 4), S(7, 0) + 0.3);
+  if (once > 0) items.push(`<div class="sub" style="left:330px; top:724px; color:#32D74B; opacity:${once}">CHARGED ONCE ✓</div>`);
+  return items.join('');
+}
+
+window.render = function (t) {
+  ISO.layer.textContent = ''; labels.textContent = '';
+  const cam = camera(t);
+  const cp = cursorAt(t);
+  CAM.yaw = 0.035 * Math.sin(t * 0.5) + (cp ? clamp((cp[0] - 270) / 270, -1, 1) * 0.06 : 0);
+  aim(cam.focus, 270, cam.sy);
+
+  // draw-in / draw-out
+  const L7 = S(7, 0), L8 = S(8, 0);
+  const phoneD = t < L7 ? prog(t, 0.0, 1.2) : t < L8 + 0.3 ? 1 - prog(t, L7, L7 + 0.7) : prog(t, L8 + 0.3, L8 + 1.2);
+  const servD = t < L7 ? prog(t, S(2, 0) + 0.2, S(2, 0) + 1.6) : t < L8 + 0.3 ? 1 - prog(t, L7, L7 + 0.7) : prog(t, L8 + 0.4, L8 + 1.3);
+  const elevD = t < L8 ? prog(t, L7 + 0.45, L7 + 1.9) : 1 - prog(t, L8, L8 + 0.55);
+  const pathK = Math.min(ep(t, S(2, 0) + 1.2, S(2, 0) + 1.8), phoneD, servD);
+
+  if (pathK > 0) {
+    const a = at(PH, SV, 0.3), b = at(PH, SV, lerp(0.3, 0.72, pathK));
+    el('path', { d: path2([P(a[0], a[1], 5), P(b[0], b[1], 5)], false), stroke: '#fff', 'stroke-width': 0.9, 'stroke-dasharray': '3 5', 'stroke-opacity': 0.6, fill: 'none' }, ISO.layer);
+  }
+  const taps = tapsPhone(), etaps = tapsElev();
+  const objs = [];
+  if (servD > 0) objs.push({ c: SV, f: () => emit(serverObj(), servD) });
+  if (phoneD > 0) objs.push({ c: PH, f: () => emit(phoneObj(pressAmt(t, taps)), phoneD) });
+  if (elevD > 0) {
+    const lit = t >= etaps[0] && t < S(7, 2) + 1.4;
+    const open = ep(t, S(7, 2) + 0.5, S(7, 2) + 1.4, ease.inOut);
+    objs.push({ c: EL, f: () => emit(elevatorObj(open, lit, pressAmt(t, etaps)), elevD) });
+  }
+  objs.sort((a, b) => depth(...a.c) - depth(...b.c)).forEach((o) => o.f());
+
+  // ---- packets ----
+  travel(t, S(2, 1) + 0.25, 1.3, 0.2, 0.8, 'charge $50');
+  travel(t, S(2, 2) + 0.35, 1.0, 0.8, 0.2, 'OK ✓', 'big green');
+  travel(t, S(4, 0) + 0.1, E(4, 0) - S(4, 0) + 0.15, 0.2, 0.8, 'charge $50');
+  travel(t, S(4, 1) + 0.1, 1.2, 0.8, 0.2, 'OK', 'big', true);
+  travel(t, S(4, 2) + 0.25, 1.4, 0.2, 0.8, 'charge $50 (again)');
+  travel(t, S(5, 2) - 0.1, 1.05, 0.2, 0.8, 'charge $50 · ID 7F3A');
+  travel(t, S(6, 0) - 0.05, 1.05, 0.2, 0.8, 'retry · ID 7F3A');
+  travel(t, S(6, 3) + 0.1, 1.15, 0.8, 0.2, 'same answer ✓', 'big green');
+
+  // ---- labels ----
+  const bp = btnScreen();
+  label('×2', bp[0] + 46, bp[1] - 26, ep(t, taps[1], taps[1] + 0.15) * (1 - ep(t, S(1, 1), S(1, 1) + 0.3)), 'big');
+  const mid = at(PH, SV, 0.5), mp = P(mid[0], mid[1], 0);
+  label('SLOW NETWORK', mp[0] - 105, mp[1] - 58, ep(t, S(4, 0), S(4, 0) + 0.3) * (1 - ep(t, S(5, 0), S(5, 0) + 0.3)), 'red');
+  const lostQ = at(PH, SV, lerp(0.8, 0.2, 0.5)), lp = P(lostQ[0], lostQ[1], 30);
+  label('✕ REPLY LOST', lp[0] + 6, lp[1], ep(t, S(4, 1) + 0.8, S(4, 1) + 1.0) * (1 - ep(t, S(4, 2) + 0.2, S(4, 2) + 0.5)), 'red big');
+  label('2 REQUESTS', mp[0] - 105, mp[1] - 36, ep(t, S(4, 4), S(4, 4) + 0.25) * (1 - ep(t, S(5, 0), S(5, 0) + 0.3)), 'big');
+  const pp = P(PH[0] - 30, PH[1] - 58, 46);
+  label('ID 7F3A', pp[0] - 4, pp[1] - 6, ep(t, S(5, 1) + 0.6, S(5, 1) + 0.9, ease.back) * (1 - ep(t, L7, L7 + 0.3)), 'tag');
+  const eb = elevBtnScreen();
+  const nTap = etaps.filter((x) => t >= x).length;
+  label(`×${nTap}`, eb[0] + 34, eb[1] - 6, (nTap > 0 ? 1 : 0) * (1 - ep(t, S(7, 2) + 0.4, S(7, 2) + 0.7)), 'big');
+  const door = P(EL[0] - 85 + 0.37 * 170, EL[1] - 26, 0);
+  label('ARRIVES ONCE', door[0], door[1] + 22, ep(t, S(7, 2) + 1.0, S(7, 2) + 1.3) * (1 - ep(t, L8, L8 + 0.3)), 'big');
+  const yp = P(PH[0] + 55, PH[1] + 85, 0);
+  label('YOU', yp[0], yp[1] + 14, Math.min(phoneD, ep(t, S(2, 0) + 0.8, S(2, 0) + 1.2)) * (1 - ep(t, L8 - 0.1, L8)));
+  const sp = P(SV[0] + 80, SV[1] + 72, 0);
+  label('PAYMENT SERVER', sp[0] - 6, sp[1] + 14, Math.min(servD, ep(t, S(2, 0) + 1.2, S(2, 0) + 1.6)) * (1 - ep(t, L8 - 0.1, L8)));
+
+  // ---- cards ----
+  $('receipts').innerHTML = receiptsHTML(t);
+  const lg = ep(t, S(5, 2) + 0.9, S(5, 2) + 1.2) * (1 - ep(t, L7, L7 + 0.3));
+  $('ledger').style.opacity = lg; $('ledger').style.display = lg > 0 ? '' : 'none';
+  if (lg > 0) {
+    const scan = t > S(6, 1) && t < S(6, 2) ? (Math.floor(t * 8) % 2 ? 0.22 : 0.08) : 0;
+    const seen = t >= S(6, 2);
+    $('ledger').innerHTML = `<div class="dim" style="font-size:10px;letter-spacing:1.5px">SEEN PAYMENT IDS</div>
+      <div class="row" style="background:rgba(${seen ? '50,215,75' : '255,255,255'},${seen ? 0.16 : scan})"><span>7F3A</span><span style="color:${seen ? '#32D74B' : '#8a8a8a'}">${seen ? '✓ SEEN' : 'done'}</span></div>`;
+  }
+  const tm = ep(t, L8 + 0.4, L8 + 0.8);
+  $('term').style.opacity = tm; $('term').style.display = tm > 0 ? '' : 'none';
+  if (tm > 0) {
+    const blink = Math.floor(t * 2.4) % 2 === 0;
+    const cmd = 'POST /pay  id=7F3A';
+    const ty = (a, b) => cmd.slice(0, Math.floor(prog(t, a, b) * cmd.length));
+    const c1 = ty(L8 + 0.6, L8 + 1.3), c2 = ty(L8 + 2.0, L8 + 2.7);
+    let h = `<span class="dim">&gt;</span> ${c1}${t < L8 + 1.45 ? `<span class="cur" style="opacity:${blink ? 1 : 0}"></span>` : ''}`;
+    if (t >= L8 + 1.45) h += `<br>&nbsp; <span style="color:#32D74B">charged $50 ✓</span>`;
+    if (t >= L8 + 1.9) h += `<br><span class="dim">&gt;</span> ${c2}${t < S(8, 1) + 0.55 ? `<span class="cur" style="opacity:${blink ? 1 : 0}"></span>` : ''}`;
+    if (t >= S(8, 1) + 0.55) h += `<br>&nbsp; <span class="dim">already done ·</span> no charge ✓`;
+    h += `<br><span class="dim" style="font-size:11px">same request, same result</span>`;
+    $('term').innerHTML = h;
+  }
+  const cm = ep(t, S(9, 1) - 0.1, S(9, 1) + 0.3, ease.back);
+  $('comment').style.display = cm > 0 ? '' : 'none';
+  $('comment').style.opacity = clamp(cm * 2); $('comment').style.transform = `translateY(${(1 - cm) * 14}px)`;
+  if (cm > 0) {
+    const txt = 'API retries';
+    const typed = txt.slice(0, Math.floor(prog(t, S(9, 1) + 0.35, S(9, 1) + 1.2) * txt.length));
+    const done = typed.length === txt.length;
+    $('comment').innerHTML = `<div style="width:36px;height:36px;border-radius:50%;border:1px solid rgba(255,255,255,0.6)"></div>
+      <div style="flex:1">${typed}<span style="display:inline-block;width:2px;height:17px;background:#fff;vertical-align:-3px;margin-left:2px;opacity:${Math.floor(t * 2.4) % 2 || !done ? 1 : 0}"></span></div>
+      <div style="height:38px;padding:0 18px;border-radius:19px;display:flex;align-items:center;font-weight:700;font-size:13px;${done ? 'background:#fff;color:#000' : 'border:1px solid rgba(255,255,255,0.4)'}">Post</div>`;
+  }
+
+  // dim during "can you spot the problem?"
+  $('dim').style.opacity = 0.62 * window01(t, S(3, 0), S(4, 0), 0.3);
+  // progress bar (4 parts)
+  const B = [0, S(3, 0), S(5, 0), S(8, 0), END];
+  document.querySelectorAll('#bar i').forEach((n, i) => { n.style.width = prog(t, B[i], B[i + 1]) * 100 + '%'; });
+  const hl = ep(t, L8 + 0.2, L8 + 0.9, ease.inOut);
+  $('handle').style.opacity = ep(t, 0.4, 1.0) * (1 - window01(t, L8 + 0.1, L8 + 1.0, 0.45));
+  $('handle').style.left = (hl > 0.5 ? 42 : 388) + 'px'; $('handle').style.alignItems = hl > 0.5 ? 'flex-start' : 'flex-end';
+
+  // cursor
+  const cur = $('cursor');
+  if (cp) {
+    const pr = Math.max(pressAmt(t, taps), pressAmt(t, etaps));
+    cur.style.display = ''; cur.style.transform = `translate(${cp[0] - 2}px, ${cp[1] - 2}px) scale(${1 - 0.18 * pr})`;
+  } else cur.style.display = 'none';
+
+  caps.render(t);
+  $('stage').style.opacity = 1 - ep(t, END - 0.4, END);
+};
+window.render(0);
+</script>
+</body>
+</html>

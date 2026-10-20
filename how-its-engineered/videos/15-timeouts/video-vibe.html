@@ -1,0 +1,737 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- 15 Timeouts, in the 10–14 ember line-art style.
+     World: the user's phone (near) → your app (thread slots on its face) → a weather API tower (far, a cloud on its roof).
+     Every outgoing call is a capsule on the OUT track, tied back to the app by a glowing thread: the thread it holds.
+     The return track stays empty. A cyan deadline dial arrives with the timeout; at zero the thread snaps.
+     Times come from voice/words.json via voice/warp.js (video-vibe.html loads voice-vibe/ for the other ending). -->
+<link rel="stylesheet" href="lib/fonts.css">
+<style>
+:root { --o: #FF6A1F; --o2: #FFB070; --w: #F2EEE8; --g: #77706A; --ok: #7CF29A; --cy: #5EE6FF; --red: #FF4632; --amb: #FFC34D; }
+html, body { margin: 0; background: #000; }
+#stage { position: relative; width: 540px; height: 960px; overflow: hidden; background: #0b0a09; font-family: Inter, sans-serif; color: var(--w); }
+#world, .layer { position: absolute; inset: 0; }
+#cv { position: absolute; inset: 0; width: 540px; height: 960px; }
+#fx { position: absolute; inset: 0; overflow: visible; }
+#grain { position: absolute; inset: -40px; opacity: 0.55; mix-blend-mode: screen; pointer-events: none; }
+#vig { position: absolute; inset: 0; background: radial-gradient(110% 75% at 50% 45%, rgba(0,0,0,0) 50%, rgba(0,0,0,0.7) 100%); pointer-events: none; }
+#dim { position: absolute; inset: 0; background: #0b0a09; opacity: 0; pointer-events: none; }
+#flash { position: absolute; inset: 0; opacity: 0; background: var(--o); mix-blend-mode: screen; pointer-events: none; }
+#cflash { position: absolute; inset: 0; opacity: 0; background: var(--cy); mix-blend-mode: screen; pointer-events: none; }
+.co { position: absolute; font-family: Mono; font-size: 9.5px; white-space: nowrap; color: #d9d2ca; display: flex; align-items: center; gap: 5px; letter-spacing: 0.4px; }
+.co:before { content: ''; width: 4px; height: 4px; border-radius: 50%; background: var(--o); }
+.lbl { position: absolute; font: 800 11px/1 Mono; letter-spacing: 1.2px; padding: 7px 10px; border-radius: 8px; white-space: nowrap; color: #F2EEE8; background: rgba(14,13,12,0.92); border: 1px solid rgba(255,176,112,0.5); box-shadow: 0 8px 24px rgba(0,0,0,0.6); }
+.lbl b { color: var(--o); font-weight: 800; }
+#ed { position: absolute; left: 26px; right: 26px; top: 150px; display: none; background: rgba(12,11,10,0.94); border: 1px solid rgba(255,106,31,0.32); border-radius: 10px; box-shadow: 0 14px 34px rgba(0,0,0,0.6); overflow: hidden; }
+#ed .tb { height: 26px; display: flex; align-items: center; gap: 5px; padding: 0 10px; border-bottom: 1px solid rgba(255,255,255,0.06); font: 600 10px/1 Mono; color: #9c948c; letter-spacing: 0.5px; }
+#ed .tb i { width: 7px; height: 7px; border-radius: 50%; background: #2c2925; display: inline-block; }
+#ed .tb .fn { margin-left: 8px; color: #d9d2ca; } #ed .tb .fn b { color: var(--o); font-weight: 600; }
+#ed .tb .st { margin-left: auto; letter-spacing: 1.2px; font-weight: 800; }
+#code { padding: 6px 0 8px; font: 600 13px/25px Mono; color: #d9d2ca; }
+.ln { position: relative; height: 25px; padding-left: 34px; padding-right: 12px; white-space: pre; display: flex; align-items: center; }
+.ln .n { position: absolute; left: 0; width: 22px; text-align: right; color: #3d3833; font-weight: 400; }
+.ln .r { margin-left: auto; font-weight: 800; font-size: 11.5px; padding-left: 8px; }
+.ln.run { background: rgba(255,176,112,0.07); } .ln.bad { background: rgba(255,70,50,0.14); } .ln.good { background: rgba(124,242,154,0.08); } .ln.amb { background: rgba(255,195,77,0.1); } .ln.cy { background: rgba(94,230,255,0.1); }
+.c { color: #6b645e; font-weight: 400; } .s { color: var(--o2); } .okc { color: var(--ok); } .oc { color: var(--o); } .ac { color: var(--amb); } .rc { color: var(--red); } .cyc { color: var(--cy); font-weight: 800; }
+#cap { position: absolute; left: 24px; right: 24px; top: 742px; height: 40px; pointer-events: none; }
+#cap .box { display: none; position: absolute; inset: 0; justify-content: center; align-items: center; white-space: nowrap; font-weight: 800; font-size: 23px; line-height: 1; letter-spacing: -0.4px; }
+#cap .w { display: inline-block; margin: 0 4px; color: #fff; -webkit-text-stroke: 4px #0b0a09; paint-order: stroke fill; text-shadow: 0 2px 10px rgba(0,0,0,0.8); }
+.slam { position: absolute; left: 0; right: 0; text-align: center; pointer-events: none; display: none; white-space: nowrap; }
+.slam .t { position: relative; display: inline-block; font: italic 400 112px/1 Instrument; letter-spacing: -2px; color: transparent; background: linear-gradient(180deg, #FFE1C4 0%, #FFB070 40%, #FF6A1F 85%); -webkit-background-clip: text; background-clip: text; filter: drop-shadow(0 0 22px rgba(255,106,31,0.45)); }
+.slam .t.r { background: linear-gradient(180deg, #FFD9CF 0%, #FF7A5C 45%, #FF4632 85%); -webkit-background-clip: text; background-clip: text; filter: drop-shadow(0 0 22px rgba(255,70,50,0.5)); }
+.slam .t.c { background: linear-gradient(180deg, #E6FBFF 0%, #9FF0FF 45%, #3FC8F0 90%); -webkit-background-clip: text; background-clip: text; filter: drop-shadow(0 0 22px rgba(94,230,255,0.45)); }
+.slam .t.g { background: linear-gradient(180deg, #E8FFEE 0%, #A6F7BC 45%, #4FD67A 90%); -webkit-background-clip: text; background-clip: text; filter: drop-shadow(0 0 22px rgba(124,242,154,0.45)); }
+.slam .sub { font: 800 11px/1 Mono; letter-spacing: 3px; color: var(--g); margin-top: 6px; }
+#prof { position: absolute; left: 44px; top: 270px; width: 452px; display: none; background: rgba(16,14,12,0.97); border: 1px solid rgba(255,176,112,0.4); border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,0.7); font-family: Inter; overflow: hidden; }
+#prof .top { display: flex; align-items: center; gap: 12px; padding: 16px 16px 12px; }
+#prof .ring { width: 56px; height: 56px; border-radius: 50%; padding: 3px; box-sizing: border-box; flex: none; background: conic-gradient(#FF6A1F, #FFB070, #FF6A1F); }
+#prof .ring div { width: 100%; height: 100%; border-radius: 50%; background: #0b0a09; display: flex; align-items: center; justify-content: center; font: 800 16px/1 Mono; color: #fff; }
+#fb { width: 104px; height: 38px; border-radius: 10px; background: var(--o); color: #0b0a09; display: flex; align-items: center; justify-content: center; font: 900 14px/1 Inter; flex: none; }
+#prof .tiles { display: flex; gap: 8px; padding: 0 16px 16px; }
+#prof .tile { position: relative; flex: 1; height: 150px; border-radius: 10px; background: #1c1916; border: 2px solid transparent; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; }
+#prof .tile .ic { width: 34px; height: 34px; border-radius: 50%; border: 2px solid #3a342e; display: flex; align-items: center; justify-content: center; font: 900 15px/1 Inter; color: #3a342e; }
+#prof .tile .t { font: 800 11px/1 Mono; letter-spacing: 1px; color: #d9d2ca; text-align: center; line-height: 1.3; }
+#onp, #vibe { position: absolute; display: none; font: 800 11px/1 Mono; letter-spacing: 1.4px; padding: 7px 10px; border-radius: 7px; background: var(--o); color: #0b0a09; white-space: nowrap; }
+#vibe { background: #F2EEE8; }
+.zd { position: absolute; width: 7px; height: 7px; margin: -3.5px 0 0 -3.5px; border-radius: 50%; background: #E6FBFF; box-shadow: 0 0 10px 3px rgba(94,230,255,0.85); pointer-events: none; }
+#cursor { position: absolute; left: 0; top: 0; width: 22px; height: 28px; display: none; pointer-events: none; filter: drop-shadow(0 3px 6px rgba(0,0,0,0.6)); }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="world">
+    <canvas id="cv" width="1080" height="1920"></canvas>
+    <svg id="fx" width="540" height="960" viewBox="0 0 540 960"></svg>
+    <div class="layer" id="lbls"></div>
+  </div>
+  <div id="vig"></div>
+  <div id="dim"></div>
+  <div class="layer" id="cards"></div>
+  <div class="layer" id="kin"></div>
+  <div id="ed">
+    <div class="tb"><i></i><i></i><i></i><span class="fn" id="edfn"></span><span class="st" id="edst"></span></div>
+    <div id="code">
+      <div class="ln" id="l1"><span class="n">1</span><span id="l1t"></span><span class="r" id="l1r"></span></div>
+      <div class="ln" id="l2"><span class="n">2</span><span id="l2t"></span><span class="r" id="l2r"></span></div>
+      <div class="ln" id="l3"><span class="n">3</span><span id="l3t"></span><span class="r" id="l3r"></span></div>
+      <div class="ln" id="l4"><span class="n">4</span><span id="l4t"></span><span class="r" id="l4r"></span></div>
+      <div class="ln" id="l5"><span class="n">5</span><span id="l5t"></span><span class="r" id="l5r"></span></div>
+    </div>
+  </div>
+  <div id="zap"><div class="zd"></div><div class="zd"></div><div class="zd"></div><div class="zd"></div><div class="zd"></div><div class="zd"></div></div>
+  <div id="prof">
+    <div class="top"><div class="ring"><div>{ }</div></div><div style="flex:1;min-width:0"><div style="font-weight:800;font-size:16px">@how.its.engineered</div><div style="color:#9c948c;font-size:11.5px;margin-top:3px">System design, one picture at a time</div></div><div id="fb">Follow</div></div>
+    <div class="tiles"><div class="tile" id="t0"><div class="ic" id="t0i">⚡</div><div class="t">CIRCUIT<br>BREAKERS</div></div><div class="tile"><div class="ic">♥</div><div class="t">HEALTH<br>CHECKS</div></div><div class="tile"><div class="ic">⌕</div><div class="t">SERVICE<br>DISCOVERY</div></div></div>
+  </div>
+  <div id="onp">ON MY PROFILE</div>
+  <div id="vibe">FOR VIBE CODERS</div>
+  <div id="cap"></div>
+  <svg id="cursor" viewBox="0 0 22 28"><path d="M2 2 L2 22 L7.5 17 L11 25 L14.5 23.5 L11 15.5 L18.5 15.5 Z" fill="#fff" stroke="#0b0a09" stroke-width="1.6" stroke-linejoin="round"/></svg>
+  <div id="flash"></div>
+  <div id="cflash"></div>
+  <div id="grain"></div>
+</div>
+<script src="../../tools/lib.js"></script>
+<script>window.VIBE_END = true; window.VOICE_DIR = "voice-vibe";</script>
+<script src="voice-vibe/timings.js"></script>
+<script src="voice-vibe/warp.js"></script>
+<script src="lib/engine.js"></script>
+<script>
+// scenes are timed on voice/ref_words.json (the normal take); WARP maps the current voice's clock onto it
+const CAPW = window.CAPW, WARP = window.WARP, VIBE = !!window.VIBE_END;
+const DURATION = CAPW[CAPW.length - 1][2] + 1.7;
+window.DURATION = DURATION;
+function toRef(t) {
+  if (t <= WARP[0][0]) return t;
+  for (let i = 1; i < WARP.length; i++) if (t <= WARP[i][0]) { const [n0, r0] = WARP[i - 1], [n1, r1] = WARP[i]; return r0 + (r1 - r0) * (t - n0) / (n1 - n0); }
+  const [n, r] = WARP[WARP.length - 1]; return r + (t - n);
+}
+const REF_END = toRef(DURATION);
+const O = hex('#FF6A1F'), O2 = hex('#FFB070'), W = [242, 238, 232], GR = [119, 112, 106], INK = [14, 13, 12], OK = hex('#7CF29A'), RED = [255, 70, 50], AMB = hex('#FFC34D'), CY = hex('#5EE6FF'), DIM = [60, 54, 48];
+
+/* ---------------- beats (seconds, from voice/ref_words.json) */
+const T = {
+  capsule: 0.76, app: 1.6, server: 2.5, weather: 3.1, leaves: 3.8, nothing: 4.64, back: 5.18, howlong: 6.18, waiting: 7.54,
+  def: 8.52, forever: 9.92, python: 10.88, requests: 11.32, noTO: 12.4, pass0: 13.34, go: 14.74, client: 15.3, same: 16.06,
+  waiting2: 17.34, free: 18.0, call: 19.0, holds: 19.28, thread: 19.74, spinner: 20.42, every: 21.68, stuck: 22.38, another: 23.46,
+  timeout: 24.8, deadline: 25.5, longest: 26.3, failure: 27.98,
+  pass: 28.9, timeout2: 29.22, three: 29.96, after: 30.68, seconds: 31.18, stop: 31.78,
+  now: 33.18, slow: 33.5, failure2: 34.28, handle: 35.36, show: 36.2, error: 36.66, fallback: 37.8, forecast: 38.7, saved: 39.2,
+  spinner2: 40.46, stops: 40.7, thread2: 41.6, freed: 41.96, user: 42.74, knows: 43.06,
+  haven: 44.8, circuit: 45.2, profile: 47.08, follow: 48.0,
+};
+const CUT = { DF: 8.35, NF: 16.9, DL: 24.35, TO: 28.75, HD: 33.0, RS: 40.15, END: 44.6 };
+const ORDER = [['H', 0], ['DF', CUT.DF], ['NF', CUT.NF], ['DL', CUT.DL], ['TO', CUT.TO], ['HD', CUT.HD], ['RS', CUT.RS], ['END', CUT.END]];
+function sceneOf(t) { let s = 'H'; for (const [k, a] of ORDER) if (t >= a) s = k; return s; }
+const TXT = (t) => ep(t, 9.6, 10.4); // world lettering fades in only after the spoken hook
+
+/* ---------------- world layout: phone (near, left) → your app → weather tower (far) */
+const PH = [-84, -150], PHW = 50, PHH = 100;
+const AP = [0, -30], APW = 78, APD = 46, APH = 44;
+const TW = [0, 172], TWW = 58, TWD = 50, TWH = 80;
+const APB = AP[1] + APD / 2, TWF = TW[1] - TWD / 2;     // app back face, tower front face
+const TX = 12;                                            // OUT track x; return track at -TX
+const OUT = [[TX, APB, 0], [TX, TWF + 4, 0]], RET = [[-TX, TWF + 4, 0], [-TX, APB, 0]];
+const PRD = [[PH[0], PH[1] + 4, 0], [PH[0], -88, 0], [-20, -88, 0], [-20, AP[1] - APD / 2, 0]];
+const NS = 8;                                             // thread slots
+const slotAnchor = (k) => [AP[0] - 28 + k * 8, APB, APH];
+const parkY = (k) => TWF - 8 - k * 19;
+const DIAL = [AP[0] + APW / 2 + 16, AP[1] + 6, 70];
+
+/* ---------------- camera */
+const WIDE = { f: [-6, 20, 24], s: 1.45, a: -0.5, e: 0.62, sy: 470 };
+const SHOTS = [
+  // H: the capsule at the app's back gate, tight
+  { t: 0, d: 0, f: [TX, APB + 16, 5], s: 8.4, a: -1.35, e: 0.3, sy: 470 },
+  { t: 0.7, d: 1.2, f: [TX - 2, APB + 2, 8], s: 6.4, a: -1.2, e: 0.34 },
+  // "your app": the app with its thread already tied on
+  { t: T.app - 0.1, d: 0.8, f: [0, -20, 22], s: 3.0, a: -0.55, e: 0.42 },
+  // "a server for the weather": over to the tower
+  { t: T.server - 0.1, d: 0.9, f: [0, 120, 34], s: 2.4, a: -0.4, e: 0.36 },
+  // "it leaves": track the capsule down the OUT track
+  { t: T.leaves - 0.1, d: 0, f: [TX, APB + 20, 6], s: 3.4, a: -1.05, e: 0.3, sy: 500 },
+  { t: T.leaves, d: 0.8, f: [TX, TWF - 10, 10], s: 3.0, a: -1.0, e: 0.3 },
+  // "nothing comes back": low along the empty return track
+  { t: T.nothing - 0.05, d: 0, f: [-TX, 70, 10], s: 2.2, a: -0.95, e: 0.2, sy: 500 },
+  { t: T.nothing + 0.1, d: 1.2, f: [-TX, 84, 12], s: 2.35, a: -0.9, e: 0.16 },
+  // "how long should your app keep waiting?": the phone, face-on, spinner
+  { t: T.howlong - 0.1, d: 0, f: [PH[0], PH[1], 58], s: 3.6, a: -0.62, e: 0.12, sy: 460 },
+  { t: T.howlong + 0.2, d: 1.8, f: [PH[0], PH[1], 64], s: 4.6, a: -0.62, e: 0.1 },
+  // DF: wide; the dial socket is empty
+  { t: CUT.DF, d: 0, ...WIDE, f: [-24, 10, 24], s: 1.6 },
+  { t: 9.6, d: 1.0, f: [10, 10, 30], s: 2.0, a: -0.55, e: 0.5, sy: 560 },
+  { t: T.go - 0.2, d: 1.2, f: [0, 40, 30], s: 1.85, a: -0.45, e: 0.5, sy: 600 },
+  // NF: the thread slots on the app's face, then the pile-up
+  { t: CUT.NF, d: 0, f: [0, AP[1] - APD / 2, 26], s: 4.0, a: -0.72, e: 0.26, sy: 470 },
+  { t: T.call - 0.1, d: 0.8, f: [-4, -24, 28], s: 2.8, a: -0.62, e: 0.46, sy: 480 },
+  { t: T.spinner - 0.1, d: 0, f: [PH[0], PH[1], 60], s: 3.8, a: -0.62, e: 0.12, sy: 460 },
+  { t: T.every - 0.15, d: 0, ...WIDE, f: [-10, 10, 24], s: 1.7, sy: 480 },
+  { t: T.stuck, d: 1.0, f: [-10, -10, 24], s: 2.0, a: -0.62, e: 0.55 },
+  // DL: the dial arrives over the app
+  { t: CUT.DL, d: 0, f: [20, AP[1], 36], s: 2.8, a: -0.4, e: 0.32, sy: 470 },
+  { t: T.longest - 0.2, d: 1.0, f: [10, 20, 30], s: 2.0, a: -0.5, e: 0.5, sy: 480 },
+  // TO (code card up): one call, one 3-second deadline
+  { t: CUT.TO, d: 0, f: [6, 40, 26], s: 1.9, a: -0.55, e: 0.5, sy: 560 },
+  { t: T.three, d: 1.6, f: [TX, 90, 20], s: 2.1, a: -0.75, e: 0.42, sy: 570 },
+  { t: T.stop - 0.25, d: 0.15, f: [TX, 40, 30], s: 2.6, a: -0.7, e: 0.45, sy: 560 },
+  // HD (code card up): the snapped thread, the freed slot, then the phone
+  { t: CUT.HD, d: 0, f: [0, -10, 30], s: 2.4, a: -0.42, e: 0.46, sy: 600 },
+  { t: T.show - 0.15, d: 0, f: [PH[0], PH[1], 54], s: 2.8, a: -0.62, e: 0.12, sy: 550 },
+  { t: T.fallback - 0.1, d: 1.2, f: [PH[0], PH[1], 58], s: 3.0, a: -0.62, e: 0.12, sy: 550 },
+  // RS: three quick cuts
+  { t: CUT.RS, d: 0, f: [PH[0], PH[1], 60], s: 4.0, a: -0.62, e: 0.12, sy: 470 },
+  { t: T.thread2 - 0.12, d: 0, f: [0, AP[1] - APD / 2, 22], s: 3.4, a: -0.45, e: 0.24, sy: 520 },
+  { t: T.user - 0.15, d: 0, ...WIDE, f: [-30, -60, 24], s: 2.1, sy: 470 },
+  { t: CUT.END, d: 1.5, ...WIDE, s: 1.05, sy: 560 },
+];
+const KICKS = [[T.leaves, 0.05], [T.nothing, 0.04], [T.howlong, 0.03], [10.0, 0.08], [T.go, 0.04], [T.free, 0.06], [T.holds, 0.05], [T.another, 0.06], [T.deadline, 0.08], [T.three, 0.04], [T.stop, 0.1], [T.failure2, 0.05], [T.handle, 0.06], [T.fallback, 0.05], [T.stops, 0.05], [T.freed, 0.06], [CUT.END, 0.04]];
+const SHAKES = [[10.0, 4, 0.4], [T.another, 3, 0.4], [T.stop, 5, 0.4]];
+
+/* ---------------- drawing helpers */
+function wbox(x, y, z, w, d, h, edge, o = {}) {
+  box(x, y, z, w, d, h, o.fill || INK, { op: o.op, edge: rgba(edge, 1, o.ea ?? 0.9), lw: o.lw || 1, gl: o.glow ? [rgba(edge, 1, o.glow), 14] : null, front: o.front, side: o.side, top: o.top, dz: o.dz, layer: o.layer });
+}
+function seg(a, b, col, lw = 1, o = {}) {
+  add(o.layer ?? 1, D((a[0] + b[0]) / 2, (a[1] + b[1]) / 2, (a[2] + b[2]) / 2) + (o.dz || 0), () => {
+    g.save(); if (o.glow) glow(o.glow, o.blur || 6); if (o.add) g.globalCompositeOperation = 'lighter';
+    g.strokeStyle = col; g.lineWidth = lw * Math.max(0.6, Math.min(2.4, cam.s * 0.75)); g.lineCap = 'round';
+    g.beginPath(); g.moveTo(...P(...a)); g.lineTo(...P(...b)); g.stroke(); g.restore();
+  });
+}
+function pline(pts, col, lw = 1, o = {}) {
+  if (pts.length < 2) return;
+  const m = pts[Math.floor(pts.length / 2)];
+  add(o.layer ?? 1, (o.depth ?? D(...m)) + (o.dz || 0), () => {
+    g.save(); if (o.glow) glow(o.glow, o.blur || 6); if (o.add) g.globalCompositeOperation = 'lighter';
+    g.strokeStyle = col; g.lineWidth = lw * Math.max(0.6, Math.min(2.4, cam.s * 0.75)); g.lineCap = 'round'; g.lineJoin = 'round';
+    if (o.dash) { g.setLineDash(o.dash.map((v) => v * cam.s)); g.lineDashOffset = o.off || 0; }
+    g.beginPath(); pts.forEach((p, i) => (i ? g.lineTo(...P(...p)) : g.moveTo(...P(...p)))); if (o.close) g.closePath();
+    if (o.fill) { g.fillStyle = o.fill; g.fill(); }
+    g.stroke(); g.restore();
+  });
+}
+function spark(p, a = 1, r = 3, col = O) {
+  if (a <= 0.01) return;
+  add(2, D(...p) - 6, () => { const c = P(...p), R = r * cam.s * 0.6; g.save(); g.globalCompositeOperation = 'lighter'; const rg = g.createRadialGradient(c[0], c[1], 0, c[0], c[1], R * 4); rg.addColorStop(0, `rgba(255,236,210,${a})`); rg.addColorStop(0.3, rgba(col, 1, 0.6 * a)); rg.addColorStop(1, rgba(col, 1, 0)); g.fillStyle = rg; g.beginPath(); g.arc(c[0], c[1], R * 4, 0, Math.PI * 2); g.fill(); g.restore(); });
+}
+function shower(t, t0, x, y, z, n, seed, spd = 170, life = 0.9, col = O) {
+  const dt = t - t0; if (dt <= 0 || dt > life) return;
+  add(3, 0, () => {
+    g.save(); g.globalCompositeOperation = 'lighter'; g.lineCap = 'round';
+    for (let i = 0; i < n; i++) {
+      const th = rnd(i, seed) * Math.PI * 2, up = 0.2 + rnd(i, seed + 1) * 1.0, v = spd * (0.4 + rnd(i, seed + 2) * 0.9);
+      const pos = (d) => P(x + Math.cos(th) * v * d, y + Math.sin(th) * v * d, z + up * v * d - 300 * d * d);
+      const a = pos(dt), b = pos(Math.max(0, dt - 0.03)), k = 1 - dt / life;
+      g.strokeStyle = rgba(mixc(col, [255, 240, 200], rnd(i, seed + 3)), 1.2, k); g.lineWidth = (0.8 + 1.2 * k) * Math.min(1.6, cam.s * 0.6);
+      g.beginPath(); g.moveTo(...b); g.lineTo(...a); g.stroke();
+    }
+    g.restore();
+  });
+}
+function popText(t, t0, p, txt, col, size = 9, life = 0.8) {
+  const k = prog(t, t0, t0 + life); if (k <= 0 || k >= 1) return;
+  add(3, 0, () => { const q = P(p[0], p[1], p[2] + 8 + k * 14), s = Math.min(1.5, Math.max(0.9, cam.s * 0.5)); g.save(); g.globalAlpha = Math.min(1, (1 - k) * 2.2) * Math.min(1, k * 8); g.font = `900 ${size * s}px Inter`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.lineWidth = 3; g.strokeStyle = '#0b0a09'; g.strokeText(txt, q[0], q[1]); g.fillStyle = rgba(col, 1.2); glow(rgba(col), 8); g.fillText(txt, q[0], q[1]); g.restore(); });
+}
+function floorGrid(a = 1) {
+  add(0, 1e7, () => {
+    const X0 = -400, X1 = 400, Y0 = -320, Y1 = 420;
+    g.save(); g.lineWidth = 0.6; g.globalAlpha = a;
+    for (let x = X0; x <= X1; x += 20) { const maj = x % 100 === 0; g.strokeStyle = `rgba(255,240,225,${maj ? 0.08 : 0.03})`; g.beginPath(); g.moveTo(...P(x, Y0, 0)); g.lineTo(...P(x, Y1, 0)); g.stroke(); }
+    for (let y = Y0; y <= Y1; y += 20) { const maj = y % 100 === 0; g.strokeStyle = `rgba(255,240,225,${maj ? 0.08 : 0.03})`; g.beginPath(); g.moveTo(...P(X0, y, 0)); g.lineTo(...P(X1, y, 0)); g.stroke(); }
+    g.restore();
+  });
+}
+function flow(pts, t, n, speed, col, a = 1, z = 6, r = 3.2, seed = 0) {
+  if (a <= 0.01) return;
+  for (let i = 0; i < n; i++) { const q = (t * speed + i / n + rnd(i, seed) * 0.08) % 1; const p = along(pts, q); orb([p[0], p[1], z], col, a * Math.min(1, q * 8, (1 - q) * 8), r); }
+}
+function trip(pts, t, a, b, col, r = 3.4, z = 6) { const q = prog(t, a, b); if (t < a || t > b) return null; const p = along(pts, q); orb([p[0], p[1], z], col, 1, r); return [p[0], p[1], z]; }
+
+/* ---------------- state over time */
+// calls: one per busy slot: [slot, launch time, park index]; the first is the hook's call
+function calls(t, sc) {
+  if (sc === 'TO' || sc === 'HD' || sc === 'RS' || sc === 'END') return [[0, T.three, 0]];
+  const L = [[0, T.leaves, 0]];
+  if (t > T.every - 0.3) for (let k = 1; k < NS; k++) L.push([k, T.every - 0.2 + (k - 1) * 0.24, k]);
+  return L;
+}
+const snapT = T.stop;                     // the 3-second deadline hits on "stop"
+const dialOn = (t) => t > T.deadline - 0.6;
+const freedAll = (t) => t > T.thread2 - 0.1;
+function phoneState(t) {
+  if (t < T.error) return { spin: 1, err: 0, fb: 0, ok: 0 };
+  return { spin: t < T.stops ? 0.0 : 0, err: ep(t, T.error - 0.1, T.error + 0.25), fb: ep(t, T.fallback - 0.1, T.fallback + 0.35), ok: ep(t, T.knows - 0.2, T.knows + 0.3) };
+}
+
+/* ---------------- the phone: a weather app */
+function sun(F, cx, cy, R, col, lw = 0.9) {
+  fpath(F, Array.from({ length: 17 }, (_, k) => { const a = k / 16 * Math.PI * 2; return [cx + Math.cos(a) * R, cy + Math.sin(a) * R]; }), col, lw);
+  for (let k = 0; k < 8; k++) { const a = k / 8 * Math.PI * 2; fpath(F, [[cx + Math.cos(a) * R * 1.35, cy + Math.sin(a) * R * 1.35], [cx + Math.cos(a) * R * 1.75, cy + Math.sin(a) * R * 1.75]], col, lw); }
+}
+// the phone's pending clock (same fast-forward as the code card's WAITING chip)
+function waitClock(t) {
+  const sc = sceneOf(t);
+  if (sc === 'TO') return clamp(t - T.three, 0, 3);
+  if (sc === 'HD' || sc === 'RS' || sc === 'END') return 3;
+  if (t < 10.85) return Math.max(0, t - T.leaves);
+  return (10.85 - T.leaves) + Math.pow(t - 10.85, 2.2) * 9;
+}
+function phoneFace(t, F, w, h) {
+  const st = phoneState(t), u0 = 3, u1 = w - 3, v0 = 4, v1 = h - 6, tx = TXT(t);
+  fquad(F, u0, v0, u1, v1, '#13110f');
+  fquad(F, w / 2 - 7, h - 3.2, w / 2 + 7, h - 2.2, '#2a2622');
+  // header bars (letters only after the hook)
+  fquad(F, u0 + 3, v1 - 6, u0 + 20, v1 - 3, rgba(O, 1.1, 0.5));
+  if (tx > 0.01) ftext(F, u1 - 3, v1 - 4.5, 'TODAY', 2.8, rgba(W, 1, 0.5 * tx), 'Mono', 800, 'right');
+  // forecast panel
+  const pv0 = v1 - 50, pv1 = v1 - 10, cx = w / 2, cy = (pv0 + pv1) / 2;
+  fquad(F, u0 + 3, pv0, u1 - 3, pv1, rgba(st.err > 0.5 ? [34, 22, 20] : [26, 23, 21], 1, 1));
+  if (st.fb < 0.5) {
+    if (st.err < 0.5) {
+      // spinner where the forecast should be
+      const R = 7, a0 = -t * 6;
+      sun(F, cx, cy, 4.6, rgba(GR, 1, 0.25), 0.6);
+      fpath(F, Array.from({ length: 13 }, (_, k) => { const a = a0 + k * 0.38; return [cx + Math.cos(a) * R * 1.6, cy + Math.sin(a) * R * 1.6]; }), rgba(O2, 1.2, 0.95), 1.1, rgba(O, 1, 0.7));
+      // indeterminate loading bar + how long it has been pending
+      const bu0 = u0 + 7, bu1 = u1 - 7, by = pv0 + 2.5, q = (t * 0.7) % 1;
+      fquad(F, bu0, by, bu1, by + 1.4, 'rgba(255,255,255,0.08)');
+      fquad(F, lerp(bu0, bu1, Math.max(0, q - 0.3)), by, lerp(bu0, bu1, Math.min(1, q)), by + 1.4, rgba(O2, 1.2, 0.95), [rgba(O, 1, 0.8), 6]);
+      if (tx > 0.01) ftext(F, cx, pv1 - 4.5, 'PENDING ' + mmss(waitClock(t)), 2.7, rgba(AMB, 1.15, 0.9 * tx), 'Mono', 800);
+    } else {
+      ftext(F, cx, cy + 6, '!', 10, rgba(RED, 1.2, st.err), 'Inter', 900);
+      ftext(F, cx, cy - 7, "CAN'T LOAD FORECAST", 2.6, rgba(RED, 1.2, st.err), 'Mono', 800);
+    }
+  } else {
+    // the saved forecast
+    sun(F, cx - 10, cy + 3, 5, rgba(AMB, 1.15, st.fb), 1);
+    ftext(F, cx + 9, cy + 3, '21°', 9, rgba(W, 1.1, st.fb), 'Inter', 900);
+    ftext(F, cx, cy - 12, 'SAVED · 10 MIN AGO', 2.4, rgba(AMB, 1.1, st.fb), 'Mono', 800);
+  }
+  // hourly row + list
+  for (let k = 0; k < 4; k++) fquad(F, u0 + 3 + k * 11, pv0 - 14, u0 + 12 + k * 11, pv0 - 4, rgba([30, 27, 24], 1, 1));
+  for (let k = 0; k < 3; k++) fquad(F, u0 + 3, pv0 - 22 - k * 7, u1 - 3 - k * 7, pv0 - 19 - k * 7, rgba(W, 1, 0.08));
+  if (st.ok > 0.01) { fquad(F, u0 + 3, v0 + 3, u1 - 3, v0 + 10, rgba(OK, 1, 0.18 * st.ok)); ftext(F, w / 2, v0 + 6.5, '✓ YOU KNOW WHAT HAPPENED', 2.2, rgba(OK, 1.2, st.ok), 'Mono', 800); }
+}
+function phone(t) { wbox(PH[0], PH[1], 0, PHW, 6, PHH, O, { lw: 1.4, glow: 0.35, fill: [18, 16, 14], front: (F, w, h) => phoneFace(t, F, w, h) }); }
+
+/* ---------------- your app: thread slots on its face */
+function slotState(t, sc, k) {
+  // 0 free, 1 waiting (amber), 2 deadline running (cyan), 3 just freed (green)
+  if (sc === 'H' || sc === 'DF') return k === 0 && t > T.leaves - 0.2 ? 1 : 0;
+  if (sc === 'NF' || sc === 'DL') { if (k === 0) return 1; const a = T.every - 0.2 + (k - 1) * 0.24; return t > a ? 1 : 0; }
+  if (sc === 'TO') return k === 0 && t > T.three - 0.2 ? (t < snapT ? 2 : 3) : 0;
+  if (sc === 'HD') return k === 0 ? 3 : 0;
+  return freedAll(t) ? 3 : 0;
+}
+// when a slot latches busy or is freed it flashes (and the tile presses in)
+function latchT(k, sc) {
+  if (sc === 'H' || sc === 'DF') return k === 0 ? T.leaves - 0.2 : 1e9;
+  if (sc === 'NF' || sc === 'DL') return k === 0 ? T.leaves - 0.2 : T.every - 0.2 + (k - 1) * 0.24;
+  if (sc === 'TO') return k === 0 ? T.three - 0.2 : 1e9;
+  return 1e9;
+}
+function slotFlash(t, sc, k) {
+  let f = pulse(t, latchT(k, sc), 7);
+  if (sc === 'TO' && k === 0) f = Math.max(f, pulse(t, snapT, 6));
+  if (sc === 'RS') f = Math.max(f, pulse(t, T.thread2 - 0.1 + k * 0.05, 6));
+  return Math.min(1, f);
+}
+function app(t, sc) {
+  const busy = Array.from({ length: NS }, (_, k) => slotState(t, sc, k));
+  const nWait = busy.filter((s) => s === 1 || s === 2).length, full = nWait >= NS, tx = TXT(t);
+  const edge = full ? mixc(O, RED, 0.7) : O;
+  const fls = busy.map((_, k) => slotFlash(t, sc, k)), anyF = Math.max(...fls);
+  wbox(AP[0], AP[1], 0, APW, APD, APH, edge, { lw: 1.4, glow: 0.3 + (full ? 0.35 + 0.15 * Math.sin(t * 9) : 0),
+    top: (F, w, d) => { if (tx > 0.01) ftext(F, w / 2, d / 2, 'YOUR APP', 6, rgba(O2, 1.2, 0.9 * tx), 'Mono', 800); },
+    front: (F, w, h) => {
+      if (tx > 0.01) {
+        ftext(F, 7, h - 7, 'THREADS', 3.6, rgba(W, 1, 0.55 * tx), 'Mono', 800, 'left');
+        const fc = full ? RED : OK;
+        ftext(F, w - 7, h - 7, `${NS - nWait} FREE`, 3.6 * (1 + 0.3 * anyF), rgba(mixc(fc, [255, 255, 255], 0.6 * anyF), 1.15, tx), 'Mono', 800, 'right');
+      }
+      for (let k = 0; k < NS; k++) {
+        const r = k < 4 ? 0 : 1, c = k % 4, u = 8 + c * 16.5, vv = h - 16 - r * 13;
+        const s = busy[k], col = s === 1 ? (full ? RED : AMB) : s === 2 ? CY : s === 3 ? OK : null;
+        const fl = fls[k], cc = col ? mixc(col, [255, 250, 240], 0.7 * fl) : null, ins = 1.4 * fl;
+        fquad(F, u + ins, vv - 9 + ins, u + 13 - ins, vv - ins, cc ? rgba(cc, 1, 0.92) : 'rgba(40,36,32,1)', cc ? [rgba(cc, 1, 0.8), 8 + 14 * fl] : null);
+        if (s === 2) {
+          // the deadline as a ring around this call's tile, burning down
+          const x0 = u - 1.8, x1 = u + 14.8, y0 = vv - 10.8, y1 = vv + 1.8;
+          const ring = sub([[x0, y1, 0], [x1, y1, 0], [x1, y0, 0], [x0, y0, 0], [x0, y1, 0]], 1 - prog(t, T.three, snapT));
+          fpath(F, ring.map((p) => [p[0], p[1]]), rgba(CY, 1.3, 1), 0.7, rgba(CY, 1, 0.9));
+        }
+        if (s === 1 || s === 2) { const sp = t * 4 + k; fpath(F, [[u + 6.5, vv - 4.5], [u + 6.5 + Math.cos(sp) * 2.6, vv - 4.5 + Math.sin(sp) * 2.6]], 'rgba(14,13,12,0.9)', 0.7); }
+      }
+    } });
+}
+
+/* ---------------- the weather tower */
+function tower(t) {
+  const tx = TXT(t);
+  wbox(TW[0], TW[1], 0, TWW, TWD, TWH, O2, { lw: 1.3, glow: 0.25, fill: [20, 18, 16],
+    front: (F, w, h) => {
+      fquad(F, w / 2 - 22, 2, w / 2 + 22, 26, 'rgba(6,5,5,1)');
+      fpath(F, [[w / 2 - 22, 26], [w / 2 + 22, 26]], rgba(O2, 1.1, 0.6), 0.5);
+      if (tx > 0.01) ftext(F, w / 2, h - 10, 'WEATHER API', 4.6, rgba(W, 1.1, 0.85 * tx), 'Mono', 800);
+      for (let k = 0; k < 3; k++) fquad(F, 8, h - 22 - k * 8, w - 8 - k * 9, h - 20.6 - k * 8, rgba(W, 1, 0.1));
+      const bl = 0.5 + 0.5 * Math.sin(t * 7);
+      fquad(F, w - 9, 4, w - 5, 8, rgba(AMB, 1.2, 0.35 + 0.65 * bl), [rgba(AMB, 1, bl), 9]);
+    } });
+  // a cloud on the roof: three puffs of light
+  const z = TWH + 14, cx = TW[0], cy = TW[1];
+  const puff = (dx, dz, r) => pline(Array.from({ length: 25 }, (_, k) => { const a = k / 24 * Math.PI * 2; return [cx + dx + Math.cos(a) * r, cy, z + dz + Math.sin(a) * r * 0.8]; }), rgba(O2, 1.2, 0.95), 1.4, { glow: rgba(O, 1, 0.7), blur: 10, close: true, fill: 'rgba(20,18,16,0.92)' });
+  puff(-14, 0, 9); puff(12, -1, 8); puff(0, 6, 12);
+}
+
+/* ---------------- the capsule and its thread */
+function capsule(p, col, a = 1, glint = 0) {
+  if (a <= 0.01) return;
+  wbox(p[0], p[1], p[2], 9, 17, 8, col, { lw: 1.4, glow: 0.5 + glint * 0.5, fill: [30, 26, 22], op: a,
+    top: (F, w, d) => { fpath(F, [[1.5, 3], [w - 1.5, d - 3]], rgba(mixc(col, [255, 240, 220], 0.4 + glint * 0.5), 1.2, a), 0.9, rgba(col, 1, 0.9)); } });
+  if (glint > 0.05) spark([p[0], p[1], p[2] + 9], glint, 2.2, col);
+}
+// position of a call's capsule: launches from the app gate, travels to its park slot in front of the tower
+function capPos(t, launch, park) {
+  const y0 = APB + 10, y1 = parkY(park), q = ep(t, launch, launch + 0.75, ease.inOut);
+  return [TX, lerp(y0, y1, q), 1];
+}
+function thread(a, b, col, alpha = 1, wob = 0, t = 0) {
+  const pts = [];
+  for (let i = 0; i <= 12; i++) { const q = i / 12, s = Math.sin(q * Math.PI); pts.push([lerp(a[0], b[0], q), lerp(a[1], b[1], q), lerp(a[2], b[2], q) + 10 * s - 6 * s * s + wob * Math.sin(q * 9 + t * 14) * s]); }
+  pline(pts, rgba(col, 1.25, alpha), 1.3, { glow: rgba(col, 1, 0.9 * alpha), blur: 8 });
+}
+// a snapped thread: two halves whip back toward their ends
+function snapped(a, b, col, k) {
+  if (k >= 1) return;
+  const m = lerp3(a, b, 0.5), r = ease.out(k);
+  const h1 = lerp3(m, a, r), h2 = lerp3(m, b, r);
+  const al = 1 - k;
+  pline([a, [lerp(a[0], h1[0], 0.5), lerp(a[1], h1[1], 0.5), lerp(a[2], h1[2], 0.5) + 8 * (1 - r)], h1], rgba(col, 1.25, al), 1.3, { glow: rgba(col, 1, al), blur: 8 });
+  pline([b, [lerp(b[0], h2[0], 0.5), lerp(b[1], h2[1], 0.5), lerp(b[2], h2[2], 0.5) - 6 * r], h2], rgba(col, 1.25, al), 1.3, { glow: rgba(col, 1, al), blur: 8 });
+}
+
+/* ---------------- the deadline dial (screen-space, anchored over the app) */
+function dial(t, sc) {
+  if (t < 9.6) return;
+  const a = (sc === 'END' ? 1 - ep(t, CUT.END, CUT.END + 0.4) : 1) * TXT(t);
+  if (a <= 0.01) return;
+  const set = dialOn(t), asm = ep(t, T.deadline - 0.6, T.deadline + 0.1, ease.back);
+  let left = 1, label = '∞';
+  if (set) {
+    if (sc === 'TO') { left = 1 - prog(t, T.three, snapT); label = (3 * left).toFixed(1) + 's'; }
+    else if (sc === 'HD' || sc === 'RS') { left = 0; label = '0.0s'; }
+    else { left = 1; label = '3.0s'; }
+  }
+  add(3, 0, () => {
+    const c = P(...DIAL), R = 17 * Math.min(1.5, Math.max(0.85, cam.s * 0.5));
+    g.save(); g.globalAlpha = a;
+    g.fillStyle = 'rgba(12,11,10,0.9)'; g.beginPath(); g.arc(c[0], c[1], R + 5, 0, Math.PI * 2); g.fill();
+    if (!set || asm < 1) {
+      g.setLineDash([3, 4]); g.strokeStyle = rgba(GR, 1.2, 0.8 * (1 - asm)); g.lineWidth = 1.6; g.beginPath(); g.arc(c[0], c[1], R, 0, Math.PI * 2); g.stroke(); g.setLineDash([]);
+    }
+    if (set) {
+      const k = Math.min(1, asm);
+      g.strokeStyle = rgba(CY, 0.35, 0.6 * k); g.lineWidth = 3.2; g.beginPath(); g.arc(c[0], c[1], R, 0, Math.PI * 2); g.stroke();
+      glow(rgba(CY), 10); g.strokeStyle = rgba(left <= 0.001 ? RED : CY, 1.15, k); g.lineWidth = 3.2; g.lineCap = 'round';
+      g.beginPath(); g.arc(c[0], c[1], R, -Math.PI / 2, -Math.PI / 2 + Math.max(0.0001, left) * Math.PI * 2 * k); g.stroke(); noGlow();
+      for (let i = 0; i < 12; i++) { const an = i / 12 * Math.PI * 2; g.strokeStyle = rgba(CY, 1, 0.35 * k); g.lineWidth = 1; g.beginPath(); g.moveTo(c[0] + Math.cos(an) * (R + 3), c[1] + Math.sin(an) * (R + 3)); g.lineTo(c[0] + Math.cos(an) * (R + 5.5), c[1] + Math.sin(an) * (R + 5.5)); g.stroke(); }
+    }
+    g.font = `800 ${set ? 10.5 : 15}px Mono`; g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.fillStyle = set ? rgba(left <= 0.001 ? RED : CY, 1.2) : rgba(GR, 1.3); g.fillText(label, c[0], c[1] + 0.5);
+    g.font = '800 7px Mono'; g.fillStyle = rgba(W, 1, 0.55); g.fillText(set ? 'TIMEOUT' : 'NO TIMEOUT', c[0], c[1] + R + 13);
+    g.restore();
+  });
+}
+
+/* ---------------- code card */
+const setH = (id, h) => { const e = $(id); if (e._h !== h) { e._h = h; e.innerHTML = h; } };
+const esc = (x) => x.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+function hl(line) {
+  let h = esc(line);
+  if (/^\s*(#|\/\/)/.test(line)) return `<span class="c">${h}</span>`;
+  h = h.replace(/("[^"]*")/g, '<span class="s">$1</span>');
+  h = h.replace(/\b(try|except|import)\b/g, '<span class="oc">$1</span>');
+  h = h.replace(/(timeout=3)/g, '<span class="cyc">$1</span>');
+  h = h.replace(/(\.?[A-Za-z_]\w*)(?=\()/g, '<span style="color:#fff">$1</span>');
+  h = h.replace(/(\/\/.*)$/, '<span class="c">$1</span>');
+  return h;
+}
+const GREEN = '#7CF29A', REDC = '#FF4632', AMBC = '#FFC34D', CYC = '#5EE6FF';
+const mmss = (s) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+// [from, to, file, chips [[t, text|fn, col]], lines, cues [[t, line, result, cls]]]
+const CODE = [
+  [10.85, CUT.NF, 'weather.py · client.go', [[0, (t) => 'WAITING ' + mmss(Math.pow(Math.max(0, t - 10.85), 2.2) * 9), AMBC]],
+    ['# Python', 'r = requests.get(URL)', '', '// Go', 'c := &http.Client{}'],
+    [[T.requests, 2, '⏳ waiting…', 'amb'], [T.noTO, 2, 'no timeout', 'bad'], [T.go, 5, 'Timeout: 0', 'bad'], [T.same, 5, 'no limit', 'bad']]],
+  [CUT.TO, CUT.HD, 'weather.py', [[0, (t) => '⏱ ' + (t < T.three ? '3.0' : (3 * (1 - prog(t, T.three, snapT))).toFixed(1)) + 's', CYC], [snapT, 'TIMEOUT', REDC]],
+    ['r = requests.get(URL, timeout=3)'],
+    [[T.timeout2, 1, 'deadline: 3s', 'cy'], [snapT, 1, '✕ timed out', 'bad']]],
+  [CUT.HD, CUT.RS, 'weather.py', [[0, 'TIMEOUT', REDC], [T.handle, 'HANDLED', GREEN]],
+    ['try:', '  r = requests.get(URL, timeout=3)', 'except requests.Timeout:', '  show_error("Can\'t load forecast")', '  # or: show_saved_forecast()'],
+    [[CUT.HD + 0.05, 2, '✕ 3.0s', 'bad'], [T.failure2, 3, 'caught', 'amb'], [T.error, 4, 'shown', 'good'], [T.fallback, 5, '✓ fallback', 'good']]],
+];
+function card(t) {
+  const seg_ = CODE.find((c) => t >= c[0] && t < c[1]), ed = $('ed');
+  if (!seg_) { ed.style.display = 'none'; return; }
+  const [a, b, file, chips, lines, cues] = seg_;
+  const k = ep(t, a, a + 0.25) * (1 - ep(t, b - 0.2, b));
+  ed.style.display = 'block'; ed.style.opacity = k; ed.style.transform = `translateY(${(1 - ep(t, a, a + 0.3, ease.out)) * -14}px)`;
+  let chip = chips[0]; for (const c of chips) if (t >= c[0]) chip = c;
+  setH('edfn', `<b>${file}</b>`);
+  setH('edst', '● ' + (typeof chip[1] === 'function' ? chip[1](t) : chip[1])); $('edst').style.color = chip[2];
+  ed.style.borderColor = chip[2] === REDC ? 'rgba(255,70,50,0.5)' : chip[2] === GREEN ? 'rgba(124,242,154,0.4)' : chip[2] === CYC ? 'rgba(94,230,255,0.45)' : 'rgba(255,195,77,0.45)';
+  const res = {}; let act = 0, acls = '';
+  for (const [ct, ln, r, cl] of cues) if (t >= ct - 0.05) { res[ln] = [r, cl]; act = ln; acls = cl; }
+  for (let i = 1; i <= 5; i++) {
+    const L = lines[i - 1];
+    $(`l${i}`).style.display = L !== undefined ? 'flex' : 'none';
+    if (L === undefined) continue;
+    setH(`l${i}t`, hl(L));
+    const r = res[i], col = r ? (r[1] === 'bad' ? REDC : r[1] === 'good' ? GREEN : r[1] === 'amb' ? AMBC : r[1] === 'cy' ? CYC : '#FFB070') : '';
+    setH(`l${i}r`, r ? `<span style="color:${col}">${esc(r[0])}</span>` : '');
+    $(`l${i}r`).style.opacity = r ? (i === act ? 1 : 0.55) : 0;
+    $(`l${i}`).className = 'ln' + (i === act ? ' ' + (acls || 'run') : '');
+    const nm = $(`l${i}`).children[0], mk = i === act ? '▸' : String(i);
+    if (nm._m !== mk) { nm._m = mk; nm.textContent = mk; nm.style.color = i === act ? (col || '#FFB070') : ''; }
+  }
+}
+
+/* ---------------- timeout=3 travels from the code to the dial */
+const ZAP_A = T.timeout2 + 0.3, ZAP_B = T.three + 0.05;
+function zap(t) {
+  const z = $('zap'), sp = $('l1t').querySelector('.cyc');
+  if (sceneOf(t) !== 'TO' || t < ZAP_A || t > ZAP_B + 0.25 || !sp) { z.style.display = 'none'; return; }
+  z.style.display = '';
+  const ed = $('ed'), ln = $('l1');
+  const x0 = ed.offsetLeft + ln.offsetLeft + sp.offsetLeft + sp.offsetWidth / 2, y0 = ed.offsetTop + ln.offsetTop + ln.offsetHeight - 4;
+  const [x1, y1] = P(...DIAL), cx = (x0 + x1) / 2 + 60, cy = Math.min(y0, y1) + 40;
+  const q = ep(t, ZAP_A, ZAP_B, ease.inOut), fade = 1 - prog(t, ZAP_B, ZAP_B + 0.25);
+  [...z.children].forEach((d, i) => {
+    const k = clamp(q - i * 0.045), x = (1 - k) * (1 - k) * x0 + 2 * (1 - k) * k * cx + k * k * x1, y = (1 - k) * (1 - k) * y0 + 2 * (1 - k) * k * cy + k * k * y1;
+    d.style.left = x + 'px'; d.style.top = y + 'px'; d.style.opacity = (1 - i / 6) * fade * (q - i * 0.045 > 0 ? 1 : 0); d.style.transform = `scale(${1 - i * 0.12})`;
+  });
+}
+
+/* ---------------- captions: one plain line, a few key words coloured */
+const HL = { weather: '#FFB070', nothing: '#FF4632', waiting: '#FFC34D', forever: '#FF4632', requests: '#FFB070', timeout: '#5EE6FF', "go's": '#FFB070', "isn't": '#FF4632', free: '#FF4632', thread: '#FFC34D', another: '#FF4632',
+  deadline: '#5EE6FF', failure: '#FF4632', 'timeout=3': '#5EE6FF', '3': '#5EE6FF', handle: '#7CF29A', error: '#FF4632', fallback: '#7CF29A', stops: '#7CF29A', freed: '#7CF29A',
+  circuit: '#FF6A1F', breakers: '#FF6A1F', follow: '#FF6A1F', vibe: '#FFB070', coder: '#FFB070', skipped: '#FF6A1F' };
+const hlCol = (w) => HL[w] || null;
+const CHUNKS = [];
+(() => {
+  const ws = CAPW.map(([s, a, b]) => ({ s, a, b }));
+  const WEAK = new Set(['a', 'an', 'the', 'are', 'on', 'in', 'it', 'and', 'at', 'is', 'of', 'to', 'for', 'with', 'by', 'its', 'has', 'that', 'so', 'but', 'you', 'your']);
+  let cur = [];
+  const flushC = () => {
+    if (!cur.length) return;
+    const carry = [];
+    while (carry.length < 2 && cur.length >= 2 && !/[.,?:!]$/.test(cur[cur.length - 1].s) && WEAK.has(cur[cur.length - 1].s.toLowerCase())) carry.unshift(cur.pop());
+    CHUNKS.push(cur); cur = carry;
+  };
+  ws.forEach((w) => {
+    const prev = cur[cur.length - 1];
+    const len = cur.reduce((n, x) => n + x.s.length + 1, 0);
+    if (prev && (/[.?:!]$/.test(prev.s) || (/,$/.test(prev.s) && cur.length >= 3) || cur.length >= 4 || len + w.s.length > 24 || w.a - prev.b > 0.6)) flushC();
+    cur.push(w);
+  });
+  flushC();
+  for (let i = CHUNKS.length - 1; i > 0; i--) {
+    const c = CHUNKS[i], p = CHUNKS[i - 1], len = [...p, ...c].reduce((n, x) => n + x.s.length + 1, 0);
+    if (c.length <= 2 && p.length + c.length <= 5 && !/[.?!]$/.test(p[p.length - 1].s) && len <= 30) { p.push(...c); CHUNKS.splice(i, 1); }
+  }
+})();
+CHUNKS.forEach((c, ci) => {
+  const bx = div($('cap'), 'box'); c.box = bx;
+  c.els = c.map((w) => {
+    const s = document.createElement('span'); s.className = 'w';
+    s.textContent = w.s.replace(/[.,:;]+$/, '');
+    const col = hlCol(w.s.toLowerCase().replace(/[.,?:!]+$/g, '').replace(/[?!]/g, ''));
+    if (col) s.style.color = col;
+    bx.appendChild(s); return s;
+  });
+  c.t0 = c[0].a - 0.04; c.t1 = CHUNKS[ci + 1] ? Math.min(CHUNKS[ci + 1][0].a - 0.04, c[c.length - 1].b + 0.9) : DURATION;
+});
+function caps(t, hide) {
+  for (const c of CHUNKS) {
+    const on = !hide && t >= c.t0 && t < c.t1;
+    c.box.style.display = on ? 'flex' : 'none';
+    if (!on) continue;
+    c.els.forEach((s, i) => { s.style.opacity = prog(t, c[i].a - 0.04, c[i].a + 0.06); });
+  }
+}
+
+/* ---------------- kinetic type */
+function slam(id, t, a, b) {
+  const e = $(id), on = t > a && t < b;
+  e.style.display = on ? 'block' : 'none';
+  if (!on) return false;
+  const i = ease.outExpo(prog(t, a, a + 0.35)), o = ep(t, b - 0.25, b, ease.in);
+  e.style.opacity = Math.min(1, prog(t, a, a + 0.08)) * (1 - o);
+  e.style.transform = `scale(${lerp(1.6, 1, i) + 0.03 * o}) translateY(${o * -10}px)`;
+  e.style.filter = i < 0.98 ? `blur(${(1 - i) * 6}px)` : 'none';
+  return true;
+}
+const CUR = $('cursor');
+function cursorAt(x, y, a, press) { CUR.style.display = a > 0.01 ? 'block' : 'none'; CUR.style.opacity = a; CUR.style.left = x + 'px'; CUR.style.top = y + 'px'; CUR.style.transform = `scale(${1 - 0.18 * press})`; }
+// the vibe ending: its own beats on the current voice's clock
+const capAt = (re, from = 0) => { const w = CAPW.find((x) => x[1] >= from && re.test(x[0])); return w ? w[1] : null; };
+const VIBE_T = VIBE ? capAt(/^vibe/i, CAPW[CAPW.length - 1][1] - 8) : null;
+const FOLLOW_TR = capAt(/^follow/i, CAPW[CAPW.length - 1][1] - 6);
+const TAP_F = toRef(FOLLOW_TR) + 0.35;
+function profile(t, tr) {
+  const p = popIn(t, CUT.END + 0.1, REF_END + 1), pr = $('prof');
+  vis(pr, p.a, `translateY(${p.y}px) scale(${p.s})`); pr.style.display = p.a > 0.001 ? 'block' : 'none';
+  const onp = $('onp'), vb = $('vibe');
+  if (p.a <= 0.001) { cursorAt(0, 0, 0, 0); onp.style.display = 'none'; vb.style.display = 'none'; return; }
+  const fb = $('fb'), done = t > TAP_F + 0.08;
+  if (fb._d !== done) { fb._d = done; fb.textContent = done ? 'Following ✓' : 'Follow'; fb.style.background = done ? '#2a2521' : ''; fb.style.color = done ? '#F2EEE8' : ''; fb.style.fontSize = done ? '12.5px' : ''; }
+  fb.style.transform = `scale(${1 - 0.06 * window01(t, TAP_F, TAP_F + 0.16, 0.06)})`;
+  const hi = window01(t, T.circuit - 0.1, (VIBE ? toRef(VIBE_T) : T.follow) - 0.1, 0.25), tk = $('t0'), ic = $('t0i');
+  tk.style.borderColor = `rgba(255,106,31,${hi})`; tk.style.boxShadow = `0 0 ${24 * hi}px rgba(255,106,31,${0.45 * hi})`; tk.style.transform = `scale(${1 + 0.04 * hi})`;
+  ic.style.transform = `scale(${1 + 0.14 * hi * Math.max(0, Math.sin(t * 6))})`;
+  ic.style.borderColor = hi > 0.3 ? '#FF6A1F' : ''; ic.style.color = hi > 0.3 ? '#FF6A1F' : '';
+  const oa = window01(t, T.profile - 0.6, (VIBE ? toRef(VIBE_T) : T.follow) - 0.1, 0.2);
+  onp.style.display = oa > 0.01 ? 'block' : 'none'; onp.style.opacity = oa;
+  onp.style.left = (44 + 16 + 70) + 'px'; onp.style.top = (pr.offsetTop + 240) + 'px'; onp.style.transform = `translate(-50%,0) scale(${0.9 + 0.1 * ep(t, T.profile - 0.6, T.profile - 0.3, ease.back)})`;
+  const va = VIBE ? window01(tr, VIBE_T - 0.1, DURATION + 1, 0.2) : 0;
+  vb.style.display = va > 0.01 ? 'block' : 'none'; vb.style.opacity = va;
+  vb.style.left = '270px'; vb.style.top = (pr.offsetTop - 34) + 'px'; vb.style.transform = `translate(-50%,0) scale(${0.9 + 0.1 * ep(tr, VIBE_T - 0.1, VIBE_T + 0.2, ease.back)})`;
+  const k2 = ep(t, TAP_F - 0.45, TAP_F - 0.02, ease.inOut), fx_ = 44 + 452 - 16 - 52, fy = pr.offsetTop + 34;
+  cursorAt(lerp(400, fx_, k2), lerp(720, fy, k2), window01(t, TAP_F - 0.75, REF_END + 1, 0.15), window01(t, TAP_F, TAP_F + 0.16, 0.06));
+}
+
+/* ---------------- background */
+function bg(t) {
+  g.setTransform(2, 0, 0, 2, 0, 0);
+  g.fillStyle = '#0b0a09'; g.fillRect(0, 0, 540, 960);
+  g.save(); g.globalCompositeOperation = 'lighter';
+  const heat = 0.5 + 0.9 * pulse(t, 10.0, 1.2) + 0.7 * pulse(t, T.another, 2);
+  const cool = t > T.deadline - 0.4 && t < CUT.HD;
+  const rg = g.createRadialGradient(270, 420, 0, 270, 420, 440);
+  rg.addColorStop(0, cool ? `rgba(94,230,255,${0.05})` : `rgba(255,106,31,${0.07 * heat})`); rg.addColorStop(1, 'rgba(255,106,31,0)');
+  g.fillStyle = rg; g.fillRect(0, 0, 540, 960);
+  for (let i = 0; i < 50; i++) { const x = (rnd(i, 9) * 540 + t * (4 + rnd(i, 3) * 8)) % 540, y = (rnd(i, 8) * 960 - t * (3 + rnd(i, 2) * 6) + 9600) % 960; g.fillStyle = `rgba(255,200,160,${0.05 + rnd(i, 7) * 0.12})`; g.fillRect(x, y, 1.2, 1.2); }
+  g.restore();
+}
+
+/* ---------------- render */
+window.ready = async () => { $('grain').style.background = `url(${grainURL(256, 0.06, 5)})`; await Promise.all([...document.fonts].map((f) => f.load().catch(() => {}))); };
+window.render = function (tr) {
+  const t = toRef(tr);
+  t_ = t;
+  const sc = sceneOf(t);
+  camAt(t, SHOTS, KICKS, SHAKES);
+  bg(t);
+  g.setTransform(2, 0, 0, 2, 0, 0);
+  const used = new Set();
+  const L = (k, txt, wp, dx, dy, a, b, col = '#FF6A1F') => { if (t < 10) return; used.add(k); callout(k, txt, wp, dx, dy, window01(t, a, b, 0.15), col); };
+
+  floorGrid(1);
+  phone(t);
+  app(t, sc);
+  tower(t);
+  // tracks: OUT carries the calls; RET is the empty way back
+  roadLine(OUT, O, 0.75);
+  roadLine(RET, sc === 'H' && t > T.nothing - 0.1 && t < T.howlong ? RED : DIM, sc === 'H' && t > T.nothing - 0.1 && t < T.howlong ? 0.55 : 0.5);
+  roadLine(PRD, O, 0.55);
+  dial(t, sc);
+
+  // calls in flight: capsule + the thread it holds
+  const CL = calls(t, sc);
+  for (const [k, launch, park] of CL) {
+    if (t < launch - 0.25) {
+      if (k === 0 && sc === 'H') capsule([TX, APB + 10, 1], O, 1, pulse(t, T.capsule, 2.5));   // waiting at the gate in the hook
+      continue;
+    }
+    const p = capPos(t, launch, park), anc = slotAnchor(k);
+    ripple(t, launch, TX, APB + 6, 0, O, 10, 0.45, 1.2);
+    const inTO = sc === 'TO' || sc === 'HD' || sc === 'RS' || sc === 'END';
+    const col = inTO ? (t < snapT ? CY : RED) : (CL.length >= NS && t > T.stuck ? mixc(AMB, RED, 0.5) : AMB);
+    const fade = inTO ? 1 - ep(t, snapT + 0.5, snapT + 1.6) : 1;
+    capsule(p, inTO && t > snapT ? DIM : O, fade, k === 0 ? pulse(t, launch + 0.75, 3) : 0);
+    if (!inTO || t < snapT) thread(anc, [p[0], p[1] - 8, p[2] + 6], col, 0.95, t < launch + 0.8 ? 1.5 : 0.4, t);
+    else snapped(anc, [p[0], p[1] - 8, p[2] + 6], CY, prog(t, snapT, snapT + 0.5));
+  }
+  if ((sc === 'NF' || sc === 'DL') && t > T.another - 0.1) {
+    const t0 = T.another - 0.1, n = Math.min(5, 1 + Math.floor((t - t0) / 0.45)), tl = t0 + (n - 1) * 0.45;
+    for (let i = 0; i < n; i++) {
+      const y = AP[1] - APD / 2 - 6 - i * 7, arr = i === n - 1 ? ep(t, tl, tl + 0.3) : 1;
+      orb([-20, lerp(y - 22, y, arr), 6], mixc(AMB, RED, 0.6), Math.min(1, arr * 2), 2.8);
+    }
+    ripple(t, tl + 0.3, -20, AP[1] - APD / 2 - 6, 0, RED, 10, 0.4, 1.2);
+    add(3, 0, () => { const q0 = P(-20, AP[1] - APD / 2 - 6 - (n - 1) * 7, 6), q = [q0[0] - 34, q0[1] - 18], k = 1 + 0.25 * pulse(t, tl + 0.3, 6); g.save(); g.font = `900 ${9 * k}px Mono`; g.textAlign = 'right'; g.lineWidth = 3; g.strokeStyle = '#0b0a09'; g.strokeText(`${n} QUEUED`, q[0], q[1]); g.fillStyle = rgba(RED, 1.2); glow(rgba(RED), 8); g.fillText(`${n} QUEUED`, q[0], q[1]); g.restore(); });
+  }
+  if (sc === 'HD') {
+    // the saved forecast rides back from the app to the phone
+    trip([...PRD].reverse(), t, T.fallback - 0.6, T.fallback - 0.05, OK, 3.8);
+    ripple(t, T.fallback - 0.05, PH[0], PH[1] + 4, 0, OK, 18, 0.5, 1.6);
+  }
+  if (sc === 'TO') spark(DIAL, pulse(t, ZAP_B, 5), 6, CY);
+  if (sc === 'H') {
+    // the capsule arrives: a flash in the tower's mouth, then nothing on the return track
+    pool(TX, APB + 10, 26, O, 0.6 * (1 - ep(t, T.leaves, T.leaves + 0.5)));
+    ripple(t, T.capsule, TX, APB + 10, 0, O, 14, 0.7, 1.4);
+    ripple(t, T.leaves + 0.75, TX, TWF - 4, 0, O, 22, 0.6, 1.6);
+    spark([TX, TWF - 2, 10], pulse(t, T.leaves + 0.75, 4), 3.2, O2);
+  }
+  if (sc === 'TO' || sc === 'HD') {
+    shower(t, snapT, (slotAnchor(0)[0] + TX) / 2, (APB + parkY(0)) / 2, 30, 30, 51, 120, 0.6, CY);
+  }
+  // requests from the phone (every one of them holds another thread)
+  if (sc === 'NF') {
+    for (let k = 1; k < NS; k++) trip(PRD, t, T.every - 1.1 + (k - 1) * 0.24, T.every - 0.25 + (k - 1) * 0.24, W, 3);
+  } else if (sc === 'RS' || sc === 'END') {
+    flow(PRD, t, 3, 0.5, W, 0.7, 6, 2.8, 1);
+  }
+
+  // callouts (never during the spoken hook)
+  if (sc === 'DF') {
+    L('d1', 'no deadline set', [DIAL[0], DIAL[1], DIAL[2] - 24], 30, 26, 10.2, T.python, '#FF4632');
+  } else if (sc === 'NF') {
+    L('n3', 'every request · one more thread', [0, -10, APH + 4], -40, -50, T.every + 0.4, T.another - 0.1, '#FFC34D');
+  } else if (sc === 'DL') {
+    L('dl1', 'the longest you’ll wait', [DIAL[0], DIAL[1], DIAL[2] + 10], 26, -34, T.longest - 0.1, T.failure - 0.1, '#5EE6FF');
+    L('dl2', 'then: a failure', [DIAL[0], DIAL[1], DIAL[2] - 18], 26, 30, T.failure - 0.1, CUT.TO - 0.05, '#FF4632');
+  } else if (sc === 'TO') {
+    L('to2', '3 s up · stop waiting', [TX, parkY(0) - 30, 30], -36, -50, snapT + 0.05, CUT.HD - 0.05, '#FF4632');
+  } else if (sc === 'HD') {
+    L('h1', 'thread freed', [slotAnchor(0)[0], AP[1] - APD / 2, APH - 18], -30, -46, CUT.HD + 0.2, T.show - 0.2, '#7CF29A');
+    popText(t, T.failure2 - 0.2, [TX, parkY(0) - 40, 26], 'TimeoutError', RED, 9, 1.0);
+  } else if (sc === 'RS') {
+    L('r1', 'spinner stopped', [PH[0], PH[1] - 3, 66], 40, -30, T.stops - 0.1, T.thread2 - 0.15, '#7CF29A');
+    L('r2', 'all threads free', [0, AP[1] - APD / 2, APH], 30, -46, T.freed - 0.1, T.user - 0.2, '#7CF29A');
+  }
+  flush();
+  g.setTransform(2, 0, 0, 2, 0, 0);
+  for (const k in LB) if (!used.has(k)) { LB[k].style.display = 'none'; if (LN[k]) LN[k].style.display = 'none'; }
+
+  /* DOM */
+  caps(tr, false);
+  card(t);
+  zap(t);
+  profile(t, tr);
+  $('dim').style.opacity = sc === 'END' ? ep(t, CUT.END, CUT.END + 0.4) * 0.75 : 0;
+  let fl = 0, cf = 0;
+  for (const [t0, a] of [[T.leaves + 0.75, 0.12], [T.nothing, 0.08], [T.howlong, 0.06], [10.0, 0.16], [CUT.NF, 0.08], [T.another, 0.12], [CUT.HD, 0.08], [T.handle, 0.1], [CUT.RS, 0.08], [CUT.END, 0.08]]) { const dt = t - t0; if (dt > 0 && dt < 0.5) fl = Math.max(fl, a * Math.exp(-dt * 9)); }
+  for (const [t0, a] of [[T.deadline, 0.22], [snapT, 0.3]]) { const dt = t - t0; if (dt > 0 && dt < 0.8) cf = Math.max(cf, a * Math.exp(-dt * 8)); }
+  $('flash').style.opacity = fl; $('cflash').style.opacity = cf;
+  if (t > TAP_F + 0.08 && t < TAP_F + 1.7) {
+    g.save(); g.globalCompositeOperation = 'lighter';
+    const dt = t - TAP_F - 0.08, cols = ['#FF6A1F', '#FFB070', '#F2EEE8', '#5EE6FF'];
+    const fbx = 44 + 452 - 16 - 52, fby = $('prof').offsetTop + 34;
+    for (let i = 0; i < 70; i++) {
+      const th = rnd(i, 70) * Math.PI * 2, v = 160 + rnd(i, 71) * 260;
+      const x = fbx + Math.cos(th) * v * dt, y = fby + Math.sin(th) * v * dt * 0.8 + 260 * dt * dt;
+      g.fillStyle = cols[i % 4]; g.globalAlpha = Math.max(0, 1 - dt / 1.5);
+      g.save(); g.translate(x, y); g.rotate(dt * 8 + i); g.fillRect(-3, -1.5, 6, 3); g.restore();
+    }
+    g.restore(); g.globalAlpha = 1;
+  }
+  $('stage').style.opacity = 1 - ep(tr, DURATION - 0.35, DURATION) * 0.85;
+};
+</script>
+<script src="lib/play.js"></script>
+</body>
+</html>

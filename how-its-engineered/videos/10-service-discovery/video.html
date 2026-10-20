@@ -1,0 +1,781 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- 10 Service Discovery, in the hybrid style picked from openings/ (variant I): ember line-art world + the caller's code on top,
+     wired to wherever the code thinks payments lives. Times come from voice/words.json. Open with #play to watch live, #play-safe for Instagram's UI zones. -->
+<link rel="stylesheet" href="openings/fonts.css">
+<style>
+:root { --o: #FF6A1F; --o2: #FFB070; --w: #F2EEE8; --g: #77706A; --ok: #7CF29A; }
+html, body { margin: 0; background: #000; }
+#stage { position: relative; width: 540px; height: 960px; overflow: hidden; background: #0b0a09; font-family: Inter, sans-serif; color: var(--w); }
+#world, .layer { position: absolute; inset: 0; }
+#cv { position: absolute; inset: 0; width: 540px; height: 960px; }
+#fx { position: absolute; inset: 0; overflow: visible; }
+#grain { position: absolute; inset: -40px; opacity: 0.55; mix-blend-mode: screen; pointer-events: none; }
+#vig { position: absolute; inset: 0; background: radial-gradient(110% 75% at 50% 45%, rgba(0,0,0,0) 50%, rgba(0,0,0,0.7) 100%); pointer-events: none; }
+#dim { position: absolute; inset: 0; background: #0b0a09; opacity: 0; pointer-events: none; }
+#flash { position: absolute; inset: 0; opacity: 0; background: var(--o); mix-blend-mode: screen; pointer-events: none; }
+#frame { position: absolute; left: 14px; right: 14px; top: 112px; bottom: 46px; border: 1px solid rgba(255,255,255,0.07); border-radius: 14px; pointer-events: none; }
+#frame i { position: absolute; width: 10px; height: 10px; border-color: rgba(255,255,255,0.45); border-style: solid; }
+#frame i:nth-child(1) { left: 8px; top: 8px; border-width: 1px 0 0 1px; } #frame i:nth-child(2) { right: 8px; top: 8px; border-width: 1px 1px 0 0; }
+#frame i:nth-child(3) { left: 8px; bottom: 8px; border-width: 0 0 1px 1px; } #frame i:nth-child(4) { right: 8px; bottom: 8px; border-width: 0 1px 1px 0; }
+.meta { position: absolute; font-family: Mono; font-size: 9px; letter-spacing: 1.4px; color: var(--g); }
+.meta b { color: var(--o); font-weight: 600; }
+.co { position: absolute; font-family: Mono; font-size: 9.5px; white-space: nowrap; color: #d9d2ca; display: flex; align-items: center; gap: 5px; letter-spacing: 0.4px; }
+.co:before { content: ''; width: 4px; height: 4px; border-radius: 50%; background: var(--o); }
+.lbl { position: absolute; transform: translate(-50%, -50%); font-family: Mono; font-weight: 600; font-size: 10px; letter-spacing: 1px; white-space: nowrap; padding: 2px 6px; border-radius: 3px; }
+/* hook: kinetic captions (white lead-in, giant orange key word) */
+#kc { position: absolute; left: 30px; right: 24px; top: 588px; height: 230px; }
+.ph { position: absolute; left: 0; top: 0; right: 0; display: none; }
+.ph .sm { font-weight: 800; font-size: 24px; letter-spacing: -0.6px; line-height: 1.08; }
+.ph .sm span { display: inline-block; margin-right: 7px; }
+.ph .bg { font-weight: 900; font-size: 58px; letter-spacing: -2.5px; line-height: 0.95; margin-top: 4px; white-space: nowrap; position: relative; }
+.ph .bg span { display: inline-block; color: var(--o); text-shadow: 0 0 24px rgba(255,106,31,0.55), 0 0 60px rgba(255,106,31,0.25); }
+.ph .bg .gh { position: absolute; left: 0; top: 0; color: transparent; -webkit-text-stroke: 1px rgba(255,176,112,0.7); text-shadow: none; }
+.ph .bg span.ol { color: transparent; -webkit-text-stroke: 1.2px rgba(255,176,112,0.55); text-shadow: none; }
+.odo { display: inline-flex; font-family: Mono; font-weight: 800; font-size: 44px; line-height: 54px; height: 54px; overflow: hidden; letter-spacing: -2px; color: var(--o); text-shadow: 0 0 22px rgba(255,106,31,0.6); }
+.odo .col { position: relative; width: 0.6em; height: 54px; overflow: hidden; } .odo .col.dot { width: 0.36em; }
+.odo .st { position: absolute; left: 0; right: 0; top: 0; } .odo .st div { height: 54px; text-align: center; }
+/* big beats after the hook */
+.kw { position: absolute; left: 30px; right: 24px; top: 610px; display: none; }
+.kw .sm { font-weight: 800; font-size: 19px; letter-spacing: -0.4px; color: #d9d2ca; }
+.kw .sm b { font-family: Mono; font-size: 11px; letter-spacing: 2px; color: var(--o); font-weight: 800; margin-right: 8px; vertical-align: 4px; }
+.kw .bg { font-weight: 900; font-size: 46px; letter-spacing: -2px; line-height: 0.95; white-space: nowrap; margin-top: 2px; }
+.kw .bg span { display: inline-block; color: var(--o); text-shadow: 0 0 24px rgba(255,106,31,0.55), 0 0 60px rgba(255,106,31,0.25); }
+.kw .bg span.ol { color: transparent; -webkit-text-stroke: 1.2px rgba(255,176,112,0.55); text-shadow: none; }
+.kw .bg span.okc { color: var(--ok); text-shadow: 0 0 24px rgba(124,242,154,0.5); }
+/* captions: one plain line at the bottom, a few key words coloured */
+#cap { position: absolute; left: 24px; right: 24px; top: 742px; height: 40px; pointer-events: none; }
+#cap .box { display: none; position: absolute; inset: 0; justify-content: center; align-items: center; white-space: nowrap; font-weight: 800; font-size: 23px; line-height: 1; letter-spacing: -0.4px; }
+#cap .w { display: inline-block; margin: 0 4px; color: #fff; -webkit-text-stroke: 4px #0b0a09; paint-order: stroke fill; text-shadow: 0 2px 10px rgba(0,0,0,0.8); }
+/* code card */
+#ed { position: absolute; left: 26px; right: 26px; top: 148px; background: rgba(12,11,10,0.94); border: 1px solid rgba(255,106,31,0.32); border-radius: 10px; box-shadow: 0 14px 34px rgba(0,0,0,0.6); overflow: hidden; }
+#ed .tb { height: 26px; display: flex; align-items: center; gap: 5px; padding: 0 10px; border-bottom: 1px solid rgba(255,255,255,0.06); font: 600 10px/1 Mono; color: #9c948c; letter-spacing: 0.5px; }
+#ed .tb i { width: 7px; height: 7px; border-radius: 50%; background: #2c2925; display: inline-block; }
+#ed .tb .fn { margin-left: 8px; color: #d9d2ca; } #ed .tb .fn b { color: var(--o); font-weight: 600; }
+#ed .tb .st { margin-left: auto; letter-spacing: 1.2px; }
+#code { padding: 6px 0 8px; font: 600 13.5px/26px Mono; color: #d9d2ca; }
+.ln { position: relative; height: 26px; padding-left: 36px; white-space: pre; }
+.ln .n { position: absolute; left: 0; width: 22px; text-align: right; color: #3d3833; font-weight: 400; }
+.ln.run { background: rgba(255,176,112,0.06); } .ln.bad { background: rgba(255,106,31,0.13); } .ln.good { background: rgba(124,242,154,0.07); }
+.c { color: #6b645e; font-weight: 400; } .k { color: #9c948c; } .s { color: var(--o2); }
+#ipCode { position: relative; display: inline-block; }
+#ipBox { position: absolute; left: -4px; right: -4px; top: 2px; bottom: 2px; border: 1.5px solid var(--o); border-radius: 4px; box-shadow: 0 0 12px rgba(255,106,31,0.6); opacity: 0; }
+#ipSel { position: absolute; left: -2px; right: -2px; top: 4px; bottom: 4px; background: rgba(255,106,31,0.35); opacity: 0; }
+.hint { margin-left: 8px; font-weight: 800; font-size: 11px; color: var(--ok); }
+#res { margin-left: 8px; font-weight: 800; font-size: 11px; color: var(--o); }
+.icur { display: inline-block; width: 8px; height: 16px; background: var(--o); vertical-align: -3px; }
+#hard { position: absolute; font: 800 10px/1 Mono; letter-spacing: 1px; color: #0b0a09; background: var(--o); border-radius: 4px; padding: 5px 7px; white-space: nowrap; opacity: 0; transform-origin: 0 50%; }
+#neq { position: absolute; font: 800 10.5px/1 Mono; letter-spacing: 0.4px; color: #0b0a09; background: var(--o2); border-radius: 4px; padding: 5px 7px; white-space: nowrap; opacity: 0; transform-origin: 0 50%; }
+#wires { position: absolute; inset: 0; overflow: visible; pointer-events: none; }
+/* registry board (anchored over the tower) */
+#reg { position: absolute; left: 0; top: 0; width: 236px; background: rgba(12,11,10,0.95); border: 1px solid rgba(255,176,112,0.5); border-radius: 9px; box-shadow: 0 10px 30px rgba(0,0,0,0.6), 0 0 22px rgba(255,106,31,0.15); overflow: hidden; display: none; font-family: Mono; }
+#reg .hd { height: 24px; display: flex; align-items: center; gap: 6px; padding: 0 9px; border-bottom: 1px solid rgba(255,255,255,0.07); font-size: 9.5px; font-weight: 800; letter-spacing: 1.4px; color: var(--o2); }
+#reg .hd .lv { width: 6px; height: 6px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 6px var(--ok); }
+#reg .hd .ct { margin-left: auto; color: var(--g); font-weight: 600; }
+#reg .row { position: relative; display: flex; align-items: center; gap: 8px; padding: 0 9px; height: 24px; font-size: 11px; font-weight: 600; color: #d9d2ca; overflow: hidden; white-space: nowrap; }
+#reg .row .a { color: var(--o2); font-weight: 800; }
+#reg .row .s { margin-left: auto; font-size: 9px; letter-spacing: 1px; font-weight: 800; }
+#reg .row:after { content: ''; position: absolute; left: 6px; right: 6px; top: 50%; height: 1.5px; background: var(--o); transform-origin: 0 50%; transform: scaleX(var(--k, 0)); }
+#regLine { position: absolute; inset: 0; overflow: visible; pointer-events: none; }
+/* phone contact */
+#phone { position: absolute; left: 150px; top: 300px; width: 240px; display: none; background: #151311; border: 1px solid rgba(255,176,112,0.45); border-radius: 26px; padding: 18px 16px 16px; box-sizing: border-box; box-shadow: 0 20px 50px rgba(0,0,0,0.7); font-family: Inter; }
+#phone .av { width: 58px; height: 58px; margin: 0 auto; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #FFB070, #FF6A1F 60%, #b8430f); display: flex; align-items: center; justify-content: center; font: 900 24px/1 Inter; color: #0b0a09; }
+#phone .nm { text-align: center; font: 900 22px/1 Inter; margin-top: 12px; letter-spacing: -0.5px; }
+#phone .lb { text-align: center; font: 700 9px/1 Mono; letter-spacing: 1.5px; color: var(--g); margin-top: 7px; }
+#phone .num { position: relative; margin: 14px auto 0; width: max-content; font: 800 15px/1 Mono; color: #6b645e; }
+#phone .num:after { content: ''; position: absolute; left: -3px; right: -3px; top: 50%; height: 2px; background: var(--o); transform-origin: 0 50%; transform: scaleX(var(--k, 0)); }
+#phone .btn { margin-top: 14px; height: 40px; border-radius: 20px; background: var(--o); color: #0b0a09; display: flex; align-items: center; justify-content: center; font: 900 14px/1 Inter; }
+/* profile card */
+#prof { position: absolute; left: 44px; top: 270px; width: 452px; display: none; background: rgba(16,14,12,0.97); border: 1px solid rgba(255,176,112,0.4); border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,0.7); font-family: Inter; overflow: hidden; }
+#prof .top { display: flex; align-items: center; gap: 12px; padding: 16px 16px 12px; }
+#prof .ring { width: 56px; height: 56px; border-radius: 50%; padding: 3px; box-sizing: border-box; flex: none; background: conic-gradient(#FF6A1F, #FFB070, #FF6A1F); }
+#prof .ring div { width: 100%; height: 100%; border-radius: 50%; background: #0b0a09; display: flex; align-items: center; justify-content: center; font: 800 16px/1 Mono; color: #fff; }
+#fb { width: 104px; height: 38px; border-radius: 10px; background: var(--o); color: #0b0a09; display: flex; align-items: center; justify-content: center; font: 900 14px/1 Inter; flex: none; }
+#prof .tiles { display: flex; gap: 8px; padding: 0 16px 16px; }
+#prof .tile { position: relative; flex: 1; height: 150px; border-radius: 10px; background: #1c1916; border: 2px solid transparent; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; }
+#prof .tile .n { font: 800 34px/1 Mono; color: #3a342e; }
+#prof .tile .t { font: 800 11px/1 Mono; letter-spacing: 1px; color: #d9d2ca; }
+#watch { position: absolute; display: none; font: 800 11px/1 Mono; letter-spacing: 1px; padding: 6px 10px; border-radius: 6px; background: var(--o); color: #0b0a09; white-space: nowrap; }
+#cursor { position: absolute; left: 0; top: 0; width: 22px; height: 28px; display: none; pointer-events: none; filter: drop-shadow(0 3px 6px rgba(0,0,0,0.6)); }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="world">
+    <canvas id="cv" width="1080" height="1920"></canvas>
+    <svg id="fx" width="540" height="960" viewBox="0 0 540 960"></svg>
+    <div class="layer" id="lbls"></div>
+  </div>
+  <div id="vig"></div>
+  <div id="dim"></div>
+  <svg id="wires" width="540" height="960" viewBox="0 0 540 960"></svg>
+  <svg id="regLine" width="540" height="960" viewBox="0 0 540 960"></svg>
+  <div class="layer" id="cards"></div>
+  <div class="layer" id="kin"></div>
+  <div id="frame"><i></i><i></i><i></i><i></i></div>
+  <div class="meta" style="left:30px;top:126px">// 10 — <b>service discovery</b></div>
+  <div class="meta" style="right:30px;top:126px">HOW.ITS.ENGINEERED</div>
+  <div class="meta" id="tc" style="left:30px;bottom:60px">T+00.00s</div>
+  <div class="meta" style="right:30px;bottom:60px">SYSTEM DESIGN · <b>10</b></div>
+  <div id="reg"><div class="hd"><span class="lv"></span><span id="regT">REGISTRY</span><span class="ct" id="regC"></span></div><div id="rows"></div></div>
+  <div id="ed">
+    <div class="tb"><i></i><i></i><i></i><span class="fn"><b>orders</b>/checkout.js</span><span class="st" id="edst">● LIVE</span></div>
+    <div id="code">
+      <div class="ln" id="l1"><span class="n">1</span><span class="c" id="l1t">// orders calls the payments service</span></div>
+      <div class="ln" id="l2"><span class="n">2</span><span id="l2t"></span></div>
+      <div class="ln" id="l3"><span class="n">3</span><span id="l3t"></span></div>
+    </div>
+  </div>
+  <div id="hard">✕ HARDCODED</div>
+  <div id="neq">≠ it's at 10.0.4.23 now</div>
+  <div id="phone"><div class="av">P</div><div class="nm" id="phNm">payments</div><div class="lb">SAVED BY NAME</div><div class="num" id="phNum">10.0.0.7</div><div class="btn" id="phBtn">✆ Call</div></div>
+  <div id="prof">
+    <div class="top"><div class="ring"><div>{ }</div></div><div style="flex:1;min-width:0"><div style="font-weight:800;font-size:16px">@how.its.engineered</div><div style="color:#9c948c;font-size:11.5px;margin-top:3px">System design, one reel at a time</div></div><div id="fb">Follow</div></div>
+    <div class="tiles"><div class="tile" id="t0"><div class="n">09</div><div class="t">KUBERNETES</div></div><div class="tile" id="t1"><div class="n">08</div><div class="t">DOCKER</div></div><div class="tile" id="t2"><div class="n">07</div><div class="t">CI / CD</div></div></div>
+  </div>
+  <div id="watch">▶ WATCH THIS FIRST</div>
+  <div id="kc"></div>
+  <div id="cap"></div>
+  <svg id="cursor" viewBox="0 0 22 28"><path d="M2 2 L2 22 L7.5 17 L11 25 L14.5 23.5 L11 15.5 L18.5 15.5 Z" fill="#fff" stroke="#0b0a09" stroke-width="1.6" stroke-linejoin="round"/></svg>
+  <div id="flash"></div>
+  <div id="grain"></div>
+</div>
+<script src="../../tools/lib.js"></script>
+<script src="voice/timings.js"></script>
+<script src="openings/engine.js"></script>
+<script>
+const DURATION = 56.6;
+window.DURATION = DURATION;
+const WORDS = window.WORDS;
+const O = hex('#FF6A1F'), O2 = hex('#FFB070'), W = [242, 238, 232], GR = [119, 112, 106], INK = [14, 13, 12], OK = hex('#7CF29A');
+
+/* ---------------- beats (seconds, from voice/words.json) */
+const B = { crash: 0.7, gone: 1.25, respawn: 1.55, same: 1.8, newip: 2.86, ipDone: 3.3, calls: 3.62, hits: [3.98, 4.34, 4.8], failed: 4.82, q: 5.86, find: 7.06, hookEnd: 7.95 };
+const T = {
+  bug: 8.28, address: 9.12, written: 9.62, code: 10.48, cloud: 11.76, restart: 12.7, move: 13.44, time: 14.2, spot: 15.16, newAddr: 16.0,
+  fix: 17.28, save: 18.08, name: 18.44, number: 19.38, phone: 19.86, contacts: 20.42, sd: 21.32, disc: 21.96,
+  s1: 23.3, reg: 24.1, starts: 25.0, tells: 25.92, registry: 26.24, im: 27.06, here: 27.9,
+  s2: 28.6, look: 30.04, before: 30.8, orders: 32.0, asks: 32.26, asksReg: 32.88, where: 33.6, now: 34.54,
+  s3: 35.56, check: 36.24, pinging: 37.72, every: 38.0, stops: 39.3, off: 40.32,
+  so: 41.42, restart2: 41.76, moved: 42.88, signed: 43.58, next: 44.62, found: 45.1,
+  k8s: 46.38, built: 47.24, you: 47.96, byName: 48.64, routes: 49.42, right: 50.1,
+  newTo: 51.4, k8s2: 51.66, profile: 53.22, follow: 53.98, series: 54.84,
+};
+const OLD_IP = '10.0.0.7';
+
+/* ---------------- world layout */
+const NX = [-50, 70, 190], NY = 200, NW = 100, NDp = 64, NH = 24;
+const SLOT = (i, side) => [NX[i] + side * 24, NY, NH];   // side -1 = left, +1 = right
+const OLD = SLOT(0, -1), NEW = SLOT(2, 1);
+const RX = 70, RY = 360;                                  // the registry tower, behind the machines
+const REG_TOP = [RX, RY, 92];
+const CALLERS = [{ n: 'cart', x: -40, y: -20 }, { n: 'orders', x: 70, y: -40 }, { n: 'login', x: 180, y: -20 }];
+const ORD = CALLERS[1];
+const ORD_P = [ORD.x, ORD.y + 8, 22];
+// where payments is over time (the hook copy, then the hops in "servers restart and move")
+const HOPS = [
+  { t: B.respawn, s: NEW, ip: '10.0.4.23' },
+  { t: T.restart, s: SLOT(1, -1), ip: '10.0.7.12' },
+  { t: T.move, s: SLOT(0, 1), ip: '10.0.2.40' },
+  { t: T.time, s: SLOT(2, -1), ip: '10.0.9.31' },
+  { t: T.spot, s: SLOT(1, 1), ip: '10.0.5.18' },
+];
+// copies of payments during the explainer
+const C1 = { s: NEW, ip: '10.0.4.23' }, C2 = { s: SLOT(0, 1), ip: '10.0.1.8' }, C3 = { s: SLOT(1, 1), ip: '10.0.2.40' }, C4 = { s: SLOT(1, -1), ip: '10.0.6.5' };
+
+const SHOTS = [
+  { t: 0, d: 0, f: [-40, 180, 30], s: 2.9, a: 0.5, e: 0.5, sy: 455 },
+  { t: 0.1, d: 1.1, s: 2.55, a: 0.42 },
+  { t: 1.4, d: 0.4, f: [200, 190, 30], s: 2.6 },
+  { t: 2.7, d: 0.3, s: 2.95 },
+  { t: 3.42, d: 0.55, f: [60, 100, 30], s: 1.05, a: 0.4, e: 0.6, sy: 480 },
+  { t: 4.8, d: 0.15, s: 1.13 },
+  { t: 5.86, d: 1.9, f: [90, 110, 30], s: 0.98, a: 0.62, e: 0.95, sy: 460 },
+  // the bug: back to the empty old spot the code still points at
+  { t: 7.9, d: 0.7, f: [-10, 160, 30], s: 1.6, a: 0.45, e: 0.58, sy: 470 },
+  // servers restart and move: wide
+  { t: 11.2, d: 0.9, f: [70, 130, 30], s: 1.02, a: 0.45, e: 0.62, sy: 480 },
+  { t: 16.6, d: 0.4, s: 1.1 },
+  // service discovery: reveal the registry
+  { t: 21.2, d: 1.1, f: [70, 210, 30], s: 0.98, a: 0.5, e: 0.64, sy: 540 },
+  // step one: payments + registry
+  { t: 23.2, d: 0.6, f: [120, 260, 30], s: 1.12, a: 0.5, e: 0.64, sy: 550 },
+  // step two: orders, registry, payments
+  { t: 28.5, d: 0.7, f: [80, 180, 30], s: 1.0, a: 0.48, e: 0.64, sy: 540 },
+  // step three: every copy
+  { t: 35.4, d: 0.6, f: [70, 230, 30], s: 1.04, a: 0.5, e: 0.64, sy: 545 },
+  // payoff
+  { t: 41.3, d: 0.5, f: [80, 200, 30], s: 1.0, a: 0.46, sy: 540 },
+  { t: 46.1, d: 0.8, f: [70, 190, 30], s: 0.98, a: 0.55, e: 0.68, sy: 545 },
+  { t: 51.2, d: 1.2, f: [70, 200, 30], s: 0.82, a: 0.6, e: 0.9, sy: 520 },
+];
+const KICKS = [[B.crash, 0.09], [B.respawn + 0.3, 0.04], [B.newip, 0.05], [B.hits[0], 0.03], [B.hits[1], 0.03], [B.hits[2], 0.03], [B.failed, 0.06],
+  [T.bug, 0.05], [T.restart, 0.03], [T.move, 0.03], [T.time, 0.03], [T.spot, 0.04], [T.fix, 0.05], [T.sd, 0.05],
+  [T.here, 0.03], [T.now + 0.3, 0.04], [T.stops, 0.04], [T.restart2, 0.06], [T.found, 0.05], [T.k8s, 0.04]];
+const SHAKES = [[B.crash, 8, 0.5], [B.failed, 5, 0.35], [T.restart2, 6, 0.4]];
+
+/* ---------------- drawing (line-art boxes on near-black, from variant I) */
+function wbox(x, y, z, w, d, h, edge, o = {}) {
+  box(x, y, z, w, d, h, o.fill || INK, { op: o.op, edge: rgba(edge, 1, o.ea ?? 0.9), lw: o.lw || 1, gl: o.glow ? [rgba(edge, 1, o.glow), 14] : null, front: o.front, side: o.side, top: o.top, dz: o.dz });
+}
+function machine(i, t, hot) {
+  const e = mixc(GR, O, hot);
+  wbox(NX[i], NY, 0, NW, NDp, NH, mixc([150, 144, 138], O, hot), { ea: 0.75, glow: hot * 0.8,
+    front: (F, w, h) => { ftext(F, 8, h / 2, 'machine-' + (i + 1), 5, rgba(e, 1.4, 0.95), 'Mono', 600, 'left'); for (let k = 0; k < 5; k++) fquad(F, w - 36 + k * 6, h / 2 - 1, w - 33 + k * 6, h / 2 + 1, rgba(rnd(i * 5 + k, Math.floor(t * 6)) > 0.4 ? O : GR, 1, 0.9)); },
+    side: (F, w, h) => { for (let k = 0; k < 6; k++) fquad(F, 8 + k * 9, 6, 9 + k * 9, h - 6, rgba(GR, 1, 0.6)); },
+    top: (F, w, d) => { for (const u of [w / 2 - 24, w / 2 + 24]) fpath(F, [[u - 20, d / 2 - 12], [u + 20, d / 2 - 12], [u + 20, d / 2 + 12], [u - 20, d / 2 + 12], [u - 20, d / 2 - 12]], rgba(GR, 1, 0.45), 0.4); } });
+}
+function service(p, o = {}) {
+  const c = o.col || O, op = o.op ?? 1, fl = o.fl || 0;
+  if (op <= 0.01) return;
+  wbox(p[0], p[1], p[2] + (o.dz || 0), 40, 24, 22, mixc(c, [255, 255, 255], fl * 0.6), { op, lw: 1.3, glow: (0.7 + fl) * (o.dim ? 0.2 : 1), fill: mixc(INK, c, (0.12 + fl * 0.3) * (o.dim ? 0.3 : 1)),
+    front: (F, w, h) => { for (let u = 4; u < w - 3; u += 5) fpath(F, [[u, 3], [u, h - 3]], rgba(c, 1, 0.45), 0.35); ftext(F, w / 2, h / 2, o.dead ? '✕' : 'payments', 4.2, rgba(c, 1.5), 'Mono', 700); },
+    side: (F, w, h) => { for (let u = 4; u < w - 3; u += 5) fpath(F, [[u, 3], [u, h - 3]], rgba(c, 1, 0.4), 0.35); } });
+}
+function caller(i, t, failA, op) {
+  const C = CALLERS[i], c = mixc([220, 214, 206], O, failA), bl = failA > 0.5 ? (Math.sin(t * 18 + i) > 0 ? 1 : 0.55) : 1;
+  if (op <= 0.01) return;
+  wbox(C.x, C.y, 0, 58, 36, 18, c, { op, ea: 0.85 * bl, glow: failA * 0.7 * bl, lw: 1.1,
+    front: (F, w, h) => ftext(F, w / 2, h / 2, C.n, 5.6, rgba(c, 1.3, bl), 'Mono', 700) });
+}
+function registry(t, a, hot) {
+  if (a <= 0.01) return;
+  const rise = ep(t, T.sd - 0.1, T.sd + 0.6, ease.out), h = 92 * rise;
+  if (h < 1) return;
+  const c = mixc(O2, [255, 255, 255], hot * 0.5);
+  wbox(RX, RY, 0, 74, 50, h, c, { op: a, lw: 1.3, glow: 0.5 + hot, fill: mixc(INK, O, 0.08 + hot * 0.15),
+    front: (F, w, hh) => { if (hh < 40) return; ftext(F, w / 2, hh - 12, t > T.k8s ? 'k8s dns' : 'registry', 6, rgba(c, 1.4), 'Mono', 800);
+      for (let k = 0; k < 4; k++) fquad(F, 10, 14 + k * 12, w - 10, 18 + k * 12, rgba(k < regCount(t) ? O : GR, 1, k < regCount(t) ? 0.9 : 0.35)); },
+    side: (F, w, hh) => { for (let k = 0; k < 7; k++) fpath(F, [[8, 8 + k * 11], [w - 8, 8 + k * 11]], rgba(GR, 1, 0.45), 0.4); } });
+  if (rise >= 1) { add(1, D(RX, RY, 100) - 4, () => { const p = P(RX, RY, 92), q = P(RX, RY, 108); g.save(); g.strokeStyle = rgba(c, 1, 0.9 * a); g.lineWidth = 1.2; g.beginPath(); g.moveTo(...p); g.lineTo(...q); g.stroke(); g.fillStyle = rgba(O, 1, a * (0.5 + 0.5 * Math.sin(t * 6))); g.beginPath(); g.arc(q[0], q[1], 2.4, 0, 7); g.fill(); g.restore(); }); }
+}
+function floorGrid(t) {
+  add(0, 1e7, () => {
+    const X0 = -400, X1 = 520, Y0 = -260, Y1 = 620;
+    g.save(); g.lineWidth = 0.6;
+    for (let x = X0; x <= X1; x += 20) { const maj = x % 100 === 0; g.strokeStyle = `rgba(255,240,225,${maj ? 0.09 : 0.035})`; g.beginPath(); g.moveTo(...P(x, Y0, 0)); g.lineTo(...P(x, Y1, 0)); g.stroke(); }
+    for (let y = Y0; y <= Y1; y += 20) { const maj = y % 100 === 0; g.strokeStyle = `rgba(255,240,225,${maj ? 0.09 : 0.035})`; g.beginPath(); g.moveTo(...P(X0, y, 0)); g.lineTo(...P(X1, y, 0)); g.stroke(); }
+    g.strokeStyle = 'rgba(255,106,31,0.35)'; g.lineWidth = 0.9;
+    g.beginPath(); g.moveTo(...P(X0, 120, 0)); g.lineTo(...P(X1, 120, 0)); g.stroke();
+    g.font = '600 7px Mono'; g.fillStyle = 'rgba(200,190,180,0.45)'; g.textAlign = 'center';
+    for (let x = -300; x <= 500; x += 100) { const p = P(x, 120, 0); g.fillText(String(x), p[0], p[1] + 10); g.fillRect(p[0] - 0.5, p[1] - 3, 1, 6); }
+    g.restore();
+  });
+}
+function bg(t) {
+  g.setTransform(2, 0, 0, 2, 0, 0);
+  g.fillStyle = '#0b0a09'; g.fillRect(0, 0, 540, 960);
+  g.save(); g.globalCompositeOperation = 'lighter';
+  const heat = 0.5 + 0.8 * window01(t, B.crash, B.respawn, 0.2) + 0.6 * window01(t, B.failed, 6.6, 0.25) + 0.4 * window01(t, T.sd, 23.5, 0.4);
+  const rg = g.createRadialGradient(270, 400, 0, 270, 400, 440); rg.addColorStop(0, `rgba(255,106,31,${0.07 * heat})`); rg.addColorStop(1, 'rgba(255,106,31,0)');
+  g.fillStyle = rg; g.fillRect(0, 0, 540, 960);
+  for (let i = 0; i < 50; i++) { const x = (rnd(i, 9) * 540 + t * (4 + rnd(i, 3) * 8)) % 540, y = (rnd(i, 8) * 960 - t * (3 + rnd(i, 2) * 6) + 9600) % 960; g.fillStyle = `rgba(255,200,160,${0.05 + rnd(i, 7) * 0.12})`; g.fillRect(x, y, 1.2, 1.2); }
+  g.restore();
+}
+function shower(t, t0, x, y, z, n, seed, spd = 170, life = 0.9) {
+  const dt = t - t0; if (dt <= 0 || dt > life) return;
+  add(3, 0, () => {
+    g.save(); g.globalCompositeOperation = 'lighter'; g.lineCap = 'round';
+    for (let i = 0; i < n; i++) {
+      const th = rnd(i, seed) * Math.PI * 2, up = 0.4 + rnd(i, seed + 1) * 1.0, v = spd * (0.4 + rnd(i, seed + 2) * 0.9);
+      const pos = (d) => P(x + Math.cos(th) * v * d, y + Math.sin(th) * v * d, Math.max(0, z + up * v * d - 300 * d * d));
+      const a = pos(dt), b = pos(Math.max(0, dt - 0.03)), k = 1 - dt / life;
+      g.strokeStyle = rgba(mixc(O, [255, 240, 200], rnd(i, seed + 3)), 1.2, k); g.lineWidth = (0.8 + 1.2 * k) * Math.min(1.6, cam.s * 0.6);
+      g.beginPath(); g.moveTo(...b); g.lineTo(...a); g.stroke();
+    }
+    g.restore();
+  });
+}
+function beam(pts, col, a, lw = 1.1) {
+  if (a <= 0.01 || pts.length < 2) return;
+  add(0, 1e6 - 3, () => {
+    const q = pts.map((p) => P(p[0], p[1], 0.5));
+    g.save(); g.globalCompositeOperation = 'lighter'; g.setLineDash([3 * cam.s, 4 * cam.s]); g.lineDashOffset = -t_ * 30 * cam.s;
+    g.strokeStyle = rgba(col, 1, 0.8 * a); g.lineWidth = lw * cam.s; glow(rgba(col), 6);
+    g.beginPath(); q.forEach((p, i) => (i ? g.lineTo(...p) : g.moveTo(...p))); g.stroke(); g.restore();
+  });
+}
+function spark(p, a = 1, r = 3, col = O) {
+  if (a <= 0.01) return;
+  add(1, D(...p) - 6, () => { const c = P(...p), R = r * cam.s * 0.6; g.save(); g.globalCompositeOperation = 'lighter'; const rg = g.createRadialGradient(c[0], c[1], 0, c[0], c[1], R * 4); rg.addColorStop(0, `rgba(255,236,210,${a})`); rg.addColorStop(0.3, rgba(col, 1, 0.6 * a)); rg.addColorStop(1, rgba(col, 1, 0)); g.fillStyle = rg; g.beginPath(); g.arc(c[0], c[1], R * 4, 0, Math.PI * 2); g.fill(); g.restore(); });
+}
+// a request flying from a to b during [t0, t1]
+function fly(t, a, b, t0, t1, hgt = 40, col = O, r = 3.4) { const q = prog(t, t0, t1); if (q > 0 && q < 1) { spark(arc(a, b, ease.inOut(q), hgt), 1, r, col); for (let s = 1; s < 6; s++) spark(arc(a, b, ease.inOut(Math.max(0, q - s * 0.025)), hgt), 0.35 * (1 - s / 6), r * 0.6, col); } }
+const topOf = (s) => [s[0], s[1] - 4, s[2] + 24];
+
+/* ---------------- where payments is (and its address), per beat */
+function hopAt(t) { let h = HOPS[0]; for (const x of HOPS) if (t >= x.t) h = x; return h; }
+function scramble(from, to, t, a, b) {
+  if (t < a) return from; if (t >= b) return to;
+  const k = Math.floor(t * 30);
+  return to.split('').map((c, i) => (c === '.' ? '.' : String(Math.floor(rnd(i, k) * 10)))).join('');
+}
+function ipNow(t) {
+  if (t < B.newip) return OLD_IP;
+  if (t < HOPS[1].t) return scramble(OLD_IP, '10.0.4.23', t, B.newip, B.ipDone);
+  const h = hopAt(t), i = HOPS.indexOf(h), prev = HOPS[i - 1];
+  return scramble(prev.ip, h.ip, t, h.t, h.t + 0.3);
+}
+
+/* ---------------- registry rows */
+const ROWS = [
+  { ip: C1.ip, tIn: T.im, tAddr: T.here, tDead: T.restart2 + 0.05, tOut: T.restart2 + 0.55, dead: 'DOWN' },
+  { ip: C2.ip, tIn: T.s3 + 0.15, tAddr: T.s3 + 0.15 },
+  { ip: C3.ip, tIn: T.s3 + 0.35, tAddr: T.s3 + 0.35, tDead: T.stops + 0.1, tOut: T.off + 0.1, dead: 'NO REPLY' },
+  { ip: C4.ip, tIn: T.signed, tAddr: T.signed + 0.15, fresh: 1 },
+];
+const regCount = (t) => ROWS.filter((r) => t >= r.tIn && !(r.tOut && t > r.tOut + 0.3)).length;
+const ROWS_EL = $('rows');
+ROWS.forEach((r) => { r.el = div(ROWS_EL, 'row', '<span>payments</span><span class="a"></span><span class="s"></span>'); });
+function regBoard(t) {
+  const reg = $('reg'), a = window01(t, T.s1 - 0.1, T.newTo - 0.3, 0.25);
+  reg.style.display = a > 0.01 ? 'block' : 'none';
+  if (a <= 0.01) { $('regLine').innerHTML = ''; return; }
+  const p = P(...REG_TOP), x = clamp(p[0] - 118, 26, 514 - 236), y = clamp(p[1] - 150, 280, 520);
+  reg.style.left = x + 'px'; reg.style.top = y + 'px'; reg.style.opacity = a; reg.style.transform = `translateY(${(1 - a) * 10}px)`;
+  $('regT').textContent = t > T.k8s ? 'K8S SERVICE' : 'REGISTRY';
+  const n = regCount(t); $('regC').textContent = n ? `${n} ${n === 1 ? 'entry' : 'entries'}` : 'empty';
+  ROWS.forEach((r) => {
+    const on = t >= r.tIn, gone = r.tOut && t > r.tOut;
+    const hh = on ? 24 * ep(t, r.tIn, r.tIn + 0.25) * (gone ? 1 - ep(t, r.tOut, r.tOut + 0.3) : 1) : 0;
+    r.el.style.height = hh + 'px'; r.el.style.opacity = hh / 24;
+    const typ = Math.floor(clamp((t - r.tAddr) * 30, 0, r.ip.length));
+    const ae = r.el.children[1], se = r.el.children[2];
+    const txt = r.ip.slice(0, typ); if (ae.textContent !== txt) ae.textContent = txt;
+    const dead = r.tDead && t > r.tDead;
+    se.textContent = dead ? '✕ ' + r.dead : t > r.tAddr + 0.35 ? '● LIVE' : '';
+    se.style.color = dead ? '#FF6A1F' : '#7CF29A';
+    // ping blink on each live row
+    const ping = t > T.pinging - 0.3 && t < T.stops + 1 ? pulse(t, T.pinging + (ROWS.indexOf(r) % 3) * 0.25, 6) : 0;
+    r.el.style.background = r.fresh && t < r.tIn + 1.4 ? `rgba(124,242,154,${0.18 * (1 - prog(t, r.tIn, r.tIn + 1.4))})` : ping > 0.05 && !dead ? `rgba(124,242,154,${0.14 * ping})` : '';
+    r.el.style.setProperty('--k', !r.tDead ? 0 : r === ROWS[2] ? ep(t, T.off - 0.1, T.off + 0.15) : ep(t, r.tDead, r.tDead + 0.2));
+  });
+  // thin leader from the board to the tower
+  const bx = x + 118, by = y + reg.offsetHeight;
+  $('regLine').innerHTML = `<line x1="${bx}" y1="${by}" x2="${p[0]}" y2="${p[1] - 18}" stroke="rgba(255,176,112,${0.6 * a})" stroke-width="1" stroke-dasharray="2 3"/><circle cx="${p[0]}" cy="${p[1] - 18}" r="2.4" fill="rgba(255,176,112,${a})"/>`;
+}
+
+/* ---------------- code card + wires */
+const WS = $('wires');
+const mkP = (o) => el('path', { fill: 'none', 'stroke-linecap': 'round', ...o }, WS);
+const wGlow = mkP({ stroke: '#FF6A1F', 'stroke-width': 5, opacity: 0, style: 'filter: blur(4px)' });
+const wire = mkP({ stroke: '#FF6A1F', 'stroke-width': 1.5, 'stroke-dasharray': '5 5' });
+const wNew = mkP({ stroke: '#FFB070', 'stroke-width': 1.3, 'stroke-dasharray': '2 5' });
+const wEnd = el('circle', { r: 3.5, fill: '#FF6A1F' }, WS), wEnd2 = el('circle', { r: 3, fill: '#FFB070' }, WS);
+function offs(e) { let x = 0, y = 0; while (e && e.id !== 'stage') { x += e.offsetLeft; y += e.offsetTop; e = e.offsetParent; } return { x, y }; }
+function curve(p, q) { const my = Math.min(p[1], q[1]) + Math.abs(q[1] - p[1]) * 0.55; return `M ${p[0]} ${p[1]} C ${p[0]} ${my}, ${q[0]} ${my - 30}, ${q[0]} ${q[1]}`; }
+const setH = (id, h) => { const e = $(id); if (e._h !== h) { e._h = h; e.innerHTML = h; } };
+const typed = (s, t, a, cps = 26) => s.slice(0, Math.floor(clamp((t - a) * cps, 0, s.length)));
+function codeCard(t) {
+  const ein = ep(t, 0, 0.4) * (1 - ep(t, T.newTo - 0.3, T.newTo));
+  $('ed').style.opacity = ein; $('ed').style.transform = `translateY(${(1 - ein) * -16}px)`;
+  $('ed').style.display = ein > 0.01 ? '' : 'none';
+  const nh = B.hits.filter((h) => t >= h).length, hookCalls = t > B.calls && t < B.q;
+  // line 2: the address, then the name, then a lookup
+  const ipBox = '<span id="ipBox"></span><span id="ipSel"></span>';
+  let l2;
+  if (t < T.save - 0.05) {
+    const ip = t >= B.q + 0.2 && t < B.hookEnd ? (Math.floor(t * 2.5) % 2 ? '<span class="icur"></span>' : '?') : OLD_IP;
+    l2 = `<span class="k">const PAY =</span> <span class="s">"<span id="ipCode">${ip}${ipBox}</span>:8080"</span>`;
+  } else if (t < T.before) {
+    const nm = typed('payments', t, T.name - 0.15, 24);
+    l2 = `<span class="k">const PAY =</span> <span class="s">"<span id="ipCode">${t < T.name - 0.15 ? OLD_IP + ':8080' : nm}${ipBox}</span>${t > T.name - 0.15 && nm.length < 8 ? '<span class="icur"></span>' : ''}"</span>`;
+  } else if (t < T.you) {
+    const fn = typed('lookup(', t, T.before, 22), hint = t > T.now - 0.2 ? (t > T.next + 0.1 ? C4.ip : C1.ip) : '';
+    l2 = `<span class="k">const PAY = ${fn}</span><span class="s">"<span id="ipCode">payments${ipBox}</span>"</span><span class="k">${fn.length === 7 ? ')' : ''}</span>${hint ? `<span class="hint">→ ${hint}</span>` : ''}`;
+  } else {
+    l2 = `<span class="c">// no address anywhere</span>`;
+  }
+  setH('l2t', l2);
+  // line 3: the call
+  let l3;
+  if (t < T.you) {
+    let res = '';
+    if (hookCalls) res = nh ? `✕ ECONNREFUSED ${nh}/3` : '⟳ calling…';
+    else if (t > T.now + 0.25 && t < T.s3) res = '<span style="color:#7CF29A">✓ 200 OK</span>';
+    else if (t > T.found && t < T.you) res = '<span style="color:#7CF29A">✓ 200 OK</span>';
+    l3 = `<span class="k">await fetch(PAY + </span><span class="s">"/charge"</span><span class="k">)</span><span id="res">${res}</span>`;
+  } else {
+    const nm = typed('http://payments/charge', t, T.you, 30);
+    l3 = `<span class="k">await fetch(</span><span class="s">"${nm.replace('payments', '<span id="ipCode" style="color:#FF6A1F">payments<span id="ipBox"></span><span id="ipSel"></span></span>')}"</span><span class="k">${nm.length >= 22 ? ')' : ''}</span>${t > T.right ? `<span class="hint">→ ${C4.ip}</span>` : ''}`;
+  }
+  setH('l3t', l3);
+  $('l3').className = 'ln' + (hookCalls ? (nh ? ' bad' : ' run') : (t > T.now + 0.25 && t < T.s3) || (t > T.found && t < T.k8s + 0.6) ? ' good' : '');
+  $('l2').className = 'ln' + (t > T.address - 0.1 && t < T.code + 0.6 ? ' bad' : t > T.name - 0.2 && t < T.number + 0.4 ? ' good' : '');
+  $('edst').textContent = t > B.q && t < B.hookEnd ? '● ?' : (nh && t < B.hookEnd) || (t > T.bug && t < T.fix) ? '● ERRORS' : t >= B.crash && t < B.respawn ? '● 503' : '● LIVE';
+  $('edst').style.color = $('edst').textContent === '● LIVE' ? '' : '#FF6A1F';
+  $('ed').style.borderColor = nh && t < B.failed + 0.8 ? `rgba(255,106,31,${0.4 + 0.6 * Math.exp(-(t - B.hits[nh - 1]) * 5)})` : '';
+  const ipC = $('ipCode') || $('l3t'), box = $('ipBox'), sel = $('ipSel');
+  if (box) {
+    const bOn = (t > B.calls - 0.1 && t < B.q) || (t >= B.q && t < B.hookEnd ? 0.5 + 0.5 * (Math.floor(t * 3) % 2) : 0) || (t > T.address - 0.1 && t < T.save - 0.1) || (t > T.asks && t < T.now) || (t > T.byName - 0.3 && t < T.right + 0.4);
+    box.style.opacity = typeof bOn === 'number' ? bOn : bOn ? 1 : 0;
+    sel.style.opacity = t > T.save - 0.1 && t < T.name - 0.15 ? 1 : 0;
+  }
+  // "hardcoded" tag under the address
+  const o = offs(ipC), from = [o.x + ipC.offsetWidth / 2, o.y + 24];
+  { const h = $('hard'), a = ep(t, T.written, T.written + 0.25, ease.back) * (1 - ep(t, T.cloud - 0.2, T.cloud + 0.1)); h.style.left = (o.x + ipC.offsetWidth + 56) + 'px'; h.style.top = (o.y + 4) + 'px'; h.style.opacity = a; h.style.transform = `scale(${0.6 + 0.4 * a})`; }
+  // wire 1: from the address to the old spot (hook + bug), then from the name to the registry (lookups)
+  let to = null, wa = 0, col = '#FF6A1F';
+  if (t < T.save) { to = P(OLD[0], OLD[1], OLD[2] + 24); wa = ep(t, 0.3, 0.8) * (1 - ep(t, B.q - 0.1, B.q + 0.1)) + ep(t, T.bug, T.bug + 0.4) * (1 - ep(t, T.save - 0.2, T.save)); }
+  else if (t > T.asks - 0.2 && t < T.s3) { to = P(...REG_TOP); wa = window01(t, T.asks - 0.2, T.s3, 0.25); col = '#FFB070'; }
+  else if (t > T.next - 0.1 && t < T.k8s) { to = P(...REG_TOP); wa = window01(t, T.next - 0.1, T.k8s, 0.2); col = '#FFB070'; }
+  else if (t > T.byName - 0.2 && t < T.newTo) { to = P(...REG_TOP); wa = window01(t, T.byName - 0.2, T.newTo - 0.3, 0.25); col = '#FFB070'; }
+  if (to) {
+    const d = curve(from, [to[0], to[1] - (t < T.save ? 0 : 6)]);
+    [wire, wGlow].forEach((w) => w.setAttribute('d', d));
+    wire.setAttribute('stroke', col); wGlow.setAttribute('stroke', col);
+    wEnd.setAttribute('cx', to[0]); wEnd.setAttribute('cy', to[1] - (t < T.save ? 0 : 6)); wEnd.setAttribute('fill', col);
+  }
+  wire.setAttribute('opacity', wa); wGlow.setAttribute('opacity', wa * (0.25 + 0.5 * Math.max(0, ...B.hits.map((h) => pulse(t, h, 5)))));
+  wire.setAttribute('stroke-dashoffset', -t * 22);
+  wEnd.setAttribute('opacity', wa * (t > B.gone && t < T.save ? 0.5 + 0.5 * Math.sin(t * 12) : 1));
+  // wire 2 (hook only): where payments really is
+  const nq = $('neq'), na = ep(t, B.ipDone + 0.05, B.ipDone + 0.3, ease.back) * (1 - ep(t, B.q - 0.1, B.q + 0.15));
+  nq.style.left = (o.x + ipC.offsetWidth + 50) + 'px'; nq.style.top = (o.y + 4) + 'px'; nq.style.opacity = na; nq.style.transform = `scale(${0.6 + 0.4 * na})`;
+  if (na > 0.01) { const f2 = [o.x + ipC.offsetWidth + 50 + nq.offsetWidth / 2, o.y + 24], to2 = P(NEW[0], NEW[1], NEW[2] + 24); wNew.setAttribute('d', curve(f2, to2)); wEnd2.setAttribute('cx', to2[0]); wEnd2.setAttribute('cy', to2[1]); }
+  wNew.setAttribute('opacity', na * 0.9); wNew.setAttribute('stroke-dashoffset', -t * 16); wEnd2.setAttribute('opacity', na);
+}
+
+/* ---------------- hook kinetic captions */
+const PH = [
+  { sm: [0, 1], bg: [2], t1: 1.76 },
+  { sm: [3], bg: [4], t1: 2.68 },
+  { sm: [5, 6], bg: [], t1: 3.58, odo: 1 },
+  { sm: [7, 8, 9, 10, 11, 12], bg: [13], t1: 5.8, fail: 1 },
+  { sm: [14, 15, 16, 17, 18], bg: [19, 20], t1: B.hookEnd },
+];
+const KC = $('kc');
+const clean = (w) => w.trim().replace(/[.,]$/, '');
+const cap1 = (s) => s.charAt(0).toUpperCase() + s.slice(1);
+const OLDC = ['1', '0', '.', '0', '.', '0', '.', '7', ' '], NEWC = ['1', '0', '.', '0', '.', '4', '.', '2', '3'];
+PH.forEach((ph) => {
+  ph.el = div(KC, 'ph');
+  const sm = div(ph.el, 'sm'); ph.sw = ph.sm.map((i, k) => { const s = document.createElement('span'); s.textContent = k === 0 ? cap1(clean(WORDS[i][0])) : clean(WORDS[i][0]); sm.appendChild(s); return s; });
+  const bgEl = div(ph.el, 'bg');
+  ph.t0 = WORDS[ph.sm[0]][1] - 0.05;
+  if (ph.odo) {
+    ph.ta = B.newip;
+    const od = div(bgEl, 'odo'); bgEl.style.marginTop = '10px';
+    ph.cols = OLDC.map((c, i) => {
+      const col = div(od, 'col' + (c === '.' ? ' dot' : '')), st = div(col, 'st');
+      (c === '.' ? ['.'] : ' 0123456789012345678901234567890'.split('')).forEach((ch) => div(st, null, ch));
+      const idx = (ch, lap) => (ch === ' ' ? 0 : 1 + Number(ch) + lap * 10);
+      return { col, st, dot: c === '.', blank: c === ' ', from: c === '.' ? 0 : idx(c, 0), to: c === '.' ? 0 : idx(NEWC[i], c === NEWC[i] ? 0 : 2) };
+    });
+    ph.letters = []; return;
+  }
+  const txt = ph.bg.map((i) => clean(WORDS[i][0]).toUpperCase()).join(' ');
+  ph.ghost = div(bgEl, 'gh', txt);
+  ph.letters = txt.split('').map((ch) => { const s = document.createElement('span'); s.textContent = ch === ' ' ? ' ' : ch; bgEl.appendChild(s); return s; });
+  ph.ta = WORDS[ph.bg[0]][1];
+  if (txt.length > 7) bgEl.style.fontSize = '48px';
+});
+function letters(list, t, ta, fail) {
+  list.forEach((s, k) => {
+    const a = ta - 0.03 + k * 0.035, p = ep(t, a, a + 0.22, ease.outExpo), filled = t >= a;
+    s.classList.toggle('ol', !filled);
+    s.style.opacity = filled ? 1 : prog(t, ta - 0.35, ta - 0.15);
+    const jit = fail && t > a && Math.sin(t * 47 + k * 3) > 0.85 ? `translateX(${4 - 8 * rnd(k, Math.floor(t * 20))}px) skewX(-12deg)` : '';
+    s.style.transform = filled ? `translateY(${(1 - p) * -18}px) scale(${lerp(1.35, 1, p)}) ${jit}` : '';
+    s.style.filter = filled && p < 1 ? `blur(${(1 - p) * 5}px)` : 'none';
+  });
+}
+function kc(t) {
+  for (const ph of PH) {
+    const on = t >= ph.t0 && t < ph.t1;
+    ph.el.style.display = on ? 'block' : 'none'; if (!on) continue;
+    const out = ep(t, ph.t1 - 0.12, ph.t1, ease.in);
+    ph.el.style.opacity = 1 - out; ph.el.style.transform = `translateY(${-out * 10}px)`;
+    ph.sw.forEach((s, k) => { const a = WORDS[ph.sm[k]][1]; const p = ep(t, a - 0.04, a + 0.16); s.style.opacity = p; s.style.filter = p < 1 ? `blur(${(1 - p) * 8}px)` : 'none'; s.style.transform = `translateY(${(1 - p) * 10}px)`; s.style.color = t > ph.ta ? '#bdb5ad' : '#F2EEE8'; });
+    if (ph.cols) ph.cols.forEach((c, i) => {
+      if (c.dot) return;
+      const a = B.newip + i * 0.03, p = ep(t, a, a + 0.35, ease.inOut);
+      c.st.style.transform = `translateY(${-lerp(c.from, c.to, p) * 54}px)`;
+      if (c.blank) c.col.style.width = lerp(0, 0.6, ep(t, B.newip, B.newip + 0.3)) + 'em';
+    });
+    letters(ph.letters, t, ph.ta, ph.fail);
+    if (!ph.ghost) continue;
+    const gp = ep(t, ph.ta + 0.1, ph.ta + 0.7);
+    ph.ghost.style.opacity = (1 - gp) * (t > ph.ta ? 0.9 : 0); ph.ghost.style.transform = `translate(${gp * 14}px, ${-gp * 6}px)`;
+  }
+}
+
+/* ---------------- big beats after the hook (same outline-then-fill words, smaller) */
+const KW = [
+  { sm: 'The', bg: 'BUG?', a: T.bug - 0.1, ta: T.bug, b: T.address + 0.3 },
+  { sm: 'The', bg: 'FIX?', a: T.fix - 0.1, ta: T.fix, b: T.save + 0.2 },
+  { sm: 'That\'s', bg: 'SERVICE', bg2: 'DISCOVERY', a: T.sd - 0.05, ta: T.sd + 0.45, ta2: T.disc, b: T.s1 - 0.05 },
+  { sm: '<b>STEP 01</b>', bg: 'REGISTER', a: T.s1 - 0.05, ta: T.reg, b: T.starts + 0.4 },
+  { sm: '<b>STEP 02</b>', bg: 'LOOK UP', a: T.s2 + 0.1, ta: T.look, b: T.before + 0.5 },
+  { sm: '<b>STEP 03</b>', bg: 'CHECK', a: T.s3 - 0.05, ta: T.check, b: T.check + 1.2 },
+  { sm: 'The next call', bg: 'FOUND IT', a: T.found - 0.4, ta: T.found, b: T.k8s - 0.15, ok: 1 },
+  { sm: 'Built in to', bg: 'KUBERNETES', a: T.k8s - 0.1, ta: T.k8s, b: T.you + 0.2 },
+];
+KW.forEach((k) => {
+  k.el = div(kin, 'kw');
+  div(k.el, 'sm', k.sm);
+  const mk = (txt) => { const b = div(k.el, 'bg'); return txt.split('').map((ch) => { const s = document.createElement('span'); s.textContent = ch === ' ' ? ' ' : ch; if (k.ok) s.classList.add('okc'); b.appendChild(s); return s; }); };
+  k.l1 = mk(k.bg); if (k.bg2) k.l2 = mk(k.bg2);
+  if (k.bg.length + (k.bg2 ? 0 : 0) > 8) k.el.querySelectorAll('.bg').forEach((b) => (b.style.fontSize = '38px'));
+});
+function kw(t) {
+  for (const k of KW) {
+    const on = t >= k.a && t < k.b;
+    k.el.style.display = on ? 'block' : 'none'; if (!on) continue;
+    const i = ep(t, k.a, k.a + 0.2), out = ep(t, k.b - 0.15, k.b, ease.in);
+    k.el.style.opacity = i * (1 - out); k.el.style.transform = `translateY(${(1 - i) * 8 - out * 10}px)`;
+    letters(k.l1, t, k.ta); if (k.l2) letters(k.l2, t, k.ta2);
+  }
+}
+
+/* ---------------- house pop-in captions (after the hook) */
+function fixW(s, a) {
+  const F = { 'payment': 'payments', 'one,': 'one:', 'two,': 'two:', 'three,': 'three:', 'registry,': 'registry:', 'answering,': 'answering?', 'restart,': 'restart?', 'code,': 'code.', 'number,': 'number.', 'name': 'name,' };
+  if (s === 'name' && a > 40) return 'name';
+  return F[s] ?? s;
+}
+function hlCol(w, t) {
+  let m;
+  if (t < 16.6) m = { restarted: '#FF6A1F', failed: '#FF6A1F', bug: '#FF6A1F', written: '#FF6A1F', move: '#FFB070' };
+  else if (t < 23.2) m = { fix: '#7CF29A', name: '#7CF29A', number: '#FF6A1F', service: '#FF6A1F', discovery: '#FF6A1F' };
+  else if (t < 28.6) m = { register: '#FF6A1F', registry: '#FFB070' };
+  else if (t < 35.5) m = { look: '#FF6A1F', up: '#FF6A1F' };
+  else if (t < 41.3) m = { check: '#FF6A1F', stops: '#FF6A1F', off: '#FF6A1F' };
+  else if (t < 46.1) m = { found: '#7CF29A', it: '#7CF29A' };
+  else if (t < 51.3) m = { kubernetes: '#FF6A1F', name: '#FF6A1F' };
+  else m = { kubernetes: '#FF6A1F', follow: '#FF6A1F' };
+  return m[w] || null;
+}
+const CHUNKS = [];
+(() => {
+  const ws = WORDS.map(([w, a, b]) => ({ s: fixW(w.trim(), a), a, b }));
+  let cur = [];
+  const flushC = () => { if (cur.length) CHUNKS.push(cur); cur = []; };
+  ws.forEach((w) => {
+    const prev = cur[cur.length - 1];
+    const len = cur.reduce((n, x) => n + x.s.length + 1, 0);
+    if (prev && (/[.?:!]$/.test(prev.s) || cur.length >= 4 || len + w.s.length > 24 || w.a - prev.b > 0.6)) flushC();
+    cur.push(w);
+  });
+  flushC();
+  // a short tail after a pause joins the line before it (unless that line ended a sentence)
+  for (let i = CHUNKS.length - 1; i > 0; i--) {
+    const c = CHUNKS[i], p = CHUNKS[i - 1], len = [...p, ...c].reduce((n, x) => n + x.s.length + 1, 0);
+    if (c.length <= 2 && p.length + c.length <= 5 && !/[.?!]$/.test(p[p.length - 1].s) && len <= 32) { p.push(...c); CHUNKS.splice(i, 1); }
+  }
+})();
+CHUNKS.forEach((c, ci) => {
+  const box = div($('cap'), 'box'); c.box = box;
+  c.els = c.map((w) => {
+    const s = document.createElement('span'); s.className = 'w';
+    s.textContent = w.s.replace(/[.,:;]+$/, '');
+    const col = hlCol(w.s.toLowerCase().replace(/[.,?:!]/g, ''), w.a);
+    if (col) s.style.color = col;
+    box.appendChild(s); return s;
+  });
+  c.t0 = c[0].a - 0.04; c.t1 = CHUNKS[ci + 1] ? Math.min(CHUNKS[ci + 1][0].a - 0.04, c[c.length - 1].b + 0.9) : DURATION;
+});
+function caps(t) {
+  for (const c of CHUNKS) {
+    const on = t >= c.t0 && t < c.t1;
+    c.box.style.display = on ? 'flex' : 'none';
+    if (!on) continue;
+    c.els.forEach((s, i) => { s.style.opacity = prog(t, c[i].a - 0.04, c[i].a + 0.06); });
+  }
+}
+
+/* ---------------- cards: phone contact, profile */
+const CUR = $('cursor');
+function cursorAt(x, y, a, press) { CUR.style.display = a > 0.01 ? 'block' : 'none'; CUR.style.opacity = a; CUR.style.left = x + 'px'; CUR.style.top = y + 'px'; CUR.style.transform = `scale(${1 - 0.18 * press})`; }
+function phone(t) {
+  const p = popIn(t, T.phone - 0.1, T.sd - 0.05), ph = $('phone');
+  vis(ph, p.a, `translateY(${p.y}px) scale(${p.s})`); ph.style.display = p.a > 0.001 ? 'block' : 'none';
+  $('phNum').style.setProperty('--k', ep(t, T.contacts - 0.1, T.contacts + 0.15));
+  const tap = window01(t, T.contacts + 0.1, T.contacts + 0.3, 0.06);
+  $('phBtn').style.transform = `scale(${1 - 0.06 * tap})`;
+  $('phBtn').textContent = t > T.contacts + 0.25 ? '✆ Calling payments…' : '✆ Call';
+  return p.a;
+}
+const TAP_T = T.profile - 0.05, TAP_F = T.follow + 0.25;
+function profile(t) {
+  const p = popIn(t, T.newTo - 0.1, DURATION + 1), pr = $('prof');
+  vis(pr, p.a, `translateY(${p.y}px) scale(${p.s})`); pr.style.display = p.a > 0.001 ? 'block' : 'none';
+  if (p.a <= 0.001) { $('watch').style.display = 'none'; return; }
+  const fb = $('fb'), done = t > TAP_F + 0.08;
+  if (fb._d !== done) { fb._d = done; fb.textContent = done ? 'Following ✓' : 'Follow'; fb.style.background = done ? '#2a2521' : ''; fb.style.color = done ? '#F2EEE8' : ''; fb.style.fontSize = done ? '12.5px' : ''; }
+  fb.style.transform = `scale(${1 - 0.06 * window01(t, TAP_F, TAP_F + 0.16, 0.06)})`;
+  const hi = ep(t, T.k8s2 - 0.1, T.k8s2 + 0.2), t0 = $('t0');
+  t0.style.borderColor = hi > 0 ? `rgba(255,106,31,${hi})` : 'transparent';
+  t0.style.boxShadow = hi > 0 ? `0 0 ${24 * hi}px rgba(255,106,31,${0.6 * hi})` : '';
+  t0.style.transform = `scale(${1 + 0.05 * hi + 0.06 * pulse(t, TAP_T, 6)})`;
+  t0.querySelector('.n').style.color = hi > 0.5 ? '#FF6A1F' : '';
+  ['t1', 't2'].forEach((id) => { $(id).style.opacity = 1 - 0.45 * hi * (1 - ep(t, T.follow, T.follow + 0.3)); });
+  const w = $('watch'), wa = window01(t, T.k8s2, DURATION + 1, 0.2) * (1 - 0.6 * ep(t, T.follow, T.follow + 0.3));
+  w.style.display = wa > 0.01 ? 'block' : 'none'; w.style.opacity = wa; w.style.left = '60px'; w.style.top = (pr.offsetTop + pr.offsetHeight + 10) + 'px';
+  // cursor: Kubernetes tile, then Follow
+  const k1 = ep(t, T.newTo + 0.6, T.profile - 0.1, ease.inOut), k2 = ep(t, T.follow - 0.25, TAP_F - 0.02, ease.inOut);
+  const tx = 44 + 16 + 64, ty = pr.offsetTop + 150, fx_ = 44 + 452 - 16 - 52, fy = pr.offsetTop + 34;
+  cursorAt(lerp(lerp(470, tx, k1), fx_, k2), lerp(lerp(780, ty, k1), fy, k2), window01(t, T.newTo + 0.5, DURATION + 1, 0.15), Math.max(window01(t, TAP_T, TAP_T + 0.16, 0.05), window01(t, TAP_F, TAP_F + 0.16, 0.06)));
+}
+
+/* ---------------- render */
+window.ready = () => { $('grain').style.background = `url(${grainURL(256, 0.06, 5)})`; };
+window.render = function (t) {
+  t_ = t;
+  camAt(t, SHOTS, KICKS, SHAKES);
+  bg(t);
+  g.setTransform(2, 0, 0, 2, 0, 0);
+  floorGrid(t);
+  const endDim = ep(t, T.newTo - 0.2, T.newTo + 0.5);
+  // machines glow where payments lands
+  for (let i = 0; i < 3; i++) {
+    const hot = (i === 0 ? window01(t, B.crash, B.respawn, 0.1) * 0.8 : 0) + (i === 2 ? 0.9 * pulse(t, B.respawn + 0.3, 2.5) : 0)
+      + HOPS.slice(1).reduce((n, h) => n + (Math.round((h.s[0] - NX[0] + 24) / 120) === i ? 0.7 * pulse(t, h.t + 0.15, 4) : 0), 0);
+    machine(i, t, Math.min(1, hot));
+  }
+  // callers: all three in the hook, then just orders
+  CALLERS.forEach((_, i) => caller(i, t, t < B.hookEnd + 0.5 ? ep(t, B.hits[i], B.hits[i] + 0.12) * (1 - ep(t, B.hookEnd, B.hookEnd + 0.5)) : 0,
+    i === 1 ? 1 : (0.25 + 0.75 * ep(t, 3.0, 3.5)) * (1 - ep(t, 10.8, 11.6))));
+  // registry tower
+  registry(t, 1, pulse(t, T.registry + 0.5, 4) + pulse(t, T.asksReg + 0.4, 4) + pulse(t, T.signed + 0.5, 4) + pulse(t, T.next + 0.2, 4) + pulse(t, T.routes, 4));
+
+  /* payments: hook copy + hops (until step one) */
+  if (t < B.gone + 0.3) {
+    const q = ep(t, B.gone, B.gone + 0.3), crash = t > B.crash;
+    service(OLD, { op: 1 - q, dz: ease.in(q) * 80, dead: t > B.crash + 0.3, fl: crash ? (Math.sin(t * 50) > 0 ? 1 : 0.3) * (1 - prog(t, B.crash, B.gone)) : 0, col: crash ? mixc(O, [255, 60, 40], 0.5) : O });
+  }
+  shower(t, B.crash, OLD[0], OLD[1], OLD[2] + 20, 60, 11, 190, 1.0);
+  ripple(t, B.crash, OLD[0], OLD[1], NH, O, 90, 0.8, 1.6);
+  // ghost of the old spot, while the code still points at it
+  if (t > B.gone && t < T.save + 0.4) wireBox(OLD[0], OLD[1], NH, 40, 24, 22, t > B.hits[0] ? O : W, (0.35 + 0.3 * Math.sin(t * 9)) * (1 - 0.6 * ep(t, B.q, B.q + 0.5)) * (1 - ep(t, T.save, T.save + 0.4)) + 0.25 * window01(t, T.bug, T.save, 0.3), 2, [2, 3]);
+  if (t > B.respawn && t < T.s1) {
+    const h = hopAt(t), i = HOPS.indexOf(h), land = ep(t, h.t, h.t + 0.3, ease.in);
+    const a = i === 0 ? prog(t, h.t, h.t + 0.08) : 1, fade = 1 - ep(t, T.s1 - 0.6, T.s1 - 0.2);
+    // hop: lift out of the previous slot, drop into the next
+    if (i > 0 && t < h.t + 0.18) service(HOPS[i - 1].s, { op: (1 - prog(t, h.t, h.t + 0.18)) * fade, dz: ease.in(prog(t, h.t, h.t + 0.18)) * 60 });
+    service(h.s, { op: a * fade * (i > 0 ? prog(t, h.t + 0.08, h.t + 0.2) : 1), dz: (1 - land) * (i === 0 ? 100 : 70),
+      fl: Math.min(1, pulse(t, h.t + 0.3, 5) + 0.6 * pulse(t, B.newip, 4) + (t > B.find && t < B.hookEnd ? 0.35 * (0.5 + 0.5 * Math.sin(t * 7)) : 0)) });
+    ripple(t, h.t + 0.3, h.s[0], h.s[1], NH, O, 70, 0.7, 1.4);
+    if (i === 0) { ripple(t, B.newip, NEW[0], NEW[1], NH, O2, 110, 0.9, 1.6); shower(t, B.respawn + 0.3, NEW[0], NEW[1], NH + 4, 24, 19, 120, 0.6); }
+    else shower(t, h.t + 0.3, h.s[0], h.s[1], NH + 4, 14, 40 + i, 90, 0.5);
+  }
+  // hook calls at the old address
+  const target = [OLD[0], OLD[1] - 6, OLD[2] + 20];
+  for (let j = 0; j < 3; j++) { const C = CALLERS[j], q = (t + 0.5 - j * 0.42) / 0.8; if (q > 0 && q < 1) spark(arc([C.x, C.y, 18], target, ease.inOut(q), 40), Math.min(1, q * 6, (1 - q) * 8)); }
+  B.hits.forEach((th, i) => {
+    const C = CALLERS[i], q = prog(t, th - 0.45, th);
+    if (q > 0 && q < 1) spark(arc([C.x, C.y, 18], target, ease.inOut(q), 46), 1, 3.6);
+    if (t > B.calls && t < B.hookEnd + 0.6) beam(sub([[C.x, C.y + 18, 0], [OLD[0], OLD[1] - 12, 0]], ep(t, B.calls + i * 0.1, B.calls + i * 0.1 + 0.4)), t > th ? O : W, (t > th ? 0.9 : 0.4) * (1 - 0.7 * ep(t, B.q, B.q + 0.5)) * (1 - ep(t, B.hookEnd, B.hookEnd + 0.6)));
+    shower(t, th, target[0], target[1], target[2], 26, 30 + i, 120, 0.7);
+  });
+  // the question: a search wandering the floor
+  if (t > B.q && t < B.hookEnd + 0.4) {
+    const k = (t - B.q) * 0.9, pts = [[ORD.x, ORD.y, 30], [NX[0], NY, 60], [NX[1], NY, 70], [NX[2] - 40, NY, 60], [NX[1], NY - 40, 70]];
+    const a = window01(t, B.q, B.hookEnd + 0.4, 0.3);
+    for (let s = 0; s < 10; s++) spark(along(pts, Math.max(0, (k % 1) - s * 0.015)), a * (1 - s / 10) * (s ? 0.5 : 1), s ? 2 : 3.4);
+  }
+  // the bug: orders keeps firing at the empty spot while payments hops around
+  if (t > T.cloud && t < T.fix) for (let j = 0; j < 4; j++) { const t0 = T.cloud + 0.3 + j * 1.2; fly(t, ORD_P, topOf(OLD), t0, t0 + 0.6, 34); shower(t, t0 + 0.6, OLD[0], OLD[1], OLD[2] + 20, 12, 60 + j, 80, 0.5); }
+
+  /* step one: payments starts on machine-3 and registers */
+  const C1on = t > T.starts - 0.2 && t < T.restart2 + 0.35;
+  if (C1on) {
+    const land = ep(t, T.starts - 0.2, T.starts + 0.15, ease.in), crash = t > T.restart2;
+    service(C1.s, { op: prog(t, T.starts - 0.2, T.starts - 0.1) * (1 - ep(t, T.restart2 + 0.1, T.restart2 + 0.35)), dz: (1 - land) * 90 + (crash ? ease.in(prog(t, T.restart2 + 0.1, T.restart2 + 0.35)) * 70 : 0),
+      dead: t > T.restart2 + 0.05, col: crash ? mixc(O, [255, 60, 40], 0.5) : O, fl: crash ? (Math.sin(t * 50) > 0 ? 1 : 0.3) : pulse(t, T.starts + 0.15, 5) + 0.6 * pulse(t, T.here, 5) });
+    ripple(t, T.starts + 0.15, C1.s[0], C1.s[1], NH, O, 70, 0.7, 1.4);
+  }
+  fly(t, topOf(C1.s), REG_TOP, T.tells, T.registry + 0.4, 60, O2);
+  ripple(t, T.registry + 0.4, RX, RY, 92, O2, 60, 0.7, 1.4);
+  // step two: orders asks, registry answers, then the real call
+  fly(t, ORD_P, REG_TOP, T.asks - 0.1, T.asksReg + 0.35, 70, O2);
+  ripple(t, T.asksReg + 0.35, RX, RY, 92, O2, 60, 0.7, 1.4);
+  fly(t, REG_TOP, ORD_P, T.where + 0.1, T.now - 0.15, 70, O2);
+  fly(t, ORD_P, topOf(C1.s), T.now - 0.05, T.now + 0.35, 40, O);
+  ripple(t, T.now + 0.35, C1.s[0], C1.s[1], NH + 22, OK, 60, 0.7, 1.6);
+  if (t > T.where && t < T.s3) beam(sub([[ORD.x, ORD.y + 18, 0], [C1.s[0], C1.s[1] - 12, 0]], ep(t, T.now - 0.05, T.now + 0.35)), O, window01(t, T.now - 0.05, T.s3, 0.2) * 0.8);
+  // step three: three copies, pings, one goes quiet and is dropped
+  const C2a = ep(t, T.s3 + 0.1, T.s3 + 0.4) * (1 - ep(t, T.newTo - 0.2, T.newTo + 0.3) * 0);
+  if (t > T.s3) {
+    service(C2.s, { op: Math.min(1, C2a * 3), dz: (1 - ep(t, T.s3 + 0.1, T.s3 + 0.4, ease.in)) * 60, fl: pulse(t, T.s3 + 0.4, 5) });
+    const dead = t > T.stops;
+    if (t < T.off + 0.5) service(C3.s, { op: Math.min(1, ep(t, T.s3 + 0.3, T.s3 + 0.6) * 3) * (1 - ep(t, T.off + 0.1, T.off + 0.5)), dz: (1 - ep(t, T.s3 + 0.3, T.s3 + 0.6, ease.in)) * 60,
+      col: dead ? GR : O, dim: dead, dead, fl: pulse(t, T.s3 + 0.6, 5) });
+  }
+  // pings: registry -> every copy, live ones answer
+  if (t > T.pinging - 0.4 && t < T.off + 0.3) {
+    const copies = [[C1, 0], [C2, 0.25], [C3, 0.5]];
+    for (const [c, dl] of copies) for (const t0 of [T.pinging - 0.35 + dl, T.stops + 0.05 + dl * 0.6]) {
+      fly(t, REG_TOP, topOf(c.s), t0, t0 + 0.4, 30, OK, 2.6);
+      const dead = c === C3 && t0 > T.stops - 0.1;
+      if (!dead) { fly(t, topOf(c.s), REG_TOP, t0 + 0.45, t0 + 0.8, 30, OK, 2.2); ripple(t, t0 + 0.4, c.s[0], c.s[1], NH + 22, OK, 34, 0.5, 1.2); }
+      else ripple(t, t0 + 0.4, c.s[0], c.s[1], NH + 22, O, 30, 0.5, 1.2);
+    }
+  }
+  // payoff: the copy on machine-3 restarts, lands on machine-2, signs in again, next call finds it
+  shower(t, T.restart2, C1.s[0], C1.s[1], C1.s[2] + 20, 40, 77, 160, 0.9);
+  ripple(t, T.restart2, C1.s[0], C1.s[1], NH, O, 80, 0.8, 1.6);
+  if (t > T.moved - 0.3) {
+    const land = ep(t, T.moved - 0.3, T.moved + 0.05, ease.in);
+    service(C4.s, { op: prog(t, T.moved - 0.3, T.moved - 0.2), dz: (1 - land) * 90, fl: Math.min(1, pulse(t, T.moved + 0.05, 5) + 0.6 * pulse(t, T.found, 4) + 0.5 * pulse(t, T.routes + 0.45, 4)) });
+    ripple(t, T.moved + 0.05, C4.s[0], C4.s[1], NH, O, 70, 0.7, 1.4);
+  }
+  fly(t, topOf(C4.s), REG_TOP, T.signed - 0.2, T.signed + 0.25, 50, O2);
+  fly(t, ORD_P, REG_TOP, T.next - 0.1, T.next + 0.2, 70, O2, 3);
+  fly(t, REG_TOP, ORD_P, T.next + 0.22, T.next + 0.45, 70, O2, 3);
+  fly(t, ORD_P, topOf(C4.s), T.found - 0.4, T.found, 40, O);
+  ripple(t, T.found, C4.s[0], C4.s[1], NH + 22, OK, 70, 0.8, 1.8);
+  if (t > T.found - 0.4 && t < T.k8s + 0.6) beam(sub([[ORD.x, ORD.y + 18, 0], [C4.s[0], C4.s[1] - 12, 0]], ep(t, T.found - 0.4, T.found)), O, window01(t, T.found - 0.4, T.k8s + 0.6, 0.2) * 0.8);
+  // kubernetes: by name -> routed to the right address
+  fly(t, ORD_P, REG_TOP, T.byName - 0.2, T.routes, 70, O2);
+  fly(t, REG_TOP, topOf(C4.s), T.routes, T.routes + 0.45, 50, O);
+  ripple(t, T.routes + 0.45, C4.s[0], C4.s[1], NH + 22, OK, 60, 0.7, 1.6);
+  flush();
+  g.setTransform(2, 0, 0, 2, 0, 0);
+
+  /* world labels */
+  const A = (k, txt, wp, dx, dy, a, b) => callout(k, txt, wp, dx, dy, window01(t, a, b, 0.15), '#FF6A1F');
+  A('h1', 'status: <span style="color:#FF6A1F">crashed</span>', [OLD[0], OLD[1], OLD[2] + 24], 40, -50, B.crash, B.respawn);
+  A('h2', 'same image · v1 <span style="color:#FF6A1F">✓</span>', [NEW[0], NEW[1], NEW[2] + 24], -40, -56, B.same, 2.7);
+  A('h3', `addr <span style="color:#FF6A1F">${ipNow(t)}</span>:8080`, [NEW[0], NEW[1], NEW[2] + 24], -40, -56, 2.7, 3.6);
+  A('h4', `payments · <span style="color:#FF6A1F">10.0.4.23</span>`, [NEW[0], NEW[1], NEW[2] + 24], -20, 58, 3.6, B.q);
+  A('h5', `${OLD_IP} · <span style="color:#77706A">nothing here</span>`, [OLD[0], OLD[1], NH + 22], 24, 64, 3.4, B.q);
+  A('h6', 'where is payments?', [ORD.x, ORD.y, 20], -60, -34, B.q + 0.25, B.hookEnd);
+  A('b1', `${OLD_IP} · <span style="color:#77706A">empty</span>`, [OLD[0], OLD[1], NH + 22], -20, 60, T.bug, T.fix);
+  { const h = hopAt(t), s = h.s; A('b2', `payments · <span style="color:#FF6A1F">${ipNow(t)}</span>`, [s[0], s[1], s[2] + 24], 26, -50, T.cloud, T.fix); }
+  A('r0', 'registry', [RX, RY, 60], 52, 30, T.sd + 0.4, T.s1);
+  A('k0', 'every copy · <span style="color:#7CF29A">♥ ok?</span>', [RX, RY, 70], 56, 24, T.pinging - 0.2, T.stops);
+  A('k1', `${C3.ip} · <span style="color:#FF6A1F">no reply</span>`, [C3.s[0], C3.s[1], NH + 22], 24, 56, T.stops + 0.2, T.off + 0.5);
+  A('p1', `payments · <span style="color:#7CF29A">${C4.ip}</span>`, [C4.s[0], C4.s[1], NH + 22], -24, 58, T.moved + 0.1, T.k8s);
+
+  /* DOM */
+  codeCard(t); caps(t); regBoard(t);
+  const pa = phone(t);
+  profile(t);
+  if (!(t > T.newTo + 0.4)) cursorAt(lerp(320, 270, ep(t, T.phone + 0.2, T.contacts + 0.05, ease.inOut)), lerp(560, ($('phone').offsetTop || 300) + 236, ep(t, T.phone + 0.2, T.contacts + 0.05, ease.inOut)), pa * window01(t, T.phone + 0.1, T.sd - 0.2, 0.15), window01(t, T.contacts + 0.1, T.contacts + 0.3, 0.06));
+  $('dim').style.opacity = 0.55 * Math.max(pa, endDim);
+  $('tc').textContent = 'T+' + t.toFixed(2).padStart(5, '0') + 's';
+  let fl = 0;
+  for (const [t0, a] of [[B.crash, 0.3], [B.respawn + 0.3, 0.1], [B.newip, 0.1], [B.hits[0], 0.1], [B.hits[1], 0.1], [B.hits[2], 0.1], [B.failed, 0.14], [T.restart2, 0.18], [T.found, 0.08]]) { const dt = t - t0; if (dt > 0 && dt < 0.5) fl = Math.max(fl, a * Math.exp(-dt * 9)); }
+  $('flash').style.opacity = fl;
+  // confetti on follow
+  if (t > TAP_F + 0.08 && t < TAP_F + 1.7) {
+    g.save(); g.globalCompositeOperation = 'lighter';
+    const dt = t - TAP_F - 0.08, cols = ['#FF6A1F', '#FFB070', '#F2EEE8', '#7CF29A'];
+    const fbx = 44 + 452 - 16 - 52, fby = $('prof').offsetTop + 34;
+    for (let i = 0; i < 70; i++) {
+      const th = rnd(i, 70) * Math.PI * 2, v = 160 + rnd(i, 71) * 260;
+      const x = fbx + Math.cos(th) * v * dt, y = fby + Math.sin(th) * v * dt * 0.8 + 260 * dt * dt;
+      g.fillStyle = cols[i % 4]; g.globalAlpha = Math.max(0, 1 - dt / 1.5);
+      g.save(); g.translate(x, y); g.rotate(dt * 8 + i); g.fillRect(-3, -1.5, 6, 3); g.restore();
+    }
+    g.restore(); g.globalAlpha = 1;
+  }
+  $('stage').style.opacity = 1 - ep(t, DURATION - 0.35, DURATION) * 0.85;
+};
+</script>
+<script src="openings/play.js"></script>
+</body>
+</html>

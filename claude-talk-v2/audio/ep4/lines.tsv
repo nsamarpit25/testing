@@ -1,0 +1,19 @@
+cleo	Claude! Forty-five thousand database reads in three minutes! We're going viral!
+claude	Cleo... you haven't deployed it yet.
+cleo	Then who's reading it?
+claude	Your app only runs on localhost. Every one of those reads came from this desk.
+cleo	...From me?
+claude	From you. You're DDoSing yourself.
+cleo	I'm not even touching anything! The page is just sitting there!
+claude	Look at the Network tab.
+cleo	Why is it counting like a slot machine?!
+claude	I wrote your useEffect with an empty array, so it fetched once. Did you touch it?
+cleo	I made it refresh whenever the tasks changed. That's called being responsive!
+claude	So it fetches your tasks, gets a brand-new array, thinks the tasks changed, and fetches again. Forever.
+cleo	Make it stop! Make it stop!
+claude	Done. The empty array is back. One request. Next time, test with the Network tab open.
+cleo	At least we caught it before it cost anything.
+cleo	"Daily read limit reached. Reads blocked until tomorrow."
+cleo	Claude... can you rewind the database too?
+claude	I can rewind my edits, Cleo. Not the calendar.
+cleo	Great. I finally went viral... and my only fan was me.

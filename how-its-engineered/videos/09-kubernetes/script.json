@@ -1,0 +1,44 @@
+{
+ "topic": "Kubernetes",
+ "lines": [
+  [
+   {"say": "Your app crashed at three A-M.", "show": "Your app *crashed* at 3 AM."},
+   {"say": "By the time you woke up, it was already back. Nobody touched it.", "show": "By the time you woke up, it was [already back.] Nobody touched it."}
+  ],
+  [
+   {"say": "With Docker alone, a crashed container stays dead until you restart it by hand.", "show": "With Docker alone, a crashed container *stays dead* until you restart it [by hand.]"},
+   {"say": "Traffic doubles? More copies, by hand too.", "show": "Traffic doubles? More copies, *by hand* too."}
+  ],
+  [
+   {"say": "The fix?", "show": "The fix?"},
+   {"say": "Tell a robot what you want.", "show": "Tell a robot *what you want.*"},
+   {"say": "That's Kubernetes.", "show": "That's [Kubernetes.]"}
+  ],
+  [
+   {"say": "Like a thermostat: you set twenty-one degrees, and it keeps the room there.", "show": "Like a *thermostat:* you set *21°,* and it [keeps the room there.]"}
+  ],
+  [
+   {"say": "Job one: heal.", "show": "Job one: [heal.]"},
+   {"say": "Keep three copies running. One crashes? A new one starts in seconds.", "show": "Keep *3 copies* running. One crashes? A new one starts *in seconds.*"}
+  ],
+  [
+   {"say": "Job two: scale.", "show": "Job two: [scale.]"},
+   {"say": "Traffic spikes? It adds copies. Traffic drops? It removes them.", "show": "Traffic spikes? It *adds copies.* Traffic drops? It *removes them.*"}
+  ],
+  [
+   {"say": "Job three: update.", "show": "Job three: [update.]"},
+   {"say": "New version? It swaps copies one at a time. No downtime.", "show": "New version? It swaps copies *one at a time.* No *downtime.*"}
+  ],
+  [
+   {"say": "So that three A-M crash? Fixed before you woke up.", "show": "So that *3 AM crash?* Fixed [before you woke up.]"}
+  ],
+  [
+   {"say": "Docker packs the box. Kubernetes runs the fleet.", "show": "*Docker* packs the box. *Kubernetes* runs the fleet."},
+   {"say": "Google built it, and every big cloud offers it.", "show": "*Google* built it, and every big cloud offers it."}
+  ],
+  [
+   {"say": "New to containers? The Docker reel is on my profile.", "show": "New to containers? The *Docker reel* is on my profile."},
+   {"say": "Follow for the rest of the series.", "show": "[Follow] for the rest of the series."}
+  ]
+ ]
+}

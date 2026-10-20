@@ -1,0 +1,24 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>09 Kubernetes preview</title>
+<style>
+html,body{margin:0;background:#111;color:#ddd;font:13px system-ui;height:100%}
+body{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px}
+#wrap{width:432px;height:768px;overflow:hidden;border-radius:10px;box-shadow:0 0 0 1px #333}
+iframe{width:540px;height:960px;border:0;transform:scale(.8);transform-origin:0 0}
+#bar{display:flex;gap:10px;align-items:center;width:432px}
+button{background:#2b6cff;color:#fff;border:0;border-radius:6px;padding:6px 14px;font-weight:600;cursor:pointer}
+input{flex:1}
+</style></head><body>
+<div id="wrap"><iframe id="f" src="../../videos/09-kubernetes/video.html"></iframe></div>
+<div id="bar"><button id="pp">Play</button><input id="sc" type="range" min="0" max="53.6" step="0.01" value="0"><span id="tm">0.00</span></div>
+<audio id="au" src="../../videos/09-kubernetes/voice/voice.wav" preload="auto"></audio>
+<script>
+const f=document.getElementById('f'),au=document.getElementById('au'),sc=document.getElementById('sc'),tm=document.getElementById('tm'),pp=document.getElementById('pp');
+const draw=t=>{const w=f.contentWindow;if(w&&w.render){w.render(t);sc.value=t;tm.textContent=t.toFixed(2);}};
+f.onload=async()=>{const w=f.contentWindow;await w.document.fonts.ready;if(w.ready)await w.ready();sc.max=w.DURATION;draw(0);};
+pp.onclick=()=>{au.paused?au.play():au.pause();};
+au.onplay=()=>pp.textContent='Pause';au.onpause=()=>pp.textContent='Play';
+sc.oninput=()=>{au.currentTime=+sc.value;draw(+sc.value);};
+document.onkeydown=e=>{if(e.code==='Space'){e.preventDefault();pp.click();}};
+(function loop(){if(!au.paused)draw(au.currentTime);requestAnimationFrame(loop);})();
+</script></body></html>

@@ -1,0 +1,81 @@
+{
+ "topic": "Timeouts",
+ "lines": [
+  [
+   {
+    "say": "This little capsule is your app asking a server for the weather.",
+    "show": "This little capsule is your app asking a server for the *weather.*"
+   },
+   {
+    "say": "It leaves. And nothing comes back.",
+    "show": "It leaves. And [nothing comes back.]"
+   },
+   {
+    "say": "So how long should your app keep waiting?",
+    "show": "So how long should your app keep *waiting?*"
+   }
+  ],
+  [
+   {
+    "say": "By default, it might wait forever.",
+    "show": "By default, it might wait [forever.]"
+   },
+   {
+    "say": "Python's requests library won't time out unless you pass a timeout.",
+    "show": "Python's *requests* library won't time out unless you pass a *timeout.*"
+   },
+   {
+    "say": "And Go's default client? Same story.",
+    "show": "And *Go's* default client? Same story."
+   }
+  ],
+  [
+   {
+    "say": "And waiting isn't free.",
+    "show": "And waiting [isn't free.]"
+   },
+   {
+    "say": "That call holds a thread while the spinner spins, and every request stuck behind it holds another.",
+    "show": "That call holds a *thread* while the spinner spins, and every request stuck behind it holds *another.*"
+   }
+  ],
+  [
+   {
+    "say": "A timeout is a deadline: the longest you'll wait before calling it a failure.",
+    "show": "A [timeout] is a *deadline:* the longest you'll wait before calling it a *failure.*"
+   }
+  ],
+  [
+   {
+    "say": "Pass timeout equals three, and after three seconds, you stop waiting.",
+    "show": "Pass *timeout=3,* and after *3 seconds,* you stop waiting."
+   }
+  ],
+  [
+   {
+    "say": "Now the slow call is a failure your code can handle.",
+    "show": "Now the slow call is a failure your code can [handle.]"
+   },
+   {
+    "say": "Show a clear error, or use a fallback, like the forecast you saved earlier.",
+    "show": "Show a clear *error,* or use a *fallback,* like the forecast you saved earlier."
+   }
+  ],
+  [
+   {
+    "say": "The spinner stops. The thread is freed. Your user knows what happened.",
+    "show": "The spinner *stops.* The thread is *freed.* Your user knows what happened."
+   }
+  ],
+  [
+   {
+    "say": "Haven't seen circuit breakers? That reel's on my profile.",
+    "show": "Haven't seen *circuit breakers?* That reel's on my profile."
+   },
+   {
+    "say": "Follow for the rest of the series.",
+    "show": "[Follow] for the rest of the series."
+   }
+  ]
+ ]
+}

@@ -1,0 +1,130 @@
+[
+ {
+  "li": 0,
+  "pi": 0,
+  "say": "You booked a flight and a hotel in one checkout.",
+  "show": "You booked a *flight* and a *hotel* in one checkout.",
+  "start": 0.0,
+  "end": 2.34
+ },
+ {
+  "li": 0,
+  "pi": 1,
+  "say": "The flight went through. The hotel failed.",
+  "show": "The flight went *through.* The hotel [failed.]",
+  "start": 2.76,
+  "end": 5.08
+ },
+ {
+  "li": 1,
+  "pi": 0,
+  "say": "Now you've paid for a flight, with nowhere to sleep.",
+  "show": "Now you've paid for a flight, with *nowhere to sleep.*",
+  "start": 5.46,
+  "end": 8.0
+ },
+ {
+  "li": 2,
+  "pi": 0,
+  "say": "Two services. Two databases. Both have to succeed, or neither should.",
+  "show": "Two services. Two databases. Both have to succeed, or [neither should.]",
+  "start": 8.52,
+  "end": 12.84
+ },
+ {
+  "li": 3,
+  "pi": 0,
+  "say": "That's called a distributed transaction.",
+  "show": "That's called a [distributed transaction.]",
+  "start": 13.26,
+  "end": 15.18
+ },
+ {
+  "li": 4,
+  "pi": 0,
+  "say": "Think of a vault with two keys. It only opens when both keys turn.",
+  "show": "Think of a *vault* with two keys. It only opens when *both keys* turn.",
+  "start": 15.92,
+  "end": 19.86
+ },
+ {
+  "li": 4,
+  "pi": 1,
+  "say": "One key alone? Nothing happens.",
+  "show": "One key alone? [Nothing happens.]",
+  "start": 20.34,
+  "end": 22.1
+ },
+ {
+  "li": 5,
+  "pi": 0,
+  "say": "Software does this in two steps. It's called two-phase commit.",
+  "show": "Software does this in two steps. It's called [two-phase commit.]",
+  "start": 22.64,
+  "end": 25.54
+ },
+ {
+  "li": 6,
+  "pi": 0,
+  "say": "Step one: a coordinator asks every service, can you do this?",
+  "show": "Step one: a *coordinator* asks every service, can you do this?",
+  "start": 26.18,
+  "end": 29.98
+ },
+ {
+  "li": 6,
+  "pi": 1,
+  "say": "Each one holds its seat or room, and answers yes or no.",
+  "show": "Each one *holds* its seat or room, and answers *yes* or *no.*",
+  "start": 30.44,
+  "end": 33.4
+ },
+ {
+  "li": 7,
+  "pi": 0,
+  "say": "Step two: if everyone said yes, they all commit together.",
+  "show": "Step two: if everyone said *yes,* they all [commit] together.",
+  "start": 33.82,
+  "end": 37.08
+ },
+ {
+  "li": 7,
+  "pi": 1,
+  "say": "If anyone said no, everyone cancels.",
+  "show": "If anyone said *no,* everyone [cancels.]",
+  "start": 37.38,
+  "end": 40.02
+ },
+ {
+  "li": 8,
+  "pi": 0,
+  "say": "You get both, or you get neither. Never half.",
+  "show": "You get both, or you get neither. Never [half.]",
+  "start": 40.12,
+  "end": 42.64
+ },
+ {
+  "li": 9,
+  "pi": 0,
+  "say": "The catch? Everyone waits for the slowest one.",
+  "show": "The catch? Everyone waits for the *slowest* one.",
+  "start": 43.3,
+  "end": 45.92
+ },
+ {
+  "li": 10,
+  "pi": 0,
+  "say": "Google Spanner uses it. PostgreSQL has it built in.",
+  "show": "*Google Spanner* uses it. *PostgreSQL* has it built in.",
+  "start": 46.62,
+  "end": 49.22
+ },
+ {
+  "li": 11,
+  "pi": 0,
+  "say": "If you're a vibe coder, follow for the system design your AI skipped.",
+  "show": "If you're a vibe coder, follow for the system design your AI [skipped.]",
+  "start": 49.7,
+  "end": 53.12
+ }
+]

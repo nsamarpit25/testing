@@ -1,0 +1,760 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- 16 Retries, in the 10–15 ember line-art style.
+     World: the weather tower in the centre (load meter + load history on its face) and an arc of 8 app boxes in front of it.
+     Every call is an orb flying app → tower; the answer flies back green (ok), red (fail), amber (503) or grey (404).
+     Scenes: hiccup + synced retry wave + DOWN · one app fails, retries, works · retry storm · cap (3 pips) · back off (1/2/4 s timeline)
+     · synced vs jitter · what to retry (503 / 404 / payment + Idempotency-Key) · AWS SDK config · profile.
+     Times come from voice/ref_words.json via voice/warp.js (video-vibe.html loads voice-vibe/ for the other ending). -->
+<link rel="stylesheet" href="lib/fonts.css">
+<style>
+:root { --o: #FF6A1F; --o2: #FFB070; --w: #F2EEE8; --g: #77706A; --ok: #7CF29A; --cy: #5EE6FF; --red: #FF4632; --amb: #FFC34D; }
+html, body { margin: 0; background: #000; }
+#stage { position: relative; width: 540px; height: 960px; overflow: hidden; background: #0b0a09; font-family: Inter, sans-serif; color: var(--w); }
+#world, .layer { position: absolute; inset: 0; }
+#cv { position: absolute; inset: 0; width: 540px; height: 960px; }
+#fx { position: absolute; inset: 0; overflow: visible; }
+#grain { position: absolute; inset: -40px; opacity: 0.55; mix-blend-mode: screen; pointer-events: none; }
+#vig { position: absolute; inset: 0; background: radial-gradient(110% 75% at 50% 45%, rgba(0,0,0,0) 50%, rgba(0,0,0,0.7) 100%); pointer-events: none; }
+#dim { position: absolute; inset: 0; background: #0b0a09; opacity: 0; pointer-events: none; }
+#flash { position: absolute; inset: 0; opacity: 0; background: var(--o); mix-blend-mode: screen; pointer-events: none; }
+#rflash { position: absolute; inset: 0; opacity: 0; background: var(--red); mix-blend-mode: screen; pointer-events: none; }
+.co { position: absolute; font-family: Mono; font-size: 9.5px; white-space: nowrap; color: #d9d2ca; display: flex; align-items: center; gap: 5px; letter-spacing: 0.4px; }
+.co:before { content: ''; width: 4px; height: 4px; border-radius: 50%; background: var(--o); }
+.card { position: absolute; left: 26px; right: 26px; top: 150px; display: none; background: rgba(12,11,10,0.94); border: 1px solid rgba(255,106,31,0.32); border-radius: 10px; box-shadow: 0 14px 34px rgba(0,0,0,0.6); overflow: hidden; }
+.card .tb { height: 26px; display: flex; align-items: center; gap: 5px; padding: 0 10px; border-bottom: 1px solid rgba(255,255,255,0.06); font: 600 10px/1 Mono; color: #9c948c; letter-spacing: 0.5px; }
+.card .tb i { width: 7px; height: 7px; border-radius: 50%; background: #2c2925; display: inline-block; }
+.card .tb .fn { margin-left: 8px; color: #d9d2ca; } .card .tb .fn b { color: var(--o); font-weight: 600; }
+.card .tb .st { margin-left: auto; letter-spacing: 1.2px; font-weight: 800; }
+#code { padding: 6px 0 8px; font: 600 13px/25px Mono; color: #d9d2ca; }
+.ln { position: relative; height: 25px; padding-left: 34px; padding-right: 12px; white-space: pre; display: flex; align-items: center; }
+.ln .n { position: absolute; left: 0; width: 22px; text-align: right; color: #3d3833; font-weight: 400; }
+.ln .r { margin-left: auto; font-weight: 800; font-size: 11.5px; padding-left: 8px; }
+.ln.run { background: rgba(255,176,112,0.07); } .ln.bad { background: rgba(255,70,50,0.14); } .ln.good { background: rgba(124,242,154,0.08); } .ln.amb { background: rgba(255,195,77,0.1); } .ln.cy { background: rgba(94,230,255,0.1); }
+.c { color: #6b645e; font-weight: 400; } .s { color: var(--o2); } .okc { color: var(--ok); } .oc { color: var(--o); } .ac { color: var(--amb); } .rc { color: var(--red); } .cyc { color: var(--cy); font-weight: 800; } .nm { color: var(--amb); }
+#cap { position: absolute; left: 24px; right: 24px; top: 742px; height: 40px; pointer-events: none; }
+#cap .box { display: none; position: absolute; inset: 0; justify-content: center; align-items: center; white-space: nowrap; font-weight: 800; font-size: 23px; line-height: 1; letter-spacing: -0.4px; }
+#cap .w { display: inline-block; margin: 0 4px; color: #fff; -webkit-text-stroke: 4px #0b0a09; paint-order: stroke fill; text-shadow: 0 2px 10px rgba(0,0,0,0.8); }
+#prof { position: absolute; left: 44px; top: 270px; width: 452px; display: none; background: rgba(16,14,12,0.97); border: 1px solid rgba(255,176,112,0.4); border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,0.7); font-family: Inter; overflow: hidden; }
+#prof .top { display: flex; align-items: center; gap: 12px; padding: 16px 16px 12px; }
+#prof .ring { width: 56px; height: 56px; border-radius: 50%; padding: 3px; box-sizing: border-box; flex: none; background: conic-gradient(#FF6A1F, #FFB070, #FF6A1F); }
+#prof .ring div { width: 100%; height: 100%; border-radius: 50%; background: #0b0a09; display: flex; align-items: center; justify-content: center; font: 800 16px/1 Mono; color: #fff; }
+#fb { width: 104px; height: 38px; border-radius: 10px; background: var(--o); color: #0b0a09; display: flex; align-items: center; justify-content: center; font: 900 14px/1 Inter; flex: none; }
+#prof .tiles { display: flex; gap: 8px; padding: 0 16px 16px; }
+#prof .tile { position: relative; flex: 1; height: 150px; border-radius: 10px; background: #1c1916; border: 2px solid transparent; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; }
+#prof .tile .ic { width: 34px; height: 34px; border-radius: 50%; border: 2px solid #3a342e; display: flex; align-items: center; justify-content: center; font: 900 13px/1 Mono; color: #3a342e; }
+#prof .tile .t { font: 800 11px/1 Mono; letter-spacing: 1px; color: #d9d2ca; text-align: center; line-height: 1.3; }
+#onp, #vibe { position: absolute; display: none; font: 800 11px/1 Mono; letter-spacing: 1.4px; padding: 7px 10px; border-radius: 7px; background: var(--o); color: #0b0a09; white-space: nowrap; }
+#vibe { background: #F2EEE8; }
+#cursor { position: absolute; left: 0; top: 0; width: 22px; height: 28px; display: none; pointer-events: none; filter: drop-shadow(0 3px 6px rgba(0,0,0,0.6)); }
+#tlsv, #jtsv { display: block; }
+#tlsv text, #jtsv text { font-family: Mono; font-weight: 800; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="world">
+    <canvas id="cv" width="1080" height="1920"></canvas>
+    <svg id="fx" width="540" height="960" viewBox="0 0 540 960"></svg>
+    <div class="layer" id="lbls"></div>
+  </div>
+  <div id="vig"></div>
+  <div id="dim"></div>
+  <div class="layer" id="cards"></div>
+  <div class="layer" id="kin"></div>
+  <div class="card" id="ed">
+    <div class="tb"><i></i><i></i><i></i><span class="fn" id="edfn"></span><span class="st" id="edst"></span></div>
+    <div id="code">
+      <div class="ln" id="l1"><span class="n">1</span><span id="l1t"></span><span class="r" id="l1r"></span></div>
+      <div class="ln" id="l2"><span class="n">2</span><span id="l2t"></span><span class="r" id="l2r"></span></div>
+      <div class="ln" id="l3"><span class="n">3</span><span id="l3t"></span><span class="r" id="l3r"></span></div>
+      <div class="ln" id="l4"><span class="n">4</span><span id="l4t"></span><span class="r" id="l4r"></span></div>
+      <div class="ln" id="l5"><span class="n">5</span><span id="l5t"></span><span class="r" id="l5r"></span></div>
+    </div>
+  </div>
+  <div class="card" id="tl">
+    <div class="tb"><i></i><i></i><i></i><span class="fn"><b>backoff</b> · one app</span><span class="st" id="tlst"></span></div>
+    <svg id="tlsv" width="488" height="84" viewBox="0 0 488 84"></svg>
+  </div>
+  <div class="card" id="jt">
+    <div class="tb"><i></i><i></i><i></i><span class="fn"><b>retry after</b> · 8 apps</span><span class="st" id="jtst"></span></div>
+    <svg id="jtsv" width="488" height="112" viewBox="0 0 488 112"></svg>
+  </div>
+  <div id="prof">
+    <div class="top"><div class="ring"><div>{ }</div></div><div style="flex:1;min-width:0"><div style="font-weight:800;font-size:16px">@how.its.engineered</div><div style="color:#9c948c;font-size:11.5px;margin-top:3px">System design, one picture at a time</div></div><div id="fb">Follow</div></div>
+    <div class="tiles"><div class="tile" id="t0"><div class="ic" id="t0i">1×</div><div class="t">IDEMPOTENCY</div></div><div class="tile"><div class="ic">⚡</div><div class="t">CIRCUIT<br>BREAKERS</div></div><div class="tile"><div class="ic">♥</div><div class="t">HEALTH<br>CHECKS</div></div></div>
+  </div>
+  <div id="onp">ON MY PROFILE</div>
+  <div id="vibe">FOR VIBE CODERS</div>
+  <div id="cap"></div>
+  <svg id="cursor" viewBox="0 0 22 28"><path d="M2 2 L2 22 L7.5 17 L11 25 L14.5 23.5 L11 15.5 L18.5 15.5 Z" fill="#fff" stroke="#0b0a09" stroke-width="1.6" stroke-linejoin="round"/></svg>
+  <div id="flash"></div>
+  <div id="rflash"></div>
+  <div id="grain"></div>
+</div>
+<script src="../../tools/lib.js"></script>
+<script>window.VIBE_END = true; window.VOICE_DIR = "voice-vibe";</script>
+<script src="voice-vibe/timings.js"></script>
+<script src="voice-vibe/warp.js"></script>
+<script src="lib/engine.js"></script>
+<script>
+// scenes are timed on voice/ref_words.json (the normal take); WARP maps the current voice's clock onto it
+const CAPW = window.CAPW, WARP = window.WARP, VIBE = !!window.VIBE_END;
+const DURATION = CAPW[CAPW.length - 1][2] + 1.7;
+window.DURATION = DURATION;
+function toRef(t) {
+  if (t <= WARP[0][0]) return t;
+  for (let i = 1; i < WARP.length; i++) if (t <= WARP[i][0]) { const [n0, r0] = WARP[i - 1], [n1, r1] = WARP[i]; return r0 + (r1 - r0) * (t - n0) / (n1 - n0); }
+  const [n, r] = WARP[WARP.length - 1]; return r + (t - n);
+}
+const REF_END = toRef(DURATION);
+const O = hex('#FF6A1F'), O2 = hex('#FFB070'), W = [242, 238, 232], GR = [119, 112, 106], INK = [14, 13, 12], OK = hex('#7CF29A'), RED = [255, 70, 50], AMB = hex('#FFC34D'), CY = hex('#5EE6FF'), DIM = [60, 54, 48];
+
+/* ---------------- beats (seconds, from voice/ref_words.json) */
+const T = {
+  hiccup: 0.94, every: 2.4, retry: 3.12, same: 3.96, now: 4.88, down: 5.52, real: 6.0,
+  retrying: 7.36, smart: 8.04, most: 8.92, brief: 9.62, blip: 10.42, restart: 11.36, again: 12.6, works: 13.9,
+  instantly: 15.16, again2: 15.96, each: 17.32, more: 18.46, storm: 20.06,
+  fix1: 21.66, cap: 22.6, three: 23.2, stop: 24.06, error: 24.84,
+  fix2: 25.62, back: 26.34, wait1: 27.24, two: 28.18, four: 28.86, eachwait: 29.14, recover: 31.46,
+  but: 32.48, exactly: 33.6, onesec: 34.18, together: 35.82,
+  fix3: 37.0, jitter: 37.82, random: 38.94, crowd: 39.86, spreads: 40.08,
+  only: 41.46, fixitself: 42.98, timeout: 44.52, s503: 45.28, not: 46.04, s404: 46.66,
+  payment: 48.72, charge: 49.32, twice: 49.76, unless: 50.58, idem: 51.64,
+  aws: 53.66, backoff: 55.9, deflt: 56.58,
+  haven: 57.5, idemp: 57.9, profile: 59.56, follow: 60.38,
+};
+const CUT = { S1: 7.1, ST: 14.45, CP: 21.45, BO: 25.4, SY: 32.25, JT: 36.85, RU: 41.2, AW: 53.3, END: 57.2 };
+const ORDER = [['H', 0], ['S1', CUT.S1], ['ST', CUT.ST], ['CP', CUT.CP], ['BO', CUT.BO], ['SY', CUT.SY], ['JT', CUT.JT], ['RU', CUT.RU], ['AW', CUT.AW], ['END', CUT.END]];
+function sceneOf(t) { let s = 'H'; for (const [k, a] of ORDER) if (t >= a) s = k; return s; }
+const TXT = (t) => ep(t, 9.6, 10.4); // world lettering fades in only after the spoken hook
+
+/* ---------------- world layout: tower in the middle, an arc of 8 apps in front */
+const TW = [0, 70], TWW = 64, TWD = 46, TWH = 100;
+const TWF = TW[1] - TWD / 2;                              // tower front face y
+const NA = 8, AR = 150, AW_ = 34, AD = 24, AH = 28;
+const APP = Array.from({ length: NA }, (_, i) => { const th = (200 + i * 20) * Math.PI / 180; return [Math.round(AR * Math.cos(th)), Math.round(TW[1] + AR * Math.sin(th))]; });
+const FA = 3, PAY = 4, A503 = 2, A404 = 5;                // the app we follow, and the three in the rules scene
+const outP = (i) => [APP[i][0], APP[i][1] + AD / 2, AH * 0.6];
+const inP = (i) => [APP[i][0] * 0.22, TWF, 34 + (i % 4) * 6];
+const ROAD = (i) => [[APP[i][0], APP[i][1] + AD / 2, 0], [APP[i][0] * 0.22, TWF, 0]];
+const JIT = [-0.42, 0.18, -0.12, 0.37, -0.3, 0.05, 0.46, -0.22];
+
+/* ---------------- calls: {i, t0, d (out), rd (back), res: ok|fail|503|404|none|lost, drop (q where it dies), key} */
+const EV = [];
+const ev = (i, t0, res, o = {}) => EV.push({ i, t0, res, d: o.d ?? 0.5, rd: o.rd ?? 0.4, drop: o.drop, key: o.key, money: o.money, lostAt: o.lostAt });
+// hook: normal traffic, the hiccup, two synced retry waves, then the wave that takes it down
+[[0, -0.3], [5, -0.1], [2, 0.15], [6, 0.35], [1, 0.5], [4, 0.62]].forEach(([i, t0]) => ev(i, t0, 'ok', { d: 0.5, rd: 0.4 }));
+[[3, 0.7], [7, 0.9], [0, 1.15], [5, 1.4], [2, 1.65]].forEach(([i, t0]) => ev(i, t0, 'fail', { d: 0.45, rd: 0.35 }));
+for (let i = 0; i < NA; i++) { ev(i, T.retry - 0.2, 'fail', { d: 0.5, rd: 0.35 }); ev(i, T.same - 0.15, 'fail', { d: 0.5, rd: 0.35 }); ev(i, T.now - 0.1, 'none', { d: 0.55 }); }
+// S1: one app: attempt 1 dies on a network blip, attempt 2 works
+ev(FA, 9.95, 'none', { d: 0.85, drop: 0.55 });
+ev(FA, T.again, 'ok', { d: 0.6, rd: 0.6 });
+[[0, 8.0], [6, 8.7], [1, 9.6], [7, 10.9], [5, 12.0], [2, 13.2]].forEach(([i, t0]) => ev(i, t0, 'ok', { d: 0.5, rd: 0.4 }));
+// storm: instant retries from one app, then every app, faster and faster
+[14.7, 15.12, 15.52, 15.9, 16.26, 16.58].forEach((t0) => ev(FA, t0, 'fail', { d: 0.28, rd: 0.16 }));
+for (let i = 0; i < NA; i++) {
+  let t0 = 16.9 + rnd(i, 5) * 0.6, k = 0;
+  while (t0 < CUT.CP + 0.4) { ev(i, t0, 'fail', { d: 0.34, rd: 0.2 }); t0 += Math.max(0.07, 0.6 * Math.exp(-(t0 - 16.9) / 1.3)) * (0.7 + 0.6 * rnd(k++, i + 11)); }
+}
+// cap: every app makes 3 attempts and stops
+const CAPS = Array.from({ length: NA }, (_, i) => (i === FA ? [22.62, 23.18, 23.5] : (() => { const s = 22.3 + rnd(i, 21) * 0.7; return [s, s + 0.48, s + 0.86]; })()));
+CAPS.forEach((ts, i) => ts.forEach((t0) => ev(i, t0, 'fail', { d: 0.25, rd: 0.2 })));
+const STOP = CAPS.map((ts) => ts[2] + 0.5);
+// back off: fail · wait 1 · fail · wait 2 · fail · wait 4 · works
+const BO = { a1: 26.3, g1: [T.wait1, 27.85], g2: [28.2, 28.75], g3: [29.1, 31.15] };
+ev(FA, BO.a1, 'fail', { d: 0.3, rd: 0.25 }); ev(FA, BO.g1[1], 'fail', { d: 0.2, rd: 0.15 }); ev(FA, BO.g2[1], 'fail', { d: 0.2, rd: 0.15 }); ev(FA, BO.g3[1], 'ok', { d: 0.25, rd: 0.3 });
+// synced: everyone fails at once, everyone waits exactly 1 s, everyone comes back together
+const SYF = 32.55, SYR = [33.4, 35.3];
+const JTR = (i) => [37.95, 39.2 + (JIT[i] + 0.5) * 1.6];
+for (let i = 0; i < NA; i++) { ev(i, SYF, 'fail', { d: 0.35, rd: 0.25 }); ev(i, SYR[1], 'fail', { d: 0.5, rd: 0.25 }); ev(i, JTR(i)[1], 'ok', { d: 0.45, rd: 0.35 }); }
+// rules: 503 → retry ✓ · 404 → stop · payment retried → charged twice, then with an Idempotency-Key → skipped
+ev(A503, 44.55, '503', { d: 0.35, rd: 0.3 }); ev(A503, 45.75, 'ok', { d: 0.3, rd: 0.3 });
+ev(A404, 46.05, '404', { d: 0.3, rd: 0.3 });
+ev(PAY, 48.1, 'lost', { d: 0.4, rd: 0.4, lostAt: 0.5, money: 1 });
+ev(PAY, 49.0, 'ok', { d: 0.38, rd: 0.35, money: 1 });
+ev(PAY, 50.75, 'ok', { d: 0.4, rd: 0.4, money: 1, key: 1 });
+// AWS + end: calm, jittered traffic
+for (let i = 0; i < NA; i++) { let t0 = CUT.AW + rnd(i, 31) * 0.9; while (t0 < REF_END + 2) { ev(i, t0, 'ok', { d: 0.5, rd: 0.4 }); t0 += 0.8 + rnd(Math.floor(t0 * 10), i) * 0.7; } }
+const arrT = (e) => e.t0 + e.d;
+const backT = (e) => e.t0 + e.d + e.rd;
+
+/* ---------------- tower state */
+// mode: 0 ok, 1 hiccup, 2 overloaded, 3 down, 4 restarting
+function towerMode(t) {
+  if (t < T.hiccup) return 0;
+  if (t < 2.1) return 1;
+  if (t < T.retry + 0.35) return 0;
+  if (t < T.down) return 2;
+  if (t < CUT.S1) return 3;
+  if (t > T.restart && t < 12.3) return 4;
+  if (t < CUT.ST) return 0;
+  if (t < 19.4) return t > 16.9 ? 2 : 0;
+  if (t < 25.0) return 2;
+  if (t < BO.g3[0] + 1.0) return 2;
+  if (t > SYR[1] + 0.45 && t < 36.4) return 2;
+  return 0;
+}
+// load: keyframes per stretch, plus a bump for every call that arrives in the synced/jitter scenes
+const LOADK = [[0, 0.32], [0.9, 0.36], [1.3, 0.12], [2.2, 0.3], [3.4, 0.38], [3.55, 0.82], [4.3, 0.86], [4.4, 1], [5.5, 1], [5.6, 0], [7.0, 0], [7.1, 0.3], [11.3, 0.3], [11.4, 0], [12.3, 0], [12.6, 0.3], [14.4, 0.35],
+  [14.5, 0.55], [16.8, 0.6], [19.4, 1], [24.0, 1], [25.3, 0.5], [26.4, 0.55], [29.1, 0.52], [31.1, 0.14], [32.2, 0.2], [32.3, 0.18], [41.1, 0.2], [41.2, 0.3], [53.2, 0.3], [53.3, 0.26]];
+function load(t) {
+  let L = key1(t, LOADK, (x) => x);
+  if (t > CUT.SY - 0.2 && t < CUT.RU) for (const e of EV) if ((e.t0 === SYR[1] || (e.t0 > 39 && e.t0 < 41.2 && e.res === 'ok')) && t > arrT(e)) L += 0.1 * Math.exp(-(t - arrT(e)) * 5);
+  return Math.min(1.08, L);
+}
+const loadCol = (L) => (L < 0.55 ? mixc(OK, AMB, L / 0.55) : mixc(AMB, RED, clamp((L - 0.55) / 0.35)));
+function reqRate(t) { let n = 0; for (const e of EV) { const a = arrT(e); if (a <= t && a > t - 0.5) n++; } return n * 2; }
+
+/* ---------------- camera */
+const WIDE = { f: [0, -20, 30], s: 1.42, a: -0.42, e: 0.62, sy: 500 };
+const SHOTS = [
+  // H: on the tower as it hiccups, pull wide for the synced wave, punch in as it goes down
+  { t: 0, d: 0, f: [0, TWF, 56], s: 3.4, a: -0.3, e: 0.3, sy: 460 },
+  { t: 0.3, d: 1.8, f: [0, TWF - 10, 52], s: 3.0, a: -0.42, e: 0.34 },
+  { t: T.every - 0.2, d: 1.2, ...WIDE, s: 1.6, sy: 480 },
+  { t: T.same + 0.2, d: 1.0, ...WIDE, f: [0, -10, 34], s: 1.5 },
+  { t: T.down - 0.15, d: 0.25, f: [0, TWF - 20, 50], s: 2.6, a: -0.36, e: 0.4, sy: 470 },
+  { t: T.real, d: 1.0, f: [0, TWF - 20, 54], s: 2.3, a: -0.3, e: 0.38 },
+  // S1: one app and the tower
+  { t: CUT.S1, d: 0, f: [-12, -22, 28], s: 2.1, a: -0.5, e: 0.44, sy: 470 },
+  { t: T.most, d: 1.6, f: [-14, -26, 26], s: 2.35, a: -0.58, e: 0.42 },
+  { t: T.restart - 0.1, d: 0.5, f: [-4, TWF - 30, 46], s: 2.6, a: -0.5, e: 0.38, sy: 470 },
+  { t: T.again - 0.2, d: 0.7, f: [-14, -26, 26], s: 2.35, a: -0.55, e: 0.42, sy: 470 },
+  // ST: the one app hammering, then everyone
+  { t: CUT.ST, d: 0, f: [-16, -34, 24], s: 2.6, a: -0.62, e: 0.4, sy: 470 },
+  { t: T.each - 0.3, d: 1.4, ...WIDE, s: 1.5 },
+  { t: T.storm - 0.15, d: 0.3, ...WIDE, f: [0, 0, 40], s: 1.75, sy: 470 },
+  // CP: the app's three pips, then the quiet
+  { t: CUT.CP, d: 0, f: [APP[FA][0] + 6, APP[FA][1] + 10, 22], s: 2.7, a: -0.3, e: 0.34, sy: 500 },
+  { t: T.stop - 0.2, d: 1.0, ...WIDE, f: [0, -10, 30], s: 1.55, sy: 540 },
+  // BO (timeline card up): the app and the tower recovering
+  { t: CUT.BO, d: 0, f: [-14, -24, 32], s: 2.1, a: -0.48, e: 0.46, sy: 600 },
+  { t: BO.g3[0], d: 2.0, f: [-10, -16, 36], s: 1.95, a: -0.4, e: 0.48, sy: 610 },
+  // SY / JT (rows card up): the whole arc
+  { t: CUT.SY, d: 0, ...WIDE, f: [0, -20, 30], s: 1.62, sy: 640 },
+  { t: T.together - 0.5, d: 0.5, ...WIDE, f: [0, -10, 36], s: 1.78, sy: 640 },
+  { t: CUT.JT, d: 0, ...WIDE, f: [0, -20, 30], s: 1.62, a: -0.3, sy: 640 },
+  { t: T.crowd, d: 1.6, ...WIDE, f: [0, -20, 30], s: 1.68, a: -0.5, sy: 640 },
+  // RU (code card up): 503 app, 404 app, then the payment app and the tower's ledger
+  { t: CUT.RU, d: 0, ...WIDE, f: [-20, -20, 30], s: 1.6, sy: 650 },
+  { t: T.timeout - 0.3, d: 0.6, f: [0, -20, 30], s: 1.75, a: -0.42, e: 0.55, sy: 620 },
+  { t: 47.6, d: 0.8, f: [APP[PAY][0] * 0.5, (APP[PAY][1] + TWF) / 2, 44], s: 2.1, a: -0.32, e: 0.44, sy: 580 },
+  // AW (code card up): calm, wide
+  { t: CUT.AW, d: 0, ...WIDE, s: 1.5, sy: 680 },
+  { t: CUT.END, d: 1.5, ...WIDE, s: 1.05, sy: 560 },
+];
+const KICKS = [[T.hiccup, 0.04], [T.retry + 0.3, 0.06], [T.same + 0.35, 0.06], [T.down, 0.1], [T.blip, 0.05], [T.again + 0.6, 0.04], [T.instantly, 0.04], [T.storm, 0.08], [T.stop, 0.05], [BO.g3[1] + 0.25, 0.05], [T.together, 0.08], [T.spreads, 0.03], [T.s503, 0.04], [T.s404, 0.04], [T.twice, 0.06], [T.idem, 0.05], [CUT.END, 0.04]];
+const SHAKES = [[T.retry + 0.3, 2, 0.3], [T.same + 0.35, 3, 0.35], [T.down, 6, 0.6], [T.storm, 4, 0.8], [T.together, 4, 0.5], [T.twice, 2, 0.3]];
+
+/* ---------------- drawing helpers */
+function wbox(x, y, z, w, d, h, edge, o = {}) {
+  box(x, y, z, w, d, h, o.fill || INK, { op: o.op, edge: rgba(edge, 1, o.ea ?? 0.9), lw: o.lw || 1, gl: o.glow ? [rgba(edge, 1, o.glow), 14] : null, front: o.front, side: o.side, top: o.top, dz: o.dz, layer: o.layer });
+}
+function pline(pts, col, lw = 1, o = {}) {
+  if (pts.length < 2) return;
+  const m = pts[Math.floor(pts.length / 2)];
+  add(o.layer ?? 1, (o.depth ?? D(...m)) + (o.dz || 0), () => {
+    g.save(); if (o.glow) glow(o.glow, o.blur || 6); if (o.add) g.globalCompositeOperation = 'lighter';
+    g.strokeStyle = col; g.lineWidth = lw * Math.max(0.6, Math.min(2.4, cam.s * 0.75)); g.lineCap = 'round'; g.lineJoin = 'round';
+    if (o.dash) { g.setLineDash(o.dash.map((v) => v * cam.s)); g.lineDashOffset = o.off || 0; }
+    g.beginPath(); pts.forEach((p, i) => (i ? g.lineTo(...P(...p)) : g.moveTo(...P(...p)))); if (o.close) g.closePath();
+    if (o.fill) { g.fillStyle = o.fill; g.fill(); }
+    g.stroke(); g.restore();
+  });
+}
+function spark(p, a = 1, r = 3, col = O) {
+  if (a <= 0.01) return;
+  add(2, D(...p) - 6, () => { const c = P(...p), R = r * cam.s * 0.6; g.save(); g.globalCompositeOperation = 'lighter'; const rg = g.createRadialGradient(c[0], c[1], 0, c[0], c[1], R * 4); rg.addColorStop(0, `rgba(255,236,210,${a})`); rg.addColorStop(0.3, rgba(col, 1, 0.6 * a)); rg.addColorStop(1, rgba(col, 1, 0)); g.fillStyle = rg; g.beginPath(); g.arc(c[0], c[1], R * 4, 0, Math.PI * 2); g.fill(); g.restore(); });
+}
+function shower(t, t0, x, y, z, n, seed, spd = 170, life = 0.9, col = O) {
+  const dt = t - t0; if (dt <= 0 || dt > life) return;
+  add(3, 0, () => {
+    g.save(); g.globalCompositeOperation = 'lighter'; g.lineCap = 'round';
+    for (let i = 0; i < n; i++) {
+      const th = rnd(i, seed) * Math.PI * 2, up = 0.2 + rnd(i, seed + 1) * 1.0, v = spd * (0.4 + rnd(i, seed + 2) * 0.9);
+      const pos = (d) => P(x + Math.cos(th) * v * d, y + Math.sin(th) * v * d, z + up * v * d - 300 * d * d);
+      const a = pos(dt), b = pos(Math.max(0, dt - 0.03)), k = 1 - dt / life;
+      g.strokeStyle = rgba(mixc(col, [255, 240, 200], rnd(i, seed + 3)), 1.2, k); g.lineWidth = (0.8 + 1.2 * k) * Math.min(1.6, cam.s * 0.6);
+      g.beginPath(); g.moveTo(...b); g.lineTo(...a); g.stroke();
+    }
+    g.restore();
+  });
+}
+function popText(t, t0, p, txt, col, size = 9, life = 0.8) {
+  const k = prog(t, t0, t0 + life); if (k <= 0 || k >= 1) return;
+  add(3, 0, () => { const q = P(p[0], p[1], p[2] + 8 + k * 14), s = Math.min(1.5, Math.max(0.9, cam.s * 0.5)); g.save(); g.globalAlpha = Math.min(1, (1 - k) * 2.2) * Math.min(1, k * 8); g.font = `900 ${size * s}px Inter`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.lineWidth = 3; g.strokeStyle = '#0b0a09'; g.strokeText(txt, q[0], q[1]); g.fillStyle = rgba(col, 1.2); glow(rgba(col), 8); g.fillText(txt, q[0], q[1]); g.restore(); });
+}
+// a small screen-space chip that rides a world point (key tags, money)
+function chip(p, txt, col, a = 1, dy = -14) {
+  if (a <= 0.01) return;
+  add(3, 0, () => { const q = P(...p); g.save(); g.globalAlpha = a; g.font = '800 8px Mono'; const w = g.measureText(txt).width + 10; g.fillStyle = 'rgba(12,11,10,0.92)'; g.strokeStyle = rgba(col, 1.1, 0.9); g.lineWidth = 1; g.beginPath(); g.roundRect(q[0] - w / 2, q[1] + dy - 7, w, 14, 4); g.fill(); g.stroke(); g.fillStyle = rgba(col, 1.2); g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(txt, q[0], q[1] + dy + 0.5); g.restore(); });
+}
+function floorGrid(a = 1) {
+  add(0, 1e7, () => {
+    const X0 = -400, X1 = 400, Y0 = -320, Y1 = 420;
+    g.save(); g.lineWidth = 0.6; g.globalAlpha = a;
+    for (let x = X0; x <= X1; x += 20) { const maj = x % 100 === 0; g.strokeStyle = `rgba(255,240,225,${maj ? 0.08 : 0.03})`; g.beginPath(); g.moveTo(...P(x, Y0, 0)); g.lineTo(...P(x, Y1, 0)); g.stroke(); }
+    for (let y = Y0; y <= Y1; y += 20) { const maj = y % 100 === 0; g.strokeStyle = `rgba(255,240,225,${maj ? 0.08 : 0.03})`; g.beginPath(); g.moveTo(...P(X0, y, 0)); g.lineTo(...P(X1, y, 0)); g.stroke(); }
+    g.restore();
+  });
+}
+
+/* ---------------- calls in flight */
+const resCol = (r) => (r === 'ok' ? OK : r === '503' ? AMB : r === '404' ? GR : RED);
+function drawCall(t, e) {
+  const a0 = e.t0, a1 = arrT(e), a2 = backT(e);
+  if (t < a0 || t > a2 + 0.05) return;
+  const A = outP(e.i), B = inP(e.i);
+  if (t < a1) {
+    const q = prog(t, a0, a1);
+    if (e.drop != null && q > e.drop) return;
+    const p = arc(A, B, ease.inOut(q), 16), col = e.money ? AMB : W;
+    const storm = e.t0 > 14.5 && e.t0 < CUT.CP && e.res === 'fail';
+    orb(p, storm ? O2 : col, Math.min(1, q * 6) * (storm ? 0.8 : 1), e.money ? 3.6 : storm ? 2.2 : 3);
+    if (e.money && TXT(t) > 0.5) chip(p, '$20', AMB, 1, -12);
+    if (e.key) chip(p, 'KEY a7f3', CY, 1, e.money ? -28 : -12);
+    return;
+  }
+  if (e.res === 'none') return;
+  const q = prog(t, a1, a2);
+  if (e.lostAt != null && q > e.lostAt) return;
+  const p = arc(B, A, ease.inOut(q), 10);
+  orb(p, resCol(e.res), Math.min(1, (1 - q) * 6 + 0.3), 3);
+}
+// ripples/sparks/pops at the moments calls land or die
+function callFx(t, e) {
+  const B = inP(e.i), A = outP(e.i), a1 = arrT(e), a2 = backT(e);
+  if (e.drop != null) { const td = e.t0 + e.d * e.drop, p = arc(A, B, ease.inOut(e.drop), 16); shower(t, td, p[0], p[1], p[2], 14, 7 + e.i, 90, 0.5, RED); spark(p, pulse(t, td, 6), 4, RED); return; }
+  if (e.res !== 'none') ripple(t, a1, B[0], B[1], 0, e.res === 'ok' ? O : resCol(e.res), 14, 0.45, 1.3);
+  else ripple(t, a1, B[0], B[1], 0, RED, 10, 0.4, 1.2);
+  if (e.lostAt != null) { const tl = a1 + e.rd * e.lostAt, p = arc(B, A, ease.inOut(e.lostAt), 10); shower(t, tl, p[0], p[1], p[2], 12, 3 + e.i, 80, 0.5, RED); }
+  if (e.res === '503') popText(t, a2 - 0.05, [A[0], A[1], AH + 4], '503', AMB, 10, 0.9);
+  if (e.res === '404') popText(t, a2 - 0.05, [A[0], A[1], AH + 4], '404', GR, 10, 0.9);
+}
+
+/* ---------------- the apps */
+// per-app face state: wait ring, mark, attempt pips
+function appState(t, sc, i) {
+  const st = { ring: null, mark: null, pips: null, hot: 0, res: null };
+  // flash when it sends, tint when an answer lands
+  for (const e of EV) {
+    if (e.i !== i) continue;
+    st.hot = Math.max(st.hot, pulse(t, e.t0, 7));
+    const b = backT(e);
+    if (e.res !== 'none' && e.lostAt == null && t > b && t < b + 0.5) st.res = [e.res, pulse(t, b, 5)];
+  }
+  if (sc === 'S1' && i === FA) { if (t > T.blip && t < T.again) st.mark = ['x', RED]; if (t > T.again + 1.2) st.mark = ['ok', OK]; }
+  if (sc === 'CP') {
+    const ts = CAPS[i];
+    st.pips = ts.map((t0) => (t < t0 ? 0 : t < t0 + 0.45 ? 1 : 2));
+    if (t > STOP[i]) st.mark = ['!', RED];
+  }
+  if (sc === 'BO' && i === FA) {
+    for (const [k, [a, b]] of [BO.g1, BO.g2, BO.g3].entries()) if (t >= a && t < b) st.ring = [prog(t, a, b), ['1s', '2s', '4s'][k], 5.5 + k * 1.6, CY];
+    if (t > BO.g3[1] + 0.55) st.mark = ['ok', OK];
+  }
+  if (sc === 'SY' && t > SYR[0] && t < SYR[1]) st.ring = [prog(t, SYR[0], SYR[1]), '1.0s', 6.5, AMB];
+  if (sc === 'JT') { const [a, b] = JTR(i); if (t > a && t < b) st.ring = [prog(t, a, b), (1 + JIT[i]).toFixed(1) + 's', 6.5, OK]; }
+  if (sc === 'RU') {
+    if (i === A503 && t > 44.55 + 0.65 && t < 45.75) st.ring = [prog(t, 45.2, 45.75), '', 5.5, AMB];
+    if (i === A503 && t > 46.4) st.mark = ['ok', OK];
+    if (i === A404 && t > 46.7) st.mark = ['x', GR];
+    if (i === PAY && t > T.idem) st.mark = ['ok', OK];
+  }
+  return st;
+}
+function appFace(t, sc, i, F, w, h) {
+  const st = appState(t, sc, i), tx = TXT(t);
+  const tint = st.res ? resCol(st.res[0]) : null, tk = st.res ? st.res[1] : 0;
+  fquad(F, 3, 4, w - 3, h - 3, tint ? rgba(mixc([20, 18, 16], tint, 0.35 * tk), 1, 1) : '#14120f');
+  // send light
+  fquad(F, 5, h - 7, 9, h - 5, rgba(mixc(DIM, O2, Math.min(1, st.hot + 0.15)), 1.2, 1), st.hot > 0.05 ? [rgba(O, 1, st.hot), 8] : null);
+  if (tx > 0.01 && i === PAY && sc === 'RU') ftext(F, w - 5, h - 6, 'PAY', 3, rgba(AMB, 1.1, tx), 'Mono', 800, 'right');
+  const cx = w / 2, cy = h / 2 + 1;
+  if (st.ring) {
+    const [p, lab, R, col] = st.ring;
+    fpath(F, Array.from({ length: 33 }, (_, k) => { const a = k / 32 * Math.PI * 2; return [cx + Math.cos(a) * R, cy + Math.sin(a) * R]; }), rgba(col, 0.5, 0.5), 0.5);
+    fpath(F, Array.from({ length: 33 }, (_, k) => { const a = Math.PI / 2 - k / 32 * Math.PI * 2 * p; return [cx + Math.cos(a) * R, cy + Math.sin(a) * R]; }), rgba(col, 1.25, 1), 0.9, rgba(col, 1, 0.8));
+    if (lab && tx > 0.01) ftext(F, cx, cy, lab, 3.4, rgba(col, 1.2, tx), 'Mono', 800);
+  } else if (st.mark) {
+    const [m, col] = st.mark;
+    if (m === 'ok') fpath(F, [[cx - 5, cy], [cx - 1.5, cy - 3.5], [cx + 5, cy + 3.5]], rgba(col, 1.2, 1), 1.1, rgba(col, 1, 0.8));
+    else if (m === 'x') { fpath(F, [[cx - 4, cy - 4], [cx + 4, cy + 4]], rgba(col, 1.2, 1), 1.1, rgba(col, 1, 0.7)); fpath(F, [[cx - 4, cy + 4], [cx + 4, cy - 4]], rgba(col, 1.2, 1), 1.1, rgba(col, 1, 0.7)); }
+    else ftext(F, cx, cy + 0.5, '!', 10, rgba(col, 1.2, 1), 'Inter', 900, 'center', rgba(col));
+  } else {
+    for (let k = 0; k < 3; k++) fquad(F, 8, cy + 3 - k * 4, w - 8 - k * 4, cy + 4.4 - k * 4, rgba(W, 1, 0.1));
+  }
+  if (st.pips) st.pips.forEach((s, k) => { const u = cx - 8 + k * 6, col = s === 1 ? AMB : s === 2 ? RED : null; fquad(F, u - 2, 5, u + 2, 8.5, col ? rgba(col, 1.1, 1) : 'rgba(50,45,40,1)', col ? [rgba(col, 1, 0.8), 8] : null); });
+}
+function apps(t, sc) {
+  for (let i = 0; i < NA; i++) {
+    const [x, y] = APP[i], st = appState(t, sc, i);
+    const focus = (sc === 'S1' || sc === 'BO' || (sc === 'ST' && t < T.each - 0.3) || (sc === 'CP' && t < T.stop - 0.2)) ? (i === FA ? 1 : 0.4) : sc === 'RU' ? ([A503, A404, PAY].includes(i) ? 1 : 0.45) : 1;
+    const edge = st.res && st.res[1] > 0.05 ? mixc(O, resCol(st.res[0]), st.res[1]) : O;
+    wbox(x, y, 0, AW_, AD, AH, mixc(DIM, edge, focus), { lw: 1.3, glow: (0.18 + 0.5 * st.hot) * focus, fill: [18, 16, 14], front: (F, w, h) => appFace(t, sc, i, F, w, h) });
+  }
+}
+// cap: a barrier drops across each app's road once it has stopped
+function barriers(t, sc) {
+  if (sc !== 'CP') return;
+  for (let i = 0; i < NA; i++) {
+    const k = ep(t, STOP[i], STOP[i] + 0.25, ease.back); if (k <= 0.01) continue;
+    const r = ROAD(i), p = lerp3(r[0], r[1], 0.16);
+    wbox(p[0], p[1], 0, 16, 3, 9 * k, RED, { lw: 1, glow: 0.6, fill: [60, 16, 12] });
+  }
+}
+
+/* ---------------- the tower: load meter, load history, ledger */
+function cloud(t, mode) {
+  const z = TWH + 16, cx = TW[0], cy = TW[1];
+  const col = mode === 3 ? mixc(DIM, RED, 0.5) : O2, a = mode === 3 ? 0.6 : 0.95;
+  const puff = (dx, dz, r) => pline(Array.from({ length: 25 }, (_, k) => { const an = k / 24 * Math.PI * 2; return [cx + dx + Math.cos(an) * r, cy, z + dz + Math.sin(an) * r * 0.8]; }), rgba(col, 1.2, a), 1.4, { glow: rgba(mode === 3 ? RED : O, 1, 0.6 * a), blur: 10, close: true, fill: 'rgba(20,18,16,0.92)' });
+  puff(-15, 0, 10); puff(13, -1, 9); puff(0, 7, 13);
+}
+function towerFace(t, sc, F, w, h) {
+  const mode = towerMode(t), tx = TXT(t), L = load(t), lc = mode === 3 ? RED : loadCol(L);
+  const flick = mode === 1 ? (Math.sin(t * 61) > 0.2 ? 1 : 0.25) : mode === 4 ? 0.3 + 0.7 * ep(t, 12.0, 12.3) : 1;
+  fquad(F, 4, 4, w - 4, h - 4, mode === 3 ? '#1a0d0b' : '#12100e');
+  // door
+  fquad(F, w / 2 - 12, 4, w / 2 + 12, 20, 'rgba(6,5,5,1)');
+  // status light + name
+  const sl = mode === 0 ? OK : mode === 1 || mode === 4 ? AMB : RED;
+  fquad(F, 8, h - 13, 13, h - 8, rgba(sl, 1.2, flick), [rgba(sl, 1, flick), 10]);
+  if (tx > 0.01) {
+    ftext(F, 17, h - 10.5, 'WEATHER API', 4.2, rgba(W, 1.1, 0.85 * tx), 'Mono', 800, 'left');
+    ftext(F, w - 8, h - 19, ['OK', 'HICCUP', 'OVERLOADED', 'DOWN', 'RESTARTING'][mode], 3.4, rgba(sl, 1.2, tx * flick), 'Mono', 800, 'right');
+  }
+  // load meter
+  const my = h - 28, mw = w - 16;
+  fquad(F, 8, my, 8 + mw, my + 4, 'rgba(40,36,32,1)');
+  if (mode !== 3) fquad(F, 8, my, 8 + mw * clamp(L) * flick, my + 4, rgba(lc, 1.1, 1), [rgba(lc, 1, 0.8), 8]);
+  if (tx > 0.01) ftext(F, 8, my - 4, mode === 3 ? 'LOAD —' : `LOAD ${Math.round(Math.min(1, L) * 100)}%`, 3.2, rgba(lc, 1.15, 0.9 * tx), 'Mono', 800, 'left');
+  if (tx > 0.01 && (sc === 'ST' || sc === 'CP')) ftext(F, w - 8, my - 4, `${reqRate(t)} REQ/S`, 3.2, rgba(RED, 1.2, tx), 'Mono', 800, 'right');
+  // ledger (payments) or load history
+  const hy0 = 24, hy1 = my - 9;
+  if (sc === 'RU' && t > 47.7) {
+    const la = ep(t, 47.7, 48.0);
+    fquad(F, 8, hy0, w - 8, hy1, rgba([22, 20, 18], 1, la));
+    if (tx > 0.01) ftext(F, 11, hy1 - 4, 'PAYMENTS', 3, rgba(GR, 1.3, la), 'Mono', 800, 'left');
+    const l1 = ep(t, arrT(EV.find((e) => e.i === PAY && e.t0 === 48.1)), 48.6);
+    const l2t = 49.38, l2 = ep(t, l2t, l2t + 0.2), fix = ep(t, T.unless + 0.55, T.unless + 0.85);
+    if (l1 > 0.01) ftext(F, 11, hy1 - 12, '$20  CHARGED', 3.6, rgba(W, 1.1, l1), 'Mono', 800, 'left');
+    if (l2 > 0.01 && fix < 0.5) { ftext(F, 11, hy1 - 20, '$20  CHARGED', 3.6, rgba(RED, 1.2, l2), 'Mono', 800, 'left'); ftext(F, w - 11, hy1 - 12, '×2', 6, rgba(RED, 1.2, l2 * (0.7 + 0.3 * Math.sin(t * 12))), 'Inter', 900, 'right'); }
+    if (fix >= 0.5) { ftext(F, 11, hy1 - 20, 'a7f3 SEEN · SKIP', 3.6, rgba(OK, 1.2, fix), 'Mono', 800, 'left'); ftext(F, w - 11, hy1 - 12, '×1', 6, rgba(OK, 1.2, fix), 'Inter', 900, 'right'); }
+  } else {
+    // rolling load history: spikes show up as peaks
+    const N = 40, pts = [];
+    for (let k = 0; k <= N; k++) { const tt = t - (N - k) * 0.06, v = towerMode(tt) === 3 ? 0 : clamp(load(tt)); pts.push([8 + (w - 16) * k / N, hy0 + 2 + (hy1 - hy0 - 4) * v]); }
+    fquad(F, 8, hy0, w - 8, hy1, 'rgba(22,20,18,1)');
+    fpath(F, [[8, hy0 + 2 + (hy1 - hy0 - 4) * 0.85], [w - 8, hy0 + 2 + (hy1 - hy0 - 4) * 0.85]], rgba(RED, 1, 0.35), 0.3);
+    fpath(F, pts, rgba(lc, 1.2, flick), 0.8, rgba(lc, 1, 0.7));
+  }
+}
+function tower(t, sc) {
+  const mode = towerMode(t), hot = mode === 2 ? 0.35 + 0.25 * Math.sin(t * 14) : 0;
+  const edge = mode === 3 ? mixc(DIM, RED, 0.6) : mode === 2 ? mixc(O2, RED, 0.75) : mode === 1 ? (Math.sin(t * 61) > 0.2 ? O2 : DIM) : O2;
+  const jit = mode === 2 ? Math.sin(t * 83) * 0.8 : 0;
+  wbox(TW[0] + jit, TW[1], 0, TWW, TWD, TWH, edge, { lw: 1.4, glow: mode === 3 ? 0.15 : 0.28 + hot, fill: [20, 18, 16], front: (F, w, h) => towerFace(t, sc, F, w, h) });
+  cloud(t, mode);
+  if (mode === 3) { for (let k = 0; k < 4; k++) shower(t, T.down + k * 0.35, TW[0] + (rnd(k, 3) - 0.5) * 40, TWF, 60 + rnd(k, 4) * 30, 10, 40 + k, 70, 0.7, RED); }
+}
+
+/* ---------------- code card */
+const setH = (id, h) => { const e = $(id); if (e._h !== h) { e._h = h; e.innerHTML = h; } };
+const esc = (x) => x.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+function hl(line) {
+  let h = esc(line);
+  if (/^\s*(#|\/\/)/.test(line)) return `<span class="c">${h}</span>`;
+  h = h.replace(/(&quot;|")([^"]*)(")/g, '<span class="s">"$2"</span>');
+  h = h.replace(/\b(retry|never|if|in|import|from)\b/g, '<span class="oc">$1</span>');
+  h = h.replace(/\b(503|404|3)\b/g, '<span class="nm">$1</span>');
+  h = h.replace(/(Idempotency-Key)/g, '<span class="cyc">$1</span>');
+  h = h.replace(/(\.?[A-Za-z_]\w*)(?=\()/g, '<span style="color:#fff">$1</span>');
+  return h;
+}
+const GREEN = '#7CF29A', REDC = '#FF4632', AMBC = '#FFC34D', CYC = '#5EE6FF';
+// [from, to, file, chips [[t, text, col]], lines, cues [[t, line, result, cls]]]
+const CODE = [
+  [42.6, CUT.AW, 'retry_rules.py', [[0, 'RULES', AMBC], [T.idem - 0.2, 'SAFE', GREEN]],
+    ['retry if status in (503, timeout)', 'never retry 404', 'payment: send Idempotency-Key'],
+    [[T.timeout, 1, 'might fix itself', 'amb'], [45.95, 1, '✓ retried', 'good'], [T.not, 2, 'won\'t fix itself', 'bad'], [46.7, 2, '✕ stop', 'bad'], [T.payment, 3, 'retry = charge ×2?', 'bad'], [T.unless + 0.3, 3, '✓ charged once', 'good']]],
+  [CUT.AW, CUT.END, 'client.py · boto3', [[0, 'BUILT IN', GREEN]],
+    ['# retries + backoff: on by default', 'from botocore.config import Config', 'cfg = Config(retries={', '    "max_attempts": 3,', '    "mode": "standard"})'],
+    [[T.aws, 1, '', 'run'], [T.backoff - 0.2, 4, 'cap', 'good'], [T.backoff + 0.3, 5, 'backoff', 'good']]],
+];
+function card(t) {
+  const seg_ = CODE.find((c) => t >= c[0] && t < c[1]), ed = $('ed');
+  if (!seg_) { ed.style.display = 'none'; return; }
+  const [a, b, file, chips, lines, cues] = seg_;
+  const k = ep(t, a, a + 0.25) * (1 - ep(t, b - 0.2, b));
+  ed.style.display = 'block'; ed.style.opacity = k; ed.style.transform = `translateY(${(1 - ep(t, a, a + 0.3, ease.out)) * -14}px)`;
+  let chipc = chips[0]; for (const c of chips) if (t >= c[0]) chipc = c;
+  setH('edfn', `<b>${file}</b>`);
+  setH('edst', '● ' + chipc[1]); $('edst').style.color = chipc[2];
+  ed.style.borderColor = chipc[2] === REDC ? 'rgba(255,70,50,0.5)' : chipc[2] === GREEN ? 'rgba(124,242,154,0.4)' : 'rgba(255,195,77,0.45)';
+  const res = {}; let act = 0, acls = '';
+  for (const [ct, ln, r, cl] of cues) if (t >= ct - 0.05) { res[ln] = [r, cl]; act = ln; acls = cl; }
+  // rules appear line by line as they are spoken
+  const shown = file === 'retry_rules.py' ? (t > T.payment - 0.4 ? 3 : t > T.not - 0.3 ? 2 : t > T.timeout - 0.4 ? 1 : 0) : 5;
+  for (let i = 1; i <= 5; i++) {
+    const L = lines[i - 1];
+    $(`l${i}`).style.display = L !== undefined ? 'flex' : 'none';
+    if (L === undefined) continue;
+    $(`l${i}`).style.opacity = i <= shown ? 1 : 0.12;
+    setH(`l${i}t`, hl(L));
+    const r = res[i], col = r ? (r[1] === 'bad' ? REDC : r[1] === 'good' ? GREEN : r[1] === 'amb' ? AMBC : r[1] === 'cy' ? CYC : '#FFB070') : '';
+    setH(`l${i}r`, r && r[0] ? `<span style="color:${col}">${esc(r[0])}</span>` : '');
+    $(`l${i}r`).style.opacity = r ? (i === act ? 1 : 0.55) : 0;
+    $(`l${i}`).className = 'ln' + (i === act ? ' ' + (acls || 'run') : '');
+    const nm = $(`l${i}`).children[0], mk = i === act ? '▸' : String(i);
+    if (nm._m !== mk) { nm._m = mk; nm.textContent = mk; nm.style.color = i === act ? (col || '#FFB070') : ''; }
+  }
+}
+
+/* ---------------- backoff timeline card: attempts at 0, 1, 3, 7 s with the waits between */
+const SV = 'http://www.w3.org/2000/svg';
+const svgEl = (p, tag, at) => { const e = document.createElementNS(SV, tag); for (const k in at) e.setAttribute(k, at[k]); p.appendChild(e); return e; };
+const TLX = (s) => 34 + s * 52;
+const TL = (() => {
+  const s = $('tlsv'), o = {};
+  svgEl(s, 'line', { x1: TLX(0), y1: 50, x2: TLX(8), y2: 50, stroke: '#2c2925', 'stroke-width': 2 });
+  for (let k = 0; k <= 8; k++) { svgEl(s, 'line', { x1: TLX(k), y1: 47, x2: TLX(k), y2: 53, stroke: '#3d3833', 'stroke-width': 1 }); const tt = svgEl(s, 'text', { x: TLX(k), y: 72, 'text-anchor': 'middle', 'font-size': 9, fill: '#5a534c' }); tt.textContent = k + 's'; }
+  o.gaps = [[0, 1], [1, 3], [3, 7]].map(([a, b], k) => {
+    const r = svgEl(s, 'rect', { x: TLX(a) + 8, y: 46, width: 0, height: 8, rx: 4, fill: '#5EE6FF', opacity: 0.85 });
+    const tx = svgEl(s, 'text', { x: (TLX(a) + TLX(b)) / 2, y: 30, 'text-anchor': 'middle', 'font-size': 12.5, fill: '#5EE6FF', opacity: 0 }); tx.textContent = 'wait ' + (b - a) + 's';
+    return { r, tx, a, b };
+  });
+  o.dots = [0, 1, 3, 7].map((x) => svgEl(s, 'circle', { cx: TLX(x), cy: 50, r: 7, fill: '#1c1916', stroke: '#3d3833', 'stroke-width': 2 }));
+  o.marks = [0, 1, 3, 7].map((x) => { const e = svgEl(s, 'text', { x: TLX(x), y: 54, 'text-anchor': 'middle', 'font-size': 10, fill: '#0b0a09' }); return e; });
+  return o;
+})();
+function tlCard(t, sc) {
+  const c = $('tl'), a = CUT.BO + 0.4, b = CUT.SY;
+  if (t < a || t > b) { c.style.display = 'none'; return; }
+  c.style.display = 'block'; c.style.opacity = ep(t, a, a + 0.25) * (1 - ep(t, b - 0.2, b)); c.style.transform = `translateY(${(1 - ep(t, a, a + 0.3)) * -14}px)`;
+  const fails = [arrT(EV.find((e) => e.i === FA && e.t0 === BO.a1)) + 0.25, BO.g1[1] + 0.35, BO.g2[1] + 0.35], okT = BO.g3[1] + 0.55;
+  const fire = [BO.a1, BO.g1[1], BO.g2[1], BO.g3[1]];
+  TL.dots.forEach((d, k) => {
+    const st = t < fire[k] ? 0 : k < 3 ? (t < fails[k] ? 1 : 2) : (t < okT ? 1 : 3);
+    const col = ['#1c1916', '#FFC34D', '#FF4632', '#7CF29A'][st];
+    d.setAttribute('fill', col); d.setAttribute('stroke', st ? col : '#3d3833'); d.setAttribute('r', 7 + 3 * pulse(t, k < 3 ? fails[k] : okT, 6));
+    TL.marks[k].textContent = st === 2 ? '✕' : st === 3 ? '✓' : '';
+  });
+  [BO.g1, BO.g2, BO.g3].forEach(([g0, g1], k) => { const G = TL.gaps[k], p = prog(t, g0, g1); G.r.setAttribute('width', Math.max(0, (TLX(G.b) - TLX(G.a) - 16) * p)); G.tx.setAttribute('opacity', t > g0 ? 1 : 0); });
+  const ok = t > okT;
+  setH('tlst', ok ? '● RECOVERED' : t > BO.g1[0] ? '● WAITING LONGER' : '● FAILED'); $('tlst').style.color = ok ? GREEN : t > BO.g1[0] ? CYC : REDC;
+  c.style.borderColor = ok ? 'rgba(124,242,154,0.4)' : 'rgba(94,230,255,0.45)';
+}
+
+/* ---------------- retry-after rows card: 8 apps, exactly 1.0 s vs 1.0 s ± jitter */
+const JX = (s) => 70 + s * 190;
+const JTC = (() => {
+  const s = $('jtsv'), o = { rows: [] };
+  svgEl(s, 'line', { x1: JX(1), y1: 6, x2: JX(1), y2: 96, stroke: '#3d3833', 'stroke-width': 1, 'stroke-dasharray': '3 3' });
+  for (const [v, lab] of [[0, '0s'], [1, '1s'], [2, '2s']]) { const e = svgEl(s, 'text', { x: JX(v), y: 108, 'text-anchor': 'middle', 'font-size': 9, fill: '#5a534c' }); e.textContent = lab; }
+  for (let i = 0; i < NA; i++) {
+    const y = 10 + i * 11.5;
+    const lab = svgEl(s, 'text', { x: 12, y: y + 3.5, 'font-size': 9.5, fill: '#8a837c' }); lab.textContent = 'app ' + (i + 1);
+    svgEl(s, 'line', { x1: JX(0), y1: y, x2: JX(2), y2: y, stroke: '#24211e', 'stroke-width': 1 });
+    const bar = svgEl(s, 'line', { x1: JX(0), y1: y, x2: JX(0), y2: y, stroke: '#FFC34D', 'stroke-width': 2, 'stroke-linecap': 'round' });
+    const dot = svgEl(s, 'circle', { cx: JX(1), cy: y, r: 3.6, fill: '#FFC34D' });
+    o.rows.push({ y, bar, dot });
+  }
+  o.cur = svgEl(s, 'line', { x1: JX(0), y1: 4, x2: JX(0), y2: 98, stroke: '#F2EEE8', 'stroke-width': 1, opacity: 0.6 });
+  return o;
+})();
+function jtCard(t, sc) {
+  const c = $('jt'), a = CUT.SY + 0.5, b = CUT.RU;
+  if (t < a || t > b) { c.style.display = 'none'; return; }
+  c.style.display = 'block'; c.style.opacity = ep(t, a, a + 0.25) * (1 - ep(t, b - 0.2, b)); c.style.transform = `translateY(${(1 - ep(t, a, a + 0.3)) * -14}px)`;
+  const jk = ep(t, T.jitter - 0.1, T.random + 0.3, ease.inOut), jit = sc === 'JT';
+  // the cursor sweeps the wait: synced runs during SYR, jitter during the jitter rings
+  const cs = jit ? prog(t, JTR(0)[0], 40.85) * 2 : prog(t, SYR[0], SYR[1]) * 1;
+  JTC.cur.setAttribute('x1', JX(cs)); JTC.cur.setAttribute('x2', JX(cs)); JTC.cur.setAttribute('opacity', (jit ? t > JTR(0)[0] : t > SYR[0]) ? 0.6 : 0);
+  JTC.rows.forEach((r, i) => {
+    const v = 1 + JIT[i] * (jit ? jk : 0), col = jit && jk > 0.5 ? '#7CF29A' : '#FFC34D';
+    const fired = cs >= v - 0.001 && (jit ? t > JTR(0)[0] : t > SYR[0]);
+    r.dot.setAttribute('cx', JX(v)); r.dot.setAttribute('fill', fired ? '#F2EEE8' : col); r.dot.setAttribute('r', 3.6 + (fired ? 1.2 : 0));
+    r.bar.setAttribute('x2', JX(Math.min(cs, v))); r.bar.setAttribute('stroke', col);
+  });
+  const together = !jit && t > T.together - 0.2;
+  setH('jtst', jit ? (jk > 0.5 ? '● 1.0s ± JITTER' : '● ADDING JITTER') : together ? '● ALL AT ONCE' : '● EXACTLY 1.0s'); $('jtst').style.color = jit ? (jk > 0.5 ? GREEN : AMBC) : together ? REDC : AMBC;
+  c.style.borderColor = jit && jk > 0.5 ? 'rgba(124,242,154,0.4)' : together ? 'rgba(255,70,50,0.5)' : 'rgba(255,195,77,0.45)';
+}
+
+/* ---------------- captions: one plain line, a few key words coloured */
+const HL = { hiccups: '#FFC34D', retry: '#FFB070', down: '#FF4632', real: '#FF4632', smart: '#7CF29A', brief: '#7CF29A', works: '#7CF29A', instantly: '#FF4632', storm: '#FF4632', calls: '#FF4632',
+  cap: '#FFB070', '3': '#FFB070', three: '#FFB070', back: '#5EE6FF', off: '#5EE6FF', '1': '#5EE6FF', '2': '#5EE6FF', '4': '#5EE6FF', recover: '#7CF29A', exactly: '#FFC34D', together: '#FF4632',
+  jitter: '#7CF29A', randomness: '#7CF29A', spreads: '#7CF29A', timeout: '#FFC34D', '503': '#FFC34D', '404': '#FF4632', twice: '#FF4632', charge: '#FF4632', idempotent: '#5EE6FF',
+  aws: '#FFB070', backoff: '#5EE6FF', idempotency: '#FF6A1F', follow: '#FF6A1F', vibe: '#FFB070', coder: '#FFB070', skipped: '#FF6A1F' };
+const hlCol = (w) => HL[w] || null;
+const CHUNKS = [];
+(() => {
+  const ws = CAPW.map(([s, a, b]) => ({ s, a, b }));
+  const WEAK = new Set(['a', 'an', 'the', 'are', 'on', 'in', 'it', 'and', 'at', 'is', 'of', 'to', 'for', 'with', 'by', 'its', 'has', 'that', 'so', 'but', 'you', 'your', 'if', 'or']);
+  let cur = [];
+  const flushC = () => {
+    if (!cur.length) return;
+    const carry = [];
+    while (carry.length < 2 && cur.length >= 2 && !/[.,?:!]$/.test(cur[cur.length - 1].s) && WEAK.has(cur[cur.length - 1].s.toLowerCase())) carry.unshift(cur.pop());
+    CHUNKS.push(cur); cur = carry;
+  };
+  ws.forEach((w) => {
+    const prev = cur[cur.length - 1];
+    const len = cur.reduce((n, x) => n + x.s.length + 1, 0);
+    if (prev && (/[.?:!]$/.test(prev.s) || (/,$/.test(prev.s) && cur.length >= 3) || cur.length >= 4 || len + w.s.length > 24 || w.a - prev.b > 0.6)) flushC();
+    cur.push(w);
+  });
+  flushC();
+  for (let i = CHUNKS.length - 1; i > 0; i--) {
+    const c = CHUNKS[i], p = CHUNKS[i - 1], len = [...p, ...c].reduce((n, x) => n + x.s.length + 1, 0);
+    if (c.length <= 2 && p.length + c.length <= 5 && !/[.?!]$/.test(p[p.length - 1].s) && len <= 30) { p.push(...c); CHUNKS.splice(i, 1); }
+  }
+})();
+CHUNKS.forEach((c, ci) => {
+  const bx = div($('cap'), 'box'); c.box = bx;
+  c.els = c.map((w) => {
+    const s = document.createElement('span'); s.className = 'w';
+    s.textContent = w.s.replace(/[.,:;]+$/, '');
+    const col = hlCol(w.s.toLowerCase().replace(/[.,?:!]+$/g, '').replace(/[?!]/g, ''));
+    if (col) s.style.color = col;
+    bx.appendChild(s); return s;
+  });
+  c.t0 = c[0].a - 0.04; c.t1 = CHUNKS[ci + 1] ? Math.min(CHUNKS[ci + 1][0].a - 0.04, c[c.length - 1].b + 0.9) : DURATION;
+});
+function caps(t) {
+  for (const c of CHUNKS) {
+    const on = t >= c.t0 && t < c.t1;
+    c.box.style.display = on ? 'flex' : 'none';
+    if (!on) continue;
+    c.els.forEach((s, i) => { s.style.opacity = prog(t, c[i].a - 0.04, c[i].a + 0.06); });
+  }
+}
+
+/* ---------------- profile card */
+const CUR = $('cursor');
+function cursorAt(x, y, a, press) { CUR.style.display = a > 0.01 ? 'block' : 'none'; CUR.style.opacity = a; CUR.style.left = x + 'px'; CUR.style.top = y + 'px'; CUR.style.transform = `scale(${1 - 0.18 * press})`; }
+// the vibe ending: its own beats on the current voice's clock
+const capAt = (re, from = 0) => { const w = CAPW.find((x) => x[1] >= from && re.test(x[0])); return w ? w[1] : null; };
+const VIBE_T = VIBE ? capAt(/^vibe/i, CAPW[CAPW.length - 1][1] - 8) : null;
+const FOLLOW_TR = capAt(/^follow/i, CAPW[CAPW.length - 1][1] - 6);
+const TAP_F = toRef(FOLLOW_TR) + 0.35;
+function profile(t, tr) {
+  const p = popIn(t, CUT.END + 0.1, REF_END + 1), pr = $('prof');
+  vis(pr, p.a, `translateY(${p.y}px) scale(${p.s})`); pr.style.display = p.a > 0.001 ? 'block' : 'none';
+  const onp = $('onp'), vb = $('vibe');
+  if (p.a <= 0.001) { cursorAt(0, 0, 0, 0); onp.style.display = 'none'; vb.style.display = 'none'; return; }
+  const fb = $('fb'), done = t > TAP_F + 0.08;
+  if (fb._d !== done) { fb._d = done; fb.textContent = done ? 'Following ✓' : 'Follow'; fb.style.background = done ? '#2a2521' : ''; fb.style.color = done ? '#F2EEE8' : ''; fb.style.fontSize = done ? '12.5px' : ''; }
+  fb.style.transform = `scale(${1 - 0.06 * window01(t, TAP_F, TAP_F + 0.16, 0.06)})`;
+  const hi = window01(t, T.idemp - 0.1, (VIBE ? toRef(VIBE_T) : T.follow) - 0.1, 0.25), tk = $('t0'), ic = $('t0i');
+  tk.style.borderColor = `rgba(255,106,31,${hi})`; tk.style.boxShadow = `0 0 ${24 * hi}px rgba(255,106,31,${0.45 * hi})`; tk.style.transform = `scale(${1 + 0.04 * hi})`;
+  ic.style.transform = `scale(${1 + 0.14 * hi * Math.max(0, Math.sin(t * 6))})`;
+  ic.style.borderColor = hi > 0.3 ? '#FF6A1F' : ''; ic.style.color = hi > 0.3 ? '#FF6A1F' : '';
+  const oa = window01(t, T.profile - 0.6, (VIBE ? toRef(VIBE_T) : T.follow) - 0.1, 0.2);
+  onp.style.display = oa > 0.01 ? 'block' : 'none'; onp.style.opacity = oa;
+  onp.style.left = (44 + 16 + 70) + 'px'; onp.style.top = (pr.offsetTop + 240) + 'px'; onp.style.transform = `translate(-50%,0) scale(${0.9 + 0.1 * ep(t, T.profile - 0.6, T.profile - 0.3, ease.back)})`;
+  const va = VIBE ? window01(tr, VIBE_T - 0.1, DURATION + 1, 0.2) : 0;
+  vb.style.display = va > 0.01 ? 'block' : 'none'; vb.style.opacity = va;
+  vb.style.left = '270px'; vb.style.top = (pr.offsetTop - 34) + 'px'; vb.style.transform = `translate(-50%,0) scale(${0.9 + 0.1 * ep(tr, VIBE_T - 0.1, VIBE_T + 0.2, ease.back)})`;
+  const k2 = ep(t, TAP_F - 0.45, TAP_F - 0.02, ease.inOut), fx_ = 44 + 452 - 16 - 52, fy = pr.offsetTop + 34;
+  cursorAt(lerp(400, fx_, k2), lerp(720, fy, k2), window01(t, TAP_F - 0.75, REF_END + 1, 0.15), window01(t, TAP_F, TAP_F + 0.16, 0.06));
+}
+
+/* ---------------- background */
+function bg(t) {
+  g.setTransform(2, 0, 0, 2, 0, 0);
+  g.fillStyle = '#0b0a09'; g.fillRect(0, 0, 540, 960);
+  g.save(); g.globalCompositeOperation = 'lighter';
+  const m = towerMode(t), red = m === 2 || m === 3;
+  const heat = 0.5 + 0.9 * pulse(t, T.down, 1.2) + 0.7 * pulse(t, T.storm, 1.5) + 0.6 * pulse(t, T.together, 2);
+  const rg = g.createRadialGradient(270, 420, 0, 270, 420, 440);
+  rg.addColorStop(0, red ? `rgba(255,70,50,${0.06 * heat})` : `rgba(255,106,31,${0.06 * heat})`); rg.addColorStop(1, 'rgba(255,106,31,0)');
+  g.fillStyle = rg; g.fillRect(0, 0, 540, 960);
+  for (let i = 0; i < 50; i++) { const x = (rnd(i, 9) * 540 + t * (4 + rnd(i, 3) * 8)) % 540, y = (rnd(i, 8) * 960 - t * (3 + rnd(i, 2) * 6) + 9600) % 960; g.fillStyle = `rgba(255,200,160,${0.05 + rnd(i, 7) * 0.12})`; g.fillRect(x, y, 1.2, 1.2); }
+  g.restore();
+}
+
+/* ---------------- render */
+window.ready = async () => { $('grain').style.background = `url(${grainURL(256, 0.06, 5)})`; await Promise.all([...document.fonts].map((f) => f.load().catch(() => {}))); };
+window.render = function (tr) {
+  const t = toRef(tr);
+  t_ = t;
+  const sc = sceneOf(t);
+  camAt(t, SHOTS, KICKS, SHAKES);
+  bg(t);
+  g.setTransform(2, 0, 0, 2, 0, 0);
+  const used = new Set();
+  const L = (k, txt, wp, dx, dy, a, b, col = '#FF6A1F') => { if (t < 10) return; used.add(k); callout(k, txt, wp, dx, dy, window01(t, a, b, 0.15), col); };
+
+  floorGrid(1);
+  // roads: brighter where calls are flowing, red in the storm
+  const mode = towerMode(t);
+  for (let i = 0; i < NA; i++) {
+    let busy = 0; for (const e of EV) if (e.i === i && t > e.t0 - 0.1 && t < backT(e) + 0.2) { busy = 1; break; }
+    const stopped = sc === 'CP' && t > STOP[i];
+    roadLine(ROAD(i), stopped ? DIM : mode === 2 && busy ? mixc(O, RED, 0.6) : O, stopped ? 0.25 : 0.3 + 0.45 * busy);
+  }
+  apps(t, sc);
+  tower(t, sc);
+  barriers(t, sc);
+  for (const e of EV) { if (t > e.t0 - 0.05 && t < backT(e) + 1.0) { drawCall(t, e); callFx(t, e); } }
+  if (mode === 3) for (let k = 0; k < 3; k++) spark([TW[0] + (k - 1) * 18, TWF, 30 + k * 20], 0.35 + 0.35 * Math.sin(t * 9 + k * 2), 4, RED);
+
+  // callouts (never during the spoken hook)
+  const AF = APP[FA];
+  if (sc === 'S1') {
+    L('s1a', 'attempt 1 ✕', [AF[0], AF[1], AH + 2], 26, -46, T.blip + 0.05, T.again - 0.1, '#FF4632');
+    L('s1b', 'restarting…', [TW[0], TWF, TWH], 36, -30, T.restart, 12.4, '#FFC34D');
+    L('s1c', 'attempt 2 ✓', [AF[0], AF[1], AH + 2], 26, -46, T.works - 0.1, CUT.ST - 0.05, '#7CF29A');
+  } else if (sc === 'ST') {
+    L('st1', 'retry · retry · retry', [AF[0], AF[1], AH + 2], 20, -56, T.instantly - 0.1, T.each - 0.4, '#FF4632');
+    L('st2', 'every ✕ → another call', [APP[1][0], APP[1][1], AH + 2], 30, -64, T.each + 0.2, T.storm - 0.2, '#FF4632');
+  } else if (sc === 'CP') {
+    L('cp1', 'max 3 attempts', [AF[0] - 8, AF[1] - AD / 2, 8], -24, 40, T.three - 0.1, T.stop - 0.25, '#FFB070');
+    L('cp2', 'all stopped · load drops', [TW[0], TWF, TWH - 10], 30, -40, T.error + 0.1, CUT.BO - 0.05, '#7CF29A');
+  } else if (sc === 'BO') {
+    L('bo1', 'room to recover', [TW[0], TWF, TWH - 10], 30, -40, T.eachwait + 0.3, T.recover + 0.3, '#7CF29A');
+  } else if (sc === 'SY') {
+    L('sy1', 'all at once', [TW[0], TWF, TWH - 10], 34, -36, T.together - 0.1, CUT.JT - 0.05, '#FF4632');
+  } else if (sc === 'JT') {
+    L('jt1', 'spread out · smooth load', [TW[0], TWF, TWH - 10], 34, -36, T.spreads, CUT.RU - 0.05, '#7CF29A');
+  } else if (sc === 'RU') {
+    L('ru1', 'Idempotency-Key: a7f3', [APP[PAY][0], APP[PAY][1], AH + 2], 44, -64, T.unless + 0.1, CUT.AW - 0.1, '#5EE6FF');
+  }
+  flush();
+  g.setTransform(2, 0, 0, 2, 0, 0);
+  for (const k in LB) if (!used.has(k)) { LB[k].style.display = 'none'; if (LN[k]) LN[k].style.display = 'none'; }
+
+  /* DOM */
+  caps(tr);
+  card(t);
+  tlCard(t, sc);
+  jtCard(t, sc);
+  profile(t, tr);
+  $('dim').style.opacity = sc === 'END' ? ep(t, CUT.END, CUT.END + 0.4) * 0.75 : 0;
+  let fl = 0, rf = 0;
+  for (const [t0, a] of [[T.retry + 0.3, 0.1], [T.same + 0.35, 0.1], [CUT.S1, 0.08], [T.again + 0.6, 0.06], [CUT.ST, 0.06], [CUT.CP, 0.08], [CUT.BO, 0.06], [BO.g3[1] + 0.25, 0.1], [CUT.SY, 0.06], [CUT.JT, 0.06], [CUT.RU, 0.06], [T.idem, 0.08], [CUT.END, 0.08]]) { const dt = t - t0; if (dt > 0 && dt < 0.5) fl = Math.max(fl, a * Math.exp(-dt * 9)); }
+  for (const [t0, a] of [[T.down, 0.3], [T.storm, 0.22], [T.together, 0.2], [T.twice, 0.14]]) { const dt = t - t0; if (dt > 0 && dt < 0.8) rf = Math.max(rf, a * Math.exp(-dt * 7)); }
+  $('flash').style.opacity = fl; $('rflash').style.opacity = rf;
+  if (t > TAP_F + 0.08 && t < TAP_F + 1.7) {
+    g.save(); g.globalCompositeOperation = 'lighter';
+    const dt = t - TAP_F - 0.08, cols = ['#FF6A1F', '#FFB070', '#F2EEE8', '#5EE6FF'];
+    const fbx = 44 + 452 - 16 - 52, fby = $('prof').offsetTop + 34;
+    for (let i = 0; i < 70; i++) {
+      const th = rnd(i, 70) * Math.PI * 2, v = 160 + rnd(i, 71) * 260;
+      const x = fbx + Math.cos(th) * v * dt, y = fby + Math.sin(th) * v * dt * 0.8 + 260 * dt * dt;
+      g.fillStyle = cols[i % 4]; g.globalAlpha = Math.max(0, 1 - dt / 1.5);
+      g.save(); g.translate(x, y); g.rotate(dt * 8 + i); g.fillRect(-3, -1.5, 6, 3); g.restore();
+    }
+    g.restore(); g.globalAlpha = 1;
+  }
+  $('stage').style.opacity = 1 - ep(tr, DURATION - 0.35, DURATION) * 0.85;
+};
+</script>
+<script src="lib/play.js"></script>
+</body>
+</html>
