@@ -4,16 +4,21 @@ Appends one line per account and one per reel to insights/history.jsonl (never
 rewritten), then regenerates insights/latest.md from it, with the change since
 the previous fetch in brackets.
 
-Run:  source ~/.instagram_tokens && python3 -I .claude/skills/ig-insights/fetch.py
+Run from anywhere:  source ~/.instagram_tokens && python3 -I .claude/skills/ig-insights/fetch.py
+Saves into the repo's own insights/ folder; times are recorded in IST (Asia/Kolkata).
 """
 import datetime
 import json
 import os
 import urllib.parse
 import urllib.request
+from zoneinfo import ZoneInfo
 
 API = "https://graph.instagram.com/v26.0"
-DIR = os.path.expanduser("~/insta-automation/insights")
+# The repo root is three folders up from .claude/skills/ig-insights/, wherever the repo is checked out.
+DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", "insights")
+DIR = os.path.normpath(DIR)
+IST = ZoneInfo("Asia/Kolkata")
 HISTORY = os.path.join(DIR, "history.jsonl")
 LATEST = os.path.join(DIR, "latest.md")
 ACCOUNTS = ["TALKINGAGENTS", "HOWITSENGINEERED"]
@@ -22,7 +27,7 @@ METRICS = ["views", "reach", "likes", "comments", "shares", "saves"]
 
 def get(path, token, **params):
     params["access_token"] = token
-    with urllib.request.urlopen(f"{API}/{path}?{urllib.parse.urlencode(params)}") as r:
+    with urllib.request.urlopen(f"{API}/{path}?{urllib.parse.urlencode(params)}", timeout=30) as r:
         return json.load(r)
 
 
@@ -37,7 +42,7 @@ def fetch(t):
         page = get("me/media", token, fields="id,caption,timestamp,permalink", limit=100)
         media = page["data"]
         while page.get("paging", {}).get("next"):
-            with urllib.request.urlopen(page["paging"]["next"]) as r:
+            with urllib.request.urlopen(page["paging"]["next"], timeout=30) as r:
                 page = json.load(r)
             media += page["data"]
         for m in media:
@@ -66,13 +71,14 @@ def fmt(new, old):
 
 
 def write_latest(history):
-    times = sorted({r["t"] for r in history})
+    # Sort as real times, not text: "+00:00" and "+05:30" stamps don't sort correctly as strings.
+    times = sorted({r["t"] for r in history}, key=datetime.datetime.fromisoformat)
     now, prev_t = times[-1], (times[-2] if len(times) > 1 else None)
     key = lambda r: (r["type"], r["account"], r.get("permalink"))
     prev = {key(r): r for r in history if r["t"] == prev_t}
     cur = [r for r in history if r["t"] == now]
-    when = datetime.datetime.fromisoformat(now).strftime("%Y-%m-%d %H:%M")
-    since = f" since {datetime.datetime.fromisoformat(prev_t).strftime('%H:%M')}" if prev_t else ""
+    when = datetime.datetime.fromisoformat(now).astimezone(IST).strftime("%Y-%m-%d %H:%M")
+    since = f" since {datetime.datetime.fromisoformat(prev_t).astimezone(IST).strftime('%H:%M')}" if prev_t else ""
     out = ["# Instagram insights", "",
            f"Updated {when}. Change{since} is in brackets. Every fetch is kept in `history.jsonl`.", ""]
     for acct in [r for r in cur if r["type"] == "account"]:
@@ -97,7 +103,7 @@ def write_latest(history):
 
 if __name__ == "__main__":
     os.makedirs(DIR, exist_ok=True)
-    t = datetime.datetime.now().astimezone().isoformat(timespec="seconds")
+    t = datetime.datetime.now(IST).isoformat(timespec="seconds")
     rows = fetch(t)
     with open(HISTORY, "a") as f:
         for r in rows:
