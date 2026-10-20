@@ -1,35 +1,35 @@
 # Instagram insights
 
-Updated 2026-10-21 00:07. Change since 23:54 is in brackets. Every fetch is kept in `history.jsonl`.
+Updated 2026-10-21 00:12. Change since 00:07 is in brackets. Every fetch is kept in `history.jsonl`.
 
 ## @talkingagents
 
-**92 (+1) followers** · 5 posts · 9,649 (+250) total views
+**92 followers** · 5 posts · 9,713 (+64) total views
 
 | Posted | Post | Views | Reach | Likes | Comments | Shares | Saves | Avg watch |
 |---|---|--:|--:|--:|--:|--:|--:|--:|
-| 2026-10-20 | [40 minutes. 11 tries. The button stayed blue.](https://www.instagram.com/reel/DeuUvcZTh5S/) | 1,090 (+231) | 653 (+127) | 26 (+6) | 0 | 0 | 1 (+1) | 25.3s |
-| 2026-10-20 | [45,000 database reads. 1 user. It was me. ](https://www.instagram.com/reel/DetP40XN2gp/) | 2,400 (+7) | 1,909 (+10) | 69 (+1) | 1 | 3 | 14 | 34.0s |
-| 2026-10-19 | [She asked for a quick cleanup. Claude rewrote everything. 🧹💥](https://www.instagram.com/reel/Der9pjFzBEp/) | 2,500 (+9) | 1,749 (+5) | 59 | 2 | 28 | 7 | 33.4s |
-| 2026-10-19 | [She pushed the key. Then she pushed the new key.](https://www.instagram.com/reel/DeqiIxDtMcS/) | 2,059 (+3) | 1,484 | 42 | 3 (+1) | 1 | 2 | 30.4s |
+| 2026-10-20 | [40 minutes. 11 tries. The button stayed blue.](https://www.instagram.com/reel/DeuUvcZTh5S/) | 1,149 (+59) | 653 | 27 (+1) | 0 | 0 | 1 | 25.3s |
+| 2026-10-20 | [45,000 database reads. 1 user. It was me. ](https://www.instagram.com/reel/DetP40XN2gp/) | 2,403 (+3) | 1,909 | 69 | 1 | 3 | 14 | 34.0s |
+| 2026-10-19 | [She asked for a quick cleanup. Claude rewrote everything. 🧹💥](https://www.instagram.com/reel/Der9pjFzBEp/) | 2,502 (+2) | 1,749 | 59 | 2 | 28 | 7 | 33.4s |
+| 2026-10-19 | [She pushed the key. Then she pushed the new key.](https://www.instagram.com/reel/DeqiIxDtMcS/) | 2,059 | 1,484 | 42 | 3 | 1 | 2 | 30.4s |
 | 2026-10-18 | [who really built it, me or the ai?](https://www.instagram.com/reel/DepT2tBz3rg/) | 1,600 | 1,324 | 41 | 0 | 9 | 8 | 18.8s |
 
 ## @how.its.engineered
 
-**212 (+1) followers** · 18 posts · 38,660 (+47) total views
+**212 followers** · 18 posts · 38,678 (+18) total views
 
 | Posted | Post | Views | Reach | Likes | Comments | Shares | Saves | Avg watch |
 |---|---|--:|--:|--:|--:|--:|--:|--:|
-| 2026-10-20 | [One bad update. 8.5 million computers. All at once 💥](https://www.instagram.com/reel/DeuVJG8SMxM/) | 258 (+13) | 223 (+13) | 3 (+1) | 0 | 0 | 1 | 8.4s |
-| 2026-10-20 | [You tap Place Order. One second later your email, tracking page and re](https://www.instagram.com/reel/Det1RFaS76L/) | 1,786 (+3) | 1,503 (+12) | 27 | 2 | 3 | 11 | 20.3s |
-| 2026-10-20 | [One post. Two million followers. One message. 📮](https://www.instagram.com/reel/DetdqQXSM9L/) | 1,327 | 1,225 | 10 | 0 | 0 | 1 | 15.4s |
+| 2026-10-20 | [One bad update. 8.5 million computers. All at once 💥](https://www.instagram.com/reel/DeuVJG8SMxM/) | 259 (+1) | 223 | 3 | 0 | 0 | 1 | 9.1s |
+| 2026-10-20 | [You tap Place Order. One second later your email, tracking page and re](https://www.instagram.com/reel/Det1RFaS76L/) | 1,788 (+2) | 1,503 | 28 (+1) | 2 | 3 | 11 | 20.3s |
+| 2026-10-20 | [One post. Two million followers. One message. 📮](https://www.instagram.com/reel/DetdqQXSM9L/) | 1,328 (+1) | 1,227 (+2) | 10 | 0 | 0 | 1 | 15.3s |
 | 2026-10-19 | [Black Friday hits. Everyone taps buy at once. The order service waits ](https://www.instagram.com/reel/Der9kXjyueH/) | 470 | 403 | 6 | 0 | 1 | 3 | 8.1s |
 | 2026-10-19 | [The weather server hiccupped for one second. Then every app hit retry ](https://www.instagram.com/reel/DeqWBdySvAD/) | 1,582 | 1,440 | 39 | 0 | 5 | 16 | 17.9s |
 | 2026-10-18 | [Your app asked a server for the weather, and nothing came back. How lo](https://www.instagram.com/reel/DepoIsTybkw/) | 1,422 | 1,242 | 28 | 0 | 1 | 7 | 13.8s |
 | 2026-10-18 | [One slow service took down the whole app. Not broken. Just slow. ⚡](https://www.instagram.com/reel/DepTLH1yW8M/) | 940 | 823 | 18 | 0 | 1 | 16 | 12.6s |
 | 2026-10-18 | [Your app froze at 3 AM. Still running, not answering anyone. And somet](https://www.instagram.com/reel/DeoNZd-ypXG/) | 2,609 | 2,264 | 70 | 3 | 6 | 37 | 14.4s |
 | 2026-10-17 | [Your service restarted. Same code, new address. And every call to it f](https://www.instagram.com/reel/Deml8FfStFb/) | 1,810 | 1,614 | 48 | 2 | 9 | 35 | 10.9s |
-| 2026-10-17 | [Your app crashed at 3 AM. By the time you woke up, it was already back](https://www.instagram.com/reel/DemAdV7yHef/) | 16,186 (+31) | 14,140 (+45) | 577 (+1) | 0 | 76 | 327 (+2) | 17.2s |
+| 2026-10-17 | [Your app crashed at 3 AM. By the time you woke up, it was already back](https://www.instagram.com/reel/DemAdV7yHef/) | 16,200 (+14) | 14,185 (+45) | 577 | 0 | 76 | 327 | 17.2s |
 | 2026-10-17 | [One service in your food app forgot to check the login. Now anyone can](https://www.instagram.com/reel/DelTG36SiBr/) | 1,371 | 1,185 | 32 | 0 | 12 | 20 | 12.6s |
 | 2026-10-16 | [It works on your laptop. You put it on a server and it crashes. Same c](https://www.instagram.com/reel/DekR_dKSMsc/) | 3,083 | 2,559 | 120 | 0 | 14 | 57 | 16.9s |
 | 2026-10-16 | [One typo shouldn’t be able to take your whole app down. 💥](https://www.instagram.com/reel/Dej6JbZS6Qo/) | 1,337 | 1,200 | 26 | 0 | 11 | 17 | 12.9s |
