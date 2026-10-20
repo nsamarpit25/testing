@@ -5,6 +5,7 @@
   python3 tools/ig.py stats [--n 10]             # account + per-reel numbers
   python3 tools/ig.py refresh                    # extend the 60-day token
   python3 tools/ig.py post VIDEO --cover PNG --caption TXT --yes
+  python3 tools/ig.py post VIDEO ... --trial manual|auto --yes   # trial reel: non-followers only at first
 
 The token is IG_HOWITSENGINEERED_TOKEN in ~/.instagram_tokens (chmod 600) and is never printed.
 Instagram fetches the video and cover from a URL, so `post` stages them in a private
@@ -114,6 +115,8 @@ def cmd_post(a):
     params = {"media_type": "REELS", "video_url": stage(a.video), "caption": caption, "share_to_feed": "true"}
     if a.cover:
         params["cover_url"] = stage(a.cover)
+    if a.trial:  # trial reel: shown to non-followers first; graduate in the app (manual) or on performance (auto)
+        params["trial_params"] = json.dumps({"graduation_strategy": {"manual": "MANUAL", "auto": "SS_PERFORMANCE"}[a.trial]})
     cid = call("POST", f"{uid}/media", params)["id"]
     print("container", cid, "- waiting for Instagram to process the video")
     for _ in range(60):
@@ -135,6 +138,7 @@ sub.add_parser("check").set_defaults(f=cmd_check)
 s = sub.add_parser("stats"); s.add_argument("--n", type=int, default=10); s.add_argument("--json", action="store_true"); s.set_defaults(f=cmd_stats)
 sub.add_parser("refresh").set_defaults(f=cmd_refresh)
 s = sub.add_parser("post"); s.add_argument("video"); s.add_argument("--cover"); s.add_argument("--caption", required=True)
+s.add_argument("--trial", choices=["manual", "auto"])
 s.add_argument("--yes", action="store_true"); s.set_defaults(f=cmd_post)
 a = p.parse_args()
 try:
