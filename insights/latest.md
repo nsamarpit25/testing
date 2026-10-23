@@ -1,61 +1,62 @@
 # Instagram insights
 
-Updated 2026-10-23 10:34. Change since 00:09 is in brackets. Every fetch is kept in `history.jsonl`.
+Updated 2026-10-23 11:08. Change since 10:34 is in brackets. Every fetch is kept in `history.jsonl`.
 
 ## @talkingagents
 
-**153 (+6) followers** · 14 posts · 27,390 (+3,616) total views
+**154 (+1) followers** · 14 posts · 27,523 (+133) total views
 
 | Posted | Post | Views | Reach | Likes | Comments | Shares | Saves | Avg watch |
 |---|---|--:|--:|--:|--:|--:|--:|--:|
-| 2026-10-22 | [I asked my Claude agent to clear my unread messages and it sent my ex ](https://www.instagram.com/reel/Deznt7RFQMt/) | 2,009 (+2,009) | 1,309 (+1,309) | 39 (+38) | 3 (+3) | 4 (+4) | 2 (+2) | 30.2s |
-| 2026-10-22 | [CORS error in Chrome but the API works in Postman? A different port is](https://www.instagram.com/reel/DezXnAYE5mY/) | 1,272 (+615) | 1,101 (+623) | 33 (+18) | 0 | 1 (+1) | 8 (+1) | 16.7s |
-| 2026-10-22 | [fetch() doesn't reject on a 500 error, so a failed checkout can still ](https://www.instagram.com/reel/DezKed5DsNJ/) | 1,112 (+777) | 858 (+568) | 26 (+19) | 2 (+2) | 0 | 1 (+1) | 19.8s |
-| 2026-10-22 | [Sent a test email to all 40,000 customers by mistake? Cleo's script us](https://www.instagram.com/reel/Deyz8hkCuGo/) | 1,894 (+125) | 1,378 (+82) | 40 (+2) | 0 | 0 | 3 | 24.9s |
-| 2026-10-22 | [Password reset says "check your inbox" but no email ever arrives? The ](https://www.instagram.com/reel/DeyQHPbCTHj/) | 2,188 (+16) | 1,518 (+13) | 27 | 0 | 0 | 3 | 23.4s |
-| 2026-10-21 | [CSS changes not showing up? Three Vite dev servers were running, so lo](https://www.instagram.com/reel/DexWx3HiEfL/) | 1,731 (+21) | 1,269 (+20) | 42 (+1) | 0 | 3 | 6 | 39.2s |
-| 2026-10-21 | [How to center a div in CSS: two hours of margin auto and position abso](https://www.instagram.com/reel/DewrvfvDs_b/) | 1,398 (+16) | 1,147 (+15) | 69 (+1) | 0 | 2 | 5 | 20.4s |
-| 2026-10-21 | [AI helped build the project; imposter syndrome took all the credit.](https://www.instagram.com/reel/DevoQ0dD6T3/) | 1,463 (+3) | 1,169 (+1) | 48 | 4 | 4 | 4 | 24.2s |
-| 2026-10-21 | [Three hours debugging a Save button, solved by my own Stack Overflow a](https://www.instagram.com/reel/Devdhj5gq_e/) | 1,554 (+1) | 1,218 | 29 | 0 | 0 | 4 | 17.5s |
-| 2026-10-21 | [Sharing a localhost link is a very exclusive portfolio launch.](https://www.instagram.com/reel/DevZ_79E5-v/) | 1,783 (+4) | 1,318 (+2) | 60 | 1 | 5 | 3 | 21.7s |
-| 2026-10-20 | [Coding side projects just for fun. Not everything needs to go on your ](https://www.instagram.com/reel/DeuqwlglNhh/) | 3,004 (+12) | 2,301 (+10) | 106 (+2) | 0 | 12 | 11 | 25.7s |
-| 2026-10-20 | [45,000 database reads. 1 user. It was me. ](https://www.instagram.com/reel/DetP40XN2gp/) | 3,024 (+2) | 2,401 | 85 | 1 | 3 | 14 | 34.7s |
-| 2026-10-19 | [She asked for a quick cleanup. Claude rewrote everything. 🧹💥](https://www.instagram.com/reel/Der9pjFzBEp/) | 2,875 (+12) | 2,038 (+2) | 61 | 2 | 28 | 7 | 34.5s |
-| 2026-10-19 | [She pushed the key. Then she pushed the new key.](https://www.instagram.com/reel/DeqiIxDtMcS/) | 2,083 (+3) | 1,502 (+3) | 43 | 5 | 1 | 2 | 30.3s |
+| 2026-10-22 | [I asked my Claude agent to clear my unread messages and it sent my ex ](https://www.instagram.com/reel/Deznt7RFQMt/) | 2,015 (+6) | 1,312 (+3) | 39 | 3 | 4 | 2 | 30.2s |
+| 2026-10-22 | [CORS error in Chrome but the API works in Postman? A different port is](https://www.instagram.com/reel/DezXnAYE5mY/) | 1,274 (+2) | 1,104 (+3) | 33 | 0 | 1 | 8 | 16.7s |
+| 2026-10-22 | [fetch() doesn't reject on a 500 error, so a failed checkout can still ](https://www.instagram.com/reel/DezKed5DsNJ/) | 1,233 (+121) | 1,029 (+171) | 27 (+1) | 2 | 0 | 1 | 20.2s |
+| 2026-10-22 | [Sent a test email to all 40,000 customers by mistake? Cleo's script us](https://www.instagram.com/reel/Deyz8hkCuGo/) | 1,898 (+4) | 1,379 (+1) | 40 | 0 | 0 | 3 | 24.9s |
+| 2026-10-22 | [Password reset says "check your inbox" but no email ever arrives? The ](https://www.instagram.com/reel/DeyQHPbCTHj/) | 2,188 | 1,518 | 27 | 0 | 0 | 3 | 23.4s |
+| 2026-10-21 | [CSS changes not showing up? Three Vite dev servers were running, so lo](https://www.instagram.com/reel/DexWx3HiEfL/) | 1,731 | 1,269 | 42 | 0 | 3 | 6 | 39.2s |
+| 2026-10-21 | [How to center a div in CSS: two hours of margin auto and position abso](https://www.instagram.com/reel/DewrvfvDs_b/) | 1,398 | 1,147 | 69 | 0 | 2 | 5 | 20.4s |
+| 2026-10-21 | [AI helped build the project; imposter syndrome took all the credit.](https://www.instagram.com/reel/DevoQ0dD6T3/) | 1,463 | 1,169 | 48 | 4 | 4 | 4 | 24.2s |
+| 2026-10-21 | [Three hours debugging a Save button, solved by my own Stack Overflow a](https://www.instagram.com/reel/Devdhj5gq_e/) | 1,554 | 1,218 | 29 | 0 | 0 | 4 | 17.5s |
+| 2026-10-21 | [Sharing a localhost link is a very exclusive portfolio launch.](https://www.instagram.com/reel/DevZ_79E5-v/) | 1,783 | 1,318 | 60 | 1 | 5 | 3 | 21.7s |
+| 2026-10-20 | [Coding side projects just for fun. Not everything needs to go on your ](https://www.instagram.com/reel/DeuqwlglNhh/) | 3,004 | 2,301 | 106 | 0 | 12 | 11 | 25.7s |
+| 2026-10-20 | [45,000 database reads. 1 user. It was me. ](https://www.instagram.com/reel/DetP40XN2gp/) | 3,024 | 2,401 | 85 | 1 | 3 | 14 | 34.7s |
+| 2026-10-19 | [She asked for a quick cleanup. Claude rewrote everything. 🧹💥](https://www.instagram.com/reel/Der9pjFzBEp/) | 2,875 | 2,038 | 61 | 2 | 28 | 7 | 34.5s |
+| 2026-10-19 | [She pushed the key. Then she pushed the new key.](https://www.instagram.com/reel/DeqiIxDtMcS/) | 2,083 | 1,502 | 43 | 5 | 1 | 2 | 30.3s |
 
 ## @how.its.engineered
 
-**395 (+11) followers** · 26 posts · 84,790 (+5,005) total views
+**395 followers** · 27 posts · 85,186 (+396) total views
 
 | Posted | Post | Views | Reach | Likes | Comments | Shares | Saves | Avg watch |
 |---|---|--:|--:|--:|--:|--:|--:|--:|
-| 2026-10-22 | [How GPS finds you: your phone never talks to the satellites. About 30 ](https://www.instagram.com/reel/Dezf1n6AgQ6/) | 1,374 (+320) | 1,173 (+499) | 26 (+11) | 0 | 0 | 4 (+3) | 18.0s |
-| 2026-10-22 | [How Google Maps knows about traffic: no cameras. Phones navigating wit](https://www.instagram.com/reel/DezYCTmEn14/) | 1,082 (+578) | 925 (+484) | 26 (+21) | 0 | 2 (+1) | 2 (+2) | 10.5s |
-| 2026-10-22 | [Query optimization explained: SELECT * pulls a million rows to show 10](https://www.instagram.com/reel/DezKT3NCMK0/) | 1,436 (+21) | 1,275 (+19) | 32 | 0 | 2 | 10 | 22.4s |
-| 2026-10-22 | [The airline said her bag was safe. Her AirTag said otherwise. How AirT](https://www.instagram.com/reel/DezGPkuiY-N/) | 1,800 (+74) | 1,426 (+71) | 34 (+2) | 0 | 0 | 3 (+1) | 18.6s |
-| 2026-10-22 | [How Shazam knows the song: it turns sound into a map of pitch over tim](https://www.instagram.com/reel/Deypq6Sj5Pw/) | 1,676 (+46) | 1,418 (+36) | 34 (+1) | 0 | 1 | 5 (+2) | 18.6s |
-| 2026-10-22 | [Database indexing explained: one line of SQL, CREATE INDEX, turns a fu](https://www.instagram.com/reel/DeyBc55EpfN/) | 2,976 (+567) | 2,570 (+491) | 75 (+19) | 0 | 9 (+1) | 38 (+7) | 22.2s |
-| 2026-10-21 | [The weather server stopped answering for one second. Then thousands of](https://www.instagram.com/reel/Dewd6RjFaG6/) | 1,565 (+10) | 1,366 (+6) | 27 | 0 | 4 | 12 | 12.3s |
-| 2026-10-21 | [You changed one letter in your code. Two minutes later, your whole app](https://www.instagram.com/reel/DewW9a6CNof/) | 1,319 (+3) | 1,143 (+3) | 20 | 0 | 4 | 10 | 12.1s |
+| 2026-10-23 | [How a touchscreen works: a see-through grid of wires under the glass s](https://www.instagram.com/reel/De0x51-joqu/) | 44 | 0 | 0 | 0 | 0 | 1 | 4.5s |
+| 2026-10-22 | [How GPS finds you: your phone never talks to the satellites. About 30 ](https://www.instagram.com/reel/Dezf1n6AgQ6/) | 1,377 (+3) | 1,177 (+4) | 26 | 0 | 0 | 4 | 18.0s |
+| 2026-10-22 | [How Google Maps knows about traffic: no cameras. Phones navigating wit](https://www.instagram.com/reel/DezYCTmEn14/) | 1,157 (+75) | 980 (+55) | 27 (+1) | 0 | 2 | 2 | 10.5s |
+| 2026-10-22 | [Query optimization explained: SELECT * pulls a million rows to show 10](https://www.instagram.com/reel/DezKT3NCMK0/) | 1,438 (+2) | 1,277 (+2) | 32 | 0 | 2 | 10 | 22.4s |
+| 2026-10-22 | [The airline said her bag was safe. Her AirTag said otherwise. How AirT](https://www.instagram.com/reel/DezGPkuiY-N/) | 1,800 | 1,428 (+2) | 34 | 0 | 0 | 3 | 18.6s |
+| 2026-10-22 | [How Shazam knows the song: it turns sound into a map of pitch over tim](https://www.instagram.com/reel/Deypq6Sj5Pw/) | 1,680 (+4) | 1,420 (+2) | 34 | 0 | 1 | 5 | 18.6s |
+| 2026-10-22 | [Database indexing explained: one line of SQL, CREATE INDEX, turns a fu](https://www.instagram.com/reel/DeyBc55EpfN/) | 2,998 (+22) | 2,601 (+31) | 76 (+1) | 0 | 9 | 38 | 22.3s |
+| 2026-10-21 | [The weather server stopped answering for one second. Then thousands of](https://www.instagram.com/reel/Dewd6RjFaG6/) | 1,565 | 1,366 | 27 | 0 | 4 | 12 | 12.3s |
+| 2026-10-21 | [You changed one letter in your code. Two minutes later, your whole app](https://www.instagram.com/reel/DewW9a6CNof/) | 1,319 | 1,143 | 20 | 0 | 4 | 10 | 12.1s |
 | 2026-10-21 | [You texted a friend whose phone is dead. One grey tick. So where is th](https://www.instagram.com/reel/DewEIruCZVw/) | 1,322 | 1,157 | 6 | 0 | 0 | 2 | 11.4s |
-| 2026-10-21 | [Your app takes two seconds to load its data. But the second time you o](https://www.instagram.com/reel/DewAKkNCNjm/) | 1,226 (+13) | 1,100 (+12) | 28 | 0 | 1 | 8 | 10.0s |
-| 2026-10-21 | [You asked an AI chatbot a question, and the answer appeared word by wo](https://www.instagram.com/reel/Dev6eHQk3he/) | 1,257 (+2) | 1,136 (+2) | 30 | 0 | 0 | 6 | 16.5s |
-| 2026-10-21 | [Your app asked the server for new messages, and the server didn't answ](https://www.instagram.com/reel/Dev0IAUgYr0/) | 1,569 (+10) | 1,360 (+7) | 20 | 0 | 0 | 8 | 16.3s |
-| 2026-10-21 | [Your friend hit send, and it popped up on your phone instantly. You ne](https://www.instagram.com/reel/Devr_8Ej1Y-/) | 1,435 (+21) | 1,232 (+18) | 29 | 0 | 2 | 9 (+1) | 14.6s |
-| 2026-10-21 | [3 AM. Nobody's awake, and your app just emailed 10,000 people their re](https://www.instagram.com/reel/Devn_rdFG6z/) | 1,418 (+1) | 1,220 | 35 | 0 | 0 | 14 | 11.5s |
-| 2026-10-21 | [You tapped Pay twice on bad Wi-Fi. So why weren't you charged twice?](https://www.instagram.com/reel/DevkAnzDIbu/) | 1,580 (+3) | 1,383 (+4) | 34 | 0 | 7 | 13 | 16.3s |
-| 2026-10-21 | [Your app has 10 servers, and bots can't find a single one. All they ev](https://www.instagram.com/reel/DevYDm4jtwu/) | 3,652 (+27) | 3,115 (+25) | 109 | 0 | 11 | 67 (+2) | 17.8s |
-| 2026-10-21 | [Your flight and hotel are paid for. Then the car booking fails. Who ge](https://www.instagram.com/reel/DevL9S8CCb7/) | 1,638 (+2) | 1,460 (+2) | 22 | 0 | 11 | 10 | 13.8s |
-| 2026-10-21 | [What is a dead letter queue? The simple version, in 40 seconds.](https://www.instagram.com/reel/DevH-HaDygZ/) | 1,829 (+14) | 1,595 (+13) | 48 | 2 | 13 | 27 | 14.0s |
+| 2026-10-21 | [Your app takes two seconds to load its data. But the second time you o](https://www.instagram.com/reel/DewAKkNCNjm/) | 1,226 | 1,100 | 28 | 0 | 1 | 8 | 10.0s |
+| 2026-10-21 | [You asked an AI chatbot a question, and the answer appeared word by wo](https://www.instagram.com/reel/Dev6eHQk3he/) | 1,257 | 1,136 | 30 | 0 | 0 | 6 | 16.5s |
+| 2026-10-21 | [Your app asked the server for new messages, and the server didn't answ](https://www.instagram.com/reel/Dev0IAUgYr0/) | 1,569 | 1,360 | 20 | 0 | 0 | 8 | 16.3s |
+| 2026-10-21 | [Your friend hit send, and it popped up on your phone instantly. You ne](https://www.instagram.com/reel/Devr_8Ej1Y-/) | 1,437 (+2) | 1,238 (+6) | 29 | 0 | 2 | 9 | 14.6s |
+| 2026-10-21 | [3 AM. Nobody's awake, and your app just emailed 10,000 people their re](https://www.instagram.com/reel/Devn_rdFG6z/) | 1,418 | 1,220 | 35 | 0 | 0 | 14 | 11.5s |
+| 2026-10-21 | [You tapped Pay twice on bad Wi-Fi. So why weren't you charged twice?](https://www.instagram.com/reel/DevkAnzDIbu/) | 1,580 | 1,383 | 34 | 0 | 7 | 13 | 16.3s |
+| 2026-10-21 | [Your app has 10 servers, and bots can't find a single one. All they ev](https://www.instagram.com/reel/DevYDm4jtwu/) | 3,652 | 3,115 | 109 | 0 | 11 | 67 | 17.8s |
+| 2026-10-21 | [Your flight and hotel are paid for. Then the car booking fails. Who ge](https://www.instagram.com/reel/DevL9S8CCb7/) | 1,638 | 1,460 | 22 | 0 | 11 | 10 | 13.8s |
+| 2026-10-21 | [What is a dead letter queue? The simple version, in 40 seconds.](https://www.instagram.com/reel/DevH-HaDygZ/) | 1,829 | 1,595 | 48 | 2 | 13 | 27 | 14.0s |
 | 2026-10-20 | [How does load balancing work? How apps survive going viral, in 35 seco](https://www.instagram.com/reel/Deu389jCI7v/) | 1,429 | 1,236 | 26 | 0 | 5 | 16 | 12.3s |
-| 2026-10-20 | [Rate limiting, the simple version: why your app should say "too many r](https://www.instagram.com/reel/Deuz-jtD7GN/) | 1,941 (+8) | 1,670 (+4) | 45 | 0 | 12 | 33 | 15.3s |
-| 2026-10-20 | [One update blue-screened 8.5 million computers. All at the same time 💥](https://www.instagram.com/reel/Deuh_3nD3Z_/) | 1,331 (+2) | 1,170 (+2) | 29 | 0 | 3 | 7 | 19.4s |
-| 2026-10-20 | [You tap Place Order. One second later your email, tracking page and re](https://www.instagram.com/reel/Det1RFaS76L/) | 2,381 (+13) | 1,887 (+5) | 46 | 2 | 5 | 22 | 19.7s |
-| 2026-10-20 | [One post. Two million followers. One message. 📮](https://www.instagram.com/reel/DetdqQXSM9L/) | 1,483 (+3) | 1,326 (+4) | 11 | 0 | 2 | 3 | 14.7s |
-| 2026-10-18 | [Your app asked a server for the weather, and nothing came back. How lo](https://www.instagram.com/reel/DepoIsTybkw/) | 1,453 (+1) | 1,269 | 28 | 0 | 1 | 7 | 13.8s |
+| 2026-10-20 | [Rate limiting, the simple version: why your app should say "too many r](https://www.instagram.com/reel/Deuz-jtD7GN/) | 1,941 | 1,670 | 45 | 0 | 12 | 33 | 15.3s |
+| 2026-10-20 | [One update blue-screened 8.5 million computers. All at the same time 💥](https://www.instagram.com/reel/Deuh_3nD3Z_/) | 1,331 | 1,170 | 29 | 0 | 3 | 7 | 19.4s |
+| 2026-10-20 | [You tap Place Order. One second later your email, tracking page and re](https://www.instagram.com/reel/Det1RFaS76L/) | 2,381 | 1,887 | 46 | 2 | 5 | 22 | 19.7s |
+| 2026-10-20 | [One post. Two million followers. One message. 📮](https://www.instagram.com/reel/DetdqQXSM9L/) | 1,483 | 1,326 | 11 | 0 | 2 | 3 | 14.7s |
+| 2026-10-18 | [Your app asked a server for the weather, and nothing came back. How lo](https://www.instagram.com/reel/DepoIsTybkw/) | 1,453 | 1,269 | 28 | 0 | 1 | 7 | 13.8s |
 | 2026-10-18 | [One slow service took down the whole app. Not broken. Just slow. ⚡](https://www.instagram.com/reel/DepTLH1yW8M/) | 975 | 847 | 18 | 0 | 2 | 17 | 12.5s |
-| 2026-10-18 | [Your app froze at 3 AM. Still running, not answering anyone. And somet](https://www.instagram.com/reel/DeoNZd-ypXG/) | 2,645 (+1) | 2,294 | 70 | 3 | 6 | 37 | 14.4s |
-| 2026-10-17 | [Your service restarted. Same code, new address. And every call to it f](https://www.instagram.com/reel/Deml8FfStFb/) | 1,842 (+2) | 1,639 (+2) | 49 | 2 | 9 | 35 | 11.0s |
-| 2026-10-17 | [Your app crashed at 3 AM. By the time you woke up, it was already back](https://www.instagram.com/reel/DemAdV7yHef/) | 34,630 (+3,257) | 30,826 (+2,906) | 1,233 (+113) | 5 | 154 (+17) | 586 (+52) | 20.3s |
+| 2026-10-18 | [Your app froze at 3 AM. Still running, not answering anyone. And somet](https://www.instagram.com/reel/DeoNZd-ypXG/) | 2,645 | 2,294 | 70 | 3 | 6 | 37 | 14.4s |
+| 2026-10-17 | [Your service restarted. Same code, new address. And every call to it f](https://www.instagram.com/reel/Deml8FfStFb/) | 1,842 | 1,639 | 49 | 2 | 9 | 35 | 11.0s |
+| 2026-10-17 | [Your app crashed at 3 AM. By the time you woke up, it was already back](https://www.instagram.com/reel/DemAdV7yHef/) | 34,874 (+244) | 31,039 (+213) | 1,238 (+5) | 5 | 154 | 589 (+3) | 20.3s |
 | 2026-10-17 | [One service in your food app forgot to check the login. Now anyone can](https://www.instagram.com/reel/DelTG36SiBr/) | 1,397 | 1,203 | 32 | 0 | 12 | 20 | 12.6s |
-| 2026-10-16 | [It works on your laptop. You put it on a server and it crashes. Same c](https://www.instagram.com/reel/DekR_dKSMsc/) | 3,129 (+6) | 2,584 | 122 (+1) | 0 | 15 | 59 (+1) | 17.0s |
+| 2026-10-16 | [It works on your laptop. You put it on a server and it crashes. Same c](https://www.instagram.com/reel/DekR_dKSMsc/) | 3,129 | 2,584 | 122 | 0 | 15 | 59 | 17.0s |
