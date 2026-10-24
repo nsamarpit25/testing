@@ -21,7 +21,7 @@ DIR = os.path.normpath(DIR)
 IST = ZoneInfo("Asia/Kolkata")
 HISTORY = os.path.join(DIR, "history.jsonl")
 LATEST = os.path.join(DIR, "latest.md")
-ACCOUNTS = ["TALKINGAGENTS", "HOWITSENGINEERED"]
+ACCOUNTS = ["AGENTINLOOP", "HOWITSENGINEERED"]
 METRICS = ["views", "reach", "likes", "comments", "shares", "saves"]
 
 
