@@ -1,0 +1,9 @@
+In 2002 there was no Shazam app. You dialled 2580, held your phone up to the speaker, and got the song name back by text. 📟
+
+The trick behind it hasn't changed. Shazam turns sound into a map of pitch over time, keeps only the brightest points, and links pairs of them into tiny codes. Those codes are a fingerprint of one exact recording, checked against millions of songs.
+
+That's also why humming never works.
+
+Did you ever use the 2580 number? 👇
+
+#shazam #music #techexplained #howitworks #nostalgia

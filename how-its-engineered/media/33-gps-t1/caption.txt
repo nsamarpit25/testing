@@ -1,0 +1,9 @@
+Your phone can find the street you're on. The GPS satellites have no idea you exist. 🛰️
+
+They never hear from your phone. About 30 satellites just keep broadcasting where they are and the exact time each signal left. Your phone measures how late each one arrives, turns that into distances, and finds the one spot that fits them all.
+
+Fun fact: until 2000, the US blurred public GPS on purpose, by about a street.
+
+Did you think your phone talked to the satellites? 👇
+
+#gps #techexplained #howitworks #space #navigation

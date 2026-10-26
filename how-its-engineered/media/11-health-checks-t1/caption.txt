@@ -1,0 +1,12 @@
+3 AM. Your app is still running, but it stopped answering anyone. Nothing crashed, so nothing restarts it. 🥶
+
+Running isn't the same as working. So something has to keep asking "are you okay?", like a nurse checking a pulse:
+
+💓 Liveness: every few seconds it hits your health page. Three misses in a row and the app gets restarted
+🚦 Readiness: a copy that's still starting says "not yet", and traffic skips it until it's ready
+
+In Kubernetes that's a few lines of config.
+
+Has your app ever been "up" but not working? 👇
+
+#kubernetes #devops #backend #systemdesign #sre

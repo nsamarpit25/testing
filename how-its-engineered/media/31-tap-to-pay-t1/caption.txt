@@ -1,0 +1,9 @@
+Your bank card has no battery. So where does it get the power to pay?
+
+From the card machine. It makes a changing magnetic field, and the coil of wire hidden around your card's edge turns that into just enough electricity to wake the chip. The chip answers with your card number and a one-time code that only works for this payment.
+
+London's Tube gates check the card on the spot so you can keep walking, and the bank checks the payment later.
+
+Did you know your card was powered by the machine? 👇
+
+#contactless #nfc #techexplained #howitworks #payments

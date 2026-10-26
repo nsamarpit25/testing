@@ -1,0 +1,11 @@
+Friday, 6 PM. You change one letter, and 2 minutes later your whole app is down.
+
+🛡️ CI/CD is the automatic safety net between your code and your users
+🏗️ Build fails? Everything stops.
+🧪 Automated tests check things like login. A test fails? It stops.
+🚀 Everything passes? It releases automatically, or with one-click approval
+✅ That one-letter typo never reaches your users
+
+What's the smallest change that ever broke your app?
+
+#cicd #devops #softwareengineering #backend #programming

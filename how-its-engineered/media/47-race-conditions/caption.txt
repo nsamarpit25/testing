@@ -1,0 +1,12 @@
+100 likes arrived in the same second, and the counter only went up by 12. The other 88 weren't blocked. They overwrote each other.
+
+📖 Each like reads the count, adds one, and writes it back
+👯 Two likes read 900 at the same time, and both write 901
+✏️ The second write erases the first: that's a race condition
+🧪 It hides in testing, because one tester never overlaps with themselves
+
+The fix is an atomic update: UPDATE posts SET likes = likes + 1 in a single statement, or INCR in Redis. For check-then-act flows like stock, use a transaction with a lock.
+
+Have you ever seen a counter in your app that didn't add up?
+
+#raceconditions #concurrency #backend #webdev #systemdesign

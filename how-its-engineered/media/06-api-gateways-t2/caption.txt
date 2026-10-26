@@ -1,0 +1,11 @@
+A stranger opened everyone's orders in your food app without logging in. One service forgot one check.
+
+🧩 Big apps run separate services: orders, payments, menu
+🙈 If each one checks logins by itself, sooner or later one gets missed
+🚪 An API gateway is one front door: every request passes through it
+🛂 No valid login? Blocked at the door
+🧭 It also routes each request and slows down anyone sending too many
+
+Airport security for your backend.
+
+#systemdesign #apigateway #microservices #backend #websecurity

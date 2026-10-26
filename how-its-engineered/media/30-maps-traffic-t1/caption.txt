@@ -1,0 +1,9 @@
+There's no camera on that road. So how does Google Maps know about the jam?
+
+The phones in the cars told it. Phones navigating with Maps share their location and speed, and when lots of dots on one road slow right down, that stretch turns red.
+
+Proof: in 2020, an artist in Berlin pulled 99 phones down an empty street in a little red wagon. Maps showed a traffic jam with no cars in it.
+
+Did you know your phone was part of the traffic map? 👇
+
+#googlemaps #techexplained #howitworks #traffic #engineering

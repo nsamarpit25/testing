@@ -1,0 +1,9 @@
+Nobody pressed a button at 3 AM. Your app still emailed 10,000 receipts. ⏰
+
+That's a cron job: a schedule that tells the server when to run your code, like an alarm that never stops repeating. 0 3 * * * means every day at 3 AM.
+
+Careful: put the same schedule on two servers and both alarms ring, so everyone gets two receipts. Keep the schedule in one place (Kubernetes has CronJobs for this).
+
+What's the first thing you'd automate? 👇
+
+#linux #devops #backend #automation #programming

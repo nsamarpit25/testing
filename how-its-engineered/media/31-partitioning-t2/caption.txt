@@ -1,0 +1,12 @@
+A billion rows, and last week's orders still load fast. The trick is that the database never looks at most of them.
+
+🗂️ Partitioning splits one huge table into smaller ones inside the same database
+📅 A partition key, usually a date, decides which partition each row goes into
+⏭️ Ask for last week, and the database skips every month that can't hold it
+🧹 Old data? Drop the oldest partition in one step instead of deleting millions of rows
+
+Not the same as sharding: partitions stay in one database, shards spread across many servers.
+
+What's the biggest table you've had to work with?
+
+#database #postgresql #sql #backend #systemdesign

@@ -1,0 +1,9 @@
+Before a card machine can take your money, it has to power your card. ⚡
+
+Your bank card has no battery. The reader makes a magnetic field that cycles 13.56 million times a second, and a coil hidden around the card's edge turns it into just enough electricity to wake the chip. The chip answers with your card number plus a one-time code that only works for that payment.
+
+On the London Tube, the gate checks the card is genuine on the spot and the bank settles up later, so nobody waits.
+
+Did you know your card was just plastic until you tap? 👇
+
+#contactless #nfc #howitworks #techexplained #engineering

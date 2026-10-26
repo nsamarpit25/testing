@@ -1,0 +1,2 @@
+Retries
+Full remake built from 16-retries-v2 (original Dewd6RjFaG6), script revised from Argon's virality review of the original: "server stopped answering for one second" hook, retry definition cut, exponential backoff and jitter named, new AI CTA, new Puck take (atempo 1.15), every camera shot re-angled and zoomed in, karaoke captions, shorter end card, re-rendered on PC 192.168.0.113, synth bed seed 306, new "1 SECOND GLITCH. THEN A CRASH." cover, new caption. 33.4 s. Argon PASS, cutcheck clean.

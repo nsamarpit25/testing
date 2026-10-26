@@ -1,0 +1,2 @@
+Health checks
+Full remake built from 11-health-checks-v2 (original DeoNZd-ypXG): new "Saturday night, peak traffic" hook, rewritten lines ("Here's the catch", "After three missed answers") and CTA, new Puck take (default explainer style, atempo 1.15, regenerated once after a stumbled "Miss three"), every camera shot re-angled, badge overlaps fixed, YAML typing finishes before the CTA, TTS artifact after the last word muted, tail trimmed, karaoke line captions, re-rendered on PC 192.168.0.113, synth bed seed 131, new "STILL RUNNING. NOT WORKING." cover, new caption.

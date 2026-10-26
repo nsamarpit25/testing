@@ -1,0 +1,9 @@
+Your app outgrew one database server. Copies won't save you, because every write still lands on one machine.
+
+So you split the users. A shard key like userId % 4 sends user 42 straight to shard 2, and each server only carries its slice of the reads and writes.
+
+The catch: questions about all users hit every shard, a bad key creates a hot shard, and adding shards means moving data. That's why most apps try caching and replicas first.
+
+Would you shard by user ID or by region? 👇
+
+#databases #systemdesign #backend #softwareengineering #coding

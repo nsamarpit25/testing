@@ -1,0 +1,2 @@
+Dead letter queues
+Full remake built from 20-dead-letter-queues (original DevH-HaDygZ): new "checkout queue stuck on one broken order" hook, rewritten lines and new AI CTA, new Puck take (atempo 1.15), every camera shot re-angled, badge overlap fixes, karaoke captions, re-rendered on PC 192.168.0.113, synth bed seed 304, new "ONE BAD ORDER. QUEUE STUCK." cover, new caption. 37.0 s. Argon PASS, cutcheck clean.

@@ -1,0 +1,12 @@
+The server went quiet for 30 seconds on purpose, and that's what made your chat feel instant.
+
+🔁 Plain polling: ask every few seconds, hear "nothing new" almost every time
+⏳ Long polling: the server holds your request open and waits
+📬 The moment a message lands, it answers, and your app asks again
+⏱️ No message before the time limit? It answers "nothing yet" and the loop restarts
+
+Telegram's Bot API offers long polling (getUpdates) over plain HTTPS.
+
+Did you know there was a real-time trick older than WebSockets?
+
+#longpolling #webdevelopment #api #backend #systemdesign

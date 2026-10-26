@@ -1,0 +1,14 @@
+Same code. New address. And every call to your service failed. 💥
+
+The address was hardcoded. In the cloud, servers restart and move all the time, so the number you saved goes stale.
+
+Save the name, not the number, like your phone contacts:
+📝 a starting service registers "I'm payments, here's my address"
+🔍 callers look up payments before every call
+💓 the registry pings every copy and drops the ones that stop answering
+
+Kubernetes does this for you: call it by name.
+
+Ever had a hardcoded IP break on you? 👇
+
+#microservices #kubernetes #backend #systemdesign #devops

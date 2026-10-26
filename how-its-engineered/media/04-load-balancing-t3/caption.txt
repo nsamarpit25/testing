@@ -1,0 +1,13 @@
+100,000 people opened your app at once. Why didn't it crash?
+
+🖥️ One server would crash under that crowd, so you run copies on 10
+🚦 A load balancer decides which server gets each request
+🔁 Round robin takes turns; least connections picks the least busy server
+🩺 It pings every server and skips any that stop answering
+➕ Need more power? Add servers. Users keep the same address.
+
+AWS, NGINX and Cloudflare all do this. Save it for the day your app blows up.
+
+What's the most traffic your app has ever handled?
+
+#systemdesign #loadbalancing #backend #scalability #softwareengineering

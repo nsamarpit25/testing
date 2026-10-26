@@ -1,0 +1,9 @@
+One service in a food app forgot to check the login. Suddenly anyone could see everyone's orders. 💥
+
+When your phone calls every service directly, each one has to check your login itself. Miss one and the door is open.
+
+An API gateway is the single front door, like airport check-in: it checks your login once, blocks someone spamming refresh, and routes one tap to all the services behind it. Kong and Amazon API Gateway are common ones.
+
+Have you ever shipped an endpoint without an auth check? 👇
+
+#apigateway #microservices #backend #security #webdevelopment

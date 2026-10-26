@@ -1,0 +1,9 @@
+Your orders page makes 101 trips to the database. It only needed two. 🐢
+
+One query fetches 100 orders. Then your code asks for each order's customer, one at a time: 100 more trips, each one waiting on the last. That's the N+1 problem.
+
+Fix: fetch all the customers at once with WHERE id IN (…), or turn on eager loading in your ORM.
+
+Have you ever found an N+1 in your own code? 👇
+
+#sql #database #backend #webdevelopment #programming

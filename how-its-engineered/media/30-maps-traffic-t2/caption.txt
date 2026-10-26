@@ -1,0 +1,9 @@
+How do you fake a traffic jam? 99 phones and a little red wagon. 🛒📱
+
+In 2020, artist Simon Weckert pulled 99 phones running Google Maps down empty Berlin streets. Maps painted those streets red.
+
+It worked because Maps doesn't watch roads. Phones navigating with it share their location and speed, and when lots of them crawl along one road, that stretch turns red. Maps blends that with the usual traffic for that hour to pick your route.
+
+What other app do you think runs on data from your phone? 👇
+
+#googlemaps #techexplained #howitworks #engineering #traffic

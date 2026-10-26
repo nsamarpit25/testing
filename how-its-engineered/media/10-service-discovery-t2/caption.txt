@@ -1,0 +1,12 @@
+2 PM. Checkout breaks. Every payment fails, and nobody touched a single line of code.
+
+🔁 The payments service restarted on a new server, with a new address
+📞 Your app was still calling the old one
+📒 Service discovery keeps a live directory: names → current addresses
+✅ Your app looks up "payments" every time, so it always finds it
+
+Kubernetes and Consul do this for you.
+
+Ever had an outage where nothing in the code changed?
+
+#systemdesign #microservices #kubernetes #backend #softwareengineering

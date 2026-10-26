@@ -1,0 +1,12 @@
+One concert ticket left, two fans tap Buy at the same moment, and one of them is put on hold on purpose.
+
+🔒 Pessimistic locking expects a clash, so a checkout locks the row before it reads it
+⏳ Checkout B tries to lock the same row and waits until A is done
+✅ A sells the ticket, commits, and the commit releases the lock
+🎟️ Then B gets the row, reads 0 left, and shows sold out: no double sale, nothing to retry
+
+In SQL it's SELECT … FOR UPDATE inside a transaction (Postgres, MySQL). Keep those transactions short, or requests pile up behind the lock.
+
+Ticket drop: would you lock first, or check at save time?
+
+#pessimisticlocking #database #sql #backend #systemdesign

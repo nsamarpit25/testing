@@ -1,0 +1,13 @@
+Your app went viral and your database is crashing. The twist: almost all that traffic is just reading.
+
+📖 Feeds, profiles, search = reads. Posting = a write.
+🪞 Read replicas are copies that get every change from the primary
+✍️ Writes still go to the primary; reads spread across the copies
+⏳ Copies can lag a moment behind (replication lag)
+✅ Fix: right after you write, read your own data from the primary for a few seconds
+
+Replicas scale reads, not writes.
+
+Still on one database, or already using replicas?
+
+#systemdesign #database #readreplicas #backend #scalability

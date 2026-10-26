@@ -1,0 +1,2 @@
+Circuit breakers
+Full remake built from 13-circuit-breakers-v2 (original DepTLH1yW8M): new "Black Friday, store down, nothing broken" hook, shop→store rewrite, new AI CTA, new Puck take (atempo 1.15), every camera shot re-angled, karaoke captions, re-rendered on PC 192.168.0.113, synth bed seed 302, new "NOT BROKEN. JUST SLOW." cover, new caption. 36.8 s. Argon PASS, cutcheck clean.

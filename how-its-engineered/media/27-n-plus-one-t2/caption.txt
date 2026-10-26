@@ -1,0 +1,4 @@
+Fast queries can still build a slow page.
+The N+1 query problem hides in repetition: one order list, then a customer lookup per row. Batch the related records and inspect your ORM's SQL. How many queries does your busiest page make?
+
+#NPlusOne #SystemDesign #DatabaseOptimization #BackendEngineering #SoftwareEngineering

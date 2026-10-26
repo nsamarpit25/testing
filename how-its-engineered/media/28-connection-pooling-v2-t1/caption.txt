@@ -1,0 +1,9 @@
+8 PM, peak traffic. Your app is throwing errors, but the database is running fine. It just won't take another connection. 🚕
+
+Every request was opening its own database connection, and Postgres only allows so many. A connection pool opens a few connections once, keeps them open, and lends them out: a request borrows one, uses it, hands it back.
+
+Like a taxi rank: a few cabs serve the whole queue.
+
+How big is your app's pool? 👇
+
+#postgresql #database #backend #programming #webdevelopment

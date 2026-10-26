@@ -1,0 +1,12 @@
+Nine seconds to load ten orders, because the app pulled a million rows and kept ten.
+
+📊 The database holds every order from every user, with a column for each detail
+🚚 "Send me everything" moves a million rows to your app, which throws most away
+🎯 A better query asks for exactly what's on screen: your 10 newest, only the columns shown
+🔍 Put EXPLAIN in front of a query to see if it scans the whole table
+
+Fetching less is often the cheapest speed-up your app will ever get.
+
+Have you ever opened the Network tab and seen how much your page downloads?
+
+#sql #database #webdev #backend #systemdesign

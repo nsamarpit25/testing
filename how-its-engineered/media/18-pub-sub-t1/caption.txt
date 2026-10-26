@@ -1,0 +1,9 @@
+2 million followers need to know you posted. Why should your post button wait for all of them? 📮
+
+If the post service sends every notification, email and feed update itself, one slow job freezes everything, and every new feature means changing it again.
+
+With Pub/Sub, it publishes one "new post" message and it's done. Each feature subscribes and gets its own copy. New feature? Subscribe it; the publisher never changes. Like a radio station broadcasting once to every radio tuned in.
+
+What would you subscribe to "new post" first? 👇
+
+#pubsub #microservices #backend #softwareengineering #cloud

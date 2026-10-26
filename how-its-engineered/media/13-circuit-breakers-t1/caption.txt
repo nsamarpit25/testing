@@ -1,0 +1,9 @@
+Nothing crashed. One feature just got slow, and the whole shopping app stopped answering.
+
+Every page waits on the slow reviews service, each waiting request holds a thread, and when threads run out nobody gets an answer. Retrying only adds more calls.
+
+A circuit breaker cuts the slow service off, like the one in your house: after too many failures, calls fail instantly and the page hides that part. After a cooldown, a few test calls check if it's healthy again.
+
+Which service in your app would take everything down with it? 👇
+
+#systemdesign #microservices #backend #softwareengineering #coding

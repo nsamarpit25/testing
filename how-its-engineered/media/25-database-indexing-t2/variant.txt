@@ -1,0 +1,2 @@
+Database indexing
+Full remake of 25-database-indexing-v2 (DeyBc55EpfN): rewritten paradox-first script, new Puck take (storyteller style), every camera shot re-angled (orbited 10-17 degrees, lower/higher, wider) and re-rendered on PC 192.168.0.113, word-by-word captions, synth bed seed 311, new "100M ROWS. 3 HOPS." cover, new caption. 59.6 s vs 53.5 s. Argon PASS, cutcheck clean.

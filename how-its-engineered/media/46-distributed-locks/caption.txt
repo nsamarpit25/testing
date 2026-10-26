@@ -1,0 +1,12 @@
+Your billing job ran at midnight on all three servers, and every customer got three invoices.
+
+🧠 A lock in your code only lives in one server's memory, so it can't stop the others
+🔒 A distributed lock lives in one shared place every server can reach, like Redis
+🏁 All three race to grab it; the first wins and runs the job, the rest skip
+⏱️ Give it a timer, so a crashed server can't hold the lock forever
+
+In Redis: SET key value NX PX 30000. For critical writes, add a fencing token so a server that froze and woke up late can't overwrite newer work.
+
+Have you ever had a cron job run twice?
+
+#distributedsystems #redis #backend #devops #systemdesign

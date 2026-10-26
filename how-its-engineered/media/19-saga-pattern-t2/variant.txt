@@ -1,0 +1,2 @@
+Saga pattern
+Full remake built from 19-saga-pattern-b (original DevL9S8CCb7), script revised from Argon's virality review of the original: "you charged for flight and hotel, then the car fails" hook, repeated mid-section replaced by "it logs each success", new AI CTA, new Puck take (atempo 1.15), every camera shot re-angled and zoomed in, karaoke captions, shorter end card, re-rendered on PC 192.168.0.113, synth bed seed 307, new "CAR FAILED. WHO REFUNDS?" cover, new caption. 33.0 s. Argon PASS, cutcheck clean.

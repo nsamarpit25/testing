@@ -1,0 +1,11 @@
+You tapped Pay once and got charged twice. How does that even happen?
+
+📶 The server charged you $50, but its reply got lost on bad Wi-Fi
+🔁 Your app saw no reply and tried again → second charge
+🏷️ The fix: your app labels each payment with a unique number and sends the same number on every retry
+🗂️ The server saves the number with the result
+✅ Seen it before? It sends back the first answer. No second charge.
+
+That's idempotency. Stripe has it built in.
+
+#systemdesign #idempotency #payments #backend #softwareengineering

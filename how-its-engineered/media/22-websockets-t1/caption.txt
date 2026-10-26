@@ -1,0 +1,9 @@
+You never refreshed. The message just appeared. 💬
+
+Normally your app asks, the server answers, and that's it: the server can't speak first. A WebSocket keeps one connection open, like a phone call nobody hangs up, so the server can push your friend's message the moment it arrives.
+
+The cost: every open connection holds server memory, and when your signal drops the app has to reconnect.
+
+Chat, live scores, multiplayer games: what would you build with it? 👇
+
+#websockets #javascript #webdevelopment #realtime #programming

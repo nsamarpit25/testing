@@ -1,0 +1,2 @@
+Docker
+Full remake built from 08-docker-v2 (original DekR_dKSMsc, 59.7 s): new "passed every test, Friday 5 PM" hook, rewritten lines and CTA, new Puck take (default explainer style, atempo 1.15, first take discarded for a repeated sentence), every camera shot re-angled, layer order and badge fixes, word-by-word captions, re-rendered on PC 192.168.0.113, synth bed seed 88, new "SAME CODE. NEW CRASH." cover, new caption. 46.4 s. Argon PASS on the final file, cutcheck clean.

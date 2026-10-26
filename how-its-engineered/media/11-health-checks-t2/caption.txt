@@ -1,0 +1,12 @@
+Saturday night, peak traffic, and your app freezes. The process says "running" but nobody gets an answer. 30 seconds later something restarts it. What noticed? 🤔
+
+Running isn't working. A frozen app looks alive, so crash recovery never fires. The fix is a health check: the system hosting your app keeps asking "are you okay?"
+
+✅ Are you alive? Hit a health page every few seconds. 3 missed answers in a row → restart
+⏳ Are you ready? A new copy says "not yet" while it starts, so requests skip it
+
+Kubernetes calls these liveness and readiness probes.
+
+Which one have you actually configured? 👇
+
+#kubernetes #devops #backend #systemdesign #webdevelopment

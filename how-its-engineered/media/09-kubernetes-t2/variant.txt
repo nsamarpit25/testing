@@ -1,0 +1,2 @@
+Kubernetes
+Full remake of the Kubernetes reel (original DemAdV7yHef, built from 09-kubernetes-v2): rewritten script and CTA ("A server died at 3 AM... nobody woke up", "If you build with AI..."), new Puck take (default explainer style, atempo 1.12), every camera shot re-angled (azimuth/elevation/zoom), word-by-word captions, two badge-overlap fixes, re-rendered on PC 192.168.0.113, synth bed seed 214, new "SERVER DIED. APP DIDN'T." cover, new caption. 40.6 s vs v2 36.9 s. Argon PASS (minor polish only), cutcheck clean.

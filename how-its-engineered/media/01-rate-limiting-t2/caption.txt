@@ -1,0 +1,4 @@
+Sometimes the healthiest response your API can send is 429.
+A rate limiter gives each sender a budget, so one bot or runaway script cannot consume everyone's capacity. Would you limit by account, API key, or IP?
+
+#SystemDesign #RateLimiting #BackendEngineering #APIDesign #SoftwareEngineering

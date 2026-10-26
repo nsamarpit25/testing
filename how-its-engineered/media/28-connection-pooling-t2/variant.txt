@@ -1,0 +1,2 @@
+Connection pooling
+Full remake of 28-connection-pooling-v2 (De1OEsgm7QM): bigger-pool paradox hook, shared-budget explanation, rewritten script and new Puck take, new perspective camera sequence/angles on PC 192.168.0.113, removed taxi detour, synth bed seed 128, green multi-server pool cover and new caption. 44.7 s vs 49.0 s source (-4.3 s). Explicit example budget of 100, max 5 per server, 2-second acquire timeout. No follow CTA.

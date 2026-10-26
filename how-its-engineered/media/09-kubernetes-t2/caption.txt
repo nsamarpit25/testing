@@ -1,0 +1,7 @@
+One server went down in the middle of the night. The app never did.
+
+Kubernetes doesn't follow steps, it chases a target. You write "3 copies, always," and it keeps checking reality against that. A server dies, it starts replacement copies on the machines that are left. Traffic spikes, autoscaling adds copies, then removes them when it calms down. New release, it swaps old copies for new ones a few at a time so users never see downtime.
+
+What would you set as your "always"?
+
+#kubernetes #devops #cloudnative #backend #systemdesign

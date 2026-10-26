@@ -1,0 +1,4 @@
+A second server can turn one scheduled email into two.
+Cron jobs need clear schedule ownership and retry-safe work. A receipt ID helps your sender recognize a completed send. Have you ever had a scheduled task run twice?
+
+#CronJobs #SystemDesign #BackendEngineering #Kubernetes #SoftwareEngineering

@@ -1,0 +1,9 @@
+50,000 password guesses in one minute. One bot. And after the fifth try, it got nothing back.
+
+That's a rate limiter. It counts each user's requests, and past the limit it answers 429 Too Many Requests until the time window resets. The bot is stuck, real users keep logging in.
+
+GitHub, OpenAI and Stripe all rate-limit their APIs.
+
+What limit would you set on your login page? 👇
+
+#apisecurity #backend #systemdesign #programming #cybersecurity

@@ -1,0 +1,2 @@
+Partitioning
+Full remake of 31-partitioning (De4Q21hk9tP): rewritten script and new hook, new Vertex Puck take, every camera shot re-angled, word-by-word captions, new synth bed, new cover and caption. Rendered on PC 192.168.0.115.

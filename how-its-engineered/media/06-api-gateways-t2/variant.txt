@@ -1,0 +1,2 @@
+API gateways
+Full remake built from 06-api-gateways-v2 (original DelTG36SiBr): new "a stranger opened everyone's orders" hook, rewritten lines and new AI CTA, new Puck take (atempo 1.15), every camera shot re-angled, anchor fixes (end card, split shot), karaoke captions, re-rendered on PC 192.168.0.113, synth bed seed 303, new "ONE CHECK FORGOTTEN." cover, new caption. 40.1 s. Argon PASS, cutcheck clean.

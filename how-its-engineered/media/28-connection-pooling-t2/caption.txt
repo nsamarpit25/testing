@@ -1,0 +1,4 @@
+One database budget. Several app servers spending it.
+Connection pooling reuses open connections, but pool sizes add up across every instance. Leave headroom and return borrowed clients. Do you check the total, or just each server's setting?
+
+#ConnectionPooling #SystemDesign #PostgreSQL #BackendEngineering #SoftwareEngineering

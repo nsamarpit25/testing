@@ -1,0 +1,9 @@
+One second of silence from the weather server. Then thousands of apps retried at the same moment, and it went down for real. 🌩️
+
+That's a retry storm. Retrying helps when a connection blips, but instant, endless retries pile onto a server that's already struggling.
+
+Three fixes: cap it (stop after three tries), back off (wait 1 s, then 2, then 4), and add jitter (a little randomness, so everyone doesn't come back together).
+
+Does your app retry forever? 👇
+
+#backend #distributedsystems #programming #api #softwareengineering

@@ -1,0 +1,2 @@
+N+1 queries
+Full remake of 27-n-plus-one-v2 (De1lsDgjOe0): fast-queries/slow-page paradox hook, rewritten script and new Puck take, new perspective camera order and angles rendered on PC 192.168.0.113, removed waiter detour, synth bed seed 127, wait-tower cover and new caption. 40.5 s vs source 47.7 s (-7.2 s). No follow CTA.

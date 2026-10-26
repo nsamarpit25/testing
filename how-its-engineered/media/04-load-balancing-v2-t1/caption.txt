@@ -1,0 +1,7 @@
+Your app went viral at 9 PM. 100,000 people opened it at once, and it didn't slow down. Here's why.
+
+There isn't one server. There are ten copies, and a load balancer hands each request to one of them: taking turns (round robin) or picking the least busy one (least connections). If a copy stops answering, health checks take it out of the rotation. Need more? Add servers, same address.
+
+Which would you pick: round robin or least connections? 👇
+
+#systemdesign #backend #scalability #devops #webdevelopment

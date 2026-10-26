@@ -1,0 +1,9 @@
+July 2024: one update reached 8.5 million Windows computers at once. Airports, banks and hospitals went to a blue screen. 💥
+
+The fix is old. Coal miners took a canary underground first, so trouble showed up before it reached everyone.
+
+A canary release does the same: ship to 1%, watch errors, roll back if it breaks, then 5%, 25%, everyone. Tools like Argo Rollouts and AWS CodeDeploy automate it.
+
+Does your team ship to everyone at once? 👇
+
+#devops #softwareengineering #deployment #crowdstrike #programming

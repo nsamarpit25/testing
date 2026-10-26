@@ -1,0 +1,2 @@
+Service discovery
+Full remake built from 10-service-discovery-v2 (original Deml8FfStFb): new "2 PM, checkout broke, nobody touched the code" hook, rewritten lines and new AI CTA, new Puck take (atempo 1.15), every camera shot re-angled, badge rewrites, failure counter no longer resets, karaoke captions, re-rendered on PC 192.168.0.113, synth bed seed 301, new "PAYMENTS FAILED. CODE UNTOUCHED." cover, new caption. 32.7 s. Argon PASS, cutcheck clean.

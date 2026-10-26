@@ -1,0 +1,2 @@
+CI/CD
+Full remake built from 07-ci-cd-v2 (original DewW9a6CNof), script revised from Argon's virality review of the original: "Friday 6 PM, one letter, whole app down" hook, definition reframed as a safety net, build/test lines tightened, new AI CTA, new Puck take (atempo 1.15), every camera shot re-angled and zoomed in, karaoke captions, shorter end card, re-rendered on PC 192.168.0.113, synth bed seed 308, new "ONE LETTER. APP DOWN." cover, new caption. 31.5 s. Argon PASS, cutcheck clean.

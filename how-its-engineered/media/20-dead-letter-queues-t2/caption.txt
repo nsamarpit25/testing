@@ -1,0 +1,13 @@
+Your checkout queue is stuck on one broken order. The app keeps retrying it, and everything behind it piles up.
+
+☠️ A message that fails every time is a "poison message"
+🔢 Set a retry limit
+📦 After that, it's moved aside into a dead letter queue
+✅ Every other order keeps flowing
+🔧 Fix the cause later and send it back to be processed
+
+Amazon SQS and RabbitMQ both support it.
+
+Have you ever had one bad message block a whole queue?
+
+#systemdesign #messagequeue #backend #aws #softwareengineering

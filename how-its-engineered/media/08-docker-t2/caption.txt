@@ -1,0 +1,7 @@
+Every test passed on your laptop. Friday, 5 PM, you deploy, and the server crashes a minute later. Same exact code.
+
+The difference wasn't the code, it was everything around it: the server had an older Python and was missing a library. Docker fixes that by shipping the code together with everything it needs. A Dockerfile lists it, Docker builds it into an image, and running that image gives you a container that's identical on a laptop, a server or the cloud.
+
+What's the worst "works on my machine" bug you've hit?
+
+#docker #containers #devops #softwaredevelopment #backend

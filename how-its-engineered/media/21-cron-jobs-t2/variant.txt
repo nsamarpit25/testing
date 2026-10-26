@@ -1,0 +1,2 @@
+Cron jobs
+Full remake of 21-cron-jobs (Devn_rdFG6z): duplicate-receipt story first, new script and Puck take, new camera order and angles rendered on PC 192.168.0.113, synth bed seed 121, duplicate-server cover and new caption. 42.8 s vs source 31.4 s (+11.4 s). Adds retry-safety caveat and receipt-ID concept; no follow CTA.

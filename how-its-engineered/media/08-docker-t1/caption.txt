@@ -1,0 +1,9 @@
+"But it works on my machine." Then it hits the server and crashes. Same code. 💥
+
+The code was fine. The machine around it wasn't: a different Node version, a library you installed months ago, a missing .env file.
+
+Docker ships the machine with the code. A Dockerfile lists what your app needs, Docker builds it into an image, and that image runs as an identical container on your laptop, the server or your teammate's PC.
+
+Tag the teammate who says "works on my machine" 👇
+
+#docker #devops #programming #coding #systemdesign

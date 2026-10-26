@@ -1,0 +1,9 @@
+Bots scan the internet all night looking for servers to hit. If your app sits behind a reverse proxy, all they ever find is one machine.
+
+Every request lands on the proxy first, like a waiter between the customers and the kitchen. Your real servers stay private with no public address. The proxy answers popular pages from its cache and sends /api and /images to different servers. That's the job NGINX and Cloudflare do for millions of sites.
+
+Forward proxy: hides you from the website. Reverse proxy: hides the website's servers from you.
+
+Is your app behind one yet?
+
+#reverseproxy #nginx #cloudflare #webdevelopment #systemdesign

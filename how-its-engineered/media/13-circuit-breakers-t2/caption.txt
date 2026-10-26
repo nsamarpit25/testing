@@ -1,0 +1,13 @@
+Black Friday. Your store is down, and nothing is even broken. The reviews just got slow.
+
+🐢 Every product page waits on the reviews server
+📈 The waiting work piles up until the whole store stops loading
+⚡ A circuit breaker sees too many slow or failed requests and pauses them
+🧩 Your code skips the reviews and loads the rest of the page
+🔁 Later it lets a few test requests through. Fast again? Resume.
+
+One slow feature shouldn't take down your whole app.
+
+Which service in your app would take everything else down with it?
+
+#systemdesign #microservices #backend #distributedsystems #softwareengineering

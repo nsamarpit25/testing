@@ -1,0 +1,12 @@
+You charged for the flight and the hotel. Then the car booking fails. Who refunds the money?
+
+🧩 Each booking lives in a separate program, with no shared undo button
+📋 A saga runs the steps one by one, each with a cleanup plan
+↩️ When the car fails, it cleans up backwards: cancel the hotel, then the flight, then refund
+🧳 Like a travel agent undoing your trip in reverse
+
+The cleanup steps are called compensating actions, and you write them. AWS Step Functions can run the whole saga.
+
+Does your checkout undo the first charge when step 2 fails?
+
+#systemdesign #sagapattern #microservices #backend #distributedsystems

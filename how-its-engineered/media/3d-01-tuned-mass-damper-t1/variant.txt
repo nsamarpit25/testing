@@ -1,0 +1,2 @@
+Taipei 101 tuned mass damper
+Of tmd_full (De2MyvCEc_W): hook line + 1.06x (40.4 → 38.1 s), new caption.

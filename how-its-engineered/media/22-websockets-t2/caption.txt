@@ -1,0 +1,12 @@
+Your chat app is on a phone call with a server that never hangs up. That's why messages show up before you refresh.
+
+📞 Normal requests: your app asks, the server answers once, and the line closes
+🔌 A WebSocket keeps one connection open, so either side can talk any time
+⚡ When your friend hits send, the server pushes it straight down that line to you
+🧠 The catch: every open line costs server memory, and dropped connections need a reconnect
+
+Discord uses WebSockets for live updates, and every modern browser supports them.
+
+Would your app notice if its connection quietly dropped?
+
+#websockets #webdev #javascript #backend #systemdesign

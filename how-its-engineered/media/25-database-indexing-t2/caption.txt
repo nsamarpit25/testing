@@ -1,0 +1,7 @@
+Same 100 million users. Same query. Remove one index and the login goes from milliseconds to seconds.
+
+An index is a separate, sorted copy of one column with pointers back to the rows, so the database jumps to "sam@" in a few hops instead of reading the whole table. The trade-off: every index adds storage and slows down every insert.
+
+Which query in your app would break first without its index?
+
+#sql #databases #postgres #backenddevelopment #softwareengineering

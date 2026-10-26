@@ -1,0 +1,9 @@
+A noisy café, a few seconds of a song, and Shazam names it. It isn't listening the way you do. 🎵
+
+It turns the clip into a map of pitch over time, keeps only the loudest points like stars in a night sky, and pairs them into tiny codes. Those codes are a fingerprint it checks against millions of songs.
+
+Back in 2002 there was no app: you dialled 2580, held up your phone, and got the song name by text.
+
+What's the last song you Shazamed? 👇
+
+#shazam #music #techexplained #howitworks #engineering

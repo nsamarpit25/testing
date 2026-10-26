@@ -1,0 +1,9 @@
+Until May 2000, the US made public GPS wrong on purpose, by about a street. 🛰️
+
+It was called Selective Availability. When President Clinton switched it off, ordinary receivers got roughly 10× more accurate overnight.
+
+And your phone still never talks to the satellites. About 30 of them broadcast where they are and exactly when each signal left. Your phone times the signals, turns them into distances, and finds the one spot where they all agree. A fourth satellite fixes your phone's clock.
+
+Would you have guessed GPS used to be blurred on purpose? 👇
+
+#gps #history #techexplained #howitworks #space

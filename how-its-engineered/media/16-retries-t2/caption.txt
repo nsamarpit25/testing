@@ -1,0 +1,11 @@
+Your server went quiet for 1 second. Then thousands of apps retried at once and took it down for real. That's a retry storm.
+
+1️⃣ Cap it: stop once it works, or after 3 retries
+2️⃣ Exponential backoff: wait 1 s, then 2 s, then 4 s
+3️⃣ Jitter: add a little randomness so apps don't all come back together
+
+Save this before you ship a fetch loop.
+
+Does your app retry forever?
+
+#systemdesign #retries #backend #distributedsystems #softwareengineering

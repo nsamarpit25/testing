@@ -1,0 +1,2 @@
+Tap to pay
+New cut of 31-tap-to-pay: power-first hook ("Before a card machine can take your money, it has to give your card power"), live field + bolt from frame 1, rewritten script, Puck voice re-take, camera rotated 0.28 rad on studio shots, synth bed + whooshes, new cover, 47.7 s (orig 45.8). Argon: facts + audio PASS; gate crowd overlap fixed.
