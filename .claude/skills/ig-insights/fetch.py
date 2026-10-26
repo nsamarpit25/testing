@@ -1,4 +1,4 @@
-"""Fetch Instagram stats for both accounts.
+"""Fetch Instagram stats for all tracked accounts.
 
 Appends one line per account and one per reel to insights/history.jsonl (never
 rewritten), then regenerates insights/latest.md from it, with the change since
@@ -21,7 +21,7 @@ DIR = os.path.normpath(DIR)
 IST = ZoneInfo("Asia/Kolkata")
 HISTORY = os.path.join(DIR, "history.jsonl")
 LATEST = os.path.join(DIR, "latest.md")
-ACCOUNTS = ["AGENTINLOOP", "HOWITSENGINEERED"]
+ACCOUNTS = ["AGENTINLOOP", "HOWITSENGINEERED", "LETSBUILDSIMPLY"]
 METRICS = ["views", "reach", "likes", "comments", "shares", "saves"]
 
 
