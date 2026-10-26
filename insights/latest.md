@@ -1,33 +1,33 @@
 # Instagram insights
 
-Updated 2026-10-27 03:42. Change since 03:36 is in brackets. Every fetch is kept in `history.jsonl`.
+Updated 2026-10-27 04:04. Change since 03:42 is in brackets. Every fetch is kept in `history.jsonl`.
 
 ## @agentinloop
 
-**1 followers** · 6 posts · 5,901 (+34) total views
+**1 followers** · 6 posts · 6,000 (+99) total views
 
 | Posted | Post | Views | Reach | Likes | Comments | Shares | Saves | Avg watch |
 |---|---|--:|--:|--:|--:|--:|--:|--:|
-| 2026-10-26 | [Claude made the whole deck. My boss called me a genius. My contributio](https://www.instagram.com/reel/De92tF4jl3E/) | 1,936 (+31) | 1,344 (+62) | 28 | 0 | 4 | 5 | 20.5s |
-| 2026-10-26 | [Launched my portfolio. Everyone says the link is broken. It works perf](https://www.instagram.com/reel/De9SdOBCane/) | 183 | 129 (+1) | 4 | 0 | 0 | 0 | 18.5s |
-| 2026-10-26 | [Asked my AI for a quick cleanup so I could commit. It merged the helpe](https://www.instagram.com/reel/De8pNQIj095/) | 422 (+3) | 316 | 17 | 0 | 0 | 1 | 25.3s |
+| 2026-10-26 | [Claude made the whole deck. My boss called me a genius. My contributio](https://www.instagram.com/reel/De92tF4jl3E/) | 2,031 (+95) | 1,434 (+90) | 29 (+1) | 0 | 4 | 5 | 20.5s |
+| 2026-10-26 | [Launched my portfolio. Everyone says the link is broken. It works perf](https://www.instagram.com/reel/De9SdOBCane/) | 183 | 129 | 4 | 0 | 0 | 0 | 18.5s |
+| 2026-10-26 | [Asked my AI for a quick cleanup so I could commit. It merged the helpe](https://www.instagram.com/reel/De8pNQIj095/) | 426 (+4) | 324 (+8) | 17 | 0 | 0 | 1 | 25.3s |
 | 2026-10-25 | [Made the button green eleven times. It stayed blue for forty minutes. ](https://www.instagram.com/reel/De7W-MejR9M/) | 197 | 162 | 4 | 0 | 0 | 0 | 21.2s |
-| 2026-10-25 | [Spent three hours on a button that only plays a sad trumpet. My AI's o](https://www.instagram.com/reel/De6dcAMCb0Y/) | 729 | 590 | 32 | 0 | 0 | 2 | 20.7s |
+| 2026-10-25 | [Spent three hours on a button that only plays a sad trumpet. My AI's o](https://www.instagram.com/reel/De6dcAMCb0Y/) | 729 | 591 (+1) | 32 | 0 | 0 | 2 | 20.7s |
 | 2026-10-24 | [Told my AI to "reply professionally" to my unread messages. It found R](https://www.instagram.com/reel/De4i_kbDJ0I/) | 2,434 | 1,595 | 38 | 0 | 0 | 0 | 26.4s |
 
 ## @how.its.engineered
 
-**468 followers** · 50 posts · 155,867 (+30) total views
+**468 followers** · 50 posts · 155,968 (+101) total views
 
 | Posted | Post | Views | Reach | Likes | Comments | Shares | Saves | Avg watch |
 |---|---|--:|--:|--:|--:|--:|--:|--:|
-| 2026-10-26 | [Your app went viral and your database is crashing. The twist: almost a](https://www.instagram.com/reel/De-ReHrj2Nk/) | 0 | 0 | 0 | 0 | 0 | 0 | 0.0s |
-| 2026-10-26 | [Your server went quiet for 1 second. Then thousands of apps retried at](https://www.instagram.com/reel/De915NjDKyl/) | 603 (+14) | 497 (+32) | 12 | 0 | 0 | 5 | 18.9s |
-| 2026-10-26 | [You charged for the flight and the hotel. Then the car booking fails. ](https://www.instagram.com/reel/De9aeAiDptJ/) | 1,463 (+3) | 1,245 | 15 | 0 | 2 | 3 | 13.6s |
-| 2026-10-26 | [Eventual consistency explained: your data lives in copies on many serv](https://www.instagram.com/reel/De9Scj0ADAb/) | 1,408 | 1,259 | 32 | 0 | 0 | 0 | 20.4s |
-| 2026-10-26 | [You tapped Pay once and got charged twice. How does that even happen?](https://www.instagram.com/reel/De8--PQALW6/) | 728 (+2) | 634 (+3) | 15 | 0 | 1 | 2 | 12.4s |
-| 2026-10-26 | [100,000 people opened your app at once. Why didn't it crash?](https://www.instagram.com/reel/De8jmVXFYa7/) | 1,298 (+1) | 1,081 | 33 | 0 | 1 | 8 | 13.7s |
-| 2026-10-26 | [CAP theorem explained: when the network splits, a distributed database](https://www.instagram.com/reel/De8bfdzicAy/) | 1,678 (+7) | 1,460 (+5) | 27 | 0 | 0 | 10 | 20.9s |
+| 2026-10-26 | [Your app went viral and your database is crashing. The twist: almost a](https://www.instagram.com/reel/De-ReHrj2Nk/) | 0 | 0 | 0 | 0 | 0 | 0 | 6.3s |
+| 2026-10-26 | [Your server went quiet for 1 second. Then thousands of apps retried at](https://www.instagram.com/reel/De915NjDKyl/) | 673 (+70) | 527 (+30) | 12 | 0 | 0 | 5 | 19.4s |
+| 2026-10-26 | [You charged for the flight and the hotel. Then the car booking fails. ](https://www.instagram.com/reel/De9aeAiDptJ/) | 1,465 (+2) | 1,247 (+2) | 15 | 0 | 2 | 3 | 13.6s |
+| 2026-10-26 | [Eventual consistency explained: your data lives in copies on many serv](https://www.instagram.com/reel/De9Scj0ADAb/) | 1,412 (+4) | 1,261 (+2) | 32 | 0 | 0 | 0 | 20.4s |
+| 2026-10-26 | [You tapped Pay once and got charged twice. How does that even happen?](https://www.instagram.com/reel/De8--PQALW6/) | 732 (+4) | 643 (+9) | 15 | 0 | 1 | 2 | 12.3s |
+| 2026-10-26 | [100,000 people opened your app at once. Why didn't it crash?](https://www.instagram.com/reel/De8jmVXFYa7/) | 1,299 (+1) | 1,081 | 33 | 0 | 1 | 8 | 13.7s |
+| 2026-10-26 | [CAP theorem explained: when the network splits, a distributed database](https://www.instagram.com/reel/De8bfdzicAy/) | 1,690 (+12) | 1,469 (+9) | 27 | 0 | 0 | 10 | 20.9s |
 | 2026-10-26 | [Your checkout queue is stuck on one broken order. The app keeps retryi](https://www.instagram.com/reel/De8ICHgAb7G/) | 1,155 | 1,036 | 24 | 0 | 2 | 7 | 14.5s |
 | 2026-10-25 | [Black Friday. Your store is down, and nothing is even broken. The revi](https://www.instagram.com/reel/De7speKiF3P/) | 151 | 144 | 1 | 0 | 0 | 0 | 5.7s |
 | 2026-10-25 | [A stranger opened everyone's orders in your food app without logging i](https://www.instagram.com/reel/De7RJ-JCn6X/) | 1,231 | 1,073 | 23 | 0 | 2 | 10 | 11.5s |
@@ -93,15 +93,15 @@ Updated 2026-10-27 03:42. Change since 03:36 is in brackets. Every fetch is kept
 | 2026-10-18 | [One slow service took down the whole app. Not broken. Just slow. ⚡](https://www.instagram.com/reel/DepTLH1yW8M/) | 985 | 854 | 18 | 0 | 2 | 17 | 12.7s |
 | 2026-10-18 | [Your app froze at 3 AM. Still running, not answering anyone. And somet](https://www.instagram.com/reel/DeoNZd-ypXG/) | 2,656 | 2,301 | 71 | 3 | 6 | 37 | 14.4s |
 | 2026-10-17 | [Your service restarted. Same code, new address. And every call to it f](https://www.instagram.com/reel/Deml8FfStFb/) | 1,852 | 1,646 | 49 | 2 | 9 | 35 | 11.0s |
-| 2026-10-17 | [Your app crashed at 3 AM. By the time you woke up, it was already back](https://www.instagram.com/reel/DemAdV7yHef/) | 41,753 (+3) | 37,343 | 1,473 | 9 | 170 | 686 | 20.5s |
+| 2026-10-17 | [Your app crashed at 3 AM. By the time you woke up, it was already back](https://www.instagram.com/reel/DemAdV7yHef/) | 41,761 (+8) | 37,348 (+5) | 1,473 | 9 | 170 | 686 | 20.5s |
 | 2026-10-17 | [One service in your food app forgot to check the login. Now anyone can](https://www.instagram.com/reel/DelTG36SiBr/) | 1,409 | 1,211 | 34 | 0 | 12 | 21 | 12.7s |
 | 2026-10-16 | [It works on your laptop. You put it on a server and it crashes. Same c](https://www.instagram.com/reel/DekR_dKSMsc/) | 3,145 | 2,591 | 122 | 0 | 15 | 59 | 17.0s |
 
 ## @letsbuildsimply
 
-**0 followers** · 2 posts · 5,073 (+3) total views
+**0 followers** · 2 posts · 5,085 (+12) total views
 
 | Posted | Post | Views | Reach | Likes | Comments | Shares | Saves | Avg watch |
 |---|---|--:|--:|--:|--:|--:|--:|--:|
-| 2026-10-26 | [What if you drilled straight through the Earth… and jumped in? 🌍](https://www.instagram.com/reel/De9zGjagJGR/) | 2,016 (+3) | 1,245 | 16 | 2 | 2 | 0 | 26.6s |
-| 2026-10-26 | [How do you move a 100-ton rock with no crane? 🪨](https://www.instagram.com/reel/De9O8t_jzK-/) | 3,057 | 2,329 | 49 | 0 | 0 | 5 | 25.3s |
+| 2026-10-26 | [What if you drilled straight through the Earth… and jumped in? 🌍](https://www.instagram.com/reel/De9zGjagJGR/) | 2,026 (+10) | 1,254 (+9) | 16 | 2 | 2 | 0 | 26.5s |
+| 2026-10-26 | [How do you move a 100-ton rock with no crane? 🪨](https://www.instagram.com/reel/De9O8t_jzK-/) | 3,059 (+2) | 2,329 | 49 | 0 | 0 | 5 | 25.3s |
