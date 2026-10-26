@@ -1,0 +1,57 @@
+{
+ "topic": "Message queues",
+ "lines": [
+  [
+   {
+    "say": "You texted a friend whose phone is dead. One grey tick.",
+    "show": "You texted a friend whose phone is *dead.* One grey tick."
+   },
+   {
+    "say": "So where is that message right now?",
+    "show": "So where is that message [right now?]"
+   }
+  ],
+  [
+   {
+    "say": "It's waiting in a queue: a line on a server where messages sit until someone picks them up.",
+    "show": "It's waiting in a [queue:] a line on a server where messages sit until someone *picks them up.*"
+   }
+  ],
+  [
+   {
+    "say": "You drop the message in and move on. The receiver doesn't need to be online.",
+    "show": "You drop the message in and *move on.* The receiver doesn't need to be [online.]"
+   }
+  ],
+  [
+   {
+    "say": "When your friend's phone comes back, it picks the messages up and confirms each one arrived. Only then is it removed from the queue.",
+    "show": "When your friend's phone comes back, it picks the messages up and *confirms* each one arrived. Only then is it [removed] from the queue."
+   }
+  ],
+  [
+   {
+    "say": "Shops queue work too. Checkout drops each order in a queue, and background programs handle them at their own pace, so a rush waits in line instead of piling onto the server.",
+    "show": "Shops queue work too. Checkout drops each order in a queue, and background programs handle them *at their own pace,* so a rush [waits in line] instead of piling onto the server."
+   }
+  ],
+  [
+   {
+    "say": "Like a post office holding your letters until you come to collect them.",
+    "show": "Like a *post office* holding your letters until you come to [collect them.]"
+   }
+  ],
+  [
+   {
+    "say": "RabbitMQ and Amazon SQS provide these queues.",
+    "show": "*RabbitMQ* and *Amazon SQS* provide these queues."
+   }
+  ],
+  [
+   {
+    "say": "If you're a vibe coder, follow for the system design your AI skipped.",
+    "show": "If you're a vibe coder, follow for the system design your AI [skipped.]"
+   }
+  ]
+ ]
+}

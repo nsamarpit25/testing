@@ -1,0 +1,74 @@
+[
+ {
+  "li": 0,
+  "pi": 0,
+  "say": "You asked an AI chatbot a question, and the answer appeared word by word, like someone typing live.",
+  "show": "You asked an AI chatbot a question, and the answer appeared *word by word,* like someone typing live.",
+  "start": 0.0,
+  "end": 4.54
+ },
+ {
+  "li": 0,
+  "pi": 1,
+  "say": "How does the server keep sending?",
+  "show": "How does the server [keep sending?]",
+  "start": 4.94,
+  "end": 6.08
+ },
+ {
+  "li": 1,
+  "pi": 0,
+  "say": "If the server waited to send the whole answer at once, you'd stare at a blank screen for seconds.",
+  "show": "If the server waited to send the *whole answer* at once, you'd stare at a [blank screen] for seconds.",
+  "start": 6.64,
+  "end": 10.6
+ },
+ {
+  "li": 2,
+  "pi": 0,
+  "say": "With server-sent events, your app asks once, and the server keeps that reply open.",
+  "show": "With [server-sent events,] your app asks *once,* and the server keeps that reply open.",
+  "start": 11.14,
+  "end": 15.12
+ },
+ {
+  "li": 3,
+  "pi": 0,
+  "say": "Every time it has a few new words, it sends them right away in a small message called an event. Your app adds them to the screen.",
+  "show": "Every time it has a few new words, it sends them *right away* in a small message called an [event.] Your app adds them to the screen.",
+  "start": 15.64,
+  "end": 21.46
+ },
+ {
+  "li": 4,
+  "pi": 0,
+  "say": "It only flows one way, from the server to you. To send something back, your app makes a new request.",
+  "show": "It only flows *one way,* from the server to you. To send something back, your app makes a [new request.]",
+  "start": 22.08,
+  "end": 26.78
+ },
+ {
+  "li": 5,
+  "pi": 0,
+  "say": "Like a news ticker. You tune in once, and the headlines keep rolling in.",
+  "show": "Like a *news ticker.* You tune in once, and the headlines [keep rolling in.]",
+  "start": 27.18,
+  "end": 30.32
+ },
+ {
+  "li": 6,
+  "pi": 0,
+  "say": "OpenAI's API streams answers this way, and browsers support it built in.",
+  "show": "*OpenAI's API* streams answers this way, and *browsers* support it built in.",
+  "start": 30.84,
+  "end": 34.38
+ },
+ {
+  "li": 7,
+  "pi": 0,
+  "say": "If you're a vibe coder, follow for the system design your AI skipped.",
+  "show": "If you're a vibe coder, follow for the system design your AI [skipped.]",
+  "start": 34.72,
+  "end": 37.52
+ }
+]

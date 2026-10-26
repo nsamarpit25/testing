@@ -1,0 +1,77 @@
+{
+ "prompt": "AUDIO PROFILE\nCleo: a young woman software developer in her mid twenties. Soft, natural, conversational voice. Real and understated, never cartoonish.\nClaude: a young man's voice. Calm, warm and gently dry-witted, never theatrical. Few words.\n\nTHE SCENE, END TO END\nEvening at her desk. Cleo 'fixed' a merge conflict by keeping her side of every file, which wiped out her teammate Arjun's week of work, then force pushed it. Claude, a small companion on her desk, restores Arjun's work from git history. Cleo wants to blame the AI.\n\nLINE BY LINE\n1. Cleo, proud, then confused.\n2. Claude, calm, suspicious.\n3. Cleo, simple, pleased.\n4. Claude, careful.\n5. Cleo, breezy.\n6. Claude, slow.\n7. Cleo, realising.\n8. Claude, gentle.\n9. Cleo, small voice.\n10. Claude, dry.\n11. Cleo, defensive.\n12. Claude, reassuring.\n13. Cleo, pleading.\n14. Claude, calm, quietly pleased.\n15. Cleo, relief, then dread.\n16. Claude, innocent.\n17. Cleo, quick whisper.\n18. Claude, dry, weary.\n\nDIRECTOR'S NOTES\nA natural, conversational pace, like two friends at a desk; not rushed, not slow. Let the jokes land with a short beat before the dry lines. Leave a short beat at every \"...\"; never read bracketed tags aloud. Finish every line fully, including its last word; never clip a word. Speak every word of the dialogue exactly as written, nothing added.",
+ "turns": [
+  [
+   "Cleo",
+   "Claude, I fixed the merge conflict. Why is Arjun crying?"
+  ],
+  [
+   "Claude",
+   "How did you fix it?"
+  ],
+  [
+   "Cleo",
+   "The editor asked: keep mine or theirs. I kept mine."
+  ],
+  [
+   "Claude",
+   "For which files?"
+  ],
+  [
+   "Cleo",
+   "All forty. It was faster."
+  ],
+  [
+   "Claude",
+   "And whose were theirs?"
+  ],
+  [
+   "Cleo",
+   "Arjun's. A week of his work."
+  ],
+  [
+   "Claude",
+   "And the push?"
+  ],
+  [
+   "Cleo",
+   "It got rejected. So I added force."
+  ],
+  [
+   "Claude",
+   "Force is for when you're sure."
+  ],
+  [
+   "Cleo",
+   "I was very sure."
+  ],
+  [
+   "Claude",
+   "Relax. His commits are still in history. I can restore them."
+  ],
+  [
+   "Cleo",
+   "Please. Do it."
+  ],
+  [
+   "Claude",
+   "Done. Both versions, merged properly this time."
+  ],
+  [
+   "Cleo",
+   "He stopped crying. He's typing... \"Who force pushed?\""
+  ],
+  [
+   "Claude",
+   "Should I tell him?"
+  ],
+  [
+   "Cleo",
+   "Tell him the AI did it."
+  ],
+  [
+   "Claude",
+   "Everyone does."
+  ]
+ ]
+}

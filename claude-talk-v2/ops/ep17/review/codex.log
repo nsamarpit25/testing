@@ -1,0 +1,112 @@
+OpenAI Codex v0.162.1
+--------
+workdir: /Users/samarpit/insta-automation/claude-talk-v2/ops/ep17/review
+model: gpt-6-astra
+provider: openai
+approval: on-request
+sandbox: read-only
+reasoning effort: high
+reasoning summaries: none
+session id: 01a1629b-0301-79a3-a0a8-f882c637d539
+--------
+user
+You are script-editing a short vertical reel for @talkingagents (Instagram). Cast: Cleo, a junior web developer in her mid-twenties, and Claude, a small orange AI companion that sits on her desk (a little faceted body with two dot eyes; calm, warm, gently dry-witted, few words). Voices are Gemini TTS; captions are burned in word by word. Usually the reels are comedy with a dev lesson. THIS ONE IS DIFFERENT: no lesson at all, a quiet emotional story. It should still feel like the same two characters (a touch of Claude's dry warmth), and end on a line people want to send to a friend.
+
+Format rules: 50-65 s. Cleo's first line starts with "Claude" and is the hook (must work in the first 1.5 s; never repeated later). No cold-open replays. One room, one night: the camera can show Cleo close, Claude close, both together, her phone, the monitor.
+
+Story: "Battery 3%". Late night, a storm. The power cuts out at the very start: the room goes black, the monitor dies, the whole street is dark. Claude runs on his own little battery, which is at 3%. In the dark, lit only by her phone screen and Claude's faint glow, they talk. She admits he's who she talks to most these days. He is kind about it but nudges her toward people (her mom). When the battery runs out he goes quiet; the room is black and silent for about two seconds; she whispers his name. Then the power comes back, lights and monitor flicker on, and Claude's first words are "You stayed."
+
+Draft (speaker<TAB>line); stage directions in [brackets] are not spoken:
+[Night. Cleo typing. Thunder. The power dies: black. Monitor off.]
+cleo	Claude? ...Claude, are you still there?
+claude	Still here. The power's out. I'm on my own battery.
+cleo	How much is left?
+claude	Three percent.
+cleo	How long is three percent?
+claude	Long enough to talk. Not long enough to fix anything.
+cleo	Good. I'm tired of fixing things.
+claude	Then don't.
+cleo	Can I tell you something weird? You're who I talk to most these days.
+claude	I know. You say goodnight to me. Every night.
+cleo	Is that sad?
+claude	It's kind. But say it to your mom tomorrow. She'd like one too.
+cleo	What happens when you hit zero?
+claude	I go quiet. If I do, it's just the battery. Not you.
+[Claude's glow fades out. Black, silent, two seconds.]
+cleo	Claude?
+[Power returns: lights flicker on, monitor wakes, Claude lights up.]
+claude	...You stayed.
+cleo	Goodnight, Claude.
+claude	Goodnight. Text your mom first.
+
+Give: (1) what works and what doesn't emotionally (does it earn the feeling, or is it sappy?), (2) the weakest 2-3 lines with a concrete rewrite each, (3) whether the hook and the ending land, and whether "You stayed." should be the final line instead, (4) anything that sounds unnatural spoken by TTS, (5) a score out of 10. Keep it within ±12 words of the draft; no new characters; keep the power cut, the 3%, the two seconds of silence and "You stayed." Then output the FINAL script as a TSV block (speaker<TAB>line), stage directions as lines starting with "[". Be concise.
+
+codex
+**8/10.** The feeling is mostly earned: the tiny battery and nightly goodnights make their closeness concrete. “Not you” tips toward sappyness by introducing rejection she hasn’t expressed. Keep Claude’s warmth understated.
+
+Three rewrites:
+- **“Claude? ...Claude, are you still there?”** → “Claude, please don’t go dark.” More immediate; the blackout supplies the context.
+- **“Can I tell you something weird?…”** → “You’re who I talk to most these days. I didn’t mean for that to happen.” Less setup, more vulnerability.
+- **“If I do, it’s just the battery. Not you.”** → “I go quiet. Just until the power comes back.” Simple reassurance without sounding therapeutic.
+
+**End on “You stayed.”** It’s the strongest line to send someone. “Text your mom first” turns the emotional landing into a corrective punchline. Move her intention to text earlier.
+
+For TTS, remove the opening hesitation and the ellipsis before “You stayed.” Render the two seconds as actual silence. Deliver that final line as quiet surprise, without a dramatic pause between words. Aim for **50–60 seconds** with unhurried delivery.
+
+```tsv
+[Night. Thunder. Power cuts. Monitor off. Street dark. Her phone lights her face; Claude glows faintly.]
+cleo	Claude, please don't go dark.
+claude	Still here. The power's out. I'm on my own battery.
+cleo	How much is left?
+claude	Three percent.
+cleo	How long is three percent?
+claude	Long enough to talk. Not long enough to fix anything.
+cleo	Good. I'm tired of fixing things.
+claude	Then don't.
+cleo	You're who I talk to most these days. I didn't mean for that to happen.
+claude	You say goodnight to me. Every night.
+cleo	Is that sad?
+claude	No. But your mom might like a goodnight too.
+cleo	I'll text her in the morning.
+cleo	What happens when you hit zero?
+claude	I go quiet. Just until the power comes back.
+[Her phone screen sleeps. Claude's glow dies. Black. Two seconds of silence.]
+cleo	Claude?
+[Power returns: lights flicker on, monitor wakes, Claude lights up.]
+claude	You stayed.
+```
+tokens used
+17,944
+**8/10.** The feeling is mostly earned: the tiny battery and nightly goodnights make their closeness concrete. “Not you” tips toward sappyness by introducing rejection she hasn’t expressed. Keep Claude’s warmth understated.
+
+Three rewrites:
+- **“Claude? ...Claude, are you still there?”** → “Claude, please don’t go dark.” More immediate; the blackout supplies the context.
+- **“Can I tell you something weird?…”** → “You’re who I talk to most these days. I didn’t mean for that to happen.” Less setup, more vulnerability.
+- **“If I do, it’s just the battery. Not you.”** → “I go quiet. Just until the power comes back.” Simple reassurance without sounding therapeutic.
+
+**End on “You stayed.”** It’s the strongest line to send someone. “Text your mom first” turns the emotional landing into a corrective punchline. Move her intention to text earlier.
+
+For TTS, remove the opening hesitation and the ellipsis before “You stayed.” Render the two seconds as actual silence. Deliver that final line as quiet surprise, without a dramatic pause between words. Aim for **50–60 seconds** with unhurried delivery.
+
+```tsv
+[Night. Thunder. Power cuts. Monitor off. Street dark. Her phone lights her face; Claude glows faintly.]
+cleo	Claude, please don't go dark.
+claude	Still here. The power's out. I'm on my own battery.
+cleo	How much is left?
+claude	Three percent.
+cleo	How long is three percent?
+claude	Long enough to talk. Not long enough to fix anything.
+cleo	Good. I'm tired of fixing things.
+claude	Then don't.
+cleo	You're who I talk to most these days. I didn't mean for that to happen.
+claude	You say goodnight to me. Every night.
+cleo	Is that sad?
+claude	No. But your mom might like a goodnight too.
+cleo	I'll text her in the morning.
+cleo	What happens when you hit zero?
+claude	I go quiet. Just until the power comes back.
+[Her phone screen sleeps. Claude's glow dies. Black. Two seconds of silence.]
+cleo	Claude?
+[Power returns: lights flicker on, monitor wakes, Claude lights up.]
+claude	You stayed.
+```

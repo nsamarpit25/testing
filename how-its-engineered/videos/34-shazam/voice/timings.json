@@ -1,0 +1,74 @@
+[
+ {
+  "li": 0,
+  "pi": 0,
+  "say": "You catch a tiny clip of a song in a noisy caf\u00e9. Shazam names it in seconds. How?",
+  "show": "You catch a *tiny clip* of a song in a noisy caf\u00e9. Shazam [names it in seconds.] How?",
+  "start": 0.0,
+  "end": 4.54
+ },
+ {
+  "li": 1,
+  "pi": 0,
+  "say": "First, it turns the sound into a map: low notes at the bottom, high notes at the top, time going across.",
+  "show": "First, it turns the sound into a *map:* low notes at the bottom, high notes at the top, [time going across.]",
+  "start": 5.26,
+  "end": 9.9
+ },
+ {
+  "li": 2,
+  "pi": 0,
+  "say": "Louder sounds glow brighter, and Shazam keeps only the brightest point in each patch. They look like stars in a night sky.",
+  "show": "Louder sounds glow *brighter,* and Shazam keeps only the brightest point in each patch. They look like [stars in a night sky.]",
+  "start": 10.36,
+  "end": 15.48
+ },
+ {
+  "li": 3,
+  "pi": 0,
+  "say": "The caf\u00e9 noise adds a few extra stars and hides others, but enough of the pattern survives.",
+  "show": "The caf\u00e9 noise adds a few extra stars and hides others, but [enough of the pattern survives.]",
+  "start": 16.11,
+  "end": 19.77
+ },
+ {
+  "li": 4,
+  "pi": 0,
+  "say": "It draws lines between pairs of stars, turning their pitches and timing into tiny codes. Together, those codes are the recording's fingerprint.",
+  "show": "It draws *lines between pairs of stars,* turning their pitches and timing into tiny codes. Together, those codes are the [recording's fingerprint.]",
+  "start": 20.23,
+  "end": 25.91
+ },
+ {
+  "li": 5,
+  "pi": 0,
+  "say": "Shazam has fingerprints for millions of songs, and looks for the one whose stars line up with yours.",
+  "show": "Shazam has fingerprints for *millions of songs,* and looks for the one whose stars [line up with yours.]",
+  "start": 26.89,
+  "end": 30.59
+ },
+ {
+  "li": 6,
+  "pi": 0,
+  "say": "When it launched in Britain in twenty-oh-two, there was no app. You dialled two five eight oh, held your phone to the speaker, and got the song name back by text.",
+  "show": "When it launched in Britain in 2002, there was *no app.* You dialled *2580,* held your phone to the speaker, and got the song name [back by text.]",
+  "start": 31.35,
+  "end": 37.39
+ },
+ {
+  "li": 7,
+  "pi": 0,
+  "say": "So Shazam isn't recognising the tune. It's recognising one exact recording. That's why humming it won't work.",
+  "show": "So Shazam isn't recognising the *tune.* It's recognising one exact *recording.* That's why [humming it won't work.]",
+  "start": 37.91,
+  "end": 43.01
+ },
+ {
+  "li": 7,
+  "pi": 1,
+  "say": "Follow for how everyday tech really works.",
+  "show": "Follow for how [everyday tech] really works.",
+  "start": 43.51,
+  "end": 45.07
+ }
+]

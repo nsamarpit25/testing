@@ -1,0 +1,31 @@
+{
+ "title": "How a block of ice becomes a fridge (v4)",
+ "lines": [
+  "Drop a block of ice in a wooden box. Congratulations, you've built a fridge.",
+  "But by tomorrow, the ice is a puddle, and your milk has gone sour.",
+  "You need cold that never melts. Ever stepped out of a shower and shivered?",
+  "That's water evaporating off your skin, and stealing its heat.",
+  "So you run a copper pipe through the box, filled with a liquid that boils below freezing.",
+  "As it boils, it sucks the heat right out of your milk. This is the evaporator.",
+  "But once it boils into gas, it just escapes into the air.",
+  "So you seal the loop, and squeeze the gas with a pump. This is the compressor.",
+  "But squeezing gas makes it scorching hot.",
+  "So you snake that hot pipe up the back, and the heat escapes into your kitchen. This is the condenser.",
+  "Ever noticed the sides of your fridge feel warm? That's this, hiding in the walls.",
+  "As the heat leaves, the gas turns back into liquid. But it's squeezed too tight to boil.",
+  "So you force it through a copper tube thinner than spaghetti. This is the capillary tube.",
+  "Like a spray can, the pressure drops, and it turns freezing cold again.",
+  "But now the loop never stops, and your milk freezes solid and cracks the bottle.",
+  "So a sensor cuts the pump just above freezing. This is the thermostat.",
+  "That's the hum you hear randomly stop at night.",
+  "And here's the twist: your fridge never made cold. It just pumps heat from your milk into your kitchen.",
+  "Wrap it in foam and steel. Congratulations, you've built a fridge. Unless you'd rather just..."
+ ],
+ "labels": {
+  "5": "EVAPORATOR",
+  "7": "COMPRESSOR",
+  "9": "CONDENSER",
+  "12": "CAPILLARY TUBE",
+  "15": "THERMOSTAT"
+ }
+}

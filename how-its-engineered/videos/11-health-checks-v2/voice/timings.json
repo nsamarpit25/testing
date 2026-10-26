@@ -1,0 +1,90 @@
+[
+ {
+  "li": 0,
+  "pi": 0,
+  "say": "Your app froze on Saturday night.",
+  "show": "Your app [froze] on Saturday night.",
+  "start": 0.0,
+  "end": 1.38
+ },
+ {
+  "li": 0,
+  "pi": 1,
+  "say": "Still running. Not answering anyone.",
+  "show": "Still running. *Not answering anyone.*",
+  "start": 1.66,
+  "end": 3.04
+ },
+ {
+  "li": 0,
+  "pi": 2,
+  "say": "Thirty seconds later, something restarted it. How did it know?",
+  "show": "30 seconds later, something [restarted it.] How did it know?",
+  "start": 3.6,
+  "end": 6.4
+ },
+ {
+  "li": 1,
+  "pi": 0,
+  "say": "Here's the trap: running isn't the same as working. A frozen app doesn't crash, so a crash restart never kicks in.",
+  "show": "Here's the trap: *running* isn't the same as *working.* A frozen app doesn't crash, so [a crash restart never kicks in.]",
+  "start": 6.94,
+  "end": 12.14
+ },
+ {
+  "li": 2,
+  "pi": 0,
+  "say": "The fix is a health check: the system running your app keeps asking it, are you okay?",
+  "show": "The fix is a [health check:] the system running your app keeps asking it, *are you okay?*",
+  "start": 12.5,
+  "end": 16.34
+ },
+ {
+  "li": 3,
+  "pi": 0,
+  "say": "Like a nurse checking your pulse every few minutes.",
+  "show": "Like a *nurse* checking your [pulse] every few minutes.",
+  "start": 16.48,
+  "end": 18.38
+ },
+ {
+  "li": 4,
+  "pi": 0,
+  "say": "Check one: are you alive? Every few seconds, it calls a health page on your app.",
+  "show": "Check one: are you *alive?* Every few seconds, it calls a [health page] on your app.",
+  "start": 18.86,
+  "end": 22.42
+ },
+ {
+  "li": 4,
+  "pi": 1,
+  "say": "Three missed answers in a row, the usual default, and it restarts the app.",
+  "show": "*3 missed answers* in a row, the usual default, and it [restarts the app.]",
+  "start": 22.74,
+  "end": 25.68
+ },
+ {
+  "li": 5,
+  "pi": 0,
+  "say": "Check two: are you ready? A new copy of your app that's still starting up says not yet, and user requests skip it until it's ready.",
+  "show": "Check two: are you *ready?* A new copy of your app that's still starting up says *not yet,* and user requests [skip it] until it's ready.",
+  "start": 26.18,
+  "end": 32.0
+ },
+ {
+  "li": 6,
+  "pi": 0,
+  "say": "In Kubernetes, the tool that runs your app's copies, these are liveness and readiness probes.",
+  "show": "In *Kubernetes,* the tool that runs your app's copies, these are [liveness] and [readiness] probes.",
+  "start": 32.54,
+  "end": 36.7
+ },
+ {
+  "li": 7,
+  "pi": 0,
+  "say": "If you're a vibe coder, follow for the system design your AI skipped.",
+  "show": "If you're a vibe coder, follow for the system design your AI [skipped.]",
+  "start": 37.22,
+  "end": 40.26
+ }
+]

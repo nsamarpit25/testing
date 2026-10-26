@@ -1,0 +1,213 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- 20 Dead letter queues, in the 21 ember style. World: a queue (a conveyor of order messages) feeding a WORKER box,
+     a DONE box behind it, and a DEAD LETTERS box off to the side that rises with the fix. The poison message (red)
+     sits at the head and fails forever while orders pile up behind it; with the fix it fails 3 times, is moved aside,
+     and the rest flow into DONE. Later it is fixed (green) and sent back through. Beats come from voice/words.json via
+     at(). Shared pieces live in ../_ember/. -->
+<link rel="stylesheet" href="../_ember/fonts.css">
+<link rel="stylesheet" href="../_ember/reel.css">
+</head>
+<body>
+<div id="stage">
+  <div id="world">
+    <canvas id="cv" width="1080" height="1920"></canvas>
+    <div class="layer" id="lbls"></div>
+  </div>
+</div>
+<script src="../../tools/lib.js"></script>
+<script src="voice/words.js"></script>
+<script src="../_ember/three.js"></script>
+<script src="../_ember/world.js"></script>
+<script src="../_ember/base.js"></script>
+<script>
+for (let i = 0; i < 10; i++) ORBS.push({ core: orbSprite(9), glow: orbSprite(34), trail: [0, 1, 2, 3, 4].map(() => orbSprite(10)) });
+
+/* ---------------- beats */
+const T = {
+  retrying: at('retrying'), broken: at('broken'), piling: at('piling'), why: at('why'), move: at('move'),
+  orders2: at('orders', 2), messages: at('messages'), details: at('details'), program: at('program'), bad: at('bad'), fail: at('fail'), every: at('every'), poison: at('poison'),
+  fix: at('fix'), dead: at('dead'), limit: at('limit'), after: at('after'), many: at('many'), failures: at('failures'), moved: at('moved'), aside: at('aside'),
+  keep: at('keep'), flowing: at('flowing'), like: at('like'), post: at('post'), bin: at('bin'), undeliverable: at('undeliverable'), waits: at('waits'), delivered: at('delivered'),
+  later: at('later'), look: at('look'), fix2: at('fix', 2), cause: at('cause'), send: at('send'), back: at('back'), processed: at('processed'),
+  amazon: at('amazon'), rabbitmq: at('rabbitmq'), ifv: at('if'), follow: at('follow'),
+};
+const CUT = { MSG: T.orders2 - 0.2, FIX: T.fix - 0.2, LIKE: T.like - 0.2, LATER: T.later - 0.2, TOOLS: T.amazon - 0.3, END: T.ifv - 0.15 };
+
+/* ---------------- layout */
+const WK = [80, 30], DONE = [225, 130], DLQ = [95, -165];
+const QX0 = -30, QY = 30, GAP = 50;
+const LIMIT = 3, ID = 1041;
+
+/* ---------------- camera */
+const WIDE = { f: [25, -30, 30], s: 0.8, a: -0.42, e: 0.62, sy: 600 };
+const SHOTS = [
+  { t: 0, d: 0, f: [-45, 20, 40], s: 0.98, a: -0.38, e: 0.56, sy: 580 },
+  { t: CUT.MSG, d: 1.0, f: [-40, 10, 30], s: 0.95, a: -0.42, e: 0.58, sy: 600 },
+  { t: CUT.FIX, d: 1.0, ...WIDE },
+  { t: CUT.LIKE, d: 1.0, ...WIDE, f: [40, -20, 30], s: 0.88 },
+  { t: CUT.LATER, d: 1.0, f: [85, -40, 30], s: 0.92, a: -0.42, e: 0.58, sy: 600 },
+  { t: CUT.TOOLS, d: 1.0, ...WIDE, s: 0.8, sy: 660 },
+  { t: CUT.END, d: 2.0, ...WIDE, s: 0.78, sy: 640 },
+];
+const KICKS = [[T.retrying, 0.03], [T.piling, 0.04], [T.why, 0.03], [T.bad, 0.03], [T.poison, 0.05], [T.dead, 0.05], [T.limit, 0.03],
+  [T.moved, 0.05], [T.keep, 0.03], [T.post, 0.03], [T.delivered, 0.04], [T.fix2, 0.04], [T.send, 0.03], [T.processed, 0.05], [T.amazon, 0.03], [T.rabbitmq, 0.03]];
+const SHAKES = [[T.poison, 3, 0.25]];
+
+/* ---------------- messages: id 0 is the poison one at the head. Others arrive and wait behind it. */
+const steps = (a, b, dt) => { const r = []; for (let x = a; x < b; x += dt) r.push(x); return r; };
+const N = 6;
+const ARR = [0, 0, 0, 1.4, 2.6, 3.6];
+const ATT_A = steps(0.55, T.fix - 0.6, 1.05);                         // before the fix: retried forever
+const ATT_B = [T.limit + 0.05, T.after + 0.15, T.many + 0.25];         // with the fix: 3 tries, then moved aside
+const ATTS = [...ATT_A, ...ATT_B];
+const MOVE = T.moved - 0.05;
+const FLOW = [0, ...[1, 2, 3, 4, 5].map((k) => T.keep - 0.35 + (k - 1) * 0.6)];   // when each good message leaves the queue
+const FIXED = T.fix2 + 0.2, RESEND = T.send;
+const triesAt = (t) => (t < T.fix ? ATT_A.filter((a) => a + 0.2 <= t).length : ATT_B.filter((a) => a + 0.2 <= t).length);
+const doneAt = (t) => FLOW.slice(1).filter((f) => f + 0.6 <= t).length + (t >= RESEND + 1.0 ? 1 : 0);
+const WK_IN = [WK[0] - 45, WK[1], 26];
+function msgPos(i, t) {
+  if (i === 0) {
+    if (t < MOVE) {
+      let x = QX0;
+      for (const a of ATTS) x = lerp(x, WK_IN[0], window01(t, a, a + 0.45, 0.18));
+      return [x, QY, 26, 1];
+    }
+    if (t < RESEND) { const q = ease.inOut(prog(t, MOVE, MOVE + 0.6)); return [lerp(QX0, DLQ[0], q), lerp(QY, DLQ[1] + 6, q), 26 + 70 * Math.sin(Math.PI * q), 1]; }
+    const q = ease.inOut(prog(t, RESEND, RESEND + 0.6)), q2 = ease.inOut(prog(t, RESEND + 0.6, RESEND + 1.0));
+    return [lerp(lerp(DLQ[0], WK[0], q), DONE[0], q2), lerp(lerp(DLQ[1] + 6, WK[1], q), DONE[1], q2), 26 + 60 * Math.sin(Math.PI * q), 1 - q2];
+  }
+  // slot = how many still-waiting messages are ahead of me
+  let rank = 0;
+  for (let j = 0; j < i; j++) if (ARR[j] <= t) rank += j === 0 ? 1 - ep(t, MOVE, MOVE + 0.4) : 1 - ep(t, FLOW[j], FLOW[j] + 0.3);
+  const arrive = ep(t, ARR[i], ARR[i] + 0.45), a = ARR[i] === 0 ? 1 : arrive;
+  const x = QX0 - rank * GAP - (1 - arrive) * 80;
+  if (t < FLOW[i] || i === 0) return [x, QY, 26, a];
+  const q = ease.inOut(prog(t, FLOW[i], FLOW[i] + 0.3)), q2 = ease.inOut(prog(t, FLOW[i] + 0.3, FLOW[i] + 0.6));
+  return [lerp(lerp(x, WK_IN[0], q), DONE[0], q2), lerp(QY, DONE[1], q2), 26 + 40 * q2 * (1 - q2) * 4, 1 - q2];
+}
+
+/* ---------------- build the world */
+const label = (g, W_, H_, txt, col, size, y = H_ / 2) => { g.fillStyle = col; g.font = `800 ${size}px Mono`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.shadowColor = col; g.shadowBlur = 12; g.fillText(txt, W_ / 2, y); g.shadowBlur = 0; g.textAlign = 'left'; };
+const belt = emberBox(QX0 - 125, QY, 300, 56, 6, O);
+const poolQ = pool(QX0 - 120, QY, 200, O);
+const wk = emberBox(WK[0], WK[1], 100, 66, 92, O);
+const wkF = decal(100, 92, 'front', 5, wk.g); wkF.m.position.set(0, -33.3, 46);
+const poolW = pool(WK[0], WK[1], 140, O);
+const dn = emberBox(DONE[0], DONE[1], 100, 60, 64, OK);
+const dnF = decal(100, 64, 'front', 5, dn.g); dnF.m.position.set(0, -30.3, 32);
+const poolD = pool(DONE[0], DONE[1], 120, OK);
+const dq = emberBox(DLQ[0], DLQ[1], 120, 60, 60, AMB);
+const dqF = decal(120, 60, 'front', 5, dq.g); dqF.m.position.set(0, -30.3, 30);
+const poolX = pool(DLQ[0], DLQ[1], 130, AMB);
+const MS = [...Array(N)].map((_, i) => emberBox(0, 0, 40, 40, 32, i === 0 ? RED : O));
+const MF = MS.map((b) => { const f = decal(40, 32, 'front', 6, b.g); f.m.position.set(0, -20.3, 16); return f; });
+const rWD = road([[WK[0] + 40, WK[1] + 20, 0], [DONE[0] - 40, DONE[1] - 20, 0]], OK);
+const rQX = road([[QX0, QY - 20, 0], [DLQ[0] - 40, DLQ[1] + 20, 0]], AMB);
+
+function wkDraw(g, W_, H_, col, t) {
+  label(g, W_, H_, 'WORKER', col, 40, H_ * 0.2);
+  const n = triesAt(t), busy = t < MOVE;
+  if (busy && n > 0) {
+    label(g, W_, H_, t < T.fix ? `RETRY #${n}` : `FAIL ${n}/${LIMIT}`, RED, 38, H_ * 0.52);
+    label(g, W_, H_, `#${ID}`, RED + 'aa', 32, H_ * 0.78);
+  } else label(g, W_, H_, busy ? '…' : '✓ RUNNING', busy ? col + '88' : OK, 34, H_ * 0.58);
+}
+function dnDraw(g, W_, H_, col, t) { label(g, W_, H_, 'DONE', col, 40, H_ * 0.28); label(g, W_, H_, `${doneAt(t)}`, col, 70, H_ * 0.68); }
+function dqDraw(g, W_, H_, col, t) {
+  label(g, W_, H_, 'DEAD LETTERS', col, 30, H_ * 0.26);
+  const inBin = t > MOVE + 0.6 && t < RESEND;
+  label(g, W_, H_, inBin ? `#${ID}` : '0', inBin ? (t > FIXED ? OK : RED) : col + '66', 52, H_ * 0.66);
+}
+
+/* ---------------- the world, frame by frame */
+function world(t) {
+  const q0 = ease.back(prog(t, 0.05, 0.4));
+  belt.g.visible = q0 > 0.01; belt.g.scale.set(1, 1, Math.max(0.01, q0)); belt.setLook(O, 0.9, 0.8); poolQ.set(O, 0.3 * q0);
+  const n = triesAt(t), stuck = t < MOVE && t > 0.6;
+  const wCol = stuck ? mixHex(O, RED, 0.45 + 0.35 * Math.sin(t * 9)) : t > T.keep - 0.4 ? mixHex(O, OK, 0.5) : O;
+  wk.g.visible = q0 > 0.01; wk.g.scale.set(1, 1, Math.max(0.01, q0));
+  wk.setLook(wCol, 1.2 + 1.5 * Math.max(0, ...ATTS.map((a) => pulse(t, a + 0.2, 6))), 1);
+  wkF.m.visible = wk.g.visible; wkF.draw((g, W_, H_) => wkDraw(g, W_, H_, wCol, t)); poolW.set(wCol, 0.5 * q0);
+  ATTS.forEach((a, k) => sparks(t, a + 0.2, WK_IN[0], WK_IN[1], 40, RED, 10, 30 + k, 90, 0.4));
+  const dq0 = ease.back(prog(t, T.dead - 0.1, T.dead + 0.3));
+  dn.g.visible = dq0 > 0.01; dn.g.scale.set(1, 1, Math.max(0.01, dq0)); dn.setLook(OK, 1.0 + 1.5 * pulse(t, T.delivered) + 2 * pulse(t, RESEND + 1.0), 1);
+  dnF.m.visible = dn.g.visible; dnF.draw((g, W_, H_) => dnDraw(g, W_, H_, OK, t)); poolD.set(OK, 0.35 * dq0);
+  rWD.set(ep(t, T.dead, T.dead + 0.4), OK, 0.4, t);
+  // the dead letter queue rises with the fix
+  const xq = ease.back(prog(t, T.dead - 0.2, T.dead + 0.2));
+  dq.g.visible = xq > 0.01; dq.g.scale.set(1, 1, Math.max(0.01, xq));
+  const xCol = t > FIXED && t < RESEND + 0.3 ? OK : AMB;
+  dq.setLook(xCol, 1.2 + 2.5 * pulse(t, MOVE + 0.6) + 1.5 * pulse(t, T.bin) + 2 * pulse(t, FIXED), 1);
+  dqF.m.visible = dq.g.visible; dqF.draw((g, W_, H_) => dqDraw(g, W_, H_, xCol, t)); poolX.set(xCol, 0.45 * xq);
+  rQX.set(ep(t, T.dead, T.dead + 0.4), AMB, 0.5, t);
+  ripple(t, MOVE + 0.6, DLQ[0], DLQ[1], 2, AMB, 110, 0.7);
+  ripple(t, RESEND + 1.0, DONE[0], DONE[1], 2, OK, 110, 0.7);
+  // messages
+  MS.forEach((b, i) => {
+    const [x, y, z, a] = msgPos(i, t);
+    const col = i === 0 ? (t > FIXED ? OK : RED) : O2;
+    b.g.visible = a > 0.02; b.g.position.set(x, y, z - 16); b.setLook(col, i === 0 ? 1.6 + 1.5 * pulse(t, T.poison) : 1.1, a);
+    MF[i].m.visible = b.g.visible; MF[i].m.material.opacity = a;
+    MF[i].draw((g, W_, H_) => label(g, W_, H_, i === 0 ? (t > FIXED ? '✓' : '!') : '✉', col, 26));
+  });
+}
+
+/* ---------------- world tags */
+function tags(t) {
+  const W_T = [WK[0], WK[1], 130], Q_T = [QX0 - 120, QY, 70], D_T = [DONE[0] - 115, DONE[1], 100], X_T = [DLQ[0], DLQ[1], 120], P = msgPos(0, t);
+  const waiting = [1, 2, 3, 4, 5].filter((i) => ARR[i] <= t && t < FLOW[i]).length;
+  tag('time', '<b>3 A.M.</b> · ORDER QUEUE', '', W_T, t, 0.2, T.piling - 0.1);
+  tag('pile', `<span style="color:${RED}">PILING UP · ${waiting} WAITING</span>`, `border-color:${RED}88`, Q_T, t, T.piling, CUT.MSG + 0.2);
+  tag('why', `<span style="color:${AMB}">WHY WON'T IT MOVE ON?</span>`, `font-size:15px;padding:9px 13px;letter-spacing:1px;border-color:${AMB}`, W_T, t, T.why, CUT.MSG + 0.2);
+  tag('msg', '<b>MESSAGE</b> = ORDER DETAILS', '', Q_T, t, T.messages, T.bad - 0.1);
+  tag('prog', '<b>PROGRAM</b> PROCESSES THEM', '', W_T, t, T.program - 0.1, T.bad - 0.1);
+  tag('poison', `<span style="color:${RED}">☠ POISON MESSAGE · FAILS EVERY TIME</span>`, `font-size:15px;padding:9px 13px;letter-spacing:1px;border-color:${RED}`, [P[0] - 60, P[1], 115], t, T.poison, CUT.FIX + 0.2);
+  tag('limit', `<span style="color:${AMB}">LIMIT · ${LIMIT} TRIES</span>`, `border-color:${AMB}88`, W_T, t, T.limit, MOVE + 0.2);
+  tag('aside', `<span style="color:${AMB}">MOVED ASIDE</span>`, `border-color:${AMB}88`, X_T, t, MOVE + 0.6, T.post - 0.1);
+  tag('flow', `<span style="color:${OK}">THE OTHERS KEEP FLOWING</span>`, `border-color:${OK}88`, D_T, t, T.keep, T.delivered - 0.1);
+  tag('bin', `<span style="color:${AMB}">BIN FOR UNDELIVERABLE MAIL</span>`, `font-size:15px;padding:9px 13px;letter-spacing:1px;border-color:${AMB}`, X_T, t, T.post, CUT.LATER + 0.2);
+  tag('deliv', `<span style="color:${OK}">EVERYTHING ELSE DELIVERED · 5/5</span>`, `border-color:${OK}88`, D_T, t, T.delivered, CUT.LATER + 0.2);
+  tag('fixd', `<span style="color:${OK}">CAUSE FIXED ✓</span>`, `border-color:${OK}88`, X_T, t, FIXED, RESEND + 0.2);
+  tag('sent', `<span style="color:${OK}">SENT BACK · PROCESSED ✓</span>`, `font-size:15px;padding:9px 13px;letter-spacing:1px;border-color:${OK}`, D_T, t, RESEND + 1.0, CUT.TOOLS + 0.2);
+}
+
+/* ---------------- reel config */
+const svgSQS = `<svg width="46" height="46" viewBox="0 0 100 100" fill="none" stroke="#FF9900" stroke-width="7" stroke-linejoin="round"><rect x="14" y="30" width="72" height="40" rx="8"/><path d="M30 30 V70 M50 30 V70 M70 30 V70"/></svg>`;
+const svgRMQ = `<svg width="46" height="46" viewBox="0 0 100 100" fill="none" stroke="#FF6600" stroke-width="7" stroke-linejoin="round"><path d="M16 14 H34 V44 H66 V14 H84 V86 H16 Z"/><rect x="58" y="58" width="14" height="14"/></svg>`;
+const REEL = {
+  shots: SHOTS, kicks: KICKS, shakes: SHAKES, world, tags,
+  code: [
+    [T.messages - 0.3, T.fix - 0.25, 'worker log', 'orders queue · 3 a.m.', [[0, 'RETRYING', AMB], [T.poison, 'STUCK', RED]],
+      [[`order #${ID}   ✗ bad data`], [`retry #${ID}   ✗ bad data`, T.fail - 0.1], [`retry #${ID}   ✗ bad data`, T.every], ['5 orders waiting', T.poison - 0.3]],
+      [[T.bad + 0.1, 1, '✗ fail', 'bad'], [T.fail, 2, '✗ fail', 'bad'], [T.every + 0.3, 3, '✗ fail', 'bad'], [T.poison, 4, 'stuck', 'bad']]],
+    [T.limit - 0.2, T.like - 0.25, 'queue settings', 'with a dead letter queue', [[0, 'LIMIT', AMB], [T.keep, 'FLOWING', OK]],
+      [['maxReceiveCount: 3'], ['deadLetterQueue: orders-dlq', T.after], [`#${ID} → orders-dlq`, MOVE], ['#1042 … #1046   done', T.keep]],
+      [[T.limit + 0.1, 1, '3 tries', 'amb'], [T.many + 0.2, 2, 'set', 'amb'], [MOVE + 0.5, 3, 'moved aside', 'amb'], [T.flowing, 4, '✓ flowing', 'good']]],
+    [T.later - 0.2, T.amazon - 0.25, 'orders-dlq', 'later', [[0, '1 MESSAGE', AMB], [RESEND + 1.0, 'EMPTY', OK]],
+      [[`#${ID}   bad data`], ['fix the cause', T.fix2 - 0.1], ['send back → orders', T.send - 0.1]],
+      [[T.look, 1, 'look', 'amb'], [FIXED, 2, '✓ fixed', 'good'], [RESEND + 1.0, 3, '✓ processed', 'good']]],
+  ],
+  hl: /\b(maxReceiveCount|deadLetterQueue|order|retry|send|back)\b/g,
+  tools: [
+    { a: T.amazon - 0.1, b: CUT.END, svg: svgSQS, name: 'Amazon SQS', sub: 'DEAD-LETTER QUEUE + MAX RECEIVE COUNT', top: 150 },
+    { a: T.rabbitmq - 0.1, b: CUT.END, svg: svgRMQ, name: 'RabbitMQ', sub: 'DEAD LETTER EXCHANGES', top: 262 },
+  ],
+  slams: [
+    { a: T.dead - 0.25, b: T.limit - 0.25, text: 'dead letter queue', sub: 'FAILED TOO OFTEN? MOVE IT ASIDE', size: 56 },
+  ],
+  bad: ['piling', 'poison'],
+  good: ['flowing', 'delivered', 'back'],
+  tiles: [['✉', 'DEAD LETTER<br>QUEUES'], ['↺', 'SAGA<br>PATTERN'], ['#', 'IDEM-<br>POTENCY']],
+  end: CUT.END, follow: T.follow,
+  cover: { t: 'DEAD LETTER QUEUES', at: T.poison + 0.5, zoom: 1, dy: 40 },
+  flash: (t) => 0.08 * pulse(t, T.poison, 7) + 0.05 * pulse(t, T.piling, 7),
+};
+</script>
+<script src="../_ember/overlay.js"></script>
+<script src="../_ember/play.js"></script>
+</body>
+</html>

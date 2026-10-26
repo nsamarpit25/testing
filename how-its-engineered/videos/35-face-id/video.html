@@ -1,0 +1,348 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- 35 Face ID v2 (premium look, far more interactive). A ceramic bust and the phone held in front of it, plus a live
+     "infrared camera" window that shows what the phone actually sees, beat by beat.
+     Hook: the lock screen scans and unlocks in a dark room; the IR window opens on a clearly lit face; a mask in the
+     dark. Parts: flood light, dot projector, infrared camera. Flood: the room goes dark for your eyes, the IR window
+     shows the face. Dots: 30,000+ rain on with a counter, and appear white in the IR window. Angle: projector → dot →
+     camera for nose and cheek, live distances. Map: the dots lift off as a 3D point cloud that turns in space, the IR
+     picture joins it, the saved face data slides in, the meter fills: match, unlocked. Photo: dots land flat, no
+     depth, no match, "Try again". Story: the mask is 3D-printed layer by layer, $150 claimed, the meter says
+     "claimed", experts: unverified. Twist: lights off; the IR window still sees the face: the phone brings its own
+     light; the hard part is your face vs a copy. Beats come from voice/words.js. -->
+<link rel="stylesheet" href="../_ember/fonts.css">
+<link rel="stylesheet" href="lib/reel.css">
+<style>
+#stage { background: #0a0a0a; }
+#hud { pointer-events: none; }
+.tool { border-color: rgba(255,255,255,0.09) !important; box-shadow: 0 14px 34px rgba(8,6,4,0.6) !important; background: rgba(22,20,19,0.94) !important; padding: 14px 16px !important; }
+.tool > div:first-child > div > div:first-child { font: 600 19px/1.15 Inter !important; letter-spacing: -0.3px !important; color: #f4f3f2; }
+.tool > div:first-child > div > div:nth-child(2) { font: 500 10px/1.3 Mono !important; letter-spacing: 1.1px !important; color: #ffb070 !important; }
+#stw { min-width: 0; }
+/* the infrared camera window: a frame only, the picture is rendered into the canvas underneath */
+.pip { position: absolute; display: none; border-radius: 10px; border: 1px solid rgba(255,255,255,0.14); box-shadow: 0 16px 40px rgba(0,0,0,0.55), inset 0 0 0 1px rgba(0,0,0,0.4); overflow: visible; pointer-events: none; }
+.pip.hot { border-color: rgba(255,106,31,0.75); }
+.pip .pk { position: absolute; left: 8px; top: 8px; display: flex; align-items: center; gap: 6px; font: 600 8.5px/1 Mono; letter-spacing: 1.3px; text-transform: uppercase; color: #d9d5d1; background: rgba(10,9,8,0.72); padding: 5px 7px; border-radius: 5px; }
+.pip .pk i { width: 6px; height: 6px; border-radius: 50%; background: #ff6a1f; box-shadow: 0 0 6px #ff6a1f; }
+.pip .pn { position: absolute; left: 0; right: 0; top: 100%; margin-top: 7px; text-align: center; font: 500 11.5px/1.25 Inter; color: #cfcac5; white-space: nowrap; }
+.mt { display: flex; align-items: center; gap: 10px; margin-top: 7px; }
+.mb { width: 132px; height: 5px; border-radius: 3px; background: rgba(255,255,255,0.09); overflow: hidden; }
+.mb i { display: block; height: 100%; border-radius: 3px; }
+.mt b { font: 600 14px/1 Inter; letter-spacing: -0.1px; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="world">
+    <canvas id="cv" width="1080" height="1920"></canvas>
+    <div class="layer" id="lbls"></div>
+  </div>
+</div>
+<script src="../../tools/lib.js"></script>
+<script src="voice/words.js"></script>
+<script src="lib/three.js"></script>
+<script src="../_ember/world.js"></script>
+<script src="lib/base.js"></script>
+<script src="kit.js"></script>
+<script src="head.js"></script>
+<script src="leehead.js"></script>
+<script src="faceid.js"></script>
+<script src="fid2.js"></script>
+<script>
+/* ---------------- beats */
+const T = {
+  darkness: at('darkness'), so: at('so'), looking: at('looking'), and: at('and'), fake: at('fake'),
+  next: at('next'), selfie: at('selfie'), three: at('three'), light: at('light'), dot: at('dot'), special: at('special'),
+  first: at('first'), light2: at('light', 2), infrared: at('infrared'), eyes: at('eyes'), that: at('that'), can: at('can'),
+  then: at('then'), fires: at('fires'), n30: at('30'), invisible: at('invisible'), dots: at('dots'),
+  beside: at('beside'), different: at('different'), angle2: at('angle', 2), far: at('far'), nose: at('nose'), cheeks: at('cheeks'),
+  turns: at('turns'), d3: at('3d'), map: at('map'), adds: at('adds'), infrared2: at('infrared', 2), checks: at('checks'), saved: at('saved'), data: at('data'),
+  thats: at("that's"), photo: at('photo'), unlock: at('unlock'), photo2: at('photo', 2), flat: at('flat'),
+  but: at('but', 2), sale: at('sale'), y2017: at('2017'), vietnamese: at('vietnamese'), firm: at('firm'), claimed: at('claimed'), usd: at('$150'), mask: at('mask'), fooled: at('fooled'),
+  experts: at('experts'), missing: at('missing'),
+  so2: at('so', 3), never: at('never'), brings: at('brings'), own: at('own'), invisible2: at('invisible', 2), hard: at('hard'), telling: at('telling'), face5: at('face', 5), copy: at('copy'),
+  follow: at('follow'),
+};
+const CUT = { HOOK: 0, MASKT: T.and - 0.08, PARTS: T.next - 0.12, FLOOD: T.first - 0.15, DOTS: T.then - 0.15, TRI: at('the', 4) - 0.1,
+  MAP: T.turns - 0.5, PHOTO: T.thats - 0.12, STORY: T.but - 0.12, TWIST: T.so2 - 0.12, END: T.follow - 0.15 };
+
+/* ---------------- build */
+renderer.localClippingEnabled = true;
+const ground = mesh(new TH.PlaneGeometry(9000, 9000), mat('#0f0f0f', { r: 0.95 }), null, 0, 0, 0, { cast: false });
+const HEAD = [0, 0], PHOTO = [700, 0], MASK_S = [-700, 0], MASK_T = [-215, 55], PHY = -160, PHZ = 150;
+const B = buildBust(null, ...HEAD);
+const PH = buildPhone(null, HEAD[0], HEAD[1] + PHY, PHZ, 4.35, Math.PI, 0.04);
+const PHT = buildPhoto(null, ...PHOTO, 0, headPhotoTex(B));
+const MK = buildMask(null, ...MASK_S, 0);
+const FACES = [B.m, PHT.m, ...new Set(MK.mats)];
+const setPhone = (s) => { PH.g.position.set(s[0], s[1] + PHY, PHZ); PH.g.updateMatrixWorld(true); ORIGIN.set(...partW(PH, 'flood')); };
+setPhone(HEAD);
+// the dots: on the head, on the photo, on the mask (story position)
+const DH = dotCloud(9000, '#ff8a40', 3.3), DP = dotCloud(6000, '#ff7a33', 2.6), DM = dotCloud(9000, '#ff7a33', 2.7);
+const PRJ = () => partW(PH, 'dots'), IRC = () => partW(PH, 'ir');
+const FACE_C = toWorld(B, [0, -6, 20]);
+fillDots(DH, projectDots(B, PRJ(), 9000, 0.78, FACE_C), 1);
+setPhone(PHOTO);
+fillDots(DP, projectFlat(PRJ(), 6000, 0.78, [PHOTO[0], -1, 172], -1.4, [PHOTO[0], 179, 38, 47.5]), 2);
+setPhone(MASK_S); MK.g.updateMatrixWorld(true);
+fillDots(DM, projectDots(MK, PRJ(), 9000, 0.78, toWorld(MK, [0, -6, 20])).filter((h) => { const l = toLocal(MK, h.p, [0, 0, 1])[0]; return inOval(l[0], l[1]); }), 3);
+setPhone(HEAD);
+// the two dots the angle beat follows: nearest hits to the nose tip and to the left cheek
+const nearest = (D, p) => D.hits.reduce((b, h) => (Math.hypot(h.p[0] - p[0], h.p[1] - p[1], h.p[2] - p[2]) < b.d ? { d: Math.hypot(h.p[0] - p[0], h.p[1] - p[1], h.p[2] - p[2]), h } : b), { d: 1e9 }).h;
+const NOSE = nearest(DH, toWorld(B, [0, -18, 48])), CHEEK = nearest(DH, toWorld(B, [19, -10, 28]));
+const cmTo = (p) => Math.hypot(p[0] - ORIGIN.x, p[1] - ORIGIN.y, p[2] - ORIGIN.z) / HS;
+const NOSE_CM = cmTo(NOSE.p), CHEEK_CM = cmTo(CHEEK.p);
+// the 3D map: the head's dots as a cloud that can turn, and the saved face data (cool grey, a touch of jitter)
+const HEAD_C = toWorld(B, [0, 0, 0]);
+const CLOUD = liftCloud(DH.hits, HEAD_C, { near: '#fff2e4', far: '#e0600f', size: 4.2 });
+const SAVED = liftCloud(DH.hits, HEAD_C, { near: '#ffffff', far: '#8d959c', jit: 1.6, size: 3.2 });
+const MASK_C = toWorld(MK, [0, 0, 0]);
+const FLOOD = cone('#ff9a5a'), PRJC = cone('#ff7a33');
+const RAYS = segs3(24, O, 1.0), SIGHT = segs3(6, '#ffffff', 1.4);
+const hot = () => { const s = new TH.Sprite(new TH.SpriteMaterial({ map: TX_ORB, transparent: true, blending: TH.AdditiveBlending, depthWrite: false, depthTest: false, toneMapped: false })); s.visible = false; s.renderOrder = 7; scene.add(s); return s; };
+const HOT = { nose: hot(), cheek: hot(), parts: TD.map(hot) };
+const showHot = (s, p, a, size, col) => { s.visible = a > 0.01; if (!s.visible) return; s.position.set(...p); s.material.opacity = a; s.material.color.set(col); s.scale.set(size, size, 1); };
+// the phone screen's glow on the face in the dark
+const SCREEN_L = new TH.PointLight('#efe9e2', 0, 520, 2); scene.add(SCREEN_L);
+const HEMI = scene.children.find((o) => o.isHemisphereLight);
+// the mask is printed layer by layer: everything above the print height is clipped away
+const PRINT = new TH.Plane(new TH.Vector3(0, 0, -1), 1e4);
+[MK.frameM, MK.eyeM].forEach((m) => (m.clippingPlanes = [PRINT]));
+
+/* ---------------- the lock screen */
+let LS = null;
+const paintLock = (st, ph = 0) => { const k = st + (st === 'scan' || st === 'fail' ? Math.round(ph * 48) : ''); if (k === LS) return; LS = k; PH.s.draw(k, (g, W, H) => lockScreen2(g, W, H, st, ph)); };
+paintLock('lock');
+
+/* ---------------- camera: hard cuts between scenes, slow eased moves inside them */
+const SHOTS = [];
+const shot = (t, f, s, a, e, sy = 440) => SHOTS.push({ t, d: 0, f, s, a, e, sy });
+const move = (t, d, o) => SHOTS.push({ t, d, ez: ease.inOut, ...o });
+const TOP = [0, PHY, PHZ + 26];
+// hook: over the bust's shoulder, onto the lock screen, then round to the face
+shot(CUT.HOOK, [0, -160, 152], 6.2, 2.7, 0.1, 430); move(0.01, T.looking - 0.3, { s: 6.8, a: 2.64 });
+move(T.looking - 0.25, CUT.MASKT - T.looking + 0.2, { f: [0, -70, 166], s: 2.6, a: -1.25, e: 0.12, sy: 480 });
+shot(CUT.MASKT, [MASK_S[0], -10, 172], 3.2, -0.4, 0.1, 430); move(CUT.MASKT + 0.01, 2.2, { s: 3.45, a: -0.3 });
+shot(CUT.PARTS, TOP, 14, 2.98, 0.08, 400); move(CUT.PARTS + 0.01, CUT.FLOOD - CUT.PARTS, { s: 16.5, a: 3.08 });
+shot(CUT.FLOOD, [0, -62, 170], 2.4, -1.52, 0.1, 470); move(CUT.FLOOD + 0.01, CUT.DOTS - CUT.FLOOD, { s: 2.6, a: -1.4 });
+shot(CUT.DOTS, [0, -28, 170], 3.0, -0.74, 0.16, 470); move(CUT.DOTS + 0.01, CUT.TRI - CUT.DOTS, { s: 3.45, a: -0.6 });
+shot(CUT.TRI, [0, -70, 176], 2.62, -1.5, 0.08, 500); move(CUT.TRI + 0.01, CUT.MAP - CUT.TRI, { s: 2.8, f: [0, -66, 176] });
+shot(CUT.MAP, [0, -20, 166], 3.3, -0.44, 0.12, 470); move(CUT.MAP + 0.01, CUT.PHOTO - CUT.MAP, { s: 3.6, a: -0.32 });
+shot(CUT.PHOTO, [PHOTO[0], -60, 172], 2.6, -0.62, 0.14, 550); move(T.flat - 0.45, 1.5, { a: -1.38, s: 3.1, f: [PHOTO[0], -30, 174] });
+shot(CUT.STORY, [MASK_S[0], -40, 172], 2.75, -0.58, 0.13, 470); move(CUT.STORY + 0.01, CUT.TWIST - CUT.STORY, { s: 3.1, a: -0.42 });
+shot(CUT.TWIST, [0, -70, 168], 2.9, -0.95, 0.12, 440); move(T.hard - 0.35, 2.2, { f: [-108, -30, 166], s: 2.25, a: -0.52 });
+const inShot = (t, a, b) => t >= a && t < b;
+
+/* ---------------- the world, frame by frame */
+// darkness: the room's light goes almost to nothing in the hook, while "your eyes can't see it", and in the twist
+const fadeIO = (t, a, b, d = 0.5) => ep(t, a, a + d, ease.inOut) * (1 - ep(t, b - d, b, ease.inOut));
+const darkAt = (t) => Math.max((t >= CUT.MASKT && t < CUT.PARTS ? 0.66 : 1) * (1 - ep(t, CUT.PARTS - 0.4, CUT.PARTS, ease.inOut)), 0.96 * fadeIO(t, T.eyes - 0.2, CUT.DOTS + 0.3, 0.5),
+  0.62 * fadeIO(t, CUT.DOTS - 0.3, CUT.MAP + 0.6, 0.6), 0.9 * ep(t, CUT.TWIST - 0.2, CUT.TWIST + 0.6, ease.inOut));
+const PIPBOX = { x: 340, y: 118, w: 182, h: 228 };
+const rzMap = (t) => 0.62 * ep(t, T.map + 0.25, T.adds + 0.6, ease.inOut) - 0.95 * ep(t, T.adds + 0.6, T.data + 0.2, ease.inOut);
+function world(t) {
+  cam3(t, SHOTS);
+  const D = darkAt(t);
+  const tw = t >= CUT.TWIST ? ep(t, CUT.TWIST, CUT.TWIST + 0.8, ease.inOut) : 0;
+  keyL.intensity = 1.6 * (1 - 0.9 * D); HEMI.intensity = 0.9 * (1 - 0.8 * D) * (1 - 0.6 * tw); rimL.intensity = 0.7 * (1 + 0.6 * D) * (1 - 0.45 * tw);
+  FACES.forEach((m) => (m.envMapIntensity = 0.55 * (1 - 0.85 * D)));
+  const inMaskT = inShot(t, CUT.MASKT, CUT.PARTS), inParts = inShot(t, CUT.PARTS, CUT.FLOOD), inPhoto = inShot(t, CUT.PHOTO, CUT.STORY),
+    inStory = inShot(t, CUT.STORY, CUT.TWIST), inTwist = t >= CUT.TWIST, inMap = inShot(t, CUT.MAP, CUT.PHOTO);
+  B.g.visible = !inParts && !inPhoto && !inStory && !inMaskT && !(inMap && t > T.map + 0.25);
+  PHT.g.visible = inPhoto; MK.g.visible = inStory || inTwist || inMaskT;
+  MK.g.position.set(...(inTwist ? MASK_T : MASK_S), 0);
+  setPhone(inPhoto ? PHOTO : inStory || inMaskT ? MASK_S : HEAD);
+  // the lock screen: it looks, then knows you
+  if (t < CUT.MASKT) paintLock(t < 0.25 ? 'lock' : t < T.darkness ? 'scan' : 'ok', prog(t, 0.25, T.darkness));
+  else if (inParts) paintLock('lock'); else if (inTwist) paintLock('ok');
+  // the screen's own glow on the face, only while it is dark and the phone is awake
+  SCREEN_L.position.set(ORIGIN.x, ORIGIN.y + 6, ORIGIN.z - 22);
+  SCREEN_L.intensity = 5200 * D * (t < CUT.MASKT ? 1 : inTwist ? 0.1 : 0);
+  /* how each face looks in the main view: ceramic, or depth map; in the map it melts into the dark behind the cloud */
+  const away = Math.max(inMap ? ep(t, T.d3 - 0.25, T.map + 0.2, ease.inOut) : 0, 0.86 * fadeIO(t, T.fires - 0.2, CUT.MAP + 0.2, 0.6));
+  const dMap = 0;
+  setFace(B.m, away, dMap); B.m.userData.u.uIRk.value = inMap ? 1 - away : 1.25 - away;
+  setFace(PHT.m, 0, ep(t, T.flat - 0.35, T.flat + 0.35, ease.inOut));
+  const mDepth = inStory ? ep(t, T.mask + 0.05, T.fooled + 0.2, ease.inOut) * 0.85 : 0;
+  new Set(MK.mats).forEach((m) => { setFace(m, 0, mDepth); m.userData.u.uIRk.value = 1; });
+  /* the mask is printed: the print height climbs up the face, then the printed eyes go in */
+  const pq = inStory ? ease.out(prog(t, T.but + 0.2, T.usd + 0.2)) : 1;
+  PRINT.constant = lerp(MASK_C[2] - 66, MASK_C[2] + 40, pq);
+  MK.eyes.forEach((e) => e.scale.setScalar(inStory ? Math.max(0.001, ep(t, T.usd - 0.2, T.usd + 0.4, ease.out)) : 1));
+  /* the parts: the three come forward and grow a little as they are named */
+  const named = { selfie: T.selfie, flood: T.light, dots: T.dot, ir: T.special };
+  PH.parts.forEach((p, k) => {
+    const lift = inParts && p.k !== 'selfie' ? ep(t, named[p.k] - 0.15, named[p.k] + 0.55, ease.inOut) : 0;
+    p.g.position.z = p.z0 + lift * 0.8 * PH.sc; p.g.scale.setScalar(1 + (p.k === 'dots' ? 0.45 : 0.12) * lift);
+    const all = inParts ? 0.55 * window01(t, T.three - 0.05, T.three + 0.9, 0.3) * (p.k === 'selfie' ? 0 : 1) : 0;
+    const hi = inParts ? Math.max(all, 0.9 * window01(t, named[p.k] - 0.1, named[p.k] + 1.1, 0.35)) : 0;
+    showHot(HOT.parts[k], partW(PH, p.k), 0.45 * hi, (p.k === 'selfie' ? 2.2 : p.k === 'flood' ? 1.8 : 2.6) * (1 + 0.3 * lift), p.k === 'selfie' ? '#d9d5d1' : O);
+  });
+  /* the flood light: a faint cone from the phone to the face */
+  const tgt = (s) => [s[0], s[1] - 30, 172];
+  const fl = 0.05 * (inShot(t, CUT.FLOOD, CUT.DOTS) ? ep(t, T.light2 - 0.1, T.light2 + 0.6, ease.inOut) * (1 - 0.5 * ep(t, T.that, T.that + 0.6)) : 0)
+    + 0.08 * (inTwist ? ep(t, T.brings - 0.1, T.brings + 0.7, ease.inOut) * (1 - ep(t, T.hard - 0.3, T.hard + 0.5, ease.inOut)) : 0);
+  FLOOD.aim([ORIGIN.x, ORIGIN.y, ORIGIN.z], tgt(HEAD), 52, fl);
+  /* the dots: rays out of the projector, then the pattern rains onto whatever is in front */
+  RAYS.begin(); SIGHT.begin();
+  const pr = PRJ();
+  const dotsOn = (Dc, t0, on, a) => { Dc.pts.visible = on && a > 0.005; Dc.m.uniforms.uP.value = ep(t, t0, t0 + 2.1, ease.inOut); Dc.m.uniforms.uA.value = on ? a : 0; };
+  const inMech = inShot(t, CUT.DOTS, CUT.PHOTO);
+  dotsOn(DH, T.fires, inMech, 1 - ep(t, T.d3 - 0.3, T.map, ease.inOut));
+  dotsOn(DP, T.photo - 0.25, inPhoto, 1);
+  DP.m.uniforms.uP.value = ep(t, T.photo - 0.25, T.photo + 0.75, ease.inOut);
+  dotsOn(DM, T.mask - 0.4, inStory, 1 - 0.5 * mDepth);
+  DM.m.uniforms.uP.value = ep(t, T.mask - 0.4, T.mask + 0.5, ease.inOut);
+  const fire = (Dc, t0, t1, n) => { if (t < t0 || t > t1 + 0.3) return; for (let i = 0; i < n; i++) { const h = Dc.hits[(i * 977) % Dc.hits.length], ts = t0 + (i / n) * (t1 - t0); RAYS.add(pr, h.p, 0.15 * window01(t, ts, ts + 0.5, 0.15)); } };
+  if (inMech && t < CUT.TRI) fire(DH, T.fires - 0.05, T.dots + 0.3, 24);
+  if (inPhoto) fire(DP, T.photo - 0.3, T.photo + 0.6, 30);
+  if (inStory) fire(DM, T.mask - 0.45, T.mask + 0.4, 30);
+  PRJC.aim(pr, tgt(HEAD), 50, inMech ? 0.06 * window01(t, T.fires - 0.1, T.dots + 0.6, 0.4) : 0);
+  /* the angle beat: projector → dot → camera, for the nose and for a cheek */
+  const ir = IRC(), inTri = inShot(t, CUT.TRI, CUT.MAP);
+  if (inTri) {
+    const qn = ep(t, T.beside - 0.1, T.beside + 0.7, ease.inOut), qc = ep(t, T.different, T.different + 0.7, ease.inOut);
+    const hn = 0.4 + 0.6 * window01(t, T.nose - 0.1, T.nose + 0.9, 0.25), hc = 0.4 + 0.6 * window01(t, T.cheeks - 0.1, T.cheeks + 0.9, 0.25);
+    SIGHT.add(pr, lerp3(pr, NOSE.p, qn), 0.85 * qn * hn, O); SIGHT.add(NOSE.p, lerp3(NOSE.p, ir, qn), 0.7 * qn * hn, '#f4f3f2');
+    SIGHT.add(pr, lerp3(pr, CHEEK.p, qc), 0.6 * qc * hc, O2); SIGHT.add(CHEEK.p, lerp3(CHEEK.p, ir, qc), 0.5 * qc * hc, '#cfcac5');
+    showHot(HOT.nose, NOSE.p, qn * hn, 9, O); showHot(HOT.cheek, CHEEK.p, qc * hc, 8, O2);
+  } else { HOT.nose.visible = HOT.cheek.visible = false; }
+  RAYS.end(); SIGHT.end();
+  /* the 3D map: the dots lift off as a cloud that turns; the saved face data slides in and lines up */
+  const cA = inMap ? ep(t, T.d3 - 0.35, T.map, ease.inOut) : 0, rz = rzMap(t);
+  const matchQ = ep(t, T.checks + 0.3, T.data - 0.05, ease.inOut), ok = inMap ? pulse(t, T.data - 0.02, 2.6) : 0;
+  CLOUD.set(cA, rz, [0, 0, 0], 0.55 * ok);
+  const sv = inMap ? ep(t, T.checks - 0.15, T.checks + 0.75, ease.inOut) : 0;
+  SAVED.set(0.7 * sv * (1 - 0.6 * ep(t, T.data, T.data + 0.5)), rz, [45 * (1 - sv), 0, 0]);
+  /* the infrared camera window */
+  const show = (...g) => g;
+  const faceAt = (s) => [s[0], s[1] - 6, s === HEAD ? FACE_C[2] : 172];
+  let po = null;
+  if (t < CUT.MASKT) po = { a: ep(t, T.looking - 0.3, T.looking + 0.35), from: IRC(), at: FACE_C, show: show(B.g), ir: 1, note: 'Your face, clear as day' };
+  else if (inMaskT) po = { a: 1 - ep(t, CUT.PARTS - 0.45, CUT.PARTS - 0.05), from: IRC(), at: faceAt(MASK_S), show: show(MK.g), ir: 1, note: 'A fake face?' };
+  else if (inShot(t, CUT.FLOOD, CUT.DOTS)) po = { a: ep(t, T.infrared - 0.2, T.infrared + 0.35), from: IRC(), at: FACE_C, show: show(B.g), ir: 0.15 + 0.85 * ep(t, T.infrared, T.light2 + 1.6, ease.inOut), note: t < T.eyes ? 'Lit by infrared' : 'Invisible to you, not to it', hot: t > T.that - 0.1 && t < T.can + 0.6 };
+  else if (inShot(t, CUT.DOTS, CUT.TRI)) po = { a: 1, from: IRC(), at: FACE_C, show: show(B.g, DH.pts), dots: [DH], ir: 0.4, note: 'The dot pattern on your face' };
+  else if (inTri) po = { a: 1, from: IRC(), at: FACE_C, fov: 32, show: show(B.g, DH.pts, HOT.nose, HOT.cheek), dots: [DH], ir: 0.4, note: 'Depth from the angle' };
+  else if (inMap) {
+    const fly = ep(t, T.adds - 0.1, T.infrared2 + 0.45, ease.inOut), gone = ep(t, T.checks - 0.35, T.checks + 0.05, ease.inOut);
+    po = { a: 1 - gone, box: { x: lerp(PIPBOX.x, 356, fly), y: lerp(PIPBOX.y, 300, fly), w: lerp(PIPBOX.w, 150, fly), h: lerp(PIPBOX.h, 188, fly) },
+      from: IRC(), at: FACE_C, show: show(B.g), ir: 1, label: fly > 0.5 ? '+ Infrared picture' : 'Infrared camera', note: '', hot: fly > 0.5 };
+  }
+  else if (inPhoto) po = { a: ep(t, T.photo - 0.3, T.photo + 0.3), from: IRC(), at: [PHOTO[0], -1, 175], fov: 40, show: show(PHT.g, DP.pts), dots: [DP], ir: 1, mix: new Map([[PHT.m, 0.3]]), note: t < T.flat - 0.1 ? 'Dots on a printed photo' : 'Flat. No depth.' };
+  else if (inTwist) {
+    po = { a: ep(t, T.never - 0.4, T.never + 0.2) * (1 - ep(t, CUT.END - 0.3, CUT.END + 0.2)), from: IRC(), at: FACE_C,
+      show: show(B.g), ir: 1, note: t > T.telling - 0.2 ? 'Your face, or a copy?' : 'Pitch dark. It still sees you.' };
+  }
+  if (po) { po.box = po.box || PIPBOX; po.fov = po.fov || 38; }
+  pipSet(po);
+}
+
+/* ---------------- HUD: few, small labels, live numbers */
+const K = (k, v, c, o) => ({ k, v, c, ...o });
+// the angle diagram, seen from above: projector and camera side by side on the phone, nose and cheek in front
+function triSVG(t) {
+  const qn = ep(t, T.beside - 0.1, T.beside + 0.7, ease.inOut), qc = ep(t, T.different, T.different + 0.7, ease.inOut);
+  const hn = window01(t, T.nose - 0.1, T.nose + 1.1, 0.25), hc = window01(t, T.cheeks - 0.1, T.cheeks + 1.1, 0.25);
+  const P = [132, 118], Cm = [76, 118], N = [104, 26], Ck = [158, 50];
+  const seg = (a, b, q, col, w, op) => `<line x1="${a[0]}" y1="${a[1]}" x2="${lerp(a[0], b[0], q).toFixed(1)}" y2="${lerp(a[1], b[1], q).toFixed(1)}" stroke="${col}" stroke-width="${w}" opacity="${op.toFixed(2)}" stroke-linecap="round"/>`;
+  return `<svg width="250" height="168" viewBox="0 0 208 140" style="display:block;margin-top:7px">
+    <path d="M24 64 C 52 52, 78 46, 92 32 Q 104 18 116 32 C 130 46, 156 52, 184 64" fill="none" stroke="#6f6a66" stroke-width="1.3"/>
+    ${seg(P, N, qn, O, 1.6, 0.55 + 0.45 * hn)}${seg(N, Cm, qn, '#f4f3f2', 1.3, 0.45 + 0.55 * hn)}
+    ${seg(P, Ck, qc, O2, 1.4, 0.4 + 0.5 * hc)}${seg(Ck, Cm, qc, '#cfcac5', 1.1, 0.35 + 0.5 * hc)}
+    <circle cx="${N[0]}" cy="${N[1]}" r="${2.6 + 1.6 * hn}" fill="${O}" opacity="${qn.toFixed(2)}"/><circle cx="${Ck[0]}" cy="${Ck[1]}" r="${2.4 + 1.4 * hc}" fill="${O2}" opacity="${qc.toFixed(2)}"/>
+    <rect x="50" y="122" width="108" height="9" rx="4.5" fill="#2b2826"/><circle cx="${P[0]}" cy="${P[1] + 8}" r="3.2" fill="${O}"/><circle cx="${Cm[0]}" cy="${Cm[1] + 8}" r="3.2" fill="#f4f3f2"/>
+    <text x="${P[0] + 8}" y="${P[1] + 11}" font-family="Inter" font-size="8.5" fill="#9a948f">projector</text><text x="${Cm[0] - 8}" y="${Cm[1] + 11}" font-family="Inter" font-size="8.5" fill="#9a948f" text-anchor="end">camera</text>
+    <text x="${N[0] - 6}" y="${N[1] - 9}" font-family="Inter" font-size="9" font-weight="600" fill="${O}" opacity="${(0.3 + 0.7 * hn).toFixed(2)}" text-anchor="end">nose · nearer</text>
+    <text x="204" y="${Ck[1] - 10}" font-family="Inter" font-size="9" font-weight="600" fill="${O2}" opacity="${(0.3 + 0.7 * hc).toFixed(2)}" text-anchor="end">cheek · farther</text></svg>`;
+}
+function tags(t) {
+  hud.begin();
+  const H = (key, o) => hud.card(key, o, t), CH = (key, o) => hud.chip(key, o, t);
+  const pw = (k) => partW(PH, k);
+  // the hook
+  H('room', K('Room light', 'Off', '#9e9995', { x: 22, y: 172, a: 0.5, b: CUT.MASKT }));
+  // the parts (screen order, left to right: infrared camera, flood light, selfie camera, dot projector)
+  CH('selfie', { s: 'Selfie camera', w: pw('selfie'), x: 62, y: 362, a: T.selfie - 0.1, b: CUT.FLOOD, c: '#d9d5d1' });
+  CH('flood', { s: 'Flood light', w: pw('flood'), x: 70, y: 498, a: T.light - 0.05, b: CUT.FLOOD, c: O, hot: true });
+  CH('dots', { s: 'Dot projector', w: pw('dots'), x: 340, y: 286, a: T.dot - 0.05, b: CUT.FLOOD, c: O, hot: true });
+  CH('irc', { s: 'Infrared camera', w: pw('ir'), x: 40, y: 286, a: T.special - 0.05, b: CUT.FLOOD, c: O, hot: true });
+  // infrared
+  CH('irl', { s: 'Infrared light · invisible', w: [ORIGIN.x, ORIGIN.y + 60, ORIGIN.z + 4], x: -30, y: -70, rel: true, a: T.infrared - 0.05, b: CUT.DOTS, c: O });
+  H('eyes', K('Your eyes', 'See nothing', '#9e9995', { x: 22, y: 172, a: T.eyes - 0.1, b: CUT.DOTS }));
+  // the dots: a live count
+  const nd = 30000 * ep(t, T.fires - 0.05, T.dots + 0.2, ease.inOut);
+  H('n30', K('Dots projected', fmtN(nd) + (nd > 29999 ? '+' : ''), O, { x: 22, y: 172, a: T.fires - 0.15, b: CUT.TRI, big: true }));
+  // the angle, and live distances to the nose and the cheek
+  hud.card('tri', { k: 'Seen from above', v: triSVG(t), c: O, x: 22, y: 172, a: T.beside - 0.15, b: CUT.MAP }, t);
+  const dn = NOSE_CM * ep(t, T.nose - 0.15, T.nose + 0.5, ease.out), dc = CHEEK_CM * ep(t, T.cheeks - 0.15, T.cheeks + 0.5, ease.out);
+  CH('dn', { s: `Nose · <b style="color:${O}">${dn.toFixed(1)} cm</b>`, w: NOSE.p, x: -128, y: 26, rel: true, a: T.nose - 0.15, b: CUT.MAP, c: O, hot: true });
+  CH('dc', { s: `Cheek · <b style="color:${O2}">${dc.toFixed(1)} cm</b>`, w: CHEEK.p, x: 40, y: 52, rel: true, a: T.cheeks - 0.15, b: CUT.MAP, c: O2, hot: true });
+  // the map + the match
+  CH('map', { s: '3D map · 30,000+ points', w: toWorld(B, [34, 34, 30]), x: 18, y: -34, rel: true, a: T.d3 - 0.1, b: T.adds - 0.15, c: O });
+  CH('sv', { s: 'Saved face data', w: [HEAD_C[0] + 28, HEAD_C[1], HEAD_C[2] + 52], x: 16, y: -44, rel: true, a: T.checks + 0.1, b: CUT.PHOTO, c: '#d9d5d1' });
+  const mq = ep(t, T.checks + 0.3, T.data - 0.05, ease.inOut), okd = t > T.data - 0.05;
+  H('m1', K('Face ID', meter(mq, okd ? O : '#cfcac5', okd ? 'Match · unlocked' : 'Checking…'), '#f4f3f2', { x: 22, y: 600, a: T.checks + 0.05, b: CUT.PHOTO }));
+  // the photo
+  CH('ph', { s: 'Printed photo', w: [PHOTO[0] + 38, -2, 220], x: 14, y: -24, rel: true, a: T.photo - 0.1, b: T.flat - 0.4, c: '#d9d5d1' });
+  H('flat', K('Depth', 'None · flat', RED, { x: 22, y: 172, a: T.flat - 0.05, b: CUT.STORY }));
+  const pq = 0.12 * ep(t, T.photo + 0.2, T.unlock + 0.2, ease.inOut), no = t > T.flat - 0.1;
+  H('m2', K('Face ID', meter(pq, no ? RED : '#cfcac5', no ? 'No match · try again' : 'Checking…'), '#f4f3f2', { x: 22, y: 600, a: T.photo + 0.1, b: CUT.STORY }));
+  // the mask
+  CH('m1p', { s: '3D-printed frame', w: toWorld(MK, [36, 26, 22]), x: 16, y: -30, rel: true, a: T.firm - 0.1, b: CUT.TWIST, c: '#d9d5d1' });
+  CH('m2p', { s: 'Handmade nose', w: toWorld(MK, [2, -18, 48]), x: 26, y: 6, rel: true, a: T.claimed - 0.05, b: CUT.TWIST, c: '#d9d5d1' });
+  CH('m3p', { s: 'Printed eyes', w: toWorld(MK, [-14, 0, 36]), x: -110, y: -40, rel: true, a: T.usd - 0.1, b: CUT.TWIST, c: '#d9d5d1' });
+  const usd = 150 * ep(t, T.usd - 0.05, T.usd + 0.55, ease.out);
+  H('cost', K('Claimed cost', '$' + Math.round(usd), '#f4f3f2', { x: 22, y: 520, a: T.usd - 0.12, b: T.experts - 0.1 }));
+  const kq = ep(t, T.mask - 0.2, T.fooled + 0.1, ease.inOut), cl = t > T.fooled - 0.05, un = t > T.experts - 0.05;
+  H('m3', K('Face ID', meter(kq, un ? '#6f6a66' : cl ? AMB : '#cfcac5', un ? 'Unverified' : cl ? 'Match? (claimed)' : 'Checking…'), '#f4f3f2', { x: 22, y: 600, a: T.mask - 0.3, b: CUT.TWIST }));
+  H('exp', K('Experts', 'Key test details missing', '#d9d5d1', { x: 22, y: 520, a: T.experts - 0.05, b: CUT.TWIST }));
+  // the twist
+  H('room2', K('Room light', 'Off', '#9e9995', { x: 22, y: 172, a: T.never - 0.2, b: T.hard - 0.2 }));
+  CH('own', { s: 'Its own invisible light', w: [ORIGIN.x, ORIGIN.y + 50, ORIGIN.z + 10], x: 20, y: -60, rel: true, a: T.own - 0.1, b: T.hard - 0.2, c: O });
+  CH('yf', { s: 'Your face', w: toWorld(B, [0, -58, 20]), x: -38, y: 26, rel: true, a: T.face5 - 0.1, b: CUT.END + 0.4, c: O, hot: true });
+  CH('cp', { s: 'A copy', w: toWorld(MK, [0, -58, 20]), x: -26, y: 26, rel: true, a: T.copy - 0.15, b: CUT.END + 0.4, c: '#d9d5d1' });
+  hud.end();
+}
+
+/* ---------------- reel config */
+const SHIELD = '<svg width="38" height="38" viewBox="0 0 40 40" fill="none" stroke="#ff6a1f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 4l13 5v10c0 8-5.6 13.6-13 17-7.4-3.4-13-9-13-17V9z"/><path d="M15 16v2M25 16v2M20 16v6h-1.5M16 27c2.4 1.8 5.6 1.8 8 0"/></svg>';
+const REEL = {
+  shots: [{ t: 0, f: [0, 0, 0], s: 1, a: -0.7, e: 0.6, sy: 480 }], world, tags,
+  tools: [{ a: T.but + 0.05, b: T.experts - 0.1, top: 174, svg: SHIELD, name: 'Bkav, Vietnam · Nov 2017', sub: 'CLAIMED: A $150 MASK FOOLED FACE ID', src: 'REPORTED 13 NOV 2017 · NOT INDEPENDENTLY VERIFIED' }],
+  state: {
+    a: 0.25, b: CUT.END + 0.3,
+    at(t) {
+      const G = '#9e9995';
+      if (t < T.darkness) return ['Face ID · scanning', G];
+      if (t < CUT.MASKT) return ['Unlocked', O];
+      if (t < CUT.PARTS) return ['Fake face?', G];
+      if (t < T.data - 0.05) return ['Face ID', G];
+      if (t < CUT.PHOTO) return ['Match · unlocked', O];
+      if (t < T.flat - 0.1) return ['Scanning', G];
+      if (t < CUT.STORY) return ['No match', RED];
+      if (t < T.fooled) return ['Scanning', G];
+      if (t < T.experts) return ['Match? (claimed)', AMB];
+      if (t < CUT.TWIST) return ['Unverified', G];
+      return ['Your face, or a copy?', G];
+    },
+  },
+  bad: ['flat'],
+  good: [],
+  tiles: [['◎', 'AIRTAGS'], ['♪', 'SHAZAM'], ['⌖', 'GPS']],
+  end: CUT.END, follow: T.follow,
+  cover: { k: 'HOW IT WORKS', t: 'FACE ID', at: T.dots + 0.6, zoom: 1.3, dy: 10 },
+};
+</script>
+<script src="lib/overlay.js"></script>
+<script>
+{ const r0 = window.ready; window.ready = async () => { await r0(); for (let i = 0; i < 200 && !LEE_NM.ready; i++) await new Promise((r) => setTimeout(r, 25)); ctexRedraw(); PH.s._k = null; LS = null; }; }
+// the state badge hides while the story card is up (they share the top-left); the IR window is drawn after the main frame
+{ const r = window.render; window.render = (t) => { r(t); if (!/cover/.test(location.hash)) pipRender(); else pipEl.style.display = 'none';
+  if (REEL.state.el && t > REEL.tools[0].a && t < REEL.tools[0].b) REEL.state.el.style.opacity = Math.min(+REEL.state.el.style.opacity, 1 - window01(t, REEL.tools[0].a - 0.2, REEL.tools[0].b + 0.3, 0.3)); }; }
+if (/cover/.test(location.hash)) { const c = document.createElement('style'); c.textContent = '#hud, #state, .pip { display: none !important; } #stage { background: #070707 !important; } #ct .t { font-weight: 700 !important; font-size: 54px !important; letter-spacing: -1.6px !important; background: none !important; color: #f4f3f2 !important; -webkit-text-fill-color: #f4f3f2 !important; filter: none !important; } #ct .k { color: #ff6a1f !important; font-weight: 600 !important; }'; document.head.appendChild(c); }
+</script>
+<script src="../_ember/play.js"></script>
+</body>
+</html>

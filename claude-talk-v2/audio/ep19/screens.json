@@ -1,0 +1,73 @@
+{
+ "m1": {
+  "kind": "page",
+  "url": "mail \u00b7 inbox",
+  "accent": "#1c7ed6",
+  "title": "Incredible deck, Cleo.",
+  "body": [
+   "Best deck this quarter.",
+   "Honestly? Genius.",
+   "Walk the execs through",
+   "your process. 9 AM.",
+   "Mark, Head of Strategy"
+  ]
+ },
+ "m1b": {
+  "kind": "page",
+  "url": "mail \u00b7 new message",
+  "accent": "#1c7ed6",
+  "title": "Re: Incredible deck, Cleo.",
+  "body": [
+   "One more thing.",
+   "Already sent this to HR.",
+   "",
+   "Mark, Head of Strategy"
+  ],
+  "badge": {
+   "text": "+ Promotion_Proposal.pdf",
+   "color": "#2f9e44"
+  }
+ },
+ "m2": {
+  "kind": "term",
+  "title": "Claude \u00b7 chat history",
+  "lines": [
+   "> make something good",
+   "",
+   "> no. less weird",
+   "",
+   "> done yet?",
+   "> done yet?",
+   "> done yet?",
+   "+ 8 more \"done yet?\""
+  ],
+  "hi": [
+   7
+  ]
+ },
+ "m3": {
+  "kind": "page",
+  "url": "Promotion_Proposal.pdf",
+  "accent": "#2f9e44",
+  "title": "Promotion: Cleo \u2192 Team Lead",
+  "body": [
+   "Delegates everything",
+   "Rejects first drafts",
+   "Follows up constantly",
+   "",
+   "Recommended by Mark"
+  ],
+  "badge": {
+   "text": "Approved",
+   "color": "#2f9e44"
+  }
+ },
+ "p1": {
+  "kind": "phone",
+  "app": "Mail",
+  "title": "Mark Davies",
+  "body": "Incredible deck, Cleo. 9 AM tomorrow?",
+  "size": 46,
+  "time": "6:12"
+ }
+}

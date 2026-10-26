@@ -1,0 +1,1 @@
+38s, finish=STOP, usage={'promptTokenCount': 24425, 'candidatesTokenCount': 1215, 'totalTokenCount': 25640, 'trafficType': 'ON_DEMAND', 'promptTokensDetails': [{'modality': 'TEXT', 'tokenCount': 929}, {'modality': 'VIDEO', 'tokenCount': 23496}], 'candidatesTokensDetails': [{'modality': 'TEXT', 'tokenCount': 1215}]}

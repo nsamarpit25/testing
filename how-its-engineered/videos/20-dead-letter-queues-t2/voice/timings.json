@@ -1,0 +1,58 @@
+[
+ {
+  "li": 0,
+  "pi": 0,
+  "say": "Your checkout queue is stuck on one broken order. The app keeps retrying it, the orders behind it are piling up, and it won't move on.",
+  "show": "Your checkout queue is stuck on one [broken order.] The app keeps *retrying* it, the orders behind it are [piling up,] and it won't move on.",
+  "start": 0.0,
+  "end": 6.64
+ },
+ {
+  "li": 1,
+  "pi": 0,
+  "say": "Orders wait in line as messages with the order details, and a program handles them. This one has bad data, so it fails every time. That's a poison message.",
+  "show": "Orders wait in line as *messages* with the order details, and a program handles them. This one has bad data, so it *fails every time.* That's a [poison message.]",
+  "start": 7.52,
+  "end": 14.76
+ },
+ {
+  "li": 2,
+  "pi": 0,
+  "say": "The fix is a dead letter queue. Set a limit, and after that many failures, the message is moved aside, so the rest keep flowing.",
+  "show": "The fix is a *dead letter queue.* Set a *limit,* and after that many failures, the message is *moved aside,* so the rest *keep flowing.*",
+  "start": 15.44,
+  "end": 20.8
+ },
+ {
+  "li": 3,
+  "pi": 0,
+  "say": "Like a post office bin for undeliverable mail. The bad letter waits there, and everything else gets delivered.",
+  "show": "Like a *post office bin* for undeliverable mail. The bad letter waits there, and everything else gets *delivered.*",
+  "start": 21.24,
+  "end": 25.76
+ },
+ {
+  "li": 4,
+  "pi": 0,
+  "say": "Later, you look at it, fix the cause, and send it back to be processed.",
+  "show": "Later, you *look at it,* fix the cause, and *send it back* to be processed.",
+  "start": 26.12,
+  "end": 28.84
+ },
+ {
+  "li": 5,
+  "pi": 0,
+  "say": "Amazon SQS and RabbitMQ both have this built in.",
+  "show": "*Amazon SQS* and *RabbitMQ* both have this built in.",
+  "start": 28.84,
+  "end": 31.94
+ },
+ {
+  "li": 6,
+  "pi": 0,
+  "say": "If AI writes your code, follow for the system design it leaves out.",
+  "show": "If AI writes your code, *follow* for the system design it [leaves out.]",
+  "start": 32.38,
+  "end": 35.2
+ }
+]

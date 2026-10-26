@@ -1,0 +1,2 @@
+CORS error in Chrome but the API works in Postman? A different port is a different origin, and the fix is the Access-Control-Allow-Origin header on the server.
+#CORS #WebDevelopment #JavaScript #API #Debugging

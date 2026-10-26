@@ -1,0 +1,57 @@
+{
+ "topic": "Long polling",
+ "lines": [
+  [
+   {
+    "say": "Your app asked the server, any new messages? The server didn't answer. For thirty seconds. On purpose.",
+    "show": "Your app asked the server, *any new messages?* The server didn't answer. For [thirty seconds.] On purpose."
+   },
+   {
+    "say": "Why?",
+    "show": "[Why?]"
+   }
+  ],
+  [
+   {
+    "say": "Without it, your app keeps asking, and most of the time it hears nothing new. That's a lot of wasted trips.",
+    "show": "Without it, your app *keeps asking,* and most of the time it hears *nothing new.* That's a lot of [wasted trips.]"
+   }
+  ],
+  [
+   {
+    "say": "Long polling flips that. The server holds your question and waits.",
+    "show": "[Long polling] flips that. The server *holds your question* and waits."
+   }
+  ],
+  [
+   {
+    "say": "The moment a message arrives, it answers. Your app shows it, and asks again straight away.",
+    "show": "The moment a message arrives, it *answers.* Your app shows it, and [asks again] straight away."
+   }
+  ],
+  [
+   {
+    "say": "If nothing happens before a time limit, say thirty seconds, the server answers nothing yet, and your app asks again.",
+    "show": "If nothing happens before a *time limit,* say 30 seconds, the server answers [nothing yet,] and your app asks again."
+   }
+  ],
+  [
+   {
+    "say": "Like a kid asking are we there yet every minute, versus asking once and getting the answer the moment you arrive.",
+    "show": "Like a kid asking *are we there yet* every minute, versus asking once and getting the answer [the moment you arrive.]"
+   }
+  ],
+  [
+   {
+    "say": "Telegram bots can get messages this way, using plain web requests.",
+    "show": "*Telegram bots* can get messages this way, using plain *web requests.*"
+   }
+  ],
+  [
+   {
+    "say": "If you're a vibe coder, follow for the system design your AI skipped.",
+    "show": "If you're a vibe coder, follow for the system design your AI [skipped.]"
+   }
+  ]
+ ]
+}

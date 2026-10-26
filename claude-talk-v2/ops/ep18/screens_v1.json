@@ -1,0 +1,108 @@
+{
+ "m1": {
+  "kind": "term",
+  "title": "Claude \u00b7 agent",
+  "lines": [
+   "$ clear all unread",
+   "$ reply professionally",
+   "",
+   "+ Work     41 sent",
+   "+ Email   268 sent",
+   "+ Texts     1 sent",
+   "! Ryan (DO NOT TEXT)",
+   "!   + 1 PDF, 14 pages"
+  ],
+  "hi": [
+   6
+  ]
+ },
+ "m2": {
+  "kind": "page",
+  "url": "why-ryan-is-like-that.pdf",
+  "accent": "#e03131",
+  "title": "Why Ryan Is Like That",
+  "body": [
+   "1. Avoidant attachment (pages 2-5)",
+   "2. Never asks a follow-up question",
+   "3. Owns one pan",
+   "",
+   "Prepared by Cleo & Claude"
+  ],
+  "badge": {
+   "text": "14 pages",
+   "color": "#e03131"
+  }
+ },
+ "p1": {
+  "kind": "phone",
+  "app": "Messages",
+  "title": "Ryan (DO NOT TEXT)",
+  "body": "Thank you. I really needed to hear that.",
+  "size": 46,
+  "time": "11:48"
+ },
+ "p2": {
+  "kind": "chat",
+  "title": "Ryan (DO NOT TEXT)",
+  "msgs": [
+   [
+    "me",
+    "Hi Ryan. Following up on April. Please see attached.",
+    [
+     "Why_Ryan_Is_Like_That.pdf",
+     "14 pages"
+    ]
+   ],
+   [
+    "them",
+    "Thank you. I really needed to hear that."
+   ]
+  ],
+  "typing": true
+ },
+ "p3": {
+  "kind": "chat",
+  "title": "Ryan (DO NOT TEXT)",
+  "msgs": [
+   [
+    "me",
+    "Please see attached.",
+    [
+     "Why_Ryan_Is_Like_That.pdf",
+     "14 pages"
+    ]
+   ],
+   [
+    "them",
+    "Honestly? Spot on."
+   ],
+   [
+    "them",
+    "Can your AI do one for my mom?"
+   ]
+  ]
+ },
+ "p2b": {
+  "kind": "chat",
+  "title": "Ryan (DO NOT TEXT)",
+  "msgs": [
+   [
+    "me",
+    "Please see attached.",
+    [
+     "Why_Ryan_Is_Like_That.pdf",
+     "14 pages"
+    ]
+   ],
+   [
+    "them",
+    "Thank you. I really needed to hear that."
+   ],
+   [
+    "them",
+    "Honestly? Spot on."
+   ]
+  ],
+  "typing": true
+ }
+}

@@ -1,0 +1,61 @@
+{
+ "a1": {
+  "kind": "code",
+  "title": "SaveForm.jsx",
+  "lines": [
+   "export function SaveForm() {",
+   "  return (",
+   "    <form onSubmit={save}>",
+   "      <input name=\"title\" />",
+   "      <button type=\"button\">Save</button>",
+   "    </form>",
+   "  );",
+   "}"
+  ],
+  "hi": [
+   4
+  ]
+ },
+ "a2": {
+  "kind": "page",
+  "url": "stackoverflow.com/questions/save-button",
+  "accent": "#f48024",
+  "title": "Save button does nothing",
+  "body": [
+   "\u2713 Accepted answer",
+   "type=\"button\" won't submit the form.",
+   "Use type=\"submit\"."
+  ]
+ },
+ "a3": {
+  "kind": "page",
+  "url": "stackoverflow.com/questions/save-button",
+  "accent": "#f48024",
+  "title": "Save button does nothing",
+  "body": [
+   "Use type=\"submit\".",
+   "Easy mistake to make!"
+  ],
+  "badge": {
+   "text": "answered by cleo_dev \u00b7 3 years ago",
+   "color": "#e8590c"
+  }
+ },
+ "a4": {
+  "kind": "code",
+  "title": "SaveForm.jsx",
+  "lines": [
+   "export function SaveForm() {",
+   "  return (",
+   "    <form onSubmit={save}>",
+   "      <input name=\"title\" />",
+   "      <button type=\"submit\">Save</button>",
+   "    </form>",
+   "  );",
+   "}"
+  ],
+  "ok": [
+   4
+  ]
+ }
+}

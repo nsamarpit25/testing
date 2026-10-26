@@ -1,0 +1,5 @@
+- **Minor — 32.5–33.5s:** Caption isolates “it.” before “Otherwise,” making the sentence feel fragmented. Keep “stops it.” together in one caption chunk.
+
+No upload-blocking issues visible. Screens support the dialogue, board close-ups explain the key points, and no obvious flash cuts, clipping, or character glitches appear. The opening establishes the problem; “New address. Back outside.” pays off the guest-list joke. The intended fade works.
+
+VERDICT: PASS

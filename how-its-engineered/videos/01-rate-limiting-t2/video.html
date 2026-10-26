@@ -1,0 +1,244 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- 01 Rate limiting, remade in the 21 ember style. World: a login server at the back; a low fence in front of it with
+     one gate, the rate limiter, which counts each sender's tries; the public side in front (a bot, then two users,
+     then a runaway script). The bouncer analogy is mapped onto the gate (limiter = bouncer, 5 entries, 6th = shut).
+     Beats come from voice/words.json via at(). Shared pieces live in ../_ember/. -->
+<link rel="stylesheet" href="../_ember/fonts.css">
+<link rel="stylesheet" href="../_ember/reel.css">
+</head>
+<body>
+<div id="stage">
+  <div id="world">
+    <canvas id="cv" width="1080" height="1920"></canvas>
+    <div class="layer" id="lbls"></div>
+  </div>
+</div>
+<script src="../../tools/lib.js"></script>
+<script src="voice/words.js"></script>
+<script src="../_ember/three.js"></script>
+<script src="../_ember/world.js"></script>
+<script src="../_ember/base.js"></script>
+<script>
+const addIcon = (k, d) => { ICON[k] = d; P2[k] = new Path2D(d); };
+addIcon('bot', 'M26 34 H74 V76 H26 Z M50 34 V20 M44 16 h12 M38 52 h1 M62 52 h1 M38 66 H62');
+addIcon('user', 'M50 18 a14 14 0 1 0 0.1 0 M24 84 Q24 56 50 56 Q76 56 76 84');
+for (let i = 0; i < 12; i++) ORBS.push({ core: orbSprite(9), glow: orbSprite(34), trail: [0, 1, 2, 3, 4].map(() => orbSprite(10)) });
+
+/* ---------------- beats */
+const T = {
+ login: at('login'), hit: at('50'), n50: at('50'), minute: at('minute'), from: line(1).start, bot: at('bot'), guessing: at('guessing'), passwords: at('passwords'),
+ after: at('after'), fifth: at('five'), try1: at('tries'), nothing: at('next'), error: at('error'),
+ thats: line(3).start, rate: at('rate'), cap: at('cap'), user: at('user'), set: at('set'),
+ like: line(5).start, bouncer: at('bouncer'), clicker: at('clicker'), guest: at('guest',2), five: at('five',2), entries: at('entries'), hour: at('hour'), sixth: at('sixth'), door: at('door'), shut: at('shut'),
+ counts: at('counts'), users: at('users'), login2: at('separately'), attempts: at('attempts'),
+ over: line(6).start, limit: at('limit'), error2: at('answers'), e429: at('429'), too: at('too'), requests2: at('requests',3),
+ once: at('once'), passes: at('passes'), again: at('again'), try2: at('try'),
+ so: line(8).start, bot2: at('runaway'), thousands: at('thousands'), runaway: at('runaway'), script: at('script'), hog: at('hog'), everyone: at('everyone',2), using: at('work'),
+ github: line(9).start, openai: at('succeed'), stripe: at('service'), limit2: at('breaking'),
+ last: WORDS[WORDS.length-1][2]
+};
+const CUT = { BOT: T.from-0.15, GATE:T.after-0.15, RL:T.thats-0.15, CNT:line(4).start-0.15, BNC:T.like-0.15, E429:T.over-0.15, RESET:T.once-0.15, SO:T.so-0.15, TOOLS:T.github-0.15, END:T.last+0.35 };
+
+/* ---------------- layout */
+const SRV = [0, 185], GATE = [0, 20], BOT = [-150, -225], U1 = [105, -245], U2 = [215, -140], SCR = [-235, -95];
+const LIMIT = 5;
+
+/* ---------------- camera */
+const WIDE = { f: [0, -20, 30], s: 0.8, a: -0.42, e: 0.62, sy: 600 };
+const SHOTS = [
+ {t:0,d:0,f:[0,150,40],s:1.5,a:-0.12,e:0.64,sy:590},
+ {t:CUT.BOT,d:0.7,f:[-100,-120,30],s:1.0,a:-0.16,e:0.55,sy:600},
+ {t:CUT.GATE,d:0.6,f:[-25,-30,30],s:1.0,a:-0.2,e:0.60,sy:600},
+ {t:CUT.RL,d:0.8,...WIDE,a:-0.16},
+ {t:CUT.CNT,d:0.8,f:[80,-80,30],s:0.82,a:-0.1,e:0.65,sy:610},
+ {t:CUT.BNC,d:0.8,f:[-20,-30,30],s:1.05,a:-0.18,e:0.55,sy:620},
+ {t:CUT.E429,d:0.7,f:[-100,-125,30],s:1.05,a:-0.14,e:0.60,sy:620},
+ {t:CUT.RESET,d:0.8,...WIDE,a:-0.16},
+ {t:CUT.SO,d:0.9,...WIDE,f:[-35,-35,30],s:0.72,a:-0.18},
+ {t:CUT.TOOLS,d:0.9,...WIDE,s:0.8,a:-0.12,sy:620},
+ {t:CUT.END,d:1,...WIDE,s:0.8,a:-0.12,sy:620}
+];
+const KICKS = [[T.n50, 0.03], [T.bot, 0.04], [T.nothing, 0.04], [T.error, 0.05], [T.rate, 0.05], [T.bouncer, 0.03], [T.five, 0.03], [T.shut, 0.05],
+  [T.counts, 0.03], [T.e429, 0.05], [T.again, 0.03], [T.thousands, 0.04], [T.hog, 0.04], [T.github, 0.03], [T.openai, 0.03], [T.stripe, 0.03]];
+const SHAKES = [[T.shut, 3, 0.3]];
+
+/* ---------------- who tries when: arrival times at the gate. Each sender's count resets when the window resets. */
+const RESET_AT = T.passes;
+const steps = (a, b, dt) => { const r = []; for (let x = a; x < b; x += dt) r.push(x); return r; };
+const BOT_TRIES = [
+  ...[0, 1, 2, 3, 4].map((k) => T.after + 0.08 + k * 0.1),                    // tries 1-5 get through (5th lands on "try")
+  ...steps(T.nothing, T.thats, 0.15), ...steps(T.thats, T.sixth - 0.4, 0.45), T.sixth + 0.05, ...steps(T.door, RESET_AT - 0.3, 0.45),
+  T.try2 - 0.05,                                                              // after the reset: one try gets in again
+  ...[0, 1, 2, 3].map((k) => T.so + 0.1 + k * 0.1), ...steps(T.thousands, CUT.END, 0.15),
+];
+const SCR_TRIES = [...[0, 1, 2, 3, 4].map((k) => T.script + 0.1 + k * 0.09), ...steps(T.script + 0.6, CUT.END, 0.16)];
+// each try: passed if fewer than LIMIT passed since the last reset
+const judge = (tries, reset) => { let n = 0, inWin = false; return tries.map((ta) => { if (ta >= reset && !inWin) { inWin = true; n = 0; } const ok = n < LIMIT; if (ok) n++; return { ta, ok, n }; }); };
+const BOTJ = judge(BOT_TRIES, RESET_AT), SCRJ = judge(SCR_TRIES, 1e9);
+const countAt = (J, t) => { let n = 0; for (const j of J) { if (j.ta > t) break; n = j.n; } return t >= RESET_AT && !J.some((j) => j.ta >= RESET_AT && j.ta <= t) ? 0 : n; };
+const U1_GO = [T.entries - 0.3, T.users, T.everyone - 0.2, T.limit2 - 0.4], U2_GO = [T.login2 - 0.2, T.hog, T.using + 0.2];
+
+/* ---------------- build the world */
+const srv = emberBox(SRV[0], SRV[1], 130, 70, 96, O);
+const srvF = decal(130, 96, 'front', 5, srv.g); srvF.m.position.set(0, -35.3, 48);
+const poolS = pool(SRV[0], SRV[1], 170, O);
+const fenceL = emberBox(-160, GATE[1], 230, 10, 26, O), fenceR = emberBox(160, GATE[1], 230, 10, 26, O);
+const gate = emberBox(GATE[0], GATE[1], 86, 44, 74, O);
+const gateF = decal(86, 74, 'front', 6, gate.g); gateF.m.position.set(0, -22.3, 37);
+const poolG = pool(GATE[0], GATE[1] - 26, 130, O);
+const bot = emberBox(BOT[0], BOT[1], 46, 46, 46, RED);
+const botF = decal(46, 46, 'front', 6, bot.g); botF.m.position.set(0, -23.3, 23);
+const poolB = pool(BOT[0], BOT[1], 100, RED);
+const mkPhone = (p) => { const b = emberBox(p[0], p[1], 40, 10, 72, O); const f = decal(36, 66, 'front', 6, b.g); f.m.position.set(0, -5.3, 36); return { b, f, pool: pool(p[0], p[1], 80, O), p }; };
+const u1 = mkPhone(U1), u2 = mkPhone(U2);
+const scr = emberBox(SCR[0], SCR[1], 54, 40, 40, AMB);
+const scrF = decal(54, 40, 'front', 6, scr.g); scrF.m.position.set(0, -20.3, 20);
+const poolX = pool(SCR[0], SCR[1], 90, AMB);
+const G_IN = [GATE[0], GATE[1] - 24, 30], G_OUT = [GATE[0], GATE[1] + 24, 30], S_IN = [SRV[0], SRV[1] - 36, 40];
+const rBot = road([[BOT[0], BOT[1] + 24, 0], [G_IN[0] - 14, G_IN[1], 0]], RED);
+const rU1 = road([[U1[0], U1[1] + 6, 0], [G_IN[0] + 8, G_IN[1], 0]], O);
+const rU2 = road([[U2[0], U2[1] + 6, 0], [G_IN[0] + 16, G_IN[1], 0]], O);
+const rScr = road([[SCR[0] + 28, SCR[1], 0], [G_IN[0] - 20, G_IN[1], 0]], AMB);
+const rSrv = road([[G_OUT[0], G_OUT[1], 0], [S_IN[0], S_IN[1], 0]], O);
+
+/* ---------------- canvas faces */
+const label = (g, W_, H_, txt, col, size, y = H_ / 2) => { g.fillStyle = col; g.font = `800 ${size}px Mono`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.shadowColor = col; g.shadowBlur = 12; g.fillText(txt, W_ / 2, y); g.shadowBlur = 0; g.textAlign = 'left'; };
+function srvDraw(g, W_, H_, col, t) {
+  label(g, W_, H_, 'LOGIN', col, 64, H_ * 0.24);
+  g.strokeStyle = col + 'aa'; g.lineWidth = 5; rrect(g, 60, H_ * 0.42, W_ - 120, 70, 12); g.stroke(); rrect(g, 60, H_ * 0.64, W_ - 120, 70, 12); g.stroke();
+  const n = 6, on = Math.floor(t * 9) % (n + 3);
+  for (let k = 0; k < n; k++) { g.beginPath(); g.arc(100 + k * 46, H_ * 0.64 + 35, 10, 0, Math.PI * 2); g.fillStyle = k < on ? col : col + '33'; g.fill(); }
+}
+function gateDraw(g, W_, H_, col, n) {
+  label(g, W_, H_, 'BOT', col + 'cc', 40, H_ * 0.22);
+  label(g, W_, H_, `${n}/${LIMIT}`, col, 120, H_ * 0.58);
+  for (let k = 0; k < LIMIT; k++) { g.beginPath(); g.arc(W_ / 2 + (k - 2) * 50, H_ * 0.87, 12, 0, Math.PI * 2); g.fillStyle = k < n ? col : col + '33'; g.fill(); }
+}
+function phoneDraw(g, W_, H_, col) { g.strokeStyle = col; g.lineWidth = 6; rrect(g, 14, 14, W_ - 28, H_ - 28, 22); g.stroke(); icon(g, 'user', W_ / 2, H_ / 2, W_ * 0.62, col, 8, 8); }
+
+/* ---------------- the world, frame by frame */
+function world(t) {
+  const thru = (pts, t0, dur, col, size = 1) => { const q = (t - t0) / dur; if (q > -0.02 && q < 1.1) orb(pts, clamp(q), col, clamp(q / 0.08) * (1 - clamp((q - 1) / 0.1)), size); };
+  // login server
+  const sq = ease.back(prog(t, -0.5, -0.1));
+  const floodHot = window01(t, 0.4, T.after + 0.2, 0.3);
+  srv.g.visible = sq > 0.01; srv.g.scale.set(1, 1, Math.max(0.01, sq));
+  const sCol = floodHot > 0.5 && t > T.n50 ? mixHex(O, RED, 0.5 + 0.5 * Math.sin(t * 14)) : O;
+  srv.setLook(sCol, 1.2 + 0.8 * floodHot + 1.5 * pulse(t, T.n50), 1);
+  srvF.m.visible = srv.g.visible; srvF.draw((g, W_, H_) => srvDraw(g, W_, H_, sCol, t));
+  poolS.set(sCol, 0.5 * sq);
+  // the flood: before the gate exists, every guess goes straight to the server
+  steps(0.35, T.after - 0.25, 0.09).forEach((t0, k) => {
+    const jx = (rnd(k, 3) - 0.5) * 40;
+    thru([[BOT[0] + jx * 0.5, BOT[1] + 20, 30], [S_IN[0] + jx, S_IN[1], 40]], t0, 0.5, RED, 0.75);
+    if (k % 3 === 0) sparks(t, t0 + 0.5, S_IN[0] + jx, S_IN[1], 40, RED, 6, 20 + k, 80, 0.35);
+  });
+  // the bot
+  const bq = ease.back(prog(t, T.bot - 0.3, T.bot + 0.1));
+  bot.g.visible = bq > 0.01; bot.g.position.z = 6 + 4 * Math.sin(t * 3); bot.g.scale.set(Math.max(0.01, bq), Math.max(0.01, bq), Math.max(0.01, bq));
+  bot.setLook(RED, 1.3 + 2 * pulse(t, T.bot) + 1.5 * pulse(t, T.e429), 1);
+  botF.m.visible = bot.g.visible; botF.draw((g, W_, H_) => icon(g, 'bot', W_ / 2, H_ / 2, H_ * 0.9, RED, 8, 10));
+  poolB.set(RED, 0.45 * bq);
+  ripple(t, T.bot, BOT[0], BOT[1], 1, RED, 110, 0.8);
+  // fence + gate (the rate limiter) rise on "after"
+  const gq = ease.back(prog(t, T.after - 0.25, T.after + 0.1));
+  const n = countAt(BOTJ, t), full = n >= LIMIT;
+  const gCol = full ? RED : t > RESET_AT - 0.05 && t < T.so ? OK : t > T.after ? AMB : O;
+  [fenceL, fenceR].forEach((f) => { f.g.visible = gq > 0.01; f.g.scale.set(1, 1, Math.max(0.01, gq)); f.setLook(O, 0.9, 0.7); });
+  gate.g.visible = gq > 0.01; gate.g.scale.set(1, 1, Math.max(0.01, gq));
+  gate.setLook(gCol, 1.3 + 2.5 * pulse(t, T.rate) + 2.5 * pulse(t, T.shut) + 2 * pulse(t, RESET_AT));
+  gateF.m.visible = gate.g.visible; gateF.draw((g, W_, H_) => gateDraw(g, W_, H_, gCol, n));
+  poolG.set(gCol, 0.55 * gq);
+  rSrv.set(ep(t, T.after, T.after + 0.4), O, 0.6, t);
+  rBot.set(ep(t, T.after, T.after + 0.4), RED, 0.5 * (1 - ep(t, CUT.END, CUT.END + 0.5)), t);
+  // bot tries: through the gate while under the limit, sparks and a red bounce once over it
+  const P_BOT = [[BOT[0], BOT[1] + 20, 30], [G_IN[0] - 14, G_IN[1], 30]];
+  BOTJ.forEach((j, k) => {
+    thru(P_BOT, j.ta - 0.35, 0.35, RED, 0.75);
+    if (j.ok) thru([G_OUT, S_IN], j.ta, 0.3, RED, 0.7);
+    else { sparks(t, j.ta, G_IN[0] - 14, G_IN[1] - 4, 30, RED, j.ta === T.sixth + 0.05 ? 26 : 9, 40 + k, j.ta === T.sixth + 0.05 ? 160 : 90, 0.45); thru([P_BOT[1], P_BOT[0]], j.ta + 0.02, 0.4, RED, 0.45); }
+  });
+  ripple(t, T.shut - 0.05, GATE[0], GATE[1] - 24, 2, RED, 120, 0.7);
+  ripple(t, RESET_AT, GATE[0], GATE[1] - 24, 2, OK, 120, 0.8);
+  // the big 429 answer back to the bot
+  thru([[G_IN[0] - 14, G_IN[1], 34], [BOT[0], BOT[1] + 20, 34]], T.e429 - 0.35, 0.4, RED, 1.6);
+  // users: guests under the limit get in and get an answer back
+  const uq = ease.back(prog(t, T.counts - 0.3, T.counts + 0.1)), uq2 = ease.back(prog(t, T.counts - 0.1, T.counts + 0.3));
+  [[u1, uq, rU1, U1_GO, 8], [u2, uq2, rU2, U2_GO, 16]].forEach(([u, q, r, go, dx]) => {
+    u.b.g.visible = q > 0.01; u.b.g.scale.set(1, 1, Math.max(0.01, q)); u.b.setLook(O, 1.2, 1);
+    u.f.m.visible = u.b.g.visible; u.f.draw((g, W_, H_) => phoneDraw(g, W_, H_, O)); u.pool.set(O, 0.4 * q);
+    r.set(ep(t, T.counts, T.counts + 0.5), O, 0.45 * (1 - ep(t, CUT.END, CUT.END + 0.5)), t);
+    const P_U = [[u.p[0], u.p[1] + 6, 40], [G_IN[0] + dx, G_IN[1], 30]];
+    go.forEach((t0) => { thru(P_U, t0, 0.4, O2); thru([G_OUT, S_IN], t0 + 0.4, 0.3, O2); thru([S_IN, G_OUT], t0 + 0.8, 0.3, OK); thru([P_U[1], P_U[0]], t0 + 1.1, 0.4, OK); });
+  });
+  // runaway script: floods too, and hits the same wall after 5
+  const xq = ease.back(prog(t, T.runaway - 0.2, T.runaway + 0.2)), xA = 1 - ep(t, CUT.END, CUT.END + 0.5);
+  scr.g.visible = xq * xA > 0.01; scr.g.scale.set(1, 1, Math.max(0.01, xq)); scr.setLook(AMB, 1.3 + 2 * pulse(t, T.runaway), xA);
+  scrF.m.visible = scr.g.visible; scrF.m.material.opacity = xA; scrF.draw((g, W_, H_) => label(g, W_, H_, '{ }', AMB, 70));
+  poolX.set(AMB, 0.45 * xq * xA); rScr.set(ep(t, T.runaway, T.runaway + 0.4), AMB, 0.5 * xA, t);
+  const P_X = [[SCR[0] + 28, SCR[1], 30], [G_IN[0] - 20, G_IN[1], 30]];
+  SCRJ.forEach((j, k) => {
+    thru(P_X, j.ta - 0.35, 0.35, AMB, 0.7);
+    if (j.ok) thru([G_OUT, S_IN], j.ta, 0.3, AMB, 0.65); else sparks(t, j.ta, G_IN[0] - 20, G_IN[1] - 4, 30, AMB, 7, 140 + k, 80, 0.4);
+  });
+}
+
+/* ---------------- world tags */
+function tags(t) {
+  tag('login', '<b>LOGIN PAGE</b>', '', [SRV[0], SRV[1], 135], t, 0.25, T.from - 0.2);
+  const hits = Math.round(50000 * ease.inOut(prog(t, T.hit, T.minute + 0.2)));
+  tag('hits', `<span style="color:${RED}">${hits.toLocaleString('en-US')} HITS · 1 MIN</span>`, `border-color:${RED}88`, [SRV[0], SRV[1], 135], t, T.n50 - 0.15, T.after, 34);
+  tag('bot', `<span style="color:${RED}">1 BOT · GUESSING PASSWORDS</span>`, `border-color:${RED}88`, [BOT[0], BOT[1], 100], t, T.bot + 0.05, T.thats);
+  tag('err', `<span style="color:${RED}">✗ ERROR, NOT A LOGIN</span>`, `border-color:${RED}88`, [BOT[0], BOT[1], 100], t, T.error, T.thats, -32);
+  tag('lim', '<b>RATE LIMITER</b> · MAX 5 TRIES', '', [GATE[0], GATE[1], 110], t, T.rate, CUT.CNT);
+  tag('bnc', `<span style="color:${O2}">LIMITER = BOUNCER</span>`, `border-color:${O}88`, [GATE[0], GATE[1], 110], t, T.bouncer - 0.05, CUT.E429 - 0.1);
+  tag('five', `<span style="color:${AMB}">5 ENTRIES / HOUR EACH</span>`, `border-color:${AMB}88`, [GATE[0], GATE[1], 110], t, T.five, CUT.E429 - 0.1, 34);
+  tag('guest', '<b>GUEST</b> · 1/5 · IN', '', [U1[0], U1[1], 100], t, T.entries, CUT.E429 - 0.1);
+  tag('sixth', `<span style="color:${RED}">6TH TRY → DOOR SHUT</span>`, `border-color:${RED}88`, [BOT[0], BOT[1], 70], t, T.sixth, CUT.E429 - 0.1);
+  tag('a1', `<span style="color:${OK}">USER A · 1/5 ✓</span>`, `border-color:${OK}88`, [U1[0], U1[1], 100], t, T.users, CUT.BNC - 0.1);
+  tag('a2', `<span style="color:${OK}">USER B · 2/5 ✓</span>`, `border-color:${OK}88`, [U2[0], U2[1], 100], t, T.login2, CUT.BNC - 0.1);
+  tag('b5', `<span style="color:${RED}">BOT · 5/5 ✗</span>`, `border-color:${RED}88`, [BOT[0], BOT[1], 70], t, T.counts + 0.1, CUT.BNC - 0.1);
+  tag('r429', `<span style="color:${RED}">429 · TOO MANY REQUESTS</span>`, `border-color:${RED}88`, [BOT[0], BOT[1], 70], t, T.e429 + 0.05, CUT.RESET + 0.3);
+  tag('reset', `<span style="color:${OK}">✓ TIME'S UP · COUNT BACK TO 0</span>`, `border-color:${OK}88`, [GATE[0], GATE[1], 110], t, RESET_AT, CUT.SO + 0.3);
+  tag('thou', `<span style="color:${RED}">THOUSANDS TRIED · 5 GOT IN</span>`, `border-color:${RED}88`, [BOT[0], BOT[1], 70], t, T.thousands + 0.2, CUT.TOOLS + 0.2);
+  tag('scr', `<span style="color:${AMB}">RUNAWAY SCRIPT · CAPPED</span>`, `border-color:${AMB}88`, [SCR[0], SCR[1], 70], t, T.hog - 0.1, CUT.TOOLS + 0.2, -10);
+  tag('ok', `<span style="color:${OK}">✓ EVERYONE ELSE STILL GETS IN</span>`, `border-color:${OK}88`, [U1[0] + 40, U1[1] + 40, 110], t, T.everyone, CUT.TOOLS + 0.2);
+}
+
+/* ---------------- reel config */
+const svgGH = `<svg width="46" height="46" viewBox="0 0 100 100" fill="none" stroke="#F2EEE8" stroke-width="7"><circle cx="30" cy="22" r="10"/><circle cx="30" cy="78" r="10"/><circle cx="72" cy="38" r="10"/><path d="M30 32 V68 M72 48 Q72 62 34 68"/></svg>`;
+const svgOA = `<svg width="46" height="46" viewBox="0 0 100 100" fill="none" stroke="#F2EEE8" stroke-width="7" stroke-linejoin="round"><path d="M50 8 L86 29 V71 L50 92 L14 71 V29 Z"/><circle cx="50" cy="50" r="15"/></svg>`;
+const svgST = `<svg width="46" height="46" viewBox="0 0 100 100" fill="none" stroke="#9D97FF" stroke-width="7" stroke-linecap="round"><rect x="12" y="12" width="76" height="76" rx="18"/><path d="M64 37 Q60 29 50 29 Q37 29 37 39 Q37 48 50 50 Q63 52 63 61 Q63 71 50 71 Q39 71 36 63"/></svg>`;
+const REEL = {
+  shots: SHOTS, kicks: KICKS, shakes: SHAKES, world, tags,
+  code: [
+    [T.guessing - 0.25, T.thats - 0.05, 'login', 'requests from 1 bot', [[0, 'GUESSING', RED], [T.nothing, 'BLOCKED', RED]],
+      [['POST /login  pw="123456"'], ['POST /login  pw="password"', T.passwords], ['…  3 more guesses', T.fifth - 0.1], ['POST /login  pw="dragon"', T.nothing - 0.05]],
+      [[T.guessing + 0.1, 1, '✗ wrong', 'bad'], [T.passwords + 0.1, 2, '✗ wrong', 'bad'], [T.fifth, 3, '✗ wrong', 'bad'], [T.error, 4, '✗ error', 'bad']]],
+    [T.counts - 0.2, CUT.BNC - 0.1, 'rate limiter', 'tries per user · this hour', [[0, 'COUNTING', AMB]],
+      [['bot-7f3     5 / 5'], ['user A      1 / 5', T.users], ['user B      2 / 5', T.login2]],
+      [[T.counts + 0.1, 1, 'used up', 'bad'], [T.users + 0.1, 2, '✓ ok', 'good'], [T.login2 + 0.1, 3, '✓ ok', 'good']]],
+    [T.over - 0.05, T.once - 0.1, 'response', 'to bot-7f3', [[0, 'OVER LIMIT', RED]],
+      [['HTTP/1.1 429 Too Many Requests'], ['Retry-After: 3600']],
+      [[T.e429, 1, '✗', 'bad'], [T.too + 0.3, 2, 'try later', 'amb']], 'type'],
+  ],
+  hl: /\b(POST|HTTP|Retry-After)\b/g,
+  tools: [],
+  slams: [
+    { a: T.rate - 0.1, b: CUT.CNT - 0.1, text: 'rate limiting', sub: 'A CAP PER USER, PER TIME WINDOW', size: 62 },
+  ],
+  bad: ['bot', 'shut', 'requests', 'hog', 'error', '429', 'thousands'],
+  good: ['again'],
+  tiles: [['⏱', 'RATE<br>LIMITING'], ['⇄', 'REVERSE<br>PROXIES'], ['⚖', 'LOAD<br>BALANCING']],
+  end: DURATION + 1, follow: DURATION + 2,
+  cover: { t: 'RATE<br>LIMITING', at: T.e429 + 0.5, zoom: 1.05, dy: 35 },
+  flash: (t) => 0.1 * pulse(t, T.shut, 7) + 0.06 * pulse(t, T.e429, 7),
+};
+</script>
+<script src="../_ember/overlay.js"></script>
+<script src="../_ember/play.js"></script>
+</body>
+</html>

@@ -1,0 +1,210 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- 10 Service discovery (v2), in the ember style. World: YOUR APP (checkout, with the payments address written in its
+     code), SERVER A (10.0.0.5) and SERVER B (10.0.0.9), the PAYMENTS program as a small glowing block sitting on one of
+     them, and later a DIRECTORY box (names → current addresses). Hook: 2:05 PM, every payment request goes to A, where
+     payments no longer lives, and fails. Replay: payments restarts on B; the app still calls the old address. Contacts
+     analogy on a card. Then the directory appears; payments restarts again from A to B, its entry updates, the app looks
+     payments up by name and the payment goes through. Beats come from voice/words.json via at(). -->
+<link rel="stylesheet" href="../_ember/fonts.css">
+<link rel="stylesheet" href="../_ember/reel.css">
+</head>
+<body>
+<div id="stage">
+  <div id="world">
+    <canvas id="cv" width="1080" height="1920"></canvas>
+    <div class="layer" id="lbls"></div>
+  </div>
+</div>
+<script src="../../tools/lib.js"></script>
+<script src="voice/words.js"></script>
+<script src="../_ember/three.js"></script>
+<script src="../_ember/world.js"></script>
+<script src="../_ember/base.js"></script>
+<script>
+for (let i = 0; i < 14; i++) ORBS.push({ core: orbSprite(9), glow: orbSprite(34), trail: [0, 1, 2, 3, 4].map(() => orbSprite(10)) });
+
+/* ---------------- beats */
+const T = {
+  failed: at('failed'), two: at('2'), nobody: at('nobody'), single: at('single'), broke: at('broke'),
+  your2: at('your', 2), restarted: at('restarted'), another: at('another'), still: at('still'), old: at('old'),
+  addresses: at('addresses'), change: at('change'), find: at('find'),
+  imagine: at('imagine'), contacts: at('contacts'), number: at('number'), changes: at('changes'), service: at('service'), programs: at('programs'),
+  oneway: at('one', 3) /* whisper glues "One way" */, directory: at('directory'), names: at('names'), current2: at('current', 2),
+  when: at('when'), restart: at('restart'), entry: at('entry'), updates: at('updates'), looks: at('looks'), name: at('name'), gets: at('gets'),
+  ifv: at('if'), follow: at('follow'),
+};
+const CUT = { MOVE: T.your2 - 0.3, FIND: T.addresses - 0.4, CONT: T.imagine - 0.3, DIR: T.oneway - 0.3, AGAIN: T.when - 0.2, END: T.ifv - 0.15 };
+
+/* ---------------- layout */
+const APP = [-215, 20], A = [-55, 40], B = [70, 40], DIR = [208, 40];
+const SH = 110, PB_Z = SH + 1;
+const P_AA = [[APP[0] + 45, APP[1], 70], [A[0] - 52, A[1], 70]];
+const P_AB = [[APP[0] + 45, APP[1] - 12, 40], [A[0], A[1] - 50, 40], [B[0] - 30, B[1] - 50, 40], [B[0] - 30, B[1] - 31, 50]], P_BA_ = [...P_AB].reverse();
+const P_AD = [[APP[0] + 45, APP[1], 140], [A[0], A[1], 180], [B[0], B[1], 180], [DIR[0] - 48, DIR[1], 130]], P_DA = [...P_AD].reverse();
+const P_BD = [[B[0] + 52, B[1], 60], [DIR[0] - 48, DIR[1], 60]];
+const TRIP = 0.45;
+// where payments lives: on B in the hook; replay A → B at "restarted"; back on A for the directory part, A → B at "restart"
+const MOVES = [[T.restarted, 0.9], [T.restart, 0.9]];
+function payAt(t) {
+  if (t < CUT.MOVE) return { p: [B[0], B[1], PB_Z], on: 'B', k: 1 };
+  const mv = (t0, d, from, to) => { const q = ease.inOut(prog(t, t0, t0 + d)); return { p: [lerp(from[0], to[0], q), lerp(from[1], to[1], q), PB_Z + 90 * Math.sin(Math.PI * q)], k: q, on: q >= 1 ? 'B' : q <= 0 ? 'A' : '' }; };
+  if (t < CUT.DIR) return mv(MOVES[0][0], MOVES[0][1], A, B);
+  return mv(MOVES[1][0], MOVES[1][1], A, B);
+}
+// payment requests from the app: [start, target] — 'A' fails (nobody there), 'B' works
+const REQ = [];
+for (let k = 0; k < 6; k++) REQ.push({ a: 0.15 + k * 0.62, to: 'A' });
+for (let k = 0; k < 3; k++) REQ.push({ a: T.still - 0.3 + k * 0.6, to: 'A' });
+REQ.push({ a: T.gets, to: 'B' });
+REQ.forEach((r) => (r.hit = r.a + TRIP));
+const failsAt = (t) => REQ.filter((r) => r.to === 'A' && t >= r.hit).length;  // keeps counting up, never resets
+const REG = T.updates - 0.3, LOOK = T.looks, ANS = LOOK + TRIP;
+
+/* ---------------- camera */
+const SHOTS = [
+  { t: 0, d: 0, f: [-60, 10, 60], s: 1.0, a: -0.4, e: 0.58, sy: 500 },
+  { t: CUT.MOVE, d: 1.0, f: [-60, 10, 60], s: 1.02, a: -0.42, e: 0.58, sy: 500 },
+  { t: CUT.FIND, d: 1.0, f: [-50, 10, 60], s: 0.98, a: -0.42, e: 0.6, sy: 500 },
+  { t: CUT.CONT, d: 1.0, f: [-10, 10, 60], s: 0.86, a: -0.42, e: 0.6, sy: 560 },
+  { t: CUT.DIR, d: 1.0, f: [0, 10, 60], s: 0.88, a: -0.42, e: 0.6, sy: 500 },
+  { t: CUT.AGAIN, d: 1.0, f: [0, 10, 60], s: 0.88, a: -0.42, e: 0.6, sy: 500 },
+  { t: CUT.END, d: 2.0, f: [0, 10, 60], s: 0.84, a: -0.42, e: 0.6, sy: 580 },
+];
+// t2 remake: every shot re-angled (azimuth, elevation, zoom) so no frame matches the original
+const REANGLE = [[0.16, 0.06, 0.92], [-0.16, -0.04, 0.94], [0.12, 0.05, 0.93], [-0.14, 0.06, 0.92], [0.16, -0.05, 0.94], [-0.12, 0.05, 0.93], [0.14, 0.04, 0.92]];
+SHOTS.forEach((s, i) => { const r = REANGLE[i % REANGLE.length]; s.a += r[0]; s.e = Math.min(1.0, Math.max(0.3, s.e + r[1])); s.s *= r[2]; });
+const KICKS = [[T.failed, 0.05], [T.two, 0.03], [T.nobody, 0.03], [T.restarted, 0.04], [T.old, 0.04], [T.change, 0.03], [T.contacts, 0.03],
+  [T.changes, 0.03], [T.service, 0.05], [T.directory, 0.04], [T.restart, 0.03], [T.updates, 0.04], [T.gets + TRIP, 0.05]];
+const SHAKES = [[T.failed, 2, 0.25]];
+
+/* ---------------- build the world */
+const label = (g, W_, H_, txt, col, size, y = H_ / 2) => { g.fillStyle = col; g.font = `800 ${size}px Mono`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.shadowColor = col; g.shadowBlur = 12; g.fillText(txt, W_ / 2, y); g.shadowBlur = 0; g.textAlign = 'left'; };
+const mk = (p, w, d, h, col, k = 5) => { const b = emberBox(p[0], p[1], w, d, h, col); const f = decal(w, h, 'front', k, b.g); f.m.position.set(0, -d / 2 - 0.3, h / 2); return { b, f, pl: pool(p[0], p[1], w * 1.3, col), p }; };
+const app = mk(APP, 90, 24, 150, O, 5), sa = mk(A, 104, 60, SH, O, 4), sb = mk(B, 104, 60, SH, O, 4), dir = mk(DIR, 96, 44, 150, AMB, 5);
+const pay = emberBox(0, 0, 50, 34, 34, OK); const payF = decal(50, 34, 'front', 6, pay.g); payF.m.position.set(0, -17.3, 17);
+const rAA = road(P_AA, O2), rAB = road(P_AB, O2), rAD = road(P_AD, AMB), rBD = road(P_BD, AMB);
+
+function appDraw(g, W_, H_, col, code, codeCol, st, stCol) {
+  g.strokeStyle = col + 'aa'; g.lineWidth = 6; rrect(g, 14, 14, W_ - 28, H_ - 28, 30); g.stroke();
+  label(g, W_, H_, 'YOUR APP', col, 46, 74);
+  g.strokeStyle = col + '77'; g.lineWidth = 4; rrect(g, 44, 150, W_ - 88, 110, 16); g.stroke(); label(g, W_, H_, 'Pay ₹499', col, 46, 205);
+  label(g, W_, H_, 'calls', GR, 30, 330); label(g, W_, H_, code, codeCol, 36, 380);
+  if (st) label(g, W_, H_, st, stCol, 40, H_ - 90);
+}
+function srvDraw(g, W_, H_, col, name, addr, sub, subCol) {
+  label(g, W_, H_, name, col, 44, H_ * 0.18);
+  label(g, W_, H_, addr, col, 50, H_ * 0.45);
+  if (sub) label(g, W_, H_, sub, subCol || GR, 36, H_ * 0.75);
+}
+function dirDraw(g, W_, H_, col, rows) {
+  label(g, W_, H_, 'DIRECTORY', col, 40, 60);
+  label(g, W_, H_, 'name → address', GR, 28, 120);
+  rows.forEach(([n, a, c], i) => { const y = 230 + i * 150; g.strokeStyle = c + '66'; g.lineWidth = 4; rrect(g, 28, y - 56, W_ - 56, 112, 14); g.stroke(); label(g, W_, H_, n, c, 36, y - 20); label(g, W_, H_, a, c, 36, y + 24); });
+}
+
+/* ---------------- the world, frame by frame */
+function world(t) {
+  const thru = (pts, t0, dur, col, size = 1) => { const q = (t - t0) / dur; if (q > -0.02 && q < 1.1) orb(pts, clamp(q), col, clamp(q / 0.08) * (1 - clamp((q - 1) / 0.1)), size); };
+  const q0 = ease.back(prog(t, 0.05, 0.4));
+  const P_ = payAt(t);
+  const usesDir = t > CUT.DIR + 0.6;
+  // payments
+  pay.g.visible = q0 > 0.01; pay.g.position.set(P_.p[0], P_.p[1], P_.p[2]); pay.g.scale.setScalar(Math.max(0.01, q0));
+  const moving = P_.on === '';
+  pay.setLook(moving ? AMB : OK, 1.6 + 2.5 * Math.max(pulse(t, MOVES[0][0] + MOVES[0][1]), pulse(t, MOVES[1][0] + MOVES[1][1])), 1);
+  payF.draw((g, W_, H_) => label(g, W_, H_, 'PAYMENTS', moving ? AMB : OK, 40, H_ / 2));
+  // servers: A is the old address, B the new one
+  const lastFail = REQ.filter((r) => r.to === 'A' && t >= r.hit).map((r) => r.hit).pop() || -9;
+  const aBad = P_.on !== 'A' && t - lastFail < 0.5;
+  const aCol = P_.on === 'A' ? O : aBad ? RED : mixHex(O, DIM, 0.4);
+  sa.b.g.visible = sb.b.g.visible = q0 > 0.01; sa.b.g.scale.set(1, 1, Math.max(0.01, q0)); sb.b.g.scale.set(1, 1, Math.max(0.01, q0));
+  sa.b.setLook(aCol, 1.2 + 2 * Math.max(...REQ.filter((r) => r.to === 'A').map((r) => pulse(t, r.hit))), 1);
+  sa.f.m.visible = sa.b.g.visible; sa.f.draw((g, W_, H_) => srvDraw(g, W_, H_, aCol, 'SERVER A', '10.0.0.5', P_.on === 'A' ? 'payments ✓' : 'nobody here', P_.on === 'A' ? OK : aBad ? RED : GR));
+  const bCol = P_.on === 'B' ? mixHex(O, OK, 0.35) : O;
+  sb.b.setLook(bCol, 1.2 + 2 * Math.max(pulse(t, MOVES[0][0] + MOVES[0][1]), pulse(t, MOVES[1][0] + MOVES[1][1]), pulse(t, T.gets + TRIP)), 1);
+  sb.f.m.visible = sb.b.g.visible; sb.f.draw((g, W_, H_) => srvDraw(g, W_, H_, bCol, 'SERVER B', '10.0.0.9', P_.on === 'B' ? 'payments ✓' : '', OK));
+  sa.pl.set(aCol, 0.45 * q0); sb.pl.set(bCol, 0.45 * q0);
+  // the directory (from "one way")
+  const qd = ease.back(prog(t, T.directory - 0.15, T.directory + 0.35));
+  const upd = t > REG + TRIP;
+  const dCol = upd ? mixHex(AMB, OK, 0.6) : AMB;
+  dir.b.g.visible = qd > 0.01; dir.b.g.scale.set(1, 1, Math.max(0.01, qd)); dir.b.setLook(dCol, 1.3 + 2.5 * Math.max(pulse(t, T.directory), pulse(t, REG + TRIP), pulse(t, LOOK + TRIP)), 1);
+  const payRow = t < T.restart ? ['payments', '10.0.0.5', AMB] : !upd ? ['payments', 'moving…', GR] : ['payments', '10.0.0.9 ✓', OK];
+  dir.f.m.visible = dir.b.g.visible; dir.f.draw((g, W_, H_) => dirDraw(g, W_, H_, dCol, [payRow, ['search', '10.0.0.7', GR], ['login', '10.0.0.3', GR]])); dir.pl.set(dCol, 0.45 * qd);
+  // your app
+  const nf = failsAt(t), paid = t > T.gets + TRIP;
+  let st = '', stCol = GR;
+  if (nf > 0 && !paid) { st = `✕ FAILED ×${nf}`; stCol = RED; }
+  if (t > CUT.CONT && t < T.gets + TRIP) st = '';
+  if (paid) { st = '✓ PAID'; stCol = OK; }
+  const code = usesDir ? "lookup('payments')" : '10.0.0.5', codeCol = usesDir ? OK : AMB;
+  const yCol = st.startsWith('✕') ? mixHex(O, RED, 0.45) : paid ? mixHex(O, OK, 0.35) : O;
+  app.b.g.visible = q0 > 0.01; app.b.g.scale.set(1, 1, Math.max(0.01, q0)); app.b.setLook(yCol, 1.2 + 2 * Math.max(pulse(t, T.gets + TRIP), pulse(t, ANS + TRIP)), 1);
+  app.f.m.visible = app.b.g.visible; app.f.draw((g, W_, H_) => appDraw(g, W_, H_, yCol, code, codeCol, st, stCol)); app.pl.set(yCol, 0.5 * q0);
+  // roads and trips
+  const on = (a, b) => window01(t, a - 0.1, b + 0.15, 0.1);
+  rAA.set(1, P_.on === 'A' ? O2 : RED, (usesDir ? 0.15 : 0.7) * q0, t);
+  rAB.set(1, paid ? OK : O2, (usesDir ? 0.7 : 0.25) * q0, t);
+  rAD.set(1, AMB, 0.75 * qd, t);
+  rBD.set(1, OK, 0.75 * qd * on(REG, REG + TRIP + 0.8), t);
+  REQ.forEach((r) => {
+    if (r.to === 'A') { thru(P_AA, r.a, TRIP, O2, 0.85); ripple(t, r.hit, A[0], A[1], 2, RED, 70, 0.5); sparks(t, r.hit, A[0] - 40, A[1], 70, RED, 8, r.a * 7, 90, 0.45); }
+    else { thru(P_AB, r.a, TRIP, OK, 0.9); thru(P_BA_, r.hit + 0.1, TRIP, OK, 0.8); ripple(t, r.hit, B[0], B[1], 2, OK, 80, 0.6); }
+  });
+  thru(P_BD, REG, TRIP, OK, 0.9);
+  thru(P_AD, LOOK, TRIP, AMB, 0.9); thru(P_DA, ANS, TRIP, OK, 0.9);
+  ripple(t, REG + TRIP, DIR[0], DIR[1], 2, OK, 80, 0.6);
+}
+
+/* ---------------- world tags */
+function tags(t) {
+  const AP_T = [APP[0] + 30, APP[1], 200], A_T = [A[0], A[1], 170], B_T = [B[0], B[1], 190], D_T = [DIR[0] - 40, DIR[1], 200];
+  const big = (c) => `font-size:15px;padding:9px 13px;letter-spacing:1px;border-color:${c}`;
+  tag('time', `<span style="color:${RED}">2 PM · EVERY PAYMENT FAILS</span>`, big(RED), A_T, t, T.failed - 0.1, T.nobody - 0.1);
+  tag('code', `<span style="color:${AMB}">CODE UNCHANGED</span>`, big(AMB), AP_T, t, T.nobody, Math.min(CUT.MOVE + 0.1, T.still - 0.15));
+  tag('rst', `<span style="color:${AMB}">PAYMENTS RESTARTED HERE</span>`, big(AMB), B_T, t, T.restarted + 0.95, T.still - 0.1);
+  tag('old', `<span style="color:${RED}">STILL CALLING THE OLD ADDRESS</span>`, big(RED), A_T, t, T.still, CUT.FIND + 0.2);
+  tag('chg', `<span style="color:${AMB}">ADDRESSES CHANGE</span>`, big(AMB), B_T, t, T.change - 0.1, T.find - 0.1);
+  tag('where', `<span style="color:${AMB}">WHERE IS PAYMENTS NOW?</span>`, big(AMB), AP_T, t, T.find - 0.1, CUT.CONT + 0.2);
+  tag('dir', `<span style="color:${AMB}">NAMES → CURRENT ADDRESSES</span>`, big(AMB), D_T, t, T.names - 0.2, T.restart - 0.1);
+  tag('rst2', `<span style="color:${AMB}">RESTARTS ON B</span>`, big(AMB), B_T, t, T.restart, T.updates - 0.1);
+  tag('upd', `<span style="color:${OK}">ENTRY UPDATED</span>`, big(OK), D_T, t, REG + TRIP, T.gets);
+  tag('look', `<span style="color:${AMB}">LOOK UP "PAYMENTS"</span>`, big(AMB), AP_T, t, LOOK - 0.1, T.gets);
+  tag('paid', `<span style="color:${OK}">✓ FOUND IT · PAID</span>`, big(OK), AP_T, t, T.gets + TRIP, CUT.END + 0.3);
+}
+
+/* ---------------- reel config */
+const REEL = {
+  shots: SHOTS, kicks: KICKS, shakes: SHAKES, world, tags,
+  code: [
+    [0.3, CUT.CONT - 0.1, 'checkout.js', 'pay', [[0, 'FAILING', RED]],
+      [["fetch('http://10.0.0.5/pay')"], ['// address written into the code', T.still - 0.2]],
+      [[REQ[0].hit, 1, (t) => `✕ failed ×${failsAt(t)}`, 'bad'], [T.old, 2, 'stale', 'bad']], 'type'],
+    [T.imagine - 0.2, CUT.DIR - 0.1, 'contacts', 'your phone', [[0, 'SAVED', AMB], [T.changes, 'UPDATED', OK]],
+      [['Mom   98201 11112'], ['Mom   99307 44471', T.changes - 0.15]],
+      [[T.number, 1, 'old number', 'bad'], [T.changes, 2, '✓ updated itself', 'good']]],
+    [T.directory + 0.4, CUT.END - 0.1, 'checkout.js', 'pay', [[0, 'LOOKUP', AMB], [T.gets + TRIP, 'PAID', OK]],
+      [["addr = directory.lookup('payments')"], ['fetch(`http://${addr}/pay`)', T.looks - 0.2]],
+      [[T.directory + 0.5, 1, '10.0.0.5', 'amb'], [REG + TRIP, 1, '→ 10.0.0.9', 'good'], [T.gets + TRIP, 2, '✓ paid', 'good']], 'type'],
+  ],
+  hl: /\b(fetch|lookup|directory|payments|pay|addr|Mom)\b/g,
+  tools: [],
+  slams: [
+    { a: T.service - 0.15, b: T.oneway - 0.3, text: 'service discovery', sub: 'FIND PROGRAMS BY NAME, NOT ADDRESS', size: 60 },
+  ],
+  bad: ['failed', 'old'],
+  good: ['discovery', 'address'],
+  tiles: [['⌖', 'SERVICE<br>DISCOVERY'], ['♥', 'HEALTH<br>CHECKS'], ['☸', 'KUBERNETES']],
+  end: CUT.END, follow: T.follow,
+  wbw: true,
+  cover: { k: 'SERVICE DISCOVERY', t: 'PAYMENTS FAILED.<br>CODE UNTOUCHED.', at: T.failed + 0.4, zoom: 0.95, dy: 0 },
+  flash: (t) => 0.07 * pulse(t, T.failed, 7) + 0.06 * pulse(t, T.gets + TRIP, 7),
+};
+</script>
+<script src="../_ember/overlay.js"></script>
+<script src="../_ember/play.js"></script>
+</body>
+</html>

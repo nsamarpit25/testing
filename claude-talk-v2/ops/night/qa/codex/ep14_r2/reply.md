@@ -1,0 +1,6 @@
+- **Minor — 13–18s, 29.5–34.5s:** Captions cross the white keyboard, reducing contrast. Add a stronger dark outline or subtle backing.
+- **Minor — 51.5–55.5s:** The support notification’s body text is small for mobile viewing. Enlarge the notification; the dialogue captions already communicate the joke.
+
+No visible missing dialogue captions, contradictory screens, flash cuts, or major visual glitches. The opening establishes the problem, the fix reads clearly, and the final confetti callback lands. The intended fade works.
+
+VERDICT: PASS

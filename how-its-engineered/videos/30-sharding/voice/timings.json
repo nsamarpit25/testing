@@ -1,0 +1,82 @@
+[
+ {
+  "li": 0,
+  "pi": 0,
+  "say": "Your app's data outgrows one database server. It can't hold it all, or keep up with every write. Copies won't help, because every write still lands on one machine.",
+  "show": "Your app's data *outgrows* one database server. It can't *hold it all,* or keep up with every *write.* Copies won't help, because every write still lands on [one machine.]",
+  "start": 0.0,
+  "end": 7.42
+ },
+ {
+  "li": 1,
+  "pi": 0,
+  "say": "So you split the data across several database servers. Each one is called a shard, and holds only some of the users.",
+  "show": "So you *split* the data across several database servers. Each one is called a [shard,] and holds only *some* of the users.",
+  "start": 7.92,
+  "end": 12.7
+ },
+ {
+  "li": 2,
+  "pi": 0,
+  "say": "To decide where a user lives, you pick a shard key, like the user ID. A simple rule turns that ID into a shard number.",
+  "show": "To decide where a user lives, you pick a [shard key,] like the *user ID.* A simple rule turns that ID into a *shard number.*",
+  "start": 13.32,
+  "end": 18.78
+ },
+ {
+  "li": 3,
+  "pi": 0,
+  "say": "User 42 lives on shard 2. So the app goes straight to that one shard, not all of them.",
+  "show": "User *42* lives on [shard 2.] So the app goes straight to that *one shard,* not all of them.",
+  "start": 19.18,
+  "end": 23.4
+ },
+ {
+  "li": 4,
+  "pi": 0,
+  "say": "Like a library split into two buildings. Authors A to M in one, N to Z in the other. You know where to walk.",
+  "show": "Like a library split into [two buildings.] Authors *A to M* in one, *N to Z* in the other. You know where to [walk.]",
+  "start": 23.8,
+  "end": 28.52
+ },
+ {
+  "li": 5,
+  "pi": 0,
+  "say": "Now each shard handles a slice of the reads and writes. Need more room? Add more shards.",
+  "show": "Now each shard handles a *slice* of the reads and writes. Need more room? [Add more shards.]",
+  "start": 28.52,
+  "end": 32.82
+ },
+ {
+  "li": 6,
+  "pi": 0,
+  "say": "But there's a cost. A question about all users, like who signed up today, has to ask every shard and combine the answers.",
+  "show": "But there's a *cost.* A question about all users, like who signed up today, has to ask [every shard] and *combine* the answers.",
+  "start": 33.42,
+  "end": 39.08
+ },
+ {
+  "li": 7,
+  "pi": 0,
+  "say": "Pick a bad key, and one shard gets most of the traffic while the others sit idle. That's a hot shard.",
+  "show": "Pick a *bad key,* and one shard gets most of the traffic while the others sit *idle.* That's a [hot shard.]",
+  "start": 39.44,
+  "end": 43.66
+ },
+ {
+  "li": 8,
+  "pi": 0,
+  "say": "And moving data when you add shards is hard. So most apps shard last, after simpler fixes like caching and replicas.",
+  "show": "And moving data when you add shards is *hard.* So most apps shard [last,] after simpler fixes like *caching* and *replicas.*",
+  "start": 44.2,
+  "end": 49.3
+ },
+ {
+  "li": 9,
+  "pi": 0,
+  "say": "If you're a vibe coder, follow for the system design your AI skipped.",
+  "show": "If you're a vibe coder, follow for the system design your AI [skipped.]",
+  "start": 49.8,
+  "end": 52.28
+ }
+]

@@ -1,0 +1,53 @@
+{
+ "topic": "Connection pooling",
+ "lines": [
+  [
+   {
+    "say": "A bigger connection pool can make your app less reliable. The database has one budget. Every app server spends from it.",
+    "show": "A bigger connection pool can make your app less reliable. The database has one budget. Every app server spends from it."
+   }
+  ],
+  [
+   {
+    "say": "A connection is the open line between app and database. Every question travels over one. Opening a new one is slow: say hello, log in first.",
+    "show": "A connection is the open line between app and database. Every question travels over one. Opening a new one is slow: say hello, log in first."
+   }
+  ],
+  [
+   {
+    "say": "If every request opens its own connection, hundreds of visitors can exhaust the budget. Imagine a database that allows a hundred connections.",
+    "show": "If every request opens its own connection, hundreds of visitors can exhaust the budget. Imagine a database that allows a hundred connections."
+   }
+  ],
+  [
+   {
+    "say": "At the limit, new connections are refused. Your users see errors.",
+    "show": "At the limit, new connections are refused. Your users see errors."
+   }
+  ],
+  [
+   {
+    "say": "A connection pool opens a few connections and keeps them open to reuse.",
+    "show": "A connection pool opens a few connections and keeps them open to reuse."
+   }
+  ],
+  [
+   {
+    "say": "Each request borrows one, asks its question, and hands it back. If all are busy, it waits in line, up to a timeout.",
+    "show": "Each request borrows one, asks its question, and hands it back. If all are busy, it waits in line, up to a timeout."
+   }
+  ],
+  [
+   {
+    "say": "Three servers with five connections each use fifteen. Count the total across every server, with room to spare.",
+    "show": "Three servers with five connections each use fifteen. Count the total across every server, with room to spare."
+   }
+  ],
+  [
+   {
+    "say": "Database libraries can manage the pool. Borrow, finish, return. A bigger pool is only useful if the database can afford it.",
+    "show": "Database libraries can manage the pool. Borrow, finish, return. A bigger pool is only useful if the database can afford it."
+   }
+  ]
+ ]
+}

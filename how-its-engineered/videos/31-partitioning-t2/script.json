@@ -1,0 +1,59 @@
+{
+  "topic": "Partitioning",
+  "lines": [
+    [
+      {
+        "say": "On day one, your orders table was fast. Three years later, it holds a billion rows, and just asking for last week's orders is slow.",
+        "show": "On day one, your orders table was *fast.* Three years later, it holds a *billion rows,* and just asking for last week's orders is [slow.]"
+      }
+    ],
+    [
+      {
+        "say": "Partitioning splits that giant table into smaller ones, called partitions, inside the same database. And your app still sees one table.",
+        "show": "*Partitioning* splits that giant table into *smaller ones,* called partitions, inside the *same database.* And your app still sees *one table.*"
+      }
+    ],
+    [
+      {
+        "say": "A partition key decides where each row lives. Usually that's a date, so each month of orders gets its own partition.",
+        "show": "A *partition key* decides where each row lives. Usually that's a *date,* so each month of orders gets its own partition."
+      }
+    ],
+    [
+      {
+        "say": "Now ask for last week's orders, and the database knows which months could hold them, and skips the rest. Far less data to read.",
+        "show": "Now ask for last week's orders, and the database *knows* which months could hold them, and *skips the rest.* Far less data to read."
+      }
+    ],
+    [
+      {
+        "say": "Like a filing cabinet with one folder per month. Need a March receipt? Open the March folder, not the whole cabinet.",
+        "show": "Like a *filing cabinet* with one folder per month. Need a March receipt? Open the *March folder,* not the [whole cabinet.]"
+      }
+    ],
+    [
+      {
+        "say": "Old data gets easy too. Instead of deleting millions of rows one at a time, you remove the oldest partition in a single step.",
+        "show": "Old data gets *easy* too. Instead of [deleting millions of rows] one at a time, you remove the oldest partition in a *single step.*"
+      }
+    ],
+    [
+      {
+        "say": "But a query that doesn't filter by date has to check every partition. So pick the key you search by most, and don't make thousands of tiny ones.",
+        "show": "But a query that doesn't filter by date has to [check every partition.] So pick the key you *search by most,* and don't make thousands of tiny ones."
+      }
+    ],
+    [
+      {
+        "say": "And no, it's not sharding. Partitions split a table inside one database. Shards spread the data across many database servers.",
+        "show": "And no, it's *not sharding.* Partitions split a table *inside one database.* Shards spread the data across *many database servers.*"
+      }
+    ],
+    [
+      {
+        "say": "If AI writes your code, follow for the system design it leaves out.",
+        "show": "If AI writes your code, *follow* for the system design it leaves out."
+      }
+    ]
+  ]
+}

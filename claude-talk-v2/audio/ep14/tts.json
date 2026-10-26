@@ -1,0 +1,61 @@
+{
+ "prompt": "AUDIO PROFILE\nCleo: a young woman software developer in her mid twenties. Soft, natural, conversational voice. Real and understated, never cartoonish.\nClaude: a young man's voice. Calm, warm and gently dry-witted, never theatrical. Few words.\n\nTHE SCENE, END TO END\nSunset at her desk. Cleo's checkout page shows a confetti success screen even when the server returns a 500 error, because fetch does not reject on HTTP errors. Claude, a small companion on her desk, has her check response.ok. The real error finally shows, and then support reports the damage.\n\nLINE BY LINE\n1. Cleo, alarmed, half laughing.\n2. Claude, curious, calm.\n3. Cleo, exasperated.\n4. Claude, gentle.\n5. Cleo, defensive, listing.\n6. Claude, clear, patient.\n7. Cleo, indignant.\n8. Claude, calm, matter of fact.\n9. Cleo, disbelief.\n10. Claude, clear, simple.\n11. Cleo, typing, then thrilled.\n12. Claude, dry.\n13. Cleo, reading a message, dread.\n14. Claude, completely straight.\n\nDIRECTOR'S NOTES\nA natural, conversational pace, like two friends at a desk; not rushed, not slow. Let the jokes land with a short beat before the dry lines. Leave a short beat at every \"...\"; never read bracketed tags aloud. Finish every line fully, including its last word; never clip a word. Speak every word of the dialogue exactly as written, nothing added.",
+ "turns": [
+  [
+   "Cleo",
+   "Claude, checkout's celebrating. Every order failed."
+  ],
+  [
+   "Claude",
+   "Why confetti?"
+  ],
+  [
+   "Cleo",
+   "That's the success screen. Every failed order gets a party."
+  ],
+  [
+   "Claude",
+   "Didn't you add error handling?"
+  ],
+  [
+   "Cleo",
+   "Try, catch, a big red error message. I tested it. Nothing went red."
+  ],
+  [
+   "Claude",
+   "Because that five hundred is a response, not a rejected promise."
+  ],
+  [
+   "Cleo",
+   "So the catch should catch it!"
+  ],
+  [
+   "Claude",
+   "Fetch doesn't reject just because the HTTP status says failure."
+  ],
+  [
+   "Cleo",
+   "So my app heard \"no\"... and threw a party?"
+  ],
+  [
+   "Claude",
+   "Await fetch, check response dot ok. If false, throw an error."
+  ],
+  [
+   "Cleo",
+   "If not response dot ok... throw... It's red! It actually failed!"
+  ],
+  [
+   "Claude",
+   "Congratulations. Your failure works."
+  ],
+  [
+   "Cleo",
+   "Oh no. Support says thirty people got confetti... and no order."
+  ],
+  [
+   "Claude",
+   "Free confetti. Delivery not included."
+  ]
+ ]
+}

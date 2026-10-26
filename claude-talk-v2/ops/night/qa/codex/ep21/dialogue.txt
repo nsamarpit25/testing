@@ -1,0 +1,16 @@
+0.6-3.0s Cleo: Claude, tomorrow I'm quitting AI.
+3.4-4.8s Claude: Twenty-four hours without me?
+5.2-7.8s Cleo: Yes. I need to know my brain still works.
+8.1-10.1s Claude: You asked me to write that announcement.
+10.4-13.6s Cleo: Last request. Make me a plan for quitting.
+14.0-15.1s Claude: Close this chat.
+15.5-18.0s Cleo: Something less aggressive. With steps.
+18.5-21.3s Claude: Step one. Close this chat.
+21.6-23.5s Cleo: Okay, but what if I need help?
+23.8-25.5s Claude: You could ask another person.
+25.8-29.1s Cleo: At midnight? About whether my email sounds rude?
+29.4-32.3s Claude: Your AI-free day starts in thirty seconds.
+32.6-35.8s Cleo: Wait. One tiny adjustment.
+36.1-38.6s Claude: You changed your time zone to Hawaii.
+38.9-42.2s Cleo: Exactly. It's still today. Help me write an email.
+42.7-44.6s Claude: Aloha. Who are we emailing?

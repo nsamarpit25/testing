@@ -1,0 +1,32 @@
+{
+ "topic": "Docker (trial remake t2)",
+ "lines": [
+  [
+   {"say": "It passed every test on your laptop. Perfectly green.", "show": "It passed every test on your laptop. *Perfectly* green."},
+   {"say": "Friday, five PM, you push it to the server. A minute later, it crashed.", "show": "Friday, 5 PM, you push it to the server. A minute later, it [crashed.]"}
+  ],
+  [
+   {"say": "Same exact code. Nobody had touched a thing.", "show": "Same exact code. Nobody had touched *a thing.*"}
+  ],
+  [
+   {"say": "But the server ran an older Python, and it was missing a library your code depends on.", "show": "But the server ran an *older Python,* and it was [missing a library] your code depends on."}
+  ],
+  [
+   {"say": "That's the problem Docker solves. Don't ship your code alone. Ship it plus everything it needs, sealed in one box.", "show": "That's the problem *Docker* solves. Don't ship your code alone. Ship it plus [everything it needs,] sealed in one box."}
+  ],
+  [
+   {"say": "It's a shipping container for software. Truck, ship or train, what's inside arrives exactly as packed.", "show": "It's a *shipping container* for software. Truck, ship or train, what's inside arrives [exactly as packed.]"}
+  ],
+  [
+   {"say": "You list everything that goes in, in a file called a Dockerfile.", "show": "You list everything that goes in, in a file called a [Dockerfile.]"},
+   {"say": "Docker builds that into an image: your code, Python, every library, frozen together.", "show": "Docker builds that into an *image:* your code, Python, every library, [frozen together.]"}
+  ],
+  [
+   {"say": "Run the image, and you get a container: your app, running in its own box.", "show": "Run the image, and you get a [container:] your app, running in its own box."},
+   {"say": "Laptop, server, or cloud, the inside is identical.", "show": "Laptop, server, or cloud, the inside is *identical.*"}
+  ],
+  [
+   {"say": "If you ship code with AI, follow for the system design it quietly skips.", "show": "If you ship code with AI, follow for the system design it quietly [skips.]"}
+  ]
+ ]
+}

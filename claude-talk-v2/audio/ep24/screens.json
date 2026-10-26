@@ -1,0 +1,65 @@
+{
+ "m1": {
+  "kind": "page",
+  "url": "notes \u00b7 grocery list",
+  "accent": "#2f9e44",
+  "title": "Grocery List",
+  "body": [
+   "This week:"
+  ],
+  "big": {
+   "text": "1. Water",
+   "color": "#2f9e44"
+  }
+ },
+ "m2": {
+  "kind": "page",
+  "url": "notes \u00b7 tuesday log",
+  "accent": "#495057",
+  "title": "Tuesday Grocery Log",
+  "body": [
+   "Spinach bought: 9 bags",
+   "Spinach eaten:"
+  ],
+  "big": {
+   "text": "0",
+   "color": "#d64545"
+  }
+ },
+ "p0": {
+  "kind": "phone",
+  "time": "7:58",
+  "app": "Messages",
+  "title": "Mom",
+  "body": "Are you eating vegetables?",
+  "size": 38
+ },
+ "p1": {
+  "kind": "chat",
+  "title": "Tuesday Thai",
+  "msgs": [
+   [
+    "them",
+    "Your usual Pad Thai is 4 minutes away!"
+   ]
+  ],
+  "size": 58,
+  "bottom": 260
+ },
+ "p2": {
+  "kind": "chat",
+  "title": "Tuesday Thai",
+  "msgs": [
+   [
+    "them",
+    "Your usual Pad Thai is 4 minutes away!"
+   ],
+   [
+    "them",
+    "Receipt: 1x Pad Thai, 2x Spring Rolls, 0x Spinach"
+   ]
+  ],
+  "size": 64,
+  "bottom": 200
+ }
+}

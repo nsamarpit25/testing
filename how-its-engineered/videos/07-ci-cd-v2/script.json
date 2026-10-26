@@ -1,0 +1,37 @@
+{
+ "topic": "CI/CD",
+ "lines": [
+  [
+   {"say": "You changed one letter in your code. Two minutes later, your whole app was down.",
+    "show": "You changed *one letter* in your code. Two minutes later, your [whole app was down.]"}
+  ],
+  [
+   {"say": "The change went straight to your users, with nothing in between to catch the mistake.",
+    "show": "The change went *straight to your users,* with [nothing in between] to catch the mistake."}
+  ],
+  [
+   {"say": "C-I-C-D automates the steps between changing your code and releasing it to users.",
+    "show": "[CI/CD] automates the steps between *changing your code* and *releasing it* to users."}
+  ],
+  [
+   {"say": "First, it builds: it turns your code into software that can run. That fails? It stops.",
+    "show": "First, it *builds:* it turns your code into software that can run. That fails? [It stops.]"}
+  ],
+  [
+   {"say": "Then automated tests check things, like whether login still works. A check fails? It stops.",
+    "show": "Then automated *tests* check things, like whether *login still works.* A check fails? [It stops.]"}
+  ],
+  [
+   {"say": "Everything passes? The update is ready to release, automatically or after someone approves it.",
+    "show": "Everything passes? The update is [ready to release,] automatically or after someone *approves it.*"}
+  ],
+  [
+   {"say": "So that typo? If the build or a test catches it, your users never see it.",
+    "show": "So that typo? If the build or a test catches it, your users [never see it.]"}
+  ],
+  [
+   {"say": "If you're a vibe coder, follow for the system design your AI skipped.",
+    "show": "If you're a vibe coder, follow for the system design your AI [skipped.]"}
+  ]
+ ]
+}

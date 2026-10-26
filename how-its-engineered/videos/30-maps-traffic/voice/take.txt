@@ -1,0 +1,1 @@
+t2 from /mnt/ssd/render/vo/30-maps-traffic/t2; gap cuts []; tail cut at 38.74s (orig 39.03) + 60ms fade

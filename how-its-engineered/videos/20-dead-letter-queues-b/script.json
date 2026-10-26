@@ -1,0 +1,55 @@
+{
+ "topic": "Dead letter queues",
+ "lines": [
+  [
+   {
+    "say": "One broken order just jammed your whole order line. Everything behind it is piling up, while your app keeps retrying it.",
+    "show": "One *broken order* just jammed your whole order line. Everything behind it is [piling up,] while your app keeps retrying it."
+   },
+   {
+    "say": "Why won't it just move on?",
+    "show": "Why won't it just *move on?*"
+   }
+  ],
+  [
+   {
+    "say": "Orders wait in line as messages with the order details, and a program processes them.",
+    "show": "Orders wait in line as *messages* with the order details, and a program processes them."
+   },
+   {
+    "say": "Bad data makes this one fail every time. That's a poison message.",
+    "show": "Bad data makes this one fail *every time.* That's a [poison message.]"
+   }
+  ],
+  [
+   {
+    "say": "The fix is a dead letter queue. You set a limit, and after that many failures, the message is moved aside, so the others keep flowing.",
+    "show": "The fix is a [dead letter queue.] You set a limit, and after that many failures, the message is *moved aside,* so the others [keep flowing.]"
+   }
+  ],
+  [
+   {
+    "say": "Like a post office's bin for undeliverable mail. The bad letter waits there, and everything else gets delivered.",
+    "show": "Like a post office's bin for *undeliverable mail.* The bad letter waits there, and everything else [gets delivered.]"
+   }
+  ],
+  [
+   {
+    "say": "Later, you look at it, fix the cause, and send the message back to be processed.",
+    "show": "Later, you look at it, *fix the cause,* and [send the message back] to be processed."
+   }
+  ],
+  [
+   {
+    "say": "Amazon SQS and RabbitMQ both support dead letter queues.",
+    "show": "*Amazon SQS* and *RabbitMQ* both support dead letter queues."
+   }
+  ],
+  [
+   {
+    "say": "If you're a vibe coder, follow for the system design your AI skipped.",
+    "show": "If you're a vibe coder, follow for the system design your AI [skipped.]"
+   }
+  ]
+ ]
+}

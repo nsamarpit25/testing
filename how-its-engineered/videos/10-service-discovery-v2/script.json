@@ -1,0 +1,34 @@
+{
+ "topic": "Service discovery",
+ "lines": [
+  [
+   {"say": "Every payment in your app failed at 2:05 PM. Nobody changed a single line of code.",
+    "show": "Every payment in your app [failed at 2:05 PM.] Nobody changed a *single line* of code."},
+   {"say": "So what broke?", "show": "So what *broke?*"}
+  ],
+  [
+   {"say": "Your payment program restarted on another server. Your app still uses its old address.",
+    "show": "Your payment program restarted on *another server.* Your app still uses its [old address.]"}
+  ],
+  [
+   {"say": "Server addresses can change. Your app needs a way to find the current one.",
+    "show": "Server addresses can *change.* Your app needs a way to [find the current one.]"}
+  ],
+  [
+   {"say": "Imagine phone contacts that update by themselves when a number changes. Service discovery does that for programs.",
+    "show": "Imagine *phone contacts* that update by themselves when a number changes. [Service discovery] does that for programs."}
+  ],
+  [
+   {"say": "One way uses a directory that matches program names to their current addresses.",
+    "show": "One way uses a [directory] that matches program *names* to their *current addresses.*"}
+  ],
+  [
+   {"say": "When payments restarts somewhere else, its entry updates. Your app looks up payments by name and gets the new address.",
+    "show": "When payments restarts somewhere else, its entry *updates.* Your app looks up payments *by name* and gets [the new address.]"}
+  ],
+  [
+   {"say": "If you're a vibe coder, follow for the system design your AI skipped.",
+    "show": "If you're a vibe coder, follow for the system design your AI [skipped.]"}
+  ]
+ ]
+}

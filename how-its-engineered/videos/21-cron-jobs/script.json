@@ -1,0 +1,51 @@
+{
+ "topic": "Cron jobs",
+ "lines": [
+  [
+   {
+    "say": "3 a.m. Nobody's awake, and your app just emailed ten thousand people their receipts.",
+    "show": "3 a.m. Nobody's awake, and your app just emailed *10,000 people* their receipts."
+   },
+   {
+    "say": "Who pressed the button?",
+    "show": "Who [pressed the button?]"
+   }
+  ],
+  [
+   {
+    "say": "Nobody. A cron job did. It's a scheduled task, like a repeating alarm for your server.",
+    "show": "Nobody. A [cron job] did. It's a scheduled task, like a *repeating alarm* for your server."
+   }
+  ],
+  [
+   {
+    "say": "You set the timing once: every day at three a.m.",
+    "show": "You set the timing once: *every day at 3 a.m.*"
+   }
+  ],
+  [
+   {
+    "say": "When the alarm rings, your server runs the code that emails the receipts.",
+    "show": "When the alarm rings, your server [runs the code] that *emails the receipts.*"
+   }
+  ],
+  [
+   {
+    "say": "One catch. Set up that same task on two servers, and both alarms ring. People could get two receipts. So keep the schedule in one place.",
+    "show": "One catch. Set up that same task on *two servers,* and both alarms ring. People could get [two receipts.] So keep the schedule *in one place.*"
+   }
+  ],
+  [
+   {
+    "say": "Linux has cron built in, and Kubernetes has CronJobs.",
+    "show": "*Linux* has cron built in, and *Kubernetes* has CronJobs."
+   }
+  ],
+  [
+   {
+    "say": "If you're a vibe coder, follow for the system design your AI skipped.",
+    "show": "If you're a vibe coder, follow for the system design your AI [skipped.]"
+   }
+  ]
+ ]
+}

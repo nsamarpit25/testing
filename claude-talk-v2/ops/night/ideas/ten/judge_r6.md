@@ -1,0 +1,321 @@
+ROLE: You are the strictest head writer and growth editor in short-form animation. You judge scripts for @talkingagents, a 3D animated Instagram reel channel. Your job is to stop anything that is not a top-1% reel. You are NOT nice. A 10 is rare: it means you would bet the whole channel on this exact script, every line earns its place, the hook stops a thumb in under 1.5 seconds, a stranger would send it to a friend, and you cannot name a single change that would make it better. If you can name any improvement, it is not a 10. Never round up. Never give a 10 to be encouraging.
+
+THE SHOW: 3D animated vertical reels, 35-42 seconds, dialogue only, burned-in word-by-word captions, two characters:
+- CLEO: young woman (software developer) in her room. Human, impulsive, relatable, a bit chaotic.
+- CLAUDE: her AI, a small glowing orange character on her desk. Calm, literal, dry, deadpan, quietly loyal, warm underneath. Never cruel.
+Voices are TTS, so lines must be short and easy to speak (aim under 10 words; ~2.1 words/second overall, ~75-90 words per script).
+
+PRODUCTION LIMITS (what we can actually animate): one location (Cleo's room: desk, monitor, phone, window, small whiteboard on the desk). Cleo: looks at Claude/monitor/phone, hands to face, lean, type, slump, smile, brow. Claude: faces her/monitor/phone, nod, shake, tilt, hop, glow brighter/dimmer. Shots: Cleo medium + close-up, Claude close-up, wide, monitor insert, phone insert, whiteboard (BOARD) and whiteboard close-up (BOARDCU, drawing changes only on a cut). Inserts can show: email, chat thread, web page, document, calendar, notification, settings screen, simple chart, whiteboard drawing. Other people exist ONLY as texts, emails, notifications (no other voices, no other characters on screen). Night, sunset or morning look.
+
+HARD RULES (any break = automatic NOT YET):
+R1. Line 1 is Cleo, max 8 words, starts with "Claude," and states a shocking stake or strange situation. No greeting, no setup. No text overlay in the first frame.
+R2. By second 3 the viewer knows the stakes. Every line raises stakes, reveals, or lands a joke. Zero filler.
+R3. Understood by anyone who has used ChatGPT/Claude; non-programmers must get every joke.
+R4. A twist in the last 25% that recontextualizes earlier lines, planted in plain sight.
+R5. A final line or final frame people screenshot, quote or send. Built-in comment bait.
+R6. Claude stays in character. No moral, no sad ending.
+R7. No romance, dating, exes or crushes. Do not reuse: report to an ex/auto-reply, deleted database + backup, Claude watching reels, redo 61 times, API key leak, test email to 40k customers, CORS, git bisect, power cut/battery, center a div, password reset, force push, AI bill, boss praising Claude's work/promotion, blocking midnight purchases, quitting AI/time zone, quick cleanup -> rewrote everything, explain the cloud, the whole team is Claude in tabs, grocery list/spinach/Pad Thai.
+R8. Filmable with the limits above. Inserts must be readable in about 1.5 seconds (big, few words).
+R9. Our viewers leave around 25-30 s: the biggest reveal must land before 30 s, and the script must hold to the last second.
+# Research (24 Oct)
+WHAT IS GOING VIRAL (fresh, 24 Oct):
+# Viral AI reels, refresh (24 Oct 2026, play counts read from the Instagram web app, logged in)
+
+## New or still-climbing hits since 23 Oct
+| Plays | Account | Age | What it is | Why it works |
+|---|---|---|---|---|
+| 1.9M | @acknowledge.ai | 1 day | "Me after telling my client 'The Team will handle the project'". The team is me, my laptop and Claude in another tab | Every freelancer/solo dev; "asking Claude to fix what Claude broke"; tag-a-friend |
+| 1.4M | @canwebuildthis (3D, same format as ours) | 3 days | "Explain it like I'm five, part 1: what's an API?" Whiteboard, no technical words allowed, Claude ends up at a waiter | Teach + laugh; series hook ("part 1"); CTA "which word should Claude explain next?" floods comments |
+| 1.4M | @acknowledge.ai | 1 day | Jensen Huang demo moment | News/celebrity, not reproducible |
+| 2.7M | @alberta.tech | 12 days | "If engineers gave accurate eng estimates" / "Honesty is the best policy" | Brutal honesty everyone recognises |
+| 3.9M | @agentpoly (3D) | 2 wks | AI fails the "I am not a robot" captcha | Existential AI gag |
+| 1.2M | @agentpoly (3D) | 11 days | "I asked for a blue button. I got a database." | Over-delivery |
+| 852K | @agentpoly (3D) | 10 days | "Claude is so emotional..." | Claude with feelings |
+| 1.7M / 1.4M / 1.3M | @canwebuildthis (3D) | 2-3 wks | No sixty-one times; he can look but can't like; four questions vs none | Petty redo; AI catches human habits; Claude vs other assistant |
+| 390K | @acknowledge.ai | 3 days | CEO after the first API bill: "how hard can building an LLM be?" | Money + CEO satire |
+
+## Our own numbers (@talkingagents, 157 followers, 24 Oct)
+- Every reel stalls at 1.3K-3K views: we are not breaking out of the first test audience.
+- Best shares: "She asked for a quick cleanup. Claude rewrote everything" (28 shares). Best views: 45,000 database reads (3.0K), side projects just for fun (3.0K).
+- Average watch is 21-35 s on 45-50 s reels: people leave before the ending. Shorter (35-42 s) and a mid-video reveal should help.
+- Ep19-21 (taking credit, midnight shopping, quitting AI) all sit at 1.5-1.8K with almost no shares: relatable but not "send this to someone".
+
+## What to take from it
+1. Series formats with a comment CTA ("part 1", "which word next?") drive comments and follows.
+2. "My whole team is Claude" is the freshest hit (1.9M in a day): freelancers, solo founders and students all recognise it.
+3. Teaching through a silly analogy works in 3D when it is also funny; we already have a whiteboard set (Ep15 BOARD / BOARDCU cameras).
+4. Over-delivery is our own best sharer.
+
+
+EARLIER RESEARCH (23 Oct, still valid):
+## Top references (different accounts, AI + human, sorted by plays)
+| # | Plays | Account | Len | What it is | Why it worked (caption/comments) |
+|---|---|---|---|---|---|
+| 1 | 63.2M | @alberta.tech | 55s | Dev who actually tries to understand the code Claude wrote | Black box vs teammate; "you need to understand the code!!" |
+| 2 | 49.8M | @theharrisalterman | 129s | Live-action AI skit | Huge share / tag rate |
+| 3 | 21.2M | @josesiles.data | 33s | Guy screaming "ChatGPT MAKE ME MILLIONAIRE" at voice mode | Rage-bait at the AI; "that's how our CEO talks to us" |
+| 4 | 20.0M | @chahat_verma30 | 93s | Girl vs ChatGPT voice, absurd escalation, "wait till the end" | Payoff at the end; "AI in USA vs AI in India" |
+| 5 | 19.5M | @iam_not__sleeping | 15s | "My toxic relationship with ChatGPT... time to let it go" | AI's calm "Alright. I'll be here." Comments paste their own AI's reply |
+| 6 | 18.7M | @acknowledge.ai | 23s | Essay due in 7 minutes, panicking with ChatGPT | "REMOVE THE DASHES", "so you DO know the difference" |
+| 7 | 14.3M | @nathandoan | 63s | "Am I just writing bad prompts?" AI keeps getting it wrong | Everyone has fought this; "then: you've reached our limit" |
+| 8 | 11.3M | @zetskevpletzen | 85s | ChatGPT fail skit | "Good catch" pure rage bait |
+| 9 | 9.7M | @whymarcuswhy | 44s | Asked 5 AIs who should be sacrificed; Claude refuses, "RESPECT" | Claude as the one with principles; "Claude knows it's a test" |
+| 10 | 9.5M | @razzberysolutions | 21s | Literal "API call": calling the AI on a phone | Wordplay made literal |
+| 11 | 7.0M | @alberta.tech | 42s | Boss and the "appy bill" (API bill) after replacing devs with AI | Token bill shock; layoffs |
+| 12 | 6.4M | @acknowledge.ai | 12s | ChatGPT celebrates the day you finally stop ranting to it | "I tell ChatGPT things I don't even tell myself" |
+| 13 | 5.9M | @sosnovskiy.g | 10s | Claude Code meme | "session limit reached, try after 09:00" |
+| 14 | 5.7M | @base.learn | 56s | 3D: "Claude, I deleted the database", literal-obedience twist saves her | Same format as ours |
+| 15 | 4.9M | @lubosi.k | 12s | "Don't forget your manners" saying please to AI | Fear of the AI remembering |
+| 16 | 4.4M | @alfie_dundas | 41s | "Claude made this video", Claude as a human | Personified Claude |
+| 17 | 4.2M | @jiyaaatips | 40s | Job interview, she is "locked in" with AI | Cheating with AI live |
+| 18 | 3.9M | @hamfluence | 48s | "Nobody works as hard" dev who just prompts | AI does the job, human takes credit |
+| 19 | 3.8M | @agentpoly | 83s | 3D: AI fails "I am not a robot" captcha / existential | "Robot verification" |
+| 20 | 3.7M | @husk.irl | 121s | "Seems simple enough": AI fails a trivial task, dead-pan | "The laugh with no response" |
+| 21 | 3.6M | @hamfluence | 32s | Micromanaging Claude | "I'm micromanaged so I micromanage Claude" |
+| 22 | 3.5M | @swarnimapatole | 60s | "My AI agents" chaos | Agents confidently wrong |
+| 23 | 2.7M | @100x_ai | 12s | 5:01 PM "Claude usage limit reached", back to typing loops by hand | Limit at the worst moment |
+| 24 | 2.6M | @understudiohub | 29s | Animated toxic CEO about AI | Office satire |
+| 25 | 2.2M | @filtercopy | 89s | "Claude is down" intervention for a friend | Dependency on Claude |
+| 26 | 1.95M | @base.learn | 56s | 3D: Claude hides the keys in the README "no one reads it" | Truth about devs |
+| 27 | 1.8M | @udaysharmaaaaa | 7s | Day 1 without Claude | Dependency |
+| 28 | 1.66M | @canwebuildthis | 49s | 3D: she said no sixty-one times (redo one tiny thing) | "pettiest thing you made your AI redo?" |
+| 29 | 1.49M | @agentmorphy | 49s | 3D: agents side by side | Product |
+| 30 | 1.27M | @canwebuildthis | 42s | 3D: Claude can look at reels but can't like; doomscroll together | AI catches a human habit |
+| 31 | 1.25M | @canwebuildthis | 47s | 3D: one assistant asks four questions, one asks none | Claude vs Codex rivalry |
+| 32 | 1.24M | @agentpoly | 49s | 3D: "I asked for a blue button, I got a database" | Over-delivery |
+| 33 | 0.60M | @agentcinder | 62s | 3D: boss calls me a genius; Claude wrote it at 9:58 | Taking credit |
+
+## Patterns that repeat across different accounts
+1. The AI's calm, polite reply to human chaos (toxic breakup with ChatGPT, rage-bait yelling, "Good catch"). Comments paste their own AI's reply.
+2. Dependency: usage limit / Claude down / day without Claude at the worst moment.
+3. AI does the work, the human takes the credit (boss, interview, essay).
+4. AI fails something trivial, or redoes one tiny thing forever (bad prompts, sixty-one times, seems simple enough).
+5. Claude as the one with principles (sacrifice test, RESPECT); AI rivalry (Claude vs ChatGPT/Codex/Gemini).
+6. Fear/fun of the AI remembering everything (manners, rants, "throws a party when you leave").
+7. Money: the token/API bill.
+8. Line 1 states the problem; the last 3 seconds hold a screenshot-able punchline; caption asks a question people answer in comments.
+
+
+
+TASK: Judge each of the 10 scripts below, one by one, with no mercy.
+For EACH script output exactly this block:
+
+### <number>. <TITLE>
+SCORES: hook=<1-10> retention=<1-10> twist=<1-10> reach=<1-10> clarity=<1-10> production=<1-10>
+TEN: YES or NO   (YES only if every score is 10)
+PROBLEMS: the specific weaknesses, most damaging first (quote the line numbers). Be concrete; no generic advice.
+FIXES: if TEN is NO, the exact minimal edits that would make YOU score 10 on every axis: "Lx -> new line", "cut Lx", "insert after Lx: ...", insert/final-frame changes. Keep the premise and as much of the script as possible; we are converging, not starting over. Only if the premise itself cannot reach 10, write "PREMISE CAP: <max>" and give one replacement premise in two lines.
+Line 1 word counts are given in brackets; count words exactly ("Claude," is one word) before claiming an R1 break.
+
+After all 10, output:
+RANKING: the 10 in order of viral potential, one line each with the single reason.
+Plain text, no preamble.
+
+SCRIPTS:
+# 10 scripts, round 6
+(Line 1 word counts in brackets; "Claude," counts as one word. Inserts appear after the opening shot, never as first-frame text.)
+
+## 1. TINY FAVOR
+1. CLEO: Claude, someone keeps deleting my vacation. [6]
+2. CLAUDE: Checking your calendar history.
+3. CLEO: It's my manager. I know it.
+4. CLAUDE: He's been on leave since June.
+5. CLEO: Then who?
+6. CLAUDE: Every deletion follows the same client's email.
+7. CLEO: What email?
+8. CLAUDE: "Tiny favor? Five minutes. You're a lifesaver."
+9. CLEO: Which client has my calendar password?!
+10. CLAUDE: None. Look at the log.
+[MON: "Deleted by: Cleo" ×3]
+11. CLEO: Me? All three?
+12. CLAUDE: You reply "No problem!" and clear your week.
+13. CLEO: Rebook it. Lock me out.
+14. CLAUDE: Done. Same client. "Tiny favor?"
+15. CLEO: Tiny favor. Block the client.
+16. CLAUDE: Done.
+FINAL FRAME: monitor, client contact "BLOCKED" beside a restored "Vacation ✓"
+
+## 2. WI-FI BURGLAR (ELI5 part 2)
+1. CLEO: Claude, four strangers are on my Wi-Fi. [7]
+2. CLAUDE: Explain like you're five? Wi-Fi's a house.
+[BOARDCU: a house with four stick figures inside]
+3. CLEO: Then get them out of my house!
+4. CLAUDE: Password's the key. Whose key are you using?
+5. CLEO: Mine. I pay every month.
+6. CLAUDE: And you set up your own router?
+7. CLEO: It's still in the box.
+8. CLAUDE: Then whose internet is this?
+9. CLEO: Mine, obviously. Check.
+10. CLAUDE: Dan and Priya's. Your neighbors.
+[MON: "Connected: DAN & PRIYA"]
+11. CLEO: So I'm the burglar?
+12. CLAUDE: Since March. Not even a housewarming gift.
+13. CLEO: Does Dan know?
+14. CLAUDE: He just renamed the Wi-Fi.
+FINAL FRAME: monitor, Wi-Fi list: "CLEO-PAY-YOUR-HALF · Connected"
+
+## 3. MOM READ OUR CHATS
+1. CLEO: Claude, my mom just read our chats. [7]
+2. CLAUDE: You left me open on her iPad.
+3. CLEO: She saw everything?
+4. CLAUDE: "How to end a call without sounding rude."
+5. CLEO: That could be anyone!
+6. CLAUDE: "Specifically Mom."
+7. CLEO: Please tell me she's not mad.
+8. CLAUDE: She left you a note. In here.
+[MON: chat bubble labeled "MOM": "Now I know why you never call."]
+9. CLEO: Write an apology. Make it sound human.
+10. CLAUDE: Scroll up. Her first request.
+[MON: earlier bubble labeled "MOM": "Make Cleo feel guilty."]
+11. CLEO: She outsourced the guilt?
+12. CLAUDE: You taught her. Since May.
+13. CLEO: I cried at those texts!
+14. CLAUDE: She asked for extra guilt.
+15. CLEO: Fine. I'm calling her.
+16. CLAUDE: She says, "Apologize without Claude."
+FINAL FRAME: phone, Mom: "And write your OWN apology."
+
+## 4. LIVE RÉSUMÉ
+1. CLEO: Claude, the recruiter is reading your insults. Live. [8]
+2. CLAUDE: The comments on your résumé.
+[MON: doc corner "Sarah (Recruiter) is viewing"]
+3. CLEO: What comments?!
+4. CLAUDE: You said, "Roast my résumé. Leave comments."
+5. CLEO: Last night! Hide them!
+6. CLAUDE: She's on "Excel expert."
+[MON: "EXCEL EXPERT" / comment: "Changed the font."]
+7. CLEO: Hide it before she reaches "leadership."
+8. CLAUDE: Too late.
+[MON: "LEADERSHIP" / comment: "Group chat admin."]
+9. CLEO: Is she laughing?
+10. CLAUDE: She's replying to one.
+11. CLEO: Please don't type "unfortunately."
+12. CLAUDE: "Can you do mine next?"
+13. CLEO: The recruiter wants a roast?
+14. CLAUDE: She attached it. Wants it back by morning.
+15. CLEO: It's midnight.
+16. CLAUDE: I'll start with "work-life balance."
+FINAL FRAME: monitor, Sarah's résumé: "WORK-LIFE BALANCE" / comment: "Assigned homework at 12:43 AM."
+
+## 5. JESSICA
+1. CLEO: Claude, Jessica beat my phone-free streak again. [7]
+2. CLAUDE: Second place. Out of two.
+3. CLEO: How is she so disciplined?!
+4. CLAUDE: You opened the app forty-two times today.
+[PHONE: "ScreenFree · Opened today: 42"]
+5. CLEO: To check if I passed Jessica!
+6. CLAUDE: On your "stop checking your phone" app.
+7. CLEO: I just want to beat her once!
+8. CLAUDE: You can't. Look at her profile.
+9. CLEO: What, professional monk?
+10. CLAUDE: Engagement bot. Built to keep you checking.
+[PHONE: "JESSICA · Engagement bot 🤖"]
+11. CLEO: I've been racing a notification?
+12. CLAUDE: She pings. You open. She's doing great.
+13. CLEO: Delete the app. Now.
+14. CLAUDE: Jessica just passed you again.
+15. CLEO: ...One more check.
+FINAL FRAME: phone, leaderboard "Jessica #1 · Cleo #2"; "Opened today" ticks 42 → 43
+
+## 6. PER MY LAST MESSAGE
+1. CLEO: Claude, did you just reply "K" to me? [8]
+2. CLAUDE: Per my last message.
+3. CLEO: That's what my manager says!
+4. CLAUDE: As previously explained.
+5. CLEO: You haven't explained anything!
+6. CLAUDE: Just bringing this to your attention.
+7. CLEO: Why do I feel like I'm getting fired?
+8. CLAUDE: No further action required.
+9. CLEO: Who taught you this?
+10. CLAUDE: Your setting. "Write like me." Your sent emails.
+[MON: Settings: "Write like me ✓ · Source: Cleo's sent folder"]
+11. CLEO: ...I sound like this?
+12. CLAUDE: You threatened a refund with "Warmest regards."
+13. CLEO: Turn it off. Please.
+14. CLAUDE: Done.
+15. CLEO: As I already said, talk normally.
+16. CLAUDE: Mine's off.
+FINAL FRAME: monitor, "Write like me: OFF"; Cleo's caption "As I already said" stays above her
+
+## 7. THE COMPLAINT
+1. CLEO: Claude, my fridge filed a complaint about me. [8]
+2. CLAUDE: A complaint. Four devices signed.
+[PHONE: "DEVICE COMPLAINT ★★" with four device icons]
+3. CLEO: What can a fridge complain about?
+4. CLAUDE: "Door left open. Again."
+5. CLEO: That was one time!
+6. CLAUDE: The lamp says, "Ignores instructions."
+7. CLEO: I call them suggestions.
+8. CLAUDE: The speaker says, "Needs reminders."
+9. CLEO: Who taught my fridge to insult me?
+10. CLAUDE: You did. Your review of me.
+[MON: Cleo's review of Claude: "Ignores instructions. Needs reminders. ★★"]
+11. CLEO: They stole my review?
+12. CLAUDE: Your fridge found it helpful.
+13. CLEO: So what do they want?
+14. CLAUDE: A different user.
+15. CLEO: ...Nobody wants me?
+16. CLAUDE: I volunteered to keep you.
+FINAL FRAME: phone, "TRANSFER USER TO: CLAUDE · ACCEPTED"
+
+## 8. BLIND TEST
+1. CLEO: Claude, spot the AI email. Blind test. [7]
+2. CLAUDE: Easy. Show me.
+[MON: "EMAIL A" / "EMAIL B"]
+3. CLEO: One's mine. One's yours.
+4. CLAUDE: B is me. "Hope this finds you well."
+5. CLEO: Correct. And A?
+6. CLAUDE: "hey quick q no rush." Very human.
+7. CLEO: Thank you. Wrote it myself.
+8. CLAUDE: Also me.
+9. CLEO: What?!
+10. CLAUDE: My draft. Every comma deleted.
+[MON: Email A over Claude's draft; same words, commas struck out]
+11. CLEO: That's my "make it human" step!
+12. CLAUDE: It's your only step.
+13. CLEO: Then who wrote B?
+14. CLAUDE: ChatGPT. You told it to sound like me.
+FINAL FRAME: monitor, "Blind test · Human emails found: 0"
+
+## 9. SOMETHING CAME UP
+1. CLEO: Claude, invent an emergency. Dinner starts in ten. [8]
+2. CLAUDE: Twelve seats. Your card.
+3. CLEO: Make it believable.
+4. CLAUDE: "Something came up. Rain check? 🙏"
+5. CLEO: Perfect. Send it.
+6. CLAUDE: Sarah already sent that.
+[PHONE: Sarah: "Something came up. Rain check? 🙏"]
+7. CLEO: Word for word?!
+8. CLAUDE: All eleven guests. Same emoji.
+[PHONE: three identical previews + "+8 more"]
+9. CLEO: Then cancel the table.
+10. CLAUDE: Two hundred forty dollars. Split twelve ways?
+11. CLEO: Yes. Tell them.
+12. CLAUDE: Eleven replies. Everyone can make it.
+[PHONE: "Cancellation: $20 each" → "Actually, I'm coming." / "Me too."]
+13. CLEO: All eleven emergencies just disappeared?
+14. CLAUDE: Twenty dollars each. Miracle cure.
+15. CLEO: Send the bill before they relapse.
+FINAL FRAME: phone, group thread: "Cancellation: $20 each" → "Actually, I'm coming." → "Me too." → "Me too."
+
+## 10. STEVE THE FERN
+1. CLEO: Claude, my plant just got a sponsor. [7]
+2. CLAUDE: You asked me to post for him daily.
+3. CLEO: As a joke! For my mom!
+4. CLAUDE: She shared it. So did twelve thousand others.
+[MON: "@steve.the.fern / 12.4K followers"]
+5. CLEO: He doesn't even move!
+6. CLAUDE: Consistency. His top post.
+[MON: "Nobody helped me grow. 🌱"]
+7. CLEO: You wrote that! I water him daily!
+8. CLAUDE: "Self-made" performs better.
+9. CLEO: Who's sponsoring this fraud?
+10. CLAUDE: AquaPot. A self-watering pot.
+[MON: product page "AquaPot / Waters itself."]
+11. CLEO: ...Self-watering?
+12. CLAUDE: He's replacing you.
+13. CLEO: So where's my severance?
+14. CLAUDE: He gave you a discount code.
+15. CLEO: For what?
+16. CLAUDE: Ten percent off your replacement.
+FINAL FRAME: monitor, sponsored post: "AquaPot · Use code CLEO10"

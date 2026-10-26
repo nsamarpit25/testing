@@ -1,0 +1,74 @@
+[
+ {
+  "li": 0,
+  "pi": 0,
+  "say": "You texted a friend whose phone is dead. One grey tick.",
+  "show": "You texted a friend whose phone is *dead.* One grey tick.",
+  "start": 0.0,
+  "end": 2.56
+ },
+ {
+  "li": 0,
+  "pi": 1,
+  "say": "So where is that message right now?",
+  "show": "So where is that message [right now?]",
+  "start": 2.84,
+  "end": 4.32
+ },
+ {
+  "li": 1,
+  "pi": 0,
+  "say": "It's waiting in a queue: a line on a server where messages sit until someone picks them up.",
+  "show": "It's waiting in a [queue:] a line on a server where messages sit until someone *picks them up.*",
+  "start": 4.64,
+  "end": 8.96
+ },
+ {
+  "li": 2,
+  "pi": 0,
+  "say": "You drop the message in and move on. The receiver doesn't need to be online.",
+  "show": "You drop the message in and *move on.* The receiver doesn't need to be [online.]",
+  "start": 9.08,
+  "end": 12.32
+ },
+ {
+  "li": 3,
+  "pi": 0,
+  "say": "When your friend's phone comes back, it picks the messages up and confirms each one arrived. Only then is it removed from the queue.",
+  "show": "When your friend's phone comes back, it picks the messages up and *confirms* each one arrived. Only then is it [removed] from the queue.",
+  "start": 12.62,
+  "end": 18.52
+ },
+ {
+  "li": 4,
+  "pi": 0,
+  "say": "Shops queue work too. Checkout drops each order in a queue, and background programs handle them at their own pace, so a rush waits in line instead of piling onto the server.",
+  "show": "Shops queue work too. Checkout drops each order in a queue, and background programs handle them *at their own pace,* so a rush [waits in line] instead of piling onto the server.",
+  "start": 19.08,
+  "end": 26.72
+ },
+ {
+  "li": 5,
+  "pi": 0,
+  "say": "Like a post office holding your letters until you come to collect them.",
+  "show": "Like a *post office* holding your letters until you come to [collect them.]",
+  "start": 26.8,
+  "end": 29.6
+ },
+ {
+  "li": 6,
+  "pi": 0,
+  "say": "RabbitMQ and Amazon SQS provide these queues.",
+  "show": "*RabbitMQ* and *Amazon SQS* provide these queues.",
+  "start": 30.16,
+  "end": 32.64
+ },
+ {
+  "li": 7,
+  "pi": 0,
+  "say": "If you're a vibe coder, follow for the system design your AI skipped.",
+  "show": "If you're a vibe coder, follow for the system design your AI [skipped.]",
+  "start": 32.92,
+  "end": 35.66
+ }
+]

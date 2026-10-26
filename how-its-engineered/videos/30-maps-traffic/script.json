@@ -1,0 +1,55 @@
+{
+ "topic": "How Google Maps Knows About Traffic",
+ "lines": [
+  [
+   {
+    "say": "Google Maps says there's a jam three kilometres ahead. There's no camera on that road. So who told it?",
+    "show": "Google Maps says there's a *jam* three kilometres ahead. There's *no camera* on that road. So [who told it?]"
+   }
+  ],
+  [
+   {
+    "say": "The cars did. Or rather, the phones inside them.",
+    "show": "The cars did. Or rather, the [phones inside them.]"
+   }
+  ],
+  [
+   {
+    "say": "Phones navigating with Google Maps can share where they are and how fast they're moving. Maps combines them, like dots moving along each road.",
+    "show": "Phones navigating with Google Maps can share where they are and *how fast* they're moving. Maps combines them, like [dots moving along each road.]"
+   }
+  ],
+  [
+   {
+    "say": "When lots of dots on one road slow right down, Maps marks that stretch red.",
+    "show": "When lots of dots on one road *slow right down,* Maps marks that stretch [red.]"
+   }
+  ],
+  [
+   {
+    "say": "It mixes that with how the road usually behaves at this hour, predicts how long each route will take, and can send you around the jam.",
+    "show": "It mixes that with how the road *usually* behaves at this hour, predicts how long each route will take, and can [send you around the jam.]"
+   }
+  ],
+  [
+   {
+    "say": "In twenty twenty, an artist in Berlin put ninety-nine phones in a little red wagon and slowly walked them down an empty street.",
+    "show": "In 2020, an artist in Berlin put *99 phones* in a little *red wagon* and slowly walked them down an [empty street.]"
+   },
+   {
+    "say": "Google Maps turned that empty street red. A traffic jam made of phones, not cars.",
+    "show": "Google Maps turned that empty street *red.* A traffic jam made of [phones, not cars.]"
+   }
+  ],
+  [
+   {
+    "say": "So Google isn't watching the road. The phones on it are drawing the map, and when you're stuck in traffic, you might be one of the dots.",
+    "show": "So Google isn't watching the road. The phones on it are *drawing the map,* and when you're stuck in traffic, [you might be one of the dots.]"
+   },
+   {
+    "say": "Follow for how everyday tech really works.",
+    "show": "Follow for how [everyday tech] really works."
+   }
+  ]
+ ]
+}

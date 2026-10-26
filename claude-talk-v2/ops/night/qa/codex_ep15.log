@@ -1,0 +1,9 @@
+== ep15
+- **35–37s — Critical caption ambiguity:** The visible captions transition from “Chrome hides the response” to “your origin is on the list,” losing the crucial **“unless.”** Keep “unless your origin is on the list” together so the explanation cannot read backwards.
+- **6.5–7.5s — Incorrect console example:** `fetch(":8000/api/items")` does not target the stated localhost API. Replace it with `fetch("http://localhost:8000/api/items")`.
+- **Claude’s dialogue throughout — Low caption contrast:** Orange highlighted words blend into the brown desk, especially around 30–36s and 46–52s. Use a brighter highlight with a strong dark outline.
+- **12.5–54s — Whiteboard information is too small:** The teaching diagrams compete with substantial empty desk space. Add tighter board shots when introducing the ports, response blocking, and server header.
+
+The opening establishes the problem, and “New address. Back outside.” pays off the guest-list joke. The intended fade works.
+
+VERDICT: FAIL

@@ -1,0 +1,32 @@
+01 cleo   cut   0.00-  6.78  speech   0.00-  5.52 | Claude, Chrome's gatekeeping. My API works in Postman. Here? CORS.
+02 claude cut   6.78-  9.03  speech   7.26-  8.72 | Finally. Board time.
+03 cleo   cut   9.03- 11.10  speech   9.18- 10.80 | Since when do you have a board?
+04 claude cut  11.10- 17.27  speech  11.38- 17.20 | Since now. Your page: localhost, port three thousand. Your API: same host, port eight thousand.
+05 cleo   cut  17.27- 19.66  speech  18.54- 19.26 | Same laptop.
+06 claude cut  19.66- 24.92  speech  20.02- 24.82 | Different port, different origin. And Chrome checks the API's guest list.
+07 cleo   cut  24.92- 27.50  speech  25.28- 27.16 | So Chrome blocks the request?
+08 claude cut  27.50- 34.81  speech  27.76- 34.78 | Sometimes a preflight check stops it. Otherwise, Chrome hides the response unless your origin is on the list.
+09 cleo   cut  34.81- 36.23  speech  35.38- 36.04 | And Postman?
+10 claude cut  36.23- 40.68  speech  36.54- 40.30 | Postman isn't a browser. It never checks the guest list.
+11 cleo   cut  40.68- 42.88  speech  40.72- 42.72 | So I fix it in the front end?
+12 claude cut  42.88- 51.26  speech  43.34- 51.10 | Server side. Add Access-Control-Allow-Origin with your page's exact origin. Guests don't write the guest list.
+13 cleo   cut  51.26- 55.98  speech  51.64- 55.60 | Allowed my page's exact origin on the server... It loaded!
+14 claude cut  55.98- 58.07  speech  56.20- 57.74 | Next lesson: production.
+15 cleo   cut  58.07- 59.43  speech  58.60- 59.34 | Same guest list?
+16 claude cut  59.43- 61.53  speech  59.78- 61.22 | New address. Back outside.
+01 cleo    6.64s 10w 1.51w/s <-- CHECK | Claude, Chrome's gatekeeping. My API works in Postman. Here? CORS.
+02 claude  1.73s  3w 1.74w/s  | Finally. Board time.
+03 cleo    1.93s  7w 3.64w/s  | Since when do you have a board?
+04 claude  5.99s 15w 2.50w/s  | Since now. Your page: localhost, port three thousand. Your API: same host, port eight thousand.
+05 cleo    2.25s  2w 0.89w/s  | Same laptop.
+06 claude  5.07s 11w 2.17w/s  | Different port, different origin. And Chrome checks the API's guest list.
+07 cleo    2.21s  5w 2.26w/s  | So Chrome blocks the request?
+08 claude  7.04s 18w 2.56w/s  | Sometimes a preflight check stops it. Otherwise, Chrome hides the response unless your origin is on the list.
+09 cleo    0.99s  2w 2.02w/s  | And Postman?
+10 claude  3.86s 10w 2.59w/s  | Postman isn't a browser. It never checks the guest list.
+11 cleo    2.15s  8w 3.72w/s  | So I fix it in the front end?
+12 claude  8.01s 18w 2.25w/s  | Server side. Add Access-Control-Allow-Origin with your page's exact origin. Guests don't write the guest list.
+13 cleo    4.41s 10w 2.27w/s  | Allowed my page's exact origin on the server... It loaded!
+14 claude  1.62s  3w 1.85w/s  | Next lesson: production.
+15 cleo    1.12s  3w 2.67w/s  | Same guest list?
+16 claude  2.06s  4w 1.94w/s  | New address. Back outside.

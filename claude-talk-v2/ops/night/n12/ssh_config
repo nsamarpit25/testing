@@ -1,0 +1,7 @@
+Host n12
+  HostName 54.88.101.45
+  User ubuntu
+  IdentityFile ~/.ssh/ctv2-bench.pem
+  UserKnownHostsFile /dev/null
+  StrictHostKeyChecking no
+  LogLevel ERROR

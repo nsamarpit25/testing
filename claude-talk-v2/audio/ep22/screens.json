@@ -1,0 +1,43 @@
+{
+ "m0": {
+  "kind": "page",
+  "url": "settings \u00b7 storage",
+  "accent": "#d64545",
+  "title": "Storage Full",
+  "body": [
+   "Photos 84 GB",
+   "Upgrade to keep saving"
+  ],
+  "big": {
+   "text": "$2.99 / MONTH",
+   "color": "#d64545"
+  }
+ },
+ "m1": {
+  "kind": "page",
+  "url": "photos \u00b7 screenshots",
+  "accent": "#1c7ed6",
+  "title": "Screenshots",
+  "body": [
+   "12,000 screenshots",
+   "\u201chow to save money\u201d",
+   "\u201c10 budget tips\u201d"
+  ],
+  "big": {
+   "text": "STORAGE FULL",
+   "color": "#d64545"
+  }
+ },
+ "p1": {
+  "kind": "chat",
+  "title": "Cloud Storage",
+  "msgs": [
+   [
+    "them",
+    "Storage full. Your photos now cost $2.99/month."
+   ]
+  ],
+  "size": 58,
+  "bottom": 260
+ }
+}

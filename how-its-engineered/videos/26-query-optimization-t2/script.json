@@ -1,0 +1,53 @@
+{
+  "topic": "Query optimization",
+  "lines": [
+    [
+      {
+        "say": "Nine seconds. That's how long your orders page takes to load, because to show ten orders, your app asks the database for a million.",
+        "show": "[Nine seconds.] That's how long your orders page takes to load, because to show *ten orders,* your app asks the database for [a million.]"
+      }
+    ],
+    [
+      {
+        "say": "Your database keeps orders like a giant spreadsheet: one row per order, from every user, with a column for each detail. And your app's request says: send me all of it.",
+        "show": "Your database keeps orders like a giant *spreadsheet:* one row per order, from every user, with a column for each detail. And your app's request says: [send me all of it.]"
+      }
+    ],
+    [
+      {
+        "say": "A million rows, every column, travel across to your app. Your code keeps your ten newest, and throws the rest away.",
+        "show": "A million rows, every column, travel across to your app. Your code keeps your *ten newest,* and [throws the rest away.]"
+      }
+    ],
+    [
+      {
+        "say": "That request is a query. A better one asks for exactly what the page shows: your ten newest orders, and only the details on screen.",
+        "show": "That request is a *query.* A better one asks for *exactly* what the page shows: your ten newest orders, and only the details on screen."
+      }
+    ],
+    [
+      {
+        "say": "Like a shopping list: you order milk and eggs, not the whole shop at your door.",
+        "show": "Like a shopping list: you order *milk and eggs,* not the [whole shop] at your door."
+      }
+    ],
+    [
+      {
+        "say": "That's one piece of query optimization: ten rows come back, instead of a million. Far less to send, far less to process.",
+        "show": "That's one piece of *query optimization:* ten rows come back, instead of a million. *Far less* to send, far less to process."
+      }
+    ],
+    [
+      {
+        "say": "Want to see how the database finds those rows? Put EXPLAIN in front of the query. If it reads the whole table to find a few rows, an index can help.",
+        "show": "Want to see how the database finds those rows? Put *EXPLAIN* in front of the query. If it reads the [whole table] to find a few rows, an *index* can help."
+      }
+    ],
+    [
+      {
+        "say": "If AI writes your code, follow for the system design it leaves out.",
+        "show": "If AI writes your code, *follow* for the system design it leaves out."
+      }
+    ]
+  ]
+}

@@ -1,0 +1,39 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1080
+PlayResY: 1920
+WrapStyle: 0
+ScaledBorderAndShadow: yes
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Cap,Noto Sans,58,&H00FFFFFF,&H00FFFFFF,&H00180D06,&H90000000,-1,0,0,0,100,100,0,0,1,6,3,2,150,150,360,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.20,0:00:01.74,Cap,,0,0,0,,{\fad(40,40)}In August {\c&H1AB2FF&}2015,{\c&HFFFFFF&}
+Dialogue: 0,0:00:01.74,0:00:03.58,Cap,,0,0,0,,{\fad(40,40)}a super typhoon hit Taipei 101,
+Dialogue: 0,0:00:03.58,0:00:05.12,Cap,,0,0,0,,{\fad(40,40)}and something near the top
+Dialogue: 0,0:00:05.12,0:00:06.08,Cap,,0,0,0,,{\fad(40,40)}of Taipei {\c&H1AB2FF&}101{\c&HFFFFFF&}
+Dialogue: 0,0:00:06.08,0:00:07.52,Cap,,0,0,0,,{\fad(40,40)}swung a full {\c&H1AB2FF&}metre.{\c&HFFFFFF&}
+Dialogue: 0,0:00:07.52,0:00:09.44,Cap,,0,0,0,,{\fad(40,40)}Wind makes a skyscraper {\c&HFFE63F&}sway,{\c&HFFFFFF&}
+Dialogue: 0,0:00:09.44,0:00:11.32,Cap,,0,0,0,,{\fad(40,40)}like a ruler flicked on a desk.
+Dialogue: 0,0:00:11.32,0:00:13.41,Cap,,0,0,0,,{\fad(40,40)}Up top, people start to feel seasick.
+Dialogue: 0,0:00:13.41,0:00:16.21,Cap,,0,0,0,,{\fad(40,40)}So between floors {\c&H1AB2FF&}87{\c&HFFFFFF&} and {\c&H1AB2FF&}92,{\c&HFFFFFF&}
+Dialogue: 0,0:00:16.21,0:00:16.95,Cap,,0,0,0,,{\fad(40,40)}engineers hung
+Dialogue: 0,0:00:16.95,0:00:19.53,Cap,,0,0,0,,{\fad(40,40)}a {\c&H1AB2FF&}660-tonne{\c&HFFFFFF&} steel {\c&H1AB2FF&}ball.{\c&HFFFFFF&}
+Dialogue: 0,0:00:19.53,0:00:21.75,Cap,,0,0,0,,{\fad(40,40)}It's a {\c&H1AB2FF&}tuned{\c&HFFFFFF&} {\c&H1AB2FF&}mass{\c&HFFFFFF&} {\c&H1AB2FF&}damper.{\c&HFFFFFF&}
+Dialogue: 0,0:00:21.75,0:00:23.71,Cap,,0,0,0,,{\fad(40,40)}Its swing matches the tower's own {\c&HFFE63F&}rhythm,{\c&HFFFFFF&}
+Dialogue: 0,0:00:23.71,0:00:25.39,Cap,,0,0,0,,{\fad(40,40)}so when wind shoves the tower one way,
+Dialogue: 0,0:00:25.39,0:00:26.52,Cap,,0,0,0,,{\fad(40,40)}the heavy ball {\c&H1AB2FF&}lags{\c&HFFFFFF&} behind
+Dialogue: 0,0:00:26.52,0:00:27.49,Cap,,0,0,0,,{\fad(40,40)}and pulls it back.
+Dialogue: 0,0:00:27.49,0:00:28.93,Cap,,0,0,0,,{\fad(40,40)}Eight hydraulic {\c&H1A5AFF&}pistons{\c&HFFFFFF&}
+Dialogue: 0,0:00:28.93,0:00:29.83,Cap,,0,0,0,,{\fad(40,40)}soak up that motion
+Dialogue: 0,0:00:29.83,0:00:30.81,Cap,,0,0,0,,{\fad(40,40)}and turn it into {\c&H1A5AFF&}heat.{\c&HFFFFFF&}
+Dialogue: 0,0:00:30.81,0:00:31.63,Cap,,0,0,0,,{\fad(40,40)}That cuts the sway
+Dialogue: 0,0:00:31.63,0:00:33.01,Cap,,0,0,0,,{\fad(40,40)}by up to {\c&H1AB2FF&}40%.{\c&HFFFFFF&}
+Dialogue: 0,0:00:33.01,0:00:34.37,Cap,,0,0,0,,{\fad(40,40)}So in that typhoon,
+Dialogue: 0,0:00:34.37,0:00:35.33,Cap,,0,0,0,,{\fad(40,40)}the ball moved a {\c&H1AB2FF&}metre,{\c&HFFFFFF&}
+Dialogue: 0,0:00:35.33,0:00:36.57,Cap,,0,0,0,,{\fad(40,40)}so the people inside
+Dialogue: 0,0:00:36.57,0:00:37.49,Cap,,0,0,0,,{\fad(40,40)}didn't have to.
+Dialogue: 0,0:00:37.49,0:00:39.59,Cap,,0,0,0,,{\fad(40,40)}Follow for how the world is really engineered.

@@ -1,0 +1,2 @@
+t2 from /mnt/ssd/render/vo/31-tap-to-pay/t2; gap cuts []; tail cut at 44.08s (orig 44.46) + 60ms fade
+31 voice.wav: breath at 29.93–30.17 s ducked -15 dB (Argon flagged it); original in scratchpad 31_voice_prebreath.wav

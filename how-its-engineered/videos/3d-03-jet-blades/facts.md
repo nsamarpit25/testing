@@ -1,0 +1,5 @@
+# Ep 3 facts (checked 2026-10-24)
+1. HP turbine blades perform at up to 200 C above the melting point of their alloy; >12,000 rpm; >12 t centrifugal force per blade; ~10 cm high, 300 g; single-crystal; air-cooling holes. Rolls-Royce Rotherham Advanced Blade Casting Facility announcement, via Foundry Management & Technology: https://www.foundrymag.com/molds-cores/article/21928462/rolls-royce-starts-up-foundry-for-turbine-blades
+2. "Each high pressure turbine blade generates the power of a Formula 1 car"; 60-90 such blades per engine. Rolls-Royce press release 24 Mar 2026: https://www.rolls-royce.com/media/press-releases/2026/24-03-2026-south-yorkshire-mayors-pound-2m-grant-unlocks-pound-19m-rr-investment-in-rotherham.aspx
+3. Single crystal removes grain boundaries, which are the weak points for creep/cracking at high temperature (Argon; patent literature; P&W introduced SX blades early 1980s - not used on screen).
+4. Cooling air bled from the compressor flows through internal channels and leaves through surface holes, forming a film; ceramic thermal barrier coating (yttria-stabilised zirconia) on top keeps the metal below melting.

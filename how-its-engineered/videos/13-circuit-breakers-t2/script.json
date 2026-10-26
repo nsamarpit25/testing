@@ -1,0 +1,53 @@
+{
+  "topic": "Circuit breakers",
+  "lines": [
+    [
+      {
+        "say": "Black Friday. Your store is down, and nothing is even broken. The reviews just got slow.",
+        "show": "Black Friday. Your store is [down,] and nothing is even broken. The reviews just got [slow.]"
+      }
+    ],
+    [
+      {
+        "say": "Every product page waits for reviews from another server. The waiting work piles up until your store stops loading.",
+        "show": "Every product page *waits* for reviews from another server. The waiting work *piles up* until your store [stops loading.]"
+      }
+    ],
+    [
+      {
+        "say": "A circuit breaker in your house cuts the power when something goes wrong. In software, it stops requests to the struggling server.",
+        "show": "A *circuit breaker* in your house cuts the *power* when something goes wrong. In software, it *stops requests* to the [struggling server.]"
+      }
+    ],
+    [
+      {
+        "say": "Too many slow or failed requests? It pauses new requests for a while.",
+        "show": "Too many slow or failed requests? It *pauses* new requests for a while."
+      }
+    ],
+    [
+      {
+        "say": "Your code decides what happens instead: skip the reviews and load the rest of the page.",
+        "show": "Your code decides what happens instead: *skip the reviews* and load the rest of the page."
+      }
+    ],
+    [
+      {
+        "say": "Later, it lets a few test requests through. Fast again? Resume. Otherwise, it pauses again.",
+        "show": "Later, it lets a *few* test requests through. *Fast again? Resume.* Otherwise, it pauses again."
+      }
+    ],
+    [
+      {
+        "say": "That keeps one slow feature from taking down your whole app.",
+        "show": "That keeps one slow feature from *taking down your whole app.*"
+      }
+    ],
+    [
+      {
+        "say": "If AI writes your code, follow for the system design it leaves out.",
+        "show": "If AI writes your code, *follow* for the system design it [leaves out.]"
+      }
+    ]
+  ]
+}

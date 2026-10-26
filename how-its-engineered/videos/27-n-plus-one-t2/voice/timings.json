@@ -1,0 +1,66 @@
+[
+ {
+  "li": 0,
+  "pi": 0,
+  "say": "Your database queries are fast. Your orders page is slow. The bug lives between them.",
+  "show": "Your database queries are fast. Your orders page is slow. The bug lives between them.",
+  "start": 0.0,
+  "end": 4.48
+ },
+ {
+  "li": 1,
+  "pi": 0,
+  "say": "First, your code asks for the last hundred orders. One trip to the database.",
+  "show": "First, your code asks for the last hundred orders. One trip to the database.",
+  "start": 5.14,
+  "end": 7.98
+ },
+ {
+  "li": 2,
+  "pi": 0,
+  "say": "Then for each order, it goes back to fetch the customer. One trip per order. A hundred more.",
+  "show": "Then for each order, it goes back to fetch the customer. One trip per order. A hundred more.",
+  "start": 8.62,
+  "end": 12.76
+ },
+ {
+  "li": 3,
+  "pi": 0,
+  "say": "Every trip waits on the network and the database. Those small waits add up. That is the slow part.",
+  "show": "Every trip waits on the network and the database. Those small waits add up. That is the slow part.",
+  "start": 13.34,
+  "end": 17.2
+ },
+ {
+  "li": 4,
+  "pi": 0,
+  "say": "This is the N plus one problem. One query for the list, then one query for each of the hundred orders. A hundred and one queries.",
+  "show": "This is the N plus one problem. One query for the list, then one query for each of the hundred orders. A hundred and one queries.",
+  "start": 17.84,
+  "end": 23.48
+ },
+ {
+  "li": 5,
+  "pi": 0,
+  "say": "The fix: get the orders, then ask for all their customers together in one query. Two trips total.",
+  "show": "The fix: get the orders, then ask for all their customers together in one query. Two trips total.",
+  "start": 24.0,
+  "end": 28.42
+ },
+ {
+  "li": 6,
+  "pi": 0,
+  "say": "Your ORM can often batch this for you with eager loading. Check which queries it actually generates.",
+  "show": "Your ORM can often batch this for you with eager loading. Check which queries it actually generates.",
+  "start": 29.02,
+  "end": 32.54
+ },
+ {
+  "li": 7,
+  "pi": 0,
+  "say": "Log the queries for one page load. If the count grows with every row on screen, that is your clue. A few queries can replace hundreds.",
+  "show": "Log the queries for one page load. If the count grows with every row on screen, that is your clue. A few queries can replace hundreds.",
+  "start": 33.14,
+  "end": 38.62
+ }
+]

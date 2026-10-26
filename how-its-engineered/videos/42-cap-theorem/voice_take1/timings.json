@@ -1,0 +1,74 @@
+[
+ {
+  "li": 0,
+  "pi": 0,
+  "say": "Your bank has two branches, and the line between them just got cut. A customer asks to withdraw money. Do you say yes?",
+  "show": "Your bank has *two branches,* and the line between them just got [cut.] A customer asks to *withdraw money.* [Do you say yes?]",
+  "start": 0.0,
+  "end": 5.7
+ },
+ {
+  "li": 1,
+  "pi": 0,
+  "say": "That's the CAP theorem. Consistency: every read sees the latest write. Availability: every request gets an answer. Partition tolerance: the system keeps working when the network splits.",
+  "show": "That's the [CAP theorem.] *Consistency:* every read sees the latest write. *Availability:* every request gets an answer. *Partition tolerance:* the system keeps working when the network [splits.]",
+  "start": 6.18,
+  "end": 15.4
+ },
+ {
+  "li": 2,
+  "pi": 0,
+  "say": "Your data lives on servers in different places. Usually they sync in milliseconds. But networks do break, so you have to handle the split.",
+  "show": "Your data lives on servers in *different places.* Usually they sync in *milliseconds.* But networks do [break,] so you have to handle the split.",
+  "start": 16.02,
+  "end": 22.48
+ },
+ {
+  "li": 3,
+  "pi": 0,
+  "say": "Pick consistency, and the branch that can't check refuses: sorry, try again later. Nobody sees a wrong balance, but some people get an error.",
+  "show": "Pick [consistency,] and the branch that can't check *refuses:* sorry, try again later. Nobody sees a *wrong balance,* but some people get an [error.]",
+  "start": 23.16,
+  "end": 29.32
+ },
+ {
+  "li": 4,
+  "pi": 0,
+  "say": "Pick availability, and both branches keep saying yes. Everyone gets an answer, but a balance can be out of date, and the same money can be spent twice.",
+  "show": "Pick [availability,] and both branches keep saying *yes.* Everyone gets an answer, but a balance can be *out of date,* and the same money can be spent [twice.]",
+  "start": 30.0,
+  "end": 36.22
+ },
+ {
+  "li": 5,
+  "pi": 0,
+  "say": "So it's not pick any two of three. When the network splits, you choose: correct, or always answering.",
+  "show": "So it's not *pick any two of three.* When the network splits, you choose: [correct,] or [always answering.]",
+  "start": 36.96,
+  "end": 42.1
+ },
+ {
+  "li": 6,
+  "pi": 0,
+  "say": "A like count that's a few seconds behind is fine. A wrong account balance isn't. That's how engineers pick.",
+  "show": "A *like count* that's a few seconds behind is fine. A wrong *account balance* [isn't.] That's how engineers pick.",
+  "start": 42.86,
+  "end": 47.9
+ },
+ {
+  "li": 7,
+  "pi": 0,
+  "say": "etcd picks consistency: the smaller side stops taking writes. Cassandra lets you choose for each query.",
+  "show": "*etcd* picks [consistency:] the smaller side stops taking writes. *Cassandra* lets you choose for [each query.]",
+  "start": 48.54,
+  "end": 53.36
+ },
+ {
+  "li": 8,
+  "pi": 0,
+  "say": "If you're a vibe coder, follow for the system design your AI skipped.",
+  "show": "If you're a vibe coder, follow for the system design your AI [skipped.]",
+  "start": 54.1,
+  "end": 56.62
+ }
+]

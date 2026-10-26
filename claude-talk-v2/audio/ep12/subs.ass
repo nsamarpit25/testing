@@ -1,0 +1,133 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1080
+PlayResY: 1920
+WrapStyle: 0
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Cap,Arial,72,&H00FFFFFF,&H00FFFFFF,&H00303030,&H80000000,1,0,0,0,100,100,0,0,1,2.2,0,2,110,110,330,1
+Style: Handle,Arial,34,&H28FFFFFF,&H28FFFFFF,&H00000000,&H90000000,1,0,0,0,100,100,1,0,1,0,1.5,2,60,60,114,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:01.00,0:00:01.80,Cap,,0,0,0,,{\alpha&H00&\c&H0066D9FF&}Claude, {\alpha&HFF&}I've {\alpha&HFF&}been {\alpha&HFF&}centering {\alpha&HFF&}this
+Dialogue: 0,0:00:01.80,0:00:02.04,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Claude, {\alpha&H00&\c&H0066D9FF&}I've {\alpha&HFF&}been {\alpha&HFF&}centering {\alpha&HFF&}this
+Dialogue: 0,0:00:02.04,0:00:02.14,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Claude, {\alpha&H00&\c&HFFFFFF&}I've {\alpha&H00&\c&H0066D9FF&}been {\alpha&HFF&}centering {\alpha&HFF&}this
+Dialogue: 0,0:00:02.14,0:00:02.80,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Claude, {\alpha&H00&\c&HFFFFFF&}I've {\alpha&H00&\c&HFFFFFF&}been {\alpha&H00&\c&H0066D9FF&}centering {\alpha&HFF&}this
+Dialogue: 0,0:00:02.80,0:00:03.06,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Claude, {\alpha&H00&\c&HFFFFFF&}I've {\alpha&H00&\c&HFFFFFF&}been {\alpha&H00&\c&HFFFFFF&}centering {\alpha&H00&\c&H0066D9FF&}this
+Dialogue: 0,0:00:03.06,0:00:03.50,Cap,,0,0,0,,{\alpha&H00&\c&H0066D9FF&}box {\alpha&HFF&}for {\alpha&HFF&}two {\alpha&HFF&}hours.
+Dialogue: 0,0:00:03.50,0:00:03.88,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}box {\alpha&H00&\c&H0066D9FF&}for {\alpha&HFF&}two {\alpha&HFF&}hours.
+Dialogue: 0,0:00:03.88,0:00:04.34,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}box {\alpha&H00&\c&HFFFFFF&}for {\alpha&H00&\c&H0066D9FF&}two {\alpha&HFF&}hours.
+Dialogue: 0,0:00:04.34,0:00:05.00,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}box {\alpha&H00&\c&HFFFFFF&}for {\alpha&H00&\c&HFFFFFF&}two {\alpha&H00&\c&H0066D9FF&}hours.
+Dialogue: 0,0:00:05.00,0:00:05.35,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}box {\alpha&H00&\c&HFFFFFF&}for {\alpha&H00&\c&HFFFFFF&}two {\alpha&H00&\c&HFFFFFF&}hours.
+Dialogue: 0,0:00:05.86,0:00:06.18,Cap,,0,0,0,,{\alpha&H00&\c&H005A9AFF&}Where {\alpha&HFF&}is {\alpha&HFF&}it {\alpha&HFF&}now?
+Dialogue: 0,0:00:06.18,0:00:06.42,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Where {\alpha&H00&\c&H005A9AFF&}is {\alpha&HFF&}it {\alpha&HFF&}now?
+Dialogue: 0,0:00:06.42,0:00:06.50,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Where {\alpha&H00&\c&HFFFFFF&}is {\alpha&H00&\c&H005A9AFF&}it {\alpha&HFF&}now?
+Dialogue: 0,0:00:06.50,0:00:06.66,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Where {\alpha&H00&\c&HFFFFFF&}is {\alpha&H00&\c&HFFFFFF&}it {\alpha&H00&\c&H005A9AFF&}now?
+Dialogue: 0,0:00:06.66,0:00:07.21,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Where {\alpha&H00&\c&HFFFFFF&}is {\alpha&H00&\c&HFFFFFF&}it {\alpha&H00&\c&HFFFFFF&}now?
+Dialogue: 0,0:00:07.21,0:00:07.55,Cap,,0,0,0,,{\alpha&H00&\c&H0066D9FF&}Top {\alpha&HFF&}left.
+Dialogue: 0,0:00:07.55,0:00:08.18,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Top {\alpha&H00&\c&H0066D9FF&}left.
+Dialogue: 0,0:00:08.18,0:00:08.73,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Top {\alpha&H00&\c&HFFFFFF&}left.
+Dialogue: 0,0:00:08.73,0:00:09.15,Cap,,0,0,0,,{\alpha&H00&\c&H0066D9FF&}Exactly {\alpha&HFF&}where {\alpha&HFF&}it {\alpha&HFF&}started.
+Dialogue: 0,0:00:09.15,0:00:09.38,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Exactly {\alpha&H00&\c&H0066D9FF&}where {\alpha&HFF&}it {\alpha&HFF&}started.
+Dialogue: 0,0:00:09.38,0:00:09.52,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Exactly {\alpha&H00&\c&HFFFFFF&}where {\alpha&H00&\c&H0066D9FF&}it {\alpha&HFF&}started.
+Dialogue: 0,0:00:09.52,0:00:09.78,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Exactly {\alpha&H00&\c&HFFFFFF&}where {\alpha&H00&\c&HFFFFFF&}it {\alpha&H00&\c&H0066D9FF&}started.
+Dialogue: 0,0:00:09.78,0:00:10.38,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Exactly {\alpha&H00&\c&HFFFFFF&}where {\alpha&H00&\c&HFFFFFF&}it {\alpha&H00&\c&HFFFFFF&}started.
+Dialogue: 0,0:00:10.38,0:00:10.60,Cap,,0,0,0,,{\alpha&H00&\c&H005A9AFF&}What {\alpha&HFF&}have {\alpha&HFF&}you {\alpha&HFF&}tried?
+Dialogue: 0,0:00:10.60,0:00:10.76,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}What {\alpha&H00&\c&H005A9AFF&}have {\alpha&HFF&}you {\alpha&HFF&}tried?
+Dialogue: 0,0:00:10.76,0:00:10.88,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}What {\alpha&H00&\c&HFFFFFF&}have {\alpha&H00&\c&H005A9AFF&}you {\alpha&HFF&}tried?
+Dialogue: 0,0:00:10.88,0:00:11.10,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}What {\alpha&H00&\c&HFFFFFF&}have {\alpha&H00&\c&HFFFFFF&}you {\alpha&H00&\c&H005A9AFF&}tried?
+Dialogue: 0,0:00:11.10,0:00:11.70,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}What {\alpha&H00&\c&HFFFFFF&}have {\alpha&H00&\c&HFFFFFF&}you {\alpha&H00&\c&HFFFFFF&}tried?
+Dialogue: 0,0:00:11.70,0:00:12.34,Cap,,0,0,0,,{\alpha&H00&\c&H0066D9FF&}Margin {\alpha&HFF&}auto.
+Dialogue: 0,0:00:12.34,0:00:12.72,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Margin {\alpha&H00&\c&H0066D9FF&}auto.
+Dialogue: 0,0:00:12.72,0:00:13.26,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Margin {\alpha&H00&\c&HFFFFFF&}auto.
+Dialogue: 0,0:00:13.26,0:00:13.44,Cap,,0,0,0,,{\alpha&H00&\c&H0066D9FF&}Text {\alpha&HFF&}align {\alpha&HFF&}center. {\alpha&HFF&}Praying.
+Dialogue: 0,0:00:13.44,0:00:13.76,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Text {\alpha&H00&\c&H0066D9FF&}align {\alpha&HFF&}center. {\alpha&HFF&}Praying.
+Dialogue: 0,0:00:13.76,0:00:15.50,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Text {\alpha&H00&\c&HFFFFFF&}align {\alpha&H00&\c&H0066D9FF&}center. {\alpha&HFF&}Praying.
+Dialogue: 0,0:00:15.50,0:00:15.96,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Text {\alpha&H00&\c&HFFFFFF&}align {\alpha&H00&\c&HFFFFFF&}center. {\alpha&H00&\c&H0066D9FF&}Praying.
+Dialogue: 0,0:00:15.96,0:00:16.66,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Text {\alpha&H00&\c&HFFFFFF&}align {\alpha&H00&\c&HFFFFFF&}center. {\alpha&H00&\c&HFFFFFF&}Praying.
+Dialogue: 0,0:00:16.66,0:00:17.02,Cap,,0,0,0,,{\alpha&H00&\c&H005A9AFF&}Anything {\alpha&HFF&}work?
+Dialogue: 0,0:00:17.02,0:00:17.24,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Anything {\alpha&H00&\c&H005A9AFF&}work?
+Dialogue: 0,0:00:17.24,0:00:17.80,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Anything {\alpha&H00&\c&HFFFFFF&}work?
+Dialogue: 0,0:00:17.80,0:00:18.26,Cap,,0,0,0,,{\alpha&H00&\c&H0066D9FF&}Praying {\alpha&HFF&}moved {\alpha&HFF&}it {\alpha&HFF&}three {\alpha&HFF&}pixels.
+Dialogue: 0,0:00:18.26,0:00:18.54,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Praying {\alpha&H00&\c&H0066D9FF&}moved {\alpha&HFF&}it {\alpha&HFF&}three {\alpha&HFF&}pixels.
+Dialogue: 0,0:00:18.54,0:00:18.74,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Praying {\alpha&H00&\c&HFFFFFF&}moved {\alpha&H00&\c&H0066D9FF&}it {\alpha&HFF&}three {\alpha&HFF&}pixels.
+Dialogue: 0,0:00:18.74,0:00:18.96,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Praying {\alpha&H00&\c&HFFFFFF&}moved {\alpha&H00&\c&HFFFFFF&}it {\alpha&H00&\c&H0066D9FF&}three {\alpha&HFF&}pixels.
+Dialogue: 0,0:00:18.96,0:00:19.32,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Praying {\alpha&H00&\c&HFFFFFF&}moved {\alpha&H00&\c&HFFFFFF&}it {\alpha&H00&\c&HFFFFFF&}three {\alpha&H00&\c&H0066D9FF&}pixels.
+Dialogue: 0,0:00:19.32,0:00:19.67,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Praying {\alpha&H00&\c&HFFFFFF&}moved {\alpha&H00&\c&HFFFFFF&}it {\alpha&H00&\c&HFFFFFF&}three {\alpha&H00&\c&HFFFFFF&}pixels.
+Dialogue: 0,0:00:20.14,0:00:20.74,Cap,,0,0,0,,{\alpha&H00&\c&H005A9AFF&}Impressive.
+Dialogue: 0,0:00:20.74,0:00:21.53,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Impressive.
+Dialogue: 0,0:00:21.53,0:00:21.75,Cap,,0,0,0,,{\alpha&H00&\c&H0066D9FF&}Then {\alpha&HFF&}I {\alpha&HFF&}tried {\alpha&HFF&}position {\alpha&HFF&}absolute.
+Dialogue: 0,0:00:21.75,0:00:21.89,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Then {\alpha&H00&\c&H0066D9FF&}I {\alpha&HFF&}tried {\alpha&HFF&}position {\alpha&HFF&}absolute.
+Dialogue: 0,0:00:21.89,0:00:22.07,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Then {\alpha&H00&\c&HFFFFFF&}I {\alpha&H00&\c&H0066D9FF&}tried {\alpha&HFF&}position {\alpha&HFF&}absolute.
+Dialogue: 0,0:00:22.07,0:00:22.51,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Then {\alpha&H00&\c&HFFFFFF&}I {\alpha&H00&\c&HFFFFFF&}tried {\alpha&H00&\c&H0066D9FF&}position {\alpha&HFF&}absolute.
+Dialogue: 0,0:00:22.51,0:00:23.15,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Then {\alpha&H00&\c&HFFFFFF&}I {\alpha&H00&\c&HFFFFFF&}tried {\alpha&H00&\c&HFFFFFF&}position {\alpha&H00&\c&H0066D9FF&}absolute.
+Dialogue: 0,0:00:23.15,0:00:23.91,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Then {\alpha&H00&\c&HFFFFFF&}I {\alpha&H00&\c&HFFFFFF&}tried {\alpha&H00&\c&HFFFFFF&}position {\alpha&H00&\c&HFFFFFF&}absolute.
+Dialogue: 0,0:00:23.91,0:00:23.99,Cap,,0,0,0,,{\alpha&H00&\c&H0066D9FF&}It {\alpha&HFF&}left {\alpha&HFF&}the {\alpha&HFF&}screen.
+Dialogue: 0,0:00:23.99,0:00:24.23,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}It {\alpha&H00&\c&H0066D9FF&}left {\alpha&HFF&}the {\alpha&HFF&}screen.
+Dialogue: 0,0:00:24.23,0:00:24.47,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}It {\alpha&H00&\c&HFFFFFF&}left {\alpha&H00&\c&H0066D9FF&}the {\alpha&HFF&}screen.
+Dialogue: 0,0:00:24.47,0:00:24.83,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}It {\alpha&H00&\c&HFFFFFF&}left {\alpha&H00&\c&HFFFFFF&}the {\alpha&H00&\c&H0066D9FF&}screen.
+Dialogue: 0,0:00:24.83,0:00:25.49,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}It {\alpha&H00&\c&HFFFFFF&}left {\alpha&H00&\c&HFFFFFF&}the {\alpha&H00&\c&HFFFFFF&}screen.
+Dialogue: 0,0:00:25.49,0:00:25.81,Cap,,0,0,0,,{\alpha&H00&\c&H005A9AFF&}Where {\alpha&HFF&}did {\alpha&HFF&}it {\alpha&HFF&}go?
+Dialogue: 0,0:00:25.81,0:00:25.99,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Where {\alpha&H00&\c&H005A9AFF&}did {\alpha&HFF&}it {\alpha&HFF&}go?
+Dialogue: 0,0:00:25.99,0:00:26.09,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Where {\alpha&H00&\c&HFFFFFF&}did {\alpha&H00&\c&H005A9AFF&}it {\alpha&HFF&}go?
+Dialogue: 0,0:00:26.09,0:00:26.25,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Where {\alpha&H00&\c&HFFFFFF&}did {\alpha&H00&\c&HFFFFFF&}it {\alpha&H00&\c&H005A9AFF&}go?
+Dialogue: 0,0:00:26.25,0:00:26.85,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Where {\alpha&H00&\c&HFFFFFF&}did {\alpha&H00&\c&HFFFFFF&}it {\alpha&H00&\c&HFFFFFF&}go?
+Dialogue: 0,0:00:26.85,0:00:27.05,Cap,,0,0,0,,{\alpha&H00&\c&H0066D9FF&}I {\alpha&HFF&}don't {\alpha&HFF&}know.
+Dialogue: 0,0:00:27.05,0:00:27.23,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}I {\alpha&H00&\c&H0066D9FF&}don't {\alpha&HFF&}know.
+Dialogue: 0,0:00:27.23,0:00:27.43,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}I {\alpha&H00&\c&HFFFFFF&}don't {\alpha&H00&\c&H0066D9FF&}know.
+Dialogue: 0,0:00:27.43,0:00:27.67,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}I {\alpha&H00&\c&HFFFFFF&}don't {\alpha&H00&\c&HFFFFFF&}know.
+Dialogue: 0,0:00:27.67,0:00:27.89,Cap,,0,0,0,,{\alpha&H00&\c&H0066D9FF&}It's {\alpha&HFF&}just {\alpha&HFF&}gone.
+Dialogue: 0,0:00:27.89,0:00:28.03,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}It's {\alpha&H00&\c&H0066D9FF&}just {\alpha&HFF&}gone.
+Dialogue: 0,0:00:28.03,0:00:28.41,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}It's {\alpha&H00&\c&HFFFFFF&}just {\alpha&H00&\c&H0066D9FF&}gone.
+Dialogue: 0,0:00:28.41,0:00:28.91,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}It's {\alpha&H00&\c&HFFFFFF&}just {\alpha&H00&\c&HFFFFFF&}gone.
+Dialogue: 0,0:00:28.91,0:00:29.11,Cap,,0,0,0,,{\alpha&H00&\c&H0066D9FF&}Like {\alpha&HFF&}my {\alpha&HFF&}evening.
+Dialogue: 0,0:00:29.11,0:00:29.33,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Like {\alpha&H00&\c&H0066D9FF&}my {\alpha&HFF&}evening.
+Dialogue: 0,0:00:29.33,0:00:29.57,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Like {\alpha&H00&\c&HFFFFFF&}my {\alpha&H00&\c&H0066D9FF&}evening.
+Dialogue: 0,0:00:29.57,0:00:30.29,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Like {\alpha&H00&\c&HFFFFFF&}my {\alpha&H00&\c&HFFFFFF&}evening.
+Dialogue: 0,0:00:30.29,0:00:30.63,Cap,,0,0,0,,{\alpha&H00&\c&H005A9AFF&}Make {\alpha&HFF&}the {\alpha&HFF&}parent {\alpha&HFF&}a {\alpha&HFF&}grid.
+Dialogue: 0,0:00:30.63,0:00:30.81,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Make {\alpha&H00&\c&H005A9AFF&}the {\alpha&HFF&}parent {\alpha&HFF&}a {\alpha&HFF&}grid.
+Dialogue: 0,0:00:30.81,0:00:31.05,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Make {\alpha&H00&\c&HFFFFFF&}the {\alpha&H00&\c&H005A9AFF&}parent {\alpha&HFF&}a {\alpha&HFF&}grid.
+Dialogue: 0,0:00:31.05,0:00:31.25,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Make {\alpha&H00&\c&HFFFFFF&}the {\alpha&H00&\c&HFFFFFF&}parent {\alpha&H00&\c&H005A9AFF&}a {\alpha&HFF&}grid.
+Dialogue: 0,0:00:31.25,0:00:31.55,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Make {\alpha&H00&\c&HFFFFFF&}the {\alpha&H00&\c&HFFFFFF&}parent {\alpha&H00&\c&HFFFFFF&}a {\alpha&H00&\c&H005A9AFF&}grid.
+Dialogue: 0,0:00:31.55,0:00:32.07,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Make {\alpha&H00&\c&HFFFFFF&}the {\alpha&H00&\c&HFFFFFF&}parent {\alpha&H00&\c&HFFFFFF&}a {\alpha&H00&\c&HFFFFFF&}grid.
+Dialogue: 0,0:00:32.07,0:00:32.25,Cap,,0,0,0,,{\alpha&H00&\c&H005A9AFF&}Place {\alpha&HFF&}items {\alpha&HFF&}center.
+Dialogue: 0,0:00:32.25,0:00:32.63,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Place {\alpha&H00&\c&H005A9AFF&}items {\alpha&HFF&}center.
+Dialogue: 0,0:00:32.63,0:00:33.07,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Place {\alpha&H00&\c&HFFFFFF&}items {\alpha&H00&\c&H005A9AFF&}center.
+Dialogue: 0,0:00:33.07,0:00:33.65,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Place {\alpha&H00&\c&HFFFFFF&}items {\alpha&H00&\c&HFFFFFF&}center.
+Dialogue: 0,0:00:35.33,0:00:36.15,Cap,,0,0,0,,{\alpha&H00&\c&H0066D9FF&}Okay... {\alpha&HFF&}grid...
+Dialogue: 0,0:00:36.15,0:00:36.97,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Okay... {\alpha&H00&\c&H0066D9FF&}grid...
+Dialogue: 0,0:00:36.97,0:00:37.12,Cap,,0,0,0,,{\alpha&H00&\c&H0066D9FF&}place {\alpha&HFF&}items {\alpha&HFF&}center...
+Dialogue: 0,0:00:37.12,0:00:37.55,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}place {\alpha&H00&\c&H0066D9FF&}items {\alpha&HFF&}center...
+Dialogue: 0,0:00:37.55,0:00:39.23,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}place {\alpha&H00&\c&HFFFFFF&}items {\alpha&H00&\c&H0066D9FF&}center...
+Dialogue: 0,0:00:39.23,0:00:39.62,Cap,,0,0,0,,{\alpha&H00&\c&H0066D9FF&}it's {\alpha&HFF&}centered.
+Dialogue: 0,0:00:39.62,0:00:39.93,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}it's {\alpha&H00&\c&H0066D9FF&}centered.
+Dialogue: 0,0:00:39.93,0:00:40.65,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}it's {\alpha&H00&\c&HFFFFFF&}centered.
+Dialogue: 0,0:00:40.65,0:00:40.85,Cap,,0,0,0,,{\alpha&H00&\c&H005A9AFF&}Two {\alpha&HFF&}lines.
+Dialogue: 0,0:00:40.85,0:00:41.15,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Two {\alpha&H00&\c&H005A9AFF&}lines.
+Dialogue: 0,0:00:41.15,0:00:41.75,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Two {\alpha&H00&\c&HFFFFFF&}lines.
+Dialogue: 0,0:00:41.75,0:00:42.23,Cap,,0,0,0,,{\alpha&H00&\c&H0066D9FF&}Two {\alpha&HFF&}hours.
+Dialogue: 0,0:00:42.23,0:00:42.91,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Two {\alpha&H00&\c&H0066D9FF&}hours.
+Dialogue: 0,0:00:42.91,0:00:43.61,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Two {\alpha&H00&\c&HFFFFFF&}hours.
+Dialogue: 0,0:00:43.61,0:00:43.81,Cap,,0,0,0,,{\alpha&H00&\c&H0066D9FF&}Two {\alpha&HFF&}lines. {\alpha&HFF&}Great.
+Dialogue: 0,0:00:43.81,0:00:45.27,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Two {\alpha&H00&\c&H0066D9FF&}lines. {\alpha&HFF&}Great.
+Dialogue: 0,0:00:45.27,0:00:45.51,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Two {\alpha&H00&\c&HFFFFFF&}lines. {\alpha&H00&\c&H0066D9FF&}Great.
+Dialogue: 0,0:00:45.51,0:00:45.86,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Two {\alpha&H00&\c&HFFFFFF&}lines. {\alpha&H00&\c&HFFFFFF&}Great.
+Dialogue: 0,0:00:46.71,0:00:47.13,Cap,,0,0,0,,{\alpha&H00&\c&H0066D9FF&}Oh {\alpha&HFF&}no.
+Dialogue: 0,0:00:47.13,0:00:47.63,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Oh {\alpha&H00&\c&H0066D9FF&}no.
+Dialogue: 0,0:00:47.63,0:00:48.13,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Oh {\alpha&H00&\c&HFFFFFF&}no.
+Dialogue: 0,0:00:48.13,0:00:48.29,Cap,,0,0,0,,{\alpha&H00&\c&H0066D9FF&}The {\alpha&HFF&}designer {\alpha&HFF&}wants {\alpha&HFF&}it {\alpha&HFF&}slightly
+Dialogue: 0,0:00:48.29,0:00:48.61,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}The {\alpha&H00&\c&H0066D9FF&}designer {\alpha&HFF&}wants {\alpha&HFF&}it {\alpha&HFF&}slightly
+Dialogue: 0,0:00:48.61,0:00:48.87,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}The {\alpha&H00&\c&HFFFFFF&}designer {\alpha&H00&\c&H0066D9FF&}wants {\alpha&HFF&}it {\alpha&HFF&}slightly
+Dialogue: 0,0:00:48.87,0:00:49.03,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}The {\alpha&H00&\c&HFFFFFF&}designer {\alpha&H00&\c&HFFFFFF&}wants {\alpha&H00&\c&H0066D9FF&}it {\alpha&HFF&}slightly
+Dialogue: 0,0:00:49.03,0:00:49.41,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}The {\alpha&H00&\c&HFFFFFF&}designer {\alpha&H00&\c&HFFFFFF&}wants {\alpha&H00&\c&HFFFFFF&}it {\alpha&H00&\c&H0066D9FF&}slightly
+Dialogue: 0,0:00:49.41,0:00:49.65,Cap,,0,0,0,,{\alpha&H00&\c&H0066D9FF&}to {\alpha&HFF&}the {\alpha&HFF&}left.
+Dialogue: 0,0:00:49.65,0:00:49.81,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}to {\alpha&H00&\c&H0066D9FF&}the {\alpha&HFF&}left.
+Dialogue: 0,0:00:49.81,0:00:50.03,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}to {\alpha&H00&\c&HFFFFFF&}the {\alpha&H00&\c&H0066D9FF&}left.
+Dialogue: 0,0:00:50.03,0:00:50.38,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}to {\alpha&H00&\c&HFFFFFF&}the {\alpha&H00&\c&HFFFFFF&}left.
+Dialogue: 0,0:00:51.23,0:00:52.05,Cap,,0,0,0,,{\alpha&H00&\c&H005A9AFF&}I'll {\alpha&HFF&}start {\alpha&HFF&}praying.
+Dialogue: 0,0:00:52.05,0:00:52.27,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}I'll {\alpha&H00&\c&H005A9AFF&}start {\alpha&HFF&}praying.
+Dialogue: 0,0:00:52.27,0:00:52.53,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}I'll {\alpha&H00&\c&HFFFFFF&}start {\alpha&H00&\c&H005A9AFF&}praying.
+Dialogue: 0,0:00:52.53,0:00:52.88,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}I'll {\alpha&H00&\c&HFFFFFF&}start {\alpha&H00&\c&HFFFFFF&}praying.
+Dialogue: 1,0:00:00.00,0:00:54.78,Handle,,0,0,0,,@talkingagents

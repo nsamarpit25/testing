@@ -1,0 +1,7 @@
+== ep16_v3
+- **48.5–50.5s — Minor screen mismatch:** Terminal stays on `bad / good / good` and “7 revisions left” while Cleo continues calling different results. Update the terminal alongside her checks so progress feels real.
+- **3.5–5.0s, 58.5–59.0s — Caption contrast:** White captions cross the bright keyboard, making them harder to read. Move them slightly upward or strengthen their dark outline.
+
+The documentary joke and self-blame reveal land. No obvious missing captions, disruptive flash cuts, cropping, or character-direction errors in the sampled frames; the intended fade works.
+
+VERDICT: PASS

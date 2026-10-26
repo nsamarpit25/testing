@@ -1,0 +1,236 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- 37 QR code, premium look (warm graphite, one orange accent, calm moves). A cafe menu on a dark oak table, a real QR
+     code printed on it (it scans to the channel), a coffee stain across part of it, a cup, a phone. Hook: the phone
+     locks onto the stained code anyway; how does it spot it on a busy menu. The cells lift: dark and light are ones and
+     zeros. The three corner squares light up: where the code is and how it is turned. From a tilted view the camera
+     straightens the grid to straight above and samples every cell. Backup cells: a smudge is rebuilt; a damaged corner
+     square and the scan fails. Story: 1994, Masahiro Hara's team at Denso, a grid inspired by Go; flyers, magazines and
+     boxes; the corner squares' stripe widths 1:1:3:1:1. Twist: a scan line sweeps the whole menu, only the corners
+     answer. Beats come from voice/words.js. -->
+<link rel="stylesheet" href="../_ember/fonts.css">
+<link rel="stylesheet" href="lib/reel.css">
+<style>
+#stage { background: #0a0a0a; }
+#hud { pointer-events: none; }
+.tool { border-color: rgba(255,255,255,0.09) !important; box-shadow: 0 14px 34px rgba(8,6,4,0.6) !important; background: rgba(22,20,19,0.94) !important; padding: 14px 16px !important; }
+.tool > div:first-child > div > div:first-child { font: 600 19px/1.15 Inter !important; letter-spacing: -0.3px !important; color: #f4f3f2; }
+.tool > div:first-child > div > div:nth-child(2) { font: 500 10px/1.3 Mono !important; letter-spacing: 1.1px !important; color: #ffb070 !important; }
+.hc .v.mono { font-family: Mono; letter-spacing: 1px; }
+#stage .hc { background: rgba(20,18,17,0.95); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+#stw { min-width: 0; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="world">
+    <canvas id="cv" width="1080" height="1920"></canvas>
+    <div class="layer" id="lbls"></div>
+  </div>
+</div>
+<script src="../../tools/lib.js"></script>
+<script src="voice/words.js"></script>
+<script src="qr.js"></script>
+<script src="lib/three.js"></script>
+<script src="../_ember/world.js"></script>
+<script src="lib/base.js"></script>
+<script src="kit.js"></script>
+<script src="qrprops.js"></script>
+<script>
+/* ---------------- beats */
+const T = {
+  smudge: at('smudge'), read: at('read'), busy: at('busy'), spot: at('spot'),
+  tiny: at('tiny'), dark: at('dark'), light: at('light'), ones: at('ones'), zeros: at('zeros'), spelling: at('spelling'), web: at('web'),
+  first: at('first'), hunts: at('hunts'), corner: at('corner'), where: at('where'), turned: at('turned'), but: at('but', 2), pick: at('pick'), everything: at('everything'),
+  straightens: at('straightens'), above: at('above'), reads: at('reads'), square: at('square'),
+  backup: at('backup'), smudge2: at('smudge', 2), rebuilt: at('rebuilt'), about: at('about'), strongest: at('strongest'), damage: at('damage'), fail: at('fail'),
+  hara: at('masahiro'), denso: at('denso'), released: at('released'), grid2: at('grid', 2), go: at('go'), studied: at('studied'), flyers: at('flyers'), magazines: at('magazines'), boxes: at('boxes'),
+  gave: at('gave'), stripe: at('stripe'), least: at('least'), print: at('print'),
+  trick: at('trick'), standing: at('standing'), studying: at('studying'), around: at('around'),
+  follow: at('follow'),
+};
+const CUT = { HOOK: 0, BITS: line(1).start - 0.12, FIND: line(2).start - 0.12, STR: line(3).start - 0.12, BACK: line(4).start - 0.12,
+  STORY: line(5).start - 0.12, PRINTS: T.studied - 0.3, RATIO: T.gave - 0.25, TWIST: line(6).start - 0.12, END: T.follow - 0.15 };
+
+/* ---------------- build */
+const ground = mesh(new TH.PlaneGeometry(9000, 9000), mat('#0c0b0a', { r: 0.95 }), null, 0, 0, -0.4, { cast: false });
+const TABLE = mesh(new TH.PlaneGeometry(2400, 2400), TABLE_M, null, 0, 0, 0, { cast: false }); OAK.repeat.set(6, 6);
+const MENU = buildMenu(0, 0, -0.06);
+const QM = buildQR(MENU.g, CARD_T + 0.02);
+const SAMP = buildSampler(QM, 0.9);
+MENU.g.updateMatrixWorld(true);
+const _qv = new TH.Vector3();
+const QW = (x, y, z = 0) => { _qv.set(x, y + QR_Y, CARD_T + z); MENU.g.localToWorld(_qv); return [_qv.x, _qv.y, _qv.z]; };   // QR-local → world
+const CELL = (i, j, z = 0) => { const [x, y] = QM.loc(i, j); return QW(x, y, z); };
+const QRC = QW(0, 0), FTL = CELL(3, 3), FTR = CELL(QN - 4, 3), FBL = CELL(3, QN - 4);
+// stains: A (in the hook, stays), B (the smudge that gets rebuilt), C (dark, over the top-right corner square)
+const SA = buildStain(QM.g, 7, -9, 0.4, 10, 1.3), SB = buildStain(QM.g, -11, 7, 0.45, 8.5, 4.1), SC = buildStain(QM.g, ...QM.loc(QN - 4, 3), 0.5, 10.5, 2.2, true);
+const inStain = (S, i, j, f = 1) => { const [x, y] = QM.loc(i, j); return Math.hypot(x - S.me.position.x, y - S.me.position.y) < S.r * f; };
+const CUP = buildCup(150, 62);
+// the phone, held at an angle over the table, its back camera towards the code
+const PH = phone3(null, 98, -112, 92, 10, '#3a3734', 'ios'); PH.g.rotation.order = 'ZXY'; PH.g.rotation.set(0.92, 0, 0.5);
+let vfKey = null;
+const vf = (o) => { const k = `${(o.lock ?? 0).toFixed(2)}|${(o.link ?? 0).toFixed(2)}|${o.stain ? 1 : 0}`; if (k === vfKey) return; vfKey = k; PH.s._k = null; PH.s.draw(k, (g, W, H) => viewfinder(g, W, H, o)); };
+vf({ lock: 0, link: 0, stain: true });
+// the story set, along the table to the right
+const GO = buildGo(560, 40);
+const PRINTS = grp(null, 560, -190, 0);
+printed(PRINTS, -62, 8, 0, 60, 84, 0.12, FLYER);
+printed(PRINTS, 8, -6, 0, 70, 96, -0.05, MAG, { t: 1.6, cc: 0.3, r: 0.45 });
+const BOXG = grp(PRINTS, 82, 18, 0, -0.1); mesh(rb(70, 60, 38, 1, 2), new TH.MeshStandardMaterial({ map: ctex(420, 228, BOX), roughness: 0.9 }), BOXG, 0, 0, 0);
+// scan lines: one across the prints, one across the corner square, one that sweeps the whole menu
+const SCAN_P = buildScan(PRINTS, 240), SCAN_R = buildScan(QM.g, 7 * MOD + 6), SCAN_M = buildScan(MENU.g, CARD_W + 10);
+SCAN_R.g.position.set(QM.loc(3, 3)[0], QM.loc(3, 3)[1], 1.2);
+const HEMI = scene.children.find((o) => o.isHemisphereLight);
+
+/* ---------------- camera: hard cuts between scenes, slow eased moves inside them */
+const SHOTS = [];
+const shot = (t, f, s, a, e, sy = 470) => SHOTS.push({ t, d: 0, f, s, a, e, sy });
+const move = (t, d, o) => SHOTS.push({ t, d, ez: ease.inOut, ...o });
+const GOC = [560, 40, 14], PRC = [570, -186, 6];
+shot(CUT.HOOK, [36, -42, 26], 2.25, -0.46, 0.66, 480); move(0.01, CUT.BITS - 0.05, { s: 2.55, a: -0.36, f: [26, -46, 20] });
+shot(CUT.BITS, QRC, 5.4, -0.32, 0.92, 470); move(CUT.BITS + 0.01, CUT.FIND - CUT.BITS, { s: 5.9, a: -0.2 });
+shot(CUT.FIND, QRC, 5.3, 0.22, 1.12, 470); move(CUT.FIND + 0.01, T.but - 0.2 - CUT.FIND, { s: 5.6, a: 0.14 }); move(T.but - 0.15, CUT.STR - T.but, { s: 2.75, f: [0, -8, 0], e: 1.0, a: 0.08 });
+shot(CUT.STR, QRC, 5.0, -0.95, 0.4, 480); move(T.straightens - 0.1, T.above + 0.35 - T.straightens, { a: 0, e: 1.5, s: 5.8 });
+shot(CUT.BACK, QRC, 5.5, 0.12, 1.28, 470); move(CUT.BACK + 0.01, CUT.STORY - CUT.BACK, { s: 5.9, a: 0.04 });
+shot(CUT.STORY, GOC, 3.4, -0.5, 0.74, 500); move(CUT.STORY + 0.01, CUT.PRINTS - CUT.STORY, { s: 3.8, a: -0.36 });
+shot(CUT.PRINTS, PRC, 2.6, -0.28, 0.92, 480); move(CUT.PRINTS + 0.01, CUT.RATIO - CUT.PRINTS, { s: 2.8, a: -0.2 });
+shot(CUT.RATIO, FTL, 11.5, -0.18, 1.15, 470); move(CUT.RATIO + 0.01, CUT.TWIST - CUT.RATIO, { s: 12.5, a: -0.1 });
+shot(CUT.TWIST, [14, -10, 0], 2.45, -0.3, 1.0, 470); move(CUT.TWIST + 0.01, CUT.END - CUT.TWIST, { s: 2.65, a: -0.22 });
+const inShot = (t, a, b) => t >= a && t < b;
+
+/* ---------------- the world, frame by frame */
+const fadeIO = (t, a, b, d = 0.5) => ep(t, a, a + d, ease.inOut) * (1 - ep(t, b - d, b, ease.inOut));
+const isF = (c) => c.role === 'f', isFTR = (c) => c.role === 'f' && c.i > QN / 2 && c.j < QN / 2;
+const QDIM = '#8f887f', QSTAIN = '#5d4636', QEC = '#7b5a43';
+const cmix = (a, b, k) => '#' + C(a).lerp(C(b), clamp(k)).getHexString();
+function world(t) {
+  cam3(t, SHOTS);
+  const inHook = t < CUT.BITS, inBits = inShot(t, CUT.BITS, CUT.FIND), inFind = inShot(t, CUT.FIND, CUT.STR), inStr = inShot(t, CUT.STR, CUT.BACK);
+  const inBack = inShot(t, CUT.BACK, CUT.STORY), inRatio = inShot(t, CUT.RATIO, CUT.TWIST), inTwist = t >= CUT.TWIST;
+  PH.g.visible = inHook;
+  /* the cells */
+  const lift = inBits ? ep(t, T.dark - 0.15, T.light + 0.5, ease.inOut) * (1 - ep(t, T.web + 0.3, CUT.FIND, ease.inOut)) : 0;
+  const rowJ = 9, rowSweep = inBits ? prog(t, T.ones - 0.1, T.zeros + 0.6) : -1;
+  const fOn = inFind ? ep(t, T.corner - 0.1, T.corner + 0.7, ease.inOut) : inRatio ? 1 : 0;
+  const dimOthers = inFind ? 0.75 * fOn : inRatio ? 0.6 : 0;
+  const ecOn = inBack ? ep(t, T.backup - 0.1, T.backup + 0.5, ease.inOut) * (1 - ep(t, T.rebuilt - 0.2, T.rebuilt + 0.4, ease.inOut)) : 0;
+  const rbOff = inBack ? ep(t, T.damage - 0.4, T.damage + 0.1, ease.inOut) : 0;
+  const sbIn = inBack ? ep(t, T.smudge2 - 0.2, T.smudge2 + 0.4, ease.inOut) : 0, rebuilt = inBack ? ep(t, T.rebuilt - 0.05, T.rebuilt + 0.45, ease.inOut) : 0;
+  const scIn = inBack ? ep(t, T.damage - 0.1, T.damage + 0.6, ease.inOut) : 0;
+  // the sweep in the twist: a line runs down the card twice; a corner square lights when the line crosses it
+  const sweepY = inTwist ? CARD_H / 2 - ((t - CUT.TWIST - 0.4) * 95) % (CARD_H + 60) : 999;
+  const passed = (yl) => inTwist && (t - CUT.TWIST - 0.4) * 95 > CARD_H / 2 - yl;
+  const ratioRow = inRatio ? ep(t, T.stripe - 0.15, T.stripe + 0.4, ease.inOut) : 0;
+  QM.set((c) => {
+    const o = {};
+    if (lift > 0.001) { o.h = 0.06 + lift * (c.dark ? 2.2 : 0.7); o.up = 0; }
+    let col = c.dark ? INK : PAPER;
+    if (rowSweep > -1 && c.j === rowJ) { const x = (c.i + 0.5) / QN, d = Math.exp(-(((x - rowSweep) / 0.06) ** 2)); col = cmix(col, c.dark ? O : '#f3d9c4', d * 0.9 + (x < rowSweep ? 0.35 : 0)); }
+    if (dimOthers > 0 && !isF(c)) col = cmix(col, c.dark ? QDIM : PAPER, dimOthers * (c.dark ? 1 : 0));
+    if (fOn > 0 && isF(c) && c.dark) col = cmix(col, O, fOn);
+    if (ecOn > 0 && c.role === 'e' && c.dark) col = cmix(col, QEC, 0.7 * ecOn);
+    if (inBack && inStain(SA, c.i, c.j) && c.dark) {
+      col = cmix(col, QSTAIN, 0.6 * (1 - rebuilt));
+      if (rebuilt > 0) { col = cmix(col, O, rebuilt * (1 - rbOff)); o.up = 1.2 * Math.sin(Math.PI * Math.min(1, rebuilt)) * 0.6; o.h = 0.06 + 0.5 * rebuilt; }
+    }
+    if (scIn > 0 && isFTR(c)) { o.k = 1 - 0.85 * scIn; if (c.dark) col = cmix(col, '#3a2a20', scIn); }
+    if (inRatio && c.j === 3 && c.i <= 6 && c.dark) { col = O; o.h = 0.06 + 0.8 * ratioRow; }
+    if (inTwist && isF(c)) { const [, ly] = QM.loc(c.i, c.j); if (passed(ly + QR_Y)) col = cmix(col, O, 0.95); }
+    o.c = col; return o;
+  });
+  /* stains */
+  SA.m.opacity = 1 - 0.75 * rebuilt; SB.m.opacity = 0; SB.me.scale.setScalar(2 * SB.r * (0.6 + 0.4 * sbIn)); SB.me.scale.z = 1;
+  SC.m.opacity = inBack ? scIn : 0; SC.me.scale.set(2 * SC.r * (0.5 + 0.5 * scIn), 2 * SC.r * (0.5 + 0.5 * scIn), 1);
+  /* the sampling grid and dots */
+  const gIn = inStr ? ep(t, T.straightens - 0.1, T.straightens + 0.6, ease.inOut) : 0;
+  SAMP.lm.opacity = 0.55 * gIn * (1 - 0.6 * ep(t, T.reads, T.square + 0.4, ease.inOut));
+  const rd = inStr ? prog(t, T.reads - 0.15, T.square + 0.55) : 0;
+  SAMP.g.visible = inStr;
+  if (inStr) SAMP.setDots((i, j) => ((j + i * 0.15) / (QN + 4) < rd ? 0.95 : 0));
+  /* scan lines */
+  const sp = inShot(t, CUT.PRINTS, CUT.RATIO) ? prog(t, T.studied - 0.1, T.gave - 0.2) : -1;
+  SCAN_P.set(sp >= 0 ? fadeIO(t, CUT.PRINTS + 0.1, CUT.RATIO, 0.3) : 0); SCAN_P.g.position.set(0, 70 - 150 * Math.max(0, sp), 42); SCAN_P.g.rotation.z = 0;
+  SCAN_R.set(inRatio ? ep(t, T.stripe - 0.3, T.stripe + 0.2, ease.inOut) : 0);
+  SCAN_M.set(inTwist ? 0.9 * fadeIO(t, CUT.TWIST + 0.3, CUT.END + 0.3, 0.3) : 0); SCAN_M.g.position.set(0, clamp(sweepY, -CARD_H / 2 - 30, CARD_H / 2 + 30), CARD_T + 1.5);
+  /* the phone screen */
+  if (inHook) vf({ lock: ep(t, T.read - 0.2, T.read + 0.15, ease.inOut), link: ep(t, T.read + 0.2, T.read + 0.6, ease.inOut), stain: true });
+  /* light: a touch dimmer in the story, the card keeps its glow */
+  HEMI.intensity = 0.9;
+}
+
+/* ---------------- HUD: few, small labels */
+const Kd = (k, v, c, o) => ({ k, v, c, ...o });
+const ROWBITS = QR.bits[9].slice(0, 13).split('').join(' ');
+function tags(t) {
+  hud.begin();
+  const H = (key, o) => hud.card(key, o, t), CH = (key, o) => hud.chip(key, o, t);
+  const G = '#d9d5d1';
+  // hook
+  CH('stain', { s: 'Coffee stain', w: QW(7, -9, 1), x: 40, y: 40, rel: true, a: T.smudge + 0.2, b: T.busy - 0.1, c: G });
+  // bits
+  H('bits', Kd('Dark = 1 · light = 0', ROWBITS, O, { x: 22, y: 172, a: T.ones - 0.1, b: T.spelling - 0.1 }));
+  H('url', Kd('This code spells', 'instagram.com/how.its.engineered', O, { x: 22, y: 172, a: T.spelling, b: CUT.FIND }));
+  // the corner squares
+  CH('ctl', { s: 'Corner square', w: CELL(3, 3, 1), x: -30, y: -70, rel: true, a: T.corner - 0.05, b: T.where - 0.1, c: O });
+  H('where', Kd('Three corner squares', 'Where it is · how it’s turned', O, { x: 22, y: 172, a: T.where - 0.1, b: T.but - 0.1 }));
+  CH('else', { s: 'Everything else on the menu', w: QW(-40, 82, 1), x: 20, y: -50, rel: true, a: T.everything - 0.1, b: CUT.STR, c: G });
+  // straighten
+  H('flat', Kd('Tilted photo', 'Straightened, then read', O, { x: 22, y: 172, a: T.straightens - 0.1, b: CUT.BACK }));
+  // backup
+  H('ec', Kd('Backup squares', 'Recovery data for missing parts', QEC, { x: 22, y: 172, a: T.backup - 0.1, b: T.rebuilt - 0.1 }));
+  H('reb', Kd('Smudged squares', 'Rebuilt · up to ~30%', O, { x: 22, y: 172, a: T.rebuilt - 0.1, b: T.damage - 0.15 }));
+  H('dmg', Kd('Damaged corner square', 'Scan can fail', RED, { x: 22, y: 172, a: T.damage - 0.05, b: CUT.STORY }));
+  // story
+  CH('go', { s: 'A Go board', w: [GO.g.position.x - 30, GO.g.position.y + 20, 16], x: -150, y: -60, rel: true, a: T.go - 0.25, b: CUT.PRINTS, c: G });
+  CH('fl', { s: 'Flyers', w: [PRINTS.position.x - 62, PRINTS.position.y + 30, 2], x: -60, y: -80, rel: true, a: T.flyers - 0.1, b: CUT.RATIO, c: G });
+  CH('mg', { s: 'Magazines', w: [PRINTS.position.x + 8, PRINTS.position.y + 30, 3], x: -20, y: -110, rel: true, a: T.magazines - 0.1, b: CUT.RATIO, c: G });
+  CH('bx', { s: 'Boxes', w: [PRINTS.position.x + 82, PRINTS.position.y + 18, 40], x: 10, y: -80, rel: true, a: T.boxes - 0.1, b: CUT.RATIO, c: G });
+  H('ratio', Kd('Stripe widths', '1 : 1 : 3 : 1 : 1', O, { x: 22, y: 172, a: T.stripe - 0.1, b: CUT.TWIST, big: true }));
+  CH('rare', { s: 'Least common in print', w: CELL(6, 3, 1), x: 20, y: 60, rel: true, a: T.least - 0.1, b: CUT.TWIST, c: O });
+  // twist
+  CH('ign', { s: 'Menu text: no match', w: QW(-30, 74, 1), x: 10, y: -60, rel: true, a: T.trick + 0.3, b: CUT.END + 0.4, c: G });
+  CH('hit', { s: 'Corner squares: match', w: CELL(QN - 4, 3, 1), x: 30, y: 40, rel: true, a: T.studying - 0.1, b: CUT.END + 0.4, c: O });
+  hud.end();
+}
+
+/* ---------------- reel config */
+const STONE = '<svg width="38" height="38" viewBox="0 0 40 40" fill="none" stroke="#ff6a1f" stroke-width="2"><path d="M6 8h28M6 20h28M6 32h28M8 6v28M20 6v28M32 6v28" stroke-opacity="0.45"/><circle cx="20" cy="20" r="5.5" fill="#ff6a1f"/><circle cx="32" cy="8" r="5.5" fill="#161413"/></svg>';
+const REEL = {
+  shots: [{ t: 0, f: [0, 0, 0], s: 1, a: -0.7, e: 0.6, sy: 480 }], world, tags,
+  tools: [{ a: T.hara - 1.0, b: T.studied - 0.25, top: 174, svg: STONE, name: 'Japan · 1994', sub: 'DENSO RELEASES THE QR CODE', src: 'MASAHIRO HARA’S TEAM · SOURCE: DENSO WAVE' }],
+  state: {
+    a: 0.25, b: CUT.END + 0.3,
+    at(t) {
+      const G = '#9e9995';
+      if (t < T.read) return ['Scanning', G];
+      if (t < CUT.BITS) return ['Code found', O];
+      if (t < CUT.FIND) return ['Reading', G];
+      if (t < CUT.STR) return [t < T.corner ? 'Searching' : 'Corners found', t < T.corner ? G : O];
+      if (t < CUT.BACK) return [t < T.reads ? 'Straightening' : 'Reading', G];
+      if (t < T.damage) return [t < T.rebuilt ? 'Smudged' : 'Rebuilt', t < T.rebuilt ? AMB : O];
+      if (t < CUT.STORY) return ['No code found', RED];
+      if (t < CUT.RATIO) return ['Since 1994', G];
+      if (t < CUT.TWIST) return ['Corner square', O];
+      return [t < T.studying ? 'Scanning' : 'Code found', t < T.studying ? G : O];
+    },
+  },
+  bad: [],
+  good: [],
+  tiles: [['◉', 'FACE ID'], ['☝', 'TOUCHSCREEN'], ['⌖', 'GPS']],
+  end: CUT.END, follow: T.follow,
+  cover: { k: 'HOW IT WORKS', t: 'QR CODE', at: T.where + 0.2, zoom: 1.0, dy: 40 },
+};
+</script>
+<script src="lib/overlay.js"></script>
+<script>
+{ const r0 = window.ready; window.ready = async () => { await r0(); ctexRedraw(); vfKey = null; PH.s._k = null; }; }
+// the state badge hides while the story card is up (they share the top-left)
+{ const r = window.render; window.render = (t) => { r(t); if (REEL.state.el && t > REEL.tools[0].a && t < REEL.tools[0].b) REEL.state.el.style.opacity = Math.min(+REEL.state.el.style.opacity, 1 - window01(t, REEL.tools[0].a - 0.2, REEL.tools[0].b + 0.3, 0.3)); }; }
+if (/cover/.test(location.hash)) { const c = document.createElement('style'); c.textContent = '#hud, #state { display: none !important; } #stage { background: #070707 !important; } #ct .t { font-weight: 700 !important; font-size: 54px !important; letter-spacing: -1.6px !important; background: none !important; color: #f4f3f2 !important; -webkit-text-fill-color: #f4f3f2 !important; filter: none !important; } #ct .k { color: #ff6a1f !important; font-weight: 600 !important; }'; document.head.appendChild(c); }
+</script>
+<script src="../_ember/play.js"></script>
+</body>
+</html>

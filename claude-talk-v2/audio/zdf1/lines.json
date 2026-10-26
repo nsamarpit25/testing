@@ -1,0 +1,44 @@
+[
+ {
+  "say": "Twenty minutes of code.",
+  "shot": "WIDE",
+  "caps": [
+   "Twenty minutes",
+   "of code."
+  ],
+  "start": 0.25,
+  "end": 1.971
+ },
+ {
+  "say": "Every single day.",
+  "shot": "HANDS",
+  "caps": [
+   "Every single",
+   "day."
+  ],
+  "start": 2.091,
+  "end": 3.811
+ },
+ {
+  "say": "For a whole year.",
+  "shot": "LAPSE",
+  "caps": [
+   "For a",
+   "whole year."
+  ],
+  "gap": 1.6,
+  "start": 3.931,
+  "end": 5.572
+ },
+ {
+  "say": "And now she's shipped her own app.",
+  "shot": "CU",
+  "caps": [
+   "And now",
+   "she's shipped",
+   "her own app."
+  ],
+  "start": 7.172,
+  "end": 9.252
+ }
+]

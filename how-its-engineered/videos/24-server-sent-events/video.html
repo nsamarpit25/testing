@@ -1,0 +1,199 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- 24 Server-sent events, in the ember style. World: an AI SERVER box and YOUR phone, with a cable between them.
+     Hook: the answer streams onto the phone two words at a time. Then the no-streaming version: the server writes for
+     seconds (progress bar), the phone stares at a blank bubble, and the whole answer lands at once. With SSE the app asks
+     once, the reply stays open, and each chunk arrives as an event (the code card shows the data: lines). One way only:
+     a send-back up the stream is blocked, and a separate new request carries it. A news-ticker replay ends it.
+     Beats come from voice/words.json via at(). Shared pieces live in ../_ember/. -->
+<link rel="stylesheet" href="../_ember/fonts.css">
+<link rel="stylesheet" href="../_ember/reel.css">
+</head>
+<body>
+<div id="stage">
+  <div id="world">
+    <canvas id="cv" width="1080" height="1920"></canvas>
+    <div class="layer" id="lbls"></div>
+  </div>
+</div>
+<script src="../../tools/lib.js"></script>
+<script src="voice/words.js"></script>
+<script src="../_ember/three.js"></script>
+<script src="../_ember/world.js"></script>
+<script src="../_ember/base.js"></script>
+<script>
+for (let i = 0; i < 16; i++) ORBS.push({ core: orbSprite(9), glow: orbSprite(34), trail: [0, 1, 2, 3, 4].map(() => orbSprite(10)) });
+
+/* ---------------- beats */
+const T = {
+  asked: at('asked'), question: at('question'), answer: at('answer'), appeared: at('appeared'), typing: at('typing'), live: at('live'),
+  how: at('how'), sending: at('sending'), if1: at('if'), waited: at('waited'), whole: at('whole'), blank: at('blank'), seconds: at('seconds'),
+  with_: at('with'), sent: at('sent'), events: at('events'), asks: at('asks'), keeps: at('keeps'), reply: at('reply'), open: at('open'),
+  every: at('every'), few: at('few'), sends: at('sends'), right: at('right'), event: at('event'), adds: at('adds'), screen2: at('screen', 2),
+  only: at('only'), flows: at('flows'), way: at('way'), send2: at('send', 2), back: at('back'), makes: at('makes'), request: at('request'),
+  news: at('news'), ticker: at('ticker'), tune: at('tune'), headlines: at('headlines'), rolling: at('rolling'),
+  openai: at('openais'), streams: at('streams'), browsers: at('browsers'), ifv: at('if', 2), follow: at('follow'),
+};
+const CUT = { BLANK: T.if1 - 0.25, SSE: T.with_ - 0.3, ONEWAY: T.only - 0.3, TICK: T.news - 0.35, TOOLS: T.openai - 0.3, END: T.ifv - 0.15 };
+
+/* ---------------- layout */
+const SRV = [-95, 40], YOU = [120, 20];
+const P_SY = [[SRV[0] + 62, SRV[1], 105], [YOU[0] - 56, YOU[1], 105]], P_YS = [...P_SY].reverse();
+const P_NR = [[YOU[0] - 56, YOU[1] - 34, 40], [SRV[0] + 62, SRV[1] - 34, 40]];      // a separate, new request
+const MID = [(SRV[0] + YOU[0]) / 2 - 15, 30, 0];
+const TRIP = 0.4;
+const ANS = ['DNS is', 'like the', "internet's", 'phone book.', 'It turns', 'names into', 'addresses.'];
+const HOOK_CH = ANS.map((_, k) => T.question + 0.25 + k * ((T.live - T.question - 0.1) / ANS.length));   // hook: streaming
+const SSE_CH = ANS.map((_, k) => T.every + 0.1 + k * ((T.screen2 - T.every - 0.3) / ANS.length));         // explained: events
+const HEADS = [['▸ rain at 5 pm', T.news + 0.1], ['▸ train delayed', T.tune], ['▸ score 2–1', T.headlines]];
+const WAIT = [T.if1 + 0.2, T.seconds + 0.15];                                         // no streaming: writing the whole thing
+const SENDBACK = T.send2 - 0.1, NEWREQ = T.makes;
+
+/* ---------------- camera */
+const SHOTS = [
+  { t: 0, d: 0, f: [12, 30, 85], s: 1.36, a: -0.38, e: 0.56, sy: 470 },
+  { t: CUT.BLANK, d: 1.0, f: [12, 30, 85], s: 1.32, a: -0.42, e: 0.58, sy: 480 },
+  { t: CUT.SSE, d: 1.0, f: [15, 30, 75], s: 1.3, a: -0.42, e: 0.58, sy: 480 },
+  { t: CUT.ONEWAY, d: 1.0, f: [15, 20, 70], s: 1.26, a: -0.44, e: 0.6, sy: 480 },
+  { t: CUT.TICK, d: 1.0, f: [18, 30, 85], s: 1.34, a: -0.4, e: 0.58, sy: 470 },
+  { t: CUT.TOOLS, d: 1.0, f: [15, 30, 75], s: 1.1, a: -0.42, e: 0.6, sy: 580 },
+  { t: CUT.END, d: 2.0, f: [15, 30, 75], s: 1.04, a: -0.42, e: 0.6, sy: 570 },
+];
+const KICKS = [[T.appeared, 0.03], [T.live, 0.03], [T.how, 0.03], [T.blank, 0.04], [T.seconds, 0.04], [T.sent, 0.05], [T.open, 0.03],
+  [T.sends, 0.03], [T.event, 0.04], [T.flows, 0.03], [T.back, 0.05], [T.request, 0.03], [T.ticker, 0.03], [T.openai, 0.03], [T.browsers, 0.03]];
+const SHAKES = [[T.back, 2, 0.25]];
+
+/* ---------------- build the world */
+const label = (g, W_, H_, txt, col, size, y = H_ / 2) => { g.fillStyle = col; g.font = `800 ${size}px Mono`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.shadowColor = col; g.shadowBlur = 12; g.fillText(txt, W_ / 2, y); g.shadowBlur = 0; g.textAlign = 'left'; };
+const mk = (p, w, d, h, col, k = 5) => { const b = emberBox(p[0], p[1], w, d, h, col); const f = decal(w, h, 'front', k, b.g); f.m.position.set(0, -d / 2 - 0.3, h / 2); return { b, f, pl: pool(p[0], p[1], w * 1.3, col), p }; };
+const srv = mk(SRV, 124, 70, 165, O, 4), you = mk(YOU, 112, 20, 190, O, 4);
+const rY = road(P_SY, OK), rN = road(P_NR, O2);
+
+function wrapText(g, words, x, y, maxW, lh) {
+  let ln = '', yy = y; const out = [];
+  words.join(' ').split(' ').forEach((w) => { const t2 = ln ? ln + ' ' + w : w; if (g.measureText(t2).width > maxW && ln) { out.push(ln); ln = w; } else ln = t2; });
+  if (ln) out.push(ln);
+  out.forEach((l) => { g.fillText(l, x, yy); yy += lh; });
+  return yy;
+}
+// the chat on your phone: your question, then the answer as far as it has arrived
+function phoneDraw(g, W_, H_, col, q, ans, caret, st, stCol, heads) {
+  g.strokeStyle = col + 'aa'; g.lineWidth = 6; rrect(g, 12, 12, W_ - 24, H_ - 24, 34); g.stroke();
+  label(g, W_, H_, heads ? 'LIVE NEWS' : 'AI CHAT', col, 44, 62);
+  g.font = '800 34px Mono'; g.textBaseline = 'middle';
+  if (heads) { heads.forEach((h, i) => { g.fillStyle = OK; g.fillText(h, 34, 150 + i * 70); }); }
+  else {
+    if (q) { const w = g.measureText(q).width + 34; g.strokeStyle = O2; g.lineWidth = 5; rrect(g, W_ - 26 - w, 110, w, 64, 18); g.stroke(); g.fillStyle = O2; g.fillText(q, W_ - 26 - w + 17, 143); }
+    if (ans != null) {
+      g.strokeStyle = (ans.length ? OK : GR) + '99'; g.lineWidth = 5; rrect(g, 26, 196, W_ - 70, 330, 18); g.stroke();
+      g.fillStyle = OK; const y = wrapText(g, ans, 46, 240, W_ - 110, 46);
+      if (!ans.length) { g.fillStyle = GR; g.fillText(caret ? '…' : '', 46, 240); }
+      else if (caret) { g.fillStyle = OK; g.fillRect(46 + 0, y - 18, 18, 36); }
+    }
+  }
+  if (st) label(g, W_, H_, st, stCol || col, 38, H_ - 60);
+}
+function srvDraw(g, W_, H_, col, prog_, st, stCol) {
+  label(g, W_, H_, 'AI SERVER', col, 46, H_ * 0.1);
+  for (let k = 0; k < 3; k++) { const y = H_ * 0.2 + k * H_ * 0.11; g.strokeStyle = col + '88'; g.lineWidth = 4; rrect(g, 24, y, W_ - 48, H_ * 0.07, 6); g.stroke(); }
+  if (prog_ != null) { const y = H_ * 0.6, w = W_ - 48; g.fillStyle = AMB + '33'; rrect(g, 24, y, w, 34, 8); g.fill(); g.fillStyle = AMB; rrect(g, 24, y, Math.max(8, w * prog_), 34, 8); g.fill(); label(g, W_, H_, 'WRITING…', AMB, 38, y + 74); }
+  if (st) label(g, W_, H_, st, stCol || col, 38, H_ * 0.9);
+}
+
+/* ---------------- the world, frame by frame */
+function world(t) {
+  const thru = (pts, t0, dur, col, size = 1) => { const q = (t - t0) / dur; if (q > -0.02 && q < 1.1) orb(pts, clamp(q), col, clamp(q / 0.08) * (1 - clamp((q - 1) / 0.1)), size); };
+  const q0 = ease.back(prog(t, 0.05, 0.4));
+  const got = (list) => list.filter((c) => t >= c + TRIP).length;
+  const streaming = (t > HOOK_CH[0] && t < HOOK_CH[6] + TRIP) || (t > SSE_CH[0] - 0.2 && t < CUT.TOOLS);
+  const waiting = t > WAIT[0] && t < WAIT[1];
+  const sseOn = t > T.keeps;
+
+  // the server
+  const sCol = streaming ? mixHex(O, OK, 0.35) : waiting ? mixHex(O, AMB, 0.4) : O;
+  srv.b.g.visible = q0 > 0.01; srv.b.g.scale.set(1, 1, Math.max(0.01, q0));
+  srv.b.setLook(sCol, 1.2 + 1.6 * Math.max(...[...HOOK_CH, ...SSE_CH].map((c) => 0.6 * pulse(t, c)), pulse(t, WAIT[1])), 1);
+  const sSt = waiting ? '' : streaming ? 'STREAMING' : '';
+  srv.f.m.visible = srv.b.g.visible; srv.f.draw((g, W_, H_) => srvDraw(g, W_, H_, sCol, waiting ? prog(t, WAIT[0], WAIT[1]) : null, sSt, OK)); srv.pl.set(sCol, 0.5 * q0);
+
+  // your phone: what the chat shows in each section
+  let q = 'what is DNS?', ans = null, caret = false, st = '', stCol = OK, heads = null;
+  if (t < CUT.BLANK) { const n = got(HOOK_CH); ans = ANS.slice(0, n); caret = n < ANS.length && t > HOOK_CH[0]; st = n ? 'WORD BY WORD' : ''; }
+  else if (t < CUT.SSE) { const done = t > WAIT[1] + TRIP; ans = done ? ANS : []; caret = !done; st = done ? 'ALL AT ONCE' : 'BLANK…'; stCol = done ? OK : GR; }
+  else if (t < CUT.TICK) { q = t > T.asks - 0.1 ? 'what is DNS?' : ''; const n = got(SSE_CH); ans = q ? ANS.slice(0, n) : null; caret = q && n < ANS.length; st = n ? `${n} EVENTS` : sseOn ? 'LINE OPEN' : ''; }
+  else { heads = HEADS.filter((h) => t >= h[1] + TRIP).map((h) => h[0]); st = 'TUNED IN ONCE'; }
+  const yCol = streaming || (t > WAIT[1] + TRIP && t < CUT.SSE) ? mixHex(O, OK, 0.4) : O;
+  you.b.g.visible = q0 > 0.01; you.b.g.scale.set(1, 1, Math.max(0.01, q0));
+  you.b.setLook(yCol, 1.2 + 1.5 * Math.max(...[...HOOK_CH, ...SSE_CH, ...HEADS.map((h) => h[1])].map((c) => 0.6 * pulse(t, c + TRIP)), pulse(t, WAIT[1] + TRIP)), 1);
+  you.f.m.visible = you.b.g.visible; you.f.draw((g, W_, H_) => phoneDraw(g, W_, H_, yCol, q, ans, caret && Math.floor(t * 3) % 2 === 0 || (ans && !ans.length && caret), st, stCol, heads)); you.pl.set(yCol, 0.5 * q0);
+
+  // the cable: the reply that stays open
+  const hookA = window01(t, HOOK_CH[0] - 0.4, CUT.BLANK, 0.2) * 0.8;
+  const waitA = window01(t, T.if1 - 0.1, WAIT[1] + TRIP + 0.3, 0.15) * 0.55;
+  const sseA = sseOn ? ep(t, T.keeps, T.keeps + 0.5) : 0;
+  rY.set(1, waiting ? AMB : OK, Math.max(hookA, waitA, sseA), t);
+  thru(P_YS, T.asked, TRIP, O2); thru(P_YS, T.if1 - 0.1, TRIP, O2); thru(P_YS, T.asks, TRIP, O2);
+  HOOK_CH.forEach((c) => thru(P_SY, c, TRIP, OK, 0.75));
+  SSE_CH.forEach((c) => thru(P_SY, c, TRIP, OK, 0.8));
+  HEADS.forEach((h) => thru(P_SY, h[1], TRIP, OK, 0.8));
+  thru(P_SY, WAIT[1], TRIP, OK, 1.4);                                                  // the whole answer, all at once
+  if (t > T.sent - 0.1 && t < T.sent + 0.5) ripple(t, T.sent, MID[0], MID[1], 100, OK, 110, 0.7);
+  // one way: a send-back up the stream is blocked; a new request carries it instead
+  { const qq = (t - SENDBACK) / 0.5; if (qq > 0 && qq < 1.3) orb(P_YS, Math.min(qq, 0.45), qq > 0.45 ? RED : O2, 1 - clamp((qq - 0.9) / 0.4), 0.9); }
+  ripple(t, SENDBACK + 0.25, (P_SY[0][0] + P_SY[1][0]) / 2 + 20, P_SY[0][1] - 8, 100, RED, 60, 0.6);
+  rN.set(ep(t, NEWREQ - 0.2, NEWREQ + 0.3), O2, 0.75 * window01(t, NEWREQ - 0.25, CUT.TICK + 0.2, 0.2), t);
+  thru(P_NR, NEWREQ + 0.15, 0.5, O2);
+}
+
+/* ---------------- world tags */
+function tags(t) {
+  const S_T = [SRV[0], SRV[1], 205], Y_T = [YOU[0], YOU[1], 225], BLK = [(P_SY[0][0] + P_SY[1][0]) / 2 + 20, P_SY[0][1] - 8, 105];
+  const big = (c) => `font-size:15px;padding:9px 13px;letter-spacing:1px;border-color:${c}`;
+  tag('wbw', `<span style="color:${OK}">ARRIVING WORD BY WORD</span>`, `border-color:${OK}88`, Y_T, t, T.appeared, T.how - 0.05);
+  tag('how', `<span style="color:${AMB}">ONE QUESTION · MANY PIECES?</span>`, big(AMB), [SRV[0] + 30, SRV[1], 205], t, T.how, CUT.BLANK + 0.2);
+  tag('wait', `<span style="color:${AMB}">WRITING THE WHOLE ANSWER…</span>`, big(AMB), [SRV[0] + 30, SRV[1], 205], t, T.waited, WAIT[1]);
+  tag('blank', `<span style="color:${GR}">BLANK SCREEN</span>`, '', Y_T, t, T.blank - 0.1, WAIT[1] + TRIP);
+  tag('once', `<span style="color:${WH}">…THEN ALL AT ONCE</span>`, '', Y_T, t, WAIT[1] + TRIP, CUT.SSE + 0.2);
+  tag('open', `<span style="color:${OK}">REPLY STAYS OPEN</span>`, big(OK), MID, t, T.keeps + 0.1, T.every - 0.05, 70);
+  tag('evt', `<span style="color:${OK}">EACH PIECE = ONE EVENT</span>`, big(OK), MID, t, T.event - 0.1, CUT.ONEWAY + 0.2, 70);
+  tag('down', `<span style="color:${OK}">ONE WAY: SERVER → YOU</span>`, big(OK), MID, t, T.flows, NEWREQ - 0.05, 70);
+  tag('blk', `<span style="color:${RED}">✕ NOT UP THE STREAM</span>`, big(RED), BLK, t, SENDBACK + 0.3, NEWREQ + 0.2, -95);
+  tag('nr', `<span style="color:${O2}">NEW REQUEST ↑</span>`, `border-color:${O2}88`, [MID[0], MID[1] - 40, 0], t, NEWREQ + 0.1, CUT.TICK + 0.2, 30);
+  tag('tick', `<span style="color:${OK}">TUNE IN ONCE · NEWS KEEPS COMING</span>`, big(OK), [MID[0], MID[1], 230], t, T.tune - 0.1, CUT.TOOLS + 0.4);
+}
+
+/* ---------------- reel config */
+const svgAI = `<svg width="46" height="46" viewBox="0 0 100 100" fill="none" stroke="#E8E2DA" stroke-width="7" stroke-linejoin="round"><circle cx="50" cy="50" r="36"/><path d="M50 22 L56 44 L78 50 L56 56 L50 78 L44 56 L22 50 L44 44 Z"/></svg>`;
+const svgBrowser = `<svg width="46" height="46" viewBox="0 0 100 100" fill="none" stroke="#7CF29A" stroke-width="7" stroke-linejoin="round"><rect x="10" y="18" width="80" height="64" rx="8"/><path d="M10 36 H90"/><circle cx="22" cy="27" r="2"/><circle cx="32" cy="27" r="2"/></svg>`;
+const REEL = {
+  shots: SHOTS, kicks: KICKS, shakes: SHAKES, world, tags,
+  code: [
+    [T.if1 - 0.15, T.with_ - 0.35, 'chat.js', 'no streaming', [[0, 'WAITING', AMB], [WAIT[1], 'DONE', OK]],
+      [['GET /answer'], ['… server writes it all first', T.waited], ['← 200  (whole answer)', WAIT[1]]],
+      [[T.waited, 2, '⏳ seconds', 'amb'], [WAIT[1], 3, 'finally', 'bad']]],
+    [T.with_ - 0.3, CUT.TICK - 0.1, 'chat.js', 'server-sent events', [[0, 'CONNECTING', AMB], [T.keeps, 'OPEN', OK]],
+      [["es = new EventSource('/answer')"], ['es.onmessage = e => add(e.data)', T.every - 0.3], ['data: DNS is', SSE_CH[0] + TRIP], ['data: like the', SSE_CH[1] + TRIP], ["data: internet's", SSE_CH[2] + TRIP]],
+      [[T.keeps, 1, '✓ open', 'good'], [T.every, 2, 'listening', 'amb'], [SSE_CH[0] + TRIP, 3, '+ added', 'good'], [SSE_CH[1] + TRIP, 4, '+ added', 'good'], [SSE_CH[2] + TRIP, 5, '+ added', 'good']], 'type'],
+  ],
+  hl: /\b(es|EventSource|onmessage|add|data|GET)\b/g,
+  tools: [
+    { a: T.openai - 0.1, b: CUT.END, svg: svgAI, name: "OpenAI's API", sub: 'stream: true → SERVER-SENT EVENTS', top: 150 },
+    { a: T.browsers - 0.1, b: CUT.END, svg: svgBrowser, name: 'Your browser', sub: 'EVENTSOURCE · BUILT IN', top: 262 },
+  ],
+  slams: [
+    { a: T.with_ - 0.15, b: T.asks - 0.05, text: 'server-sent events', sub: 'ASK ONCE · THE REPLY KEEPS COMING', size: 54 },
+  ],
+  bad: ['blank'],
+  good: ['once', 'event', 'adds'],
+  tiles: [['≋', 'SERVER-SENT<br>EVENTS'], ['⇆', 'LONG<br>POLLING'], ['⇄', 'WEB<br>SOCKETS']],
+  end: CUT.END, follow: T.follow,
+  cover: { t: 'SERVER-SENT EVENTS', at: SSE_CH[4] + 0.3, zoom: 0.95, dy: 40 },
+  flash: (t) => 0.06 * pulse(t, T.sent, 7) + 0.06 * pulse(t, WAIT[1] + TRIP, 7),
+};
+</script>
+<script src="../_ember/overlay.js"></script>
+<script src="../_ember/play.js"></script>
+</body>
+</html>

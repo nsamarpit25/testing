@@ -1,0 +1,15 @@
+== output/ep15_takes/take1.wav  68.7s
+   speakers: line 4 (Claude) sounds like the other voice (167 Hz); line 6 (Claude) sounds like the other voice (174 Hz); line 10 (Claude) sounds like the other voice (190 Hz); line 16 (Claude) sounds like the other voice (200 Hz)
+   gemini words: line 1: 'claude' -> ''; line 1: 'cors' -> 'course'; line 2: 'board' -> 'bore'; line 4: 'three thousand' -> ''; line 4: 'eight thousand' -> ''; line 8: 'preflight' -> 'pre flight'; line 12: 'guests' -> 'guess'
+   whisper words: line 1: 'cors' -> 'cores'; line 4: 'localhost' -> 'local host'; line 4: 'three thousand' -> ''; line 4: 'eight thousand' -> ''; line 8: 'preflight' -> 'pre flight'; line 13: 'loaded' -> 'looted'
+   pitch: 1:258 2:156 3:327 4:167 5:177 6:174 7:254 8:162 9:188 10:190 11:264 12:163 13:222 14:152 15:256 16:200
+== output/ep15_takes/take2.wav  56.8s
+   speakers: OK
+   gemini words: line 1: 'claude' -> 'clyde'; line 1: 'cors' -> 'course'; line 4: 'three thousand' -> ''; line 4: 'eight thousand' -> ''; line 8: 'preflight' -> 'pre flight'; line 9: 'and' -> 'in'; line 13: 'page's' -> 'pages'
+   whisper words: line 1: 'claude' -> 'clyde'; line 1: 'cors' -> 'course'; line 4: 'three thousand' -> ''; line 4: 'eight thousand' -> ''
+   pitch: 1:219 2:116 3:291 4:130 5:254 6:151 7:229 8:136 9:250 10:133 11:235 12:124 13:208 14:150 15:235 16:152
+== output/ep15_takes/take3.wav  59.0s
+   speakers: line 5 (Cleo) sounds like the other voice (165 Hz)
+   gemini words: line 1: 'claude' -> ''; line 1: 'cors' -> 'course'; line 4: '' -> 'is'; line 4: 'three thousand' -> ''; line 4: 'eight thousand' -> ''; line 8: 'preflight' -> 'pre flight'; line 12: 'add' -> ''
+   whisper words: line 1: 'claude' -> ''; line 1: 'gatekeeping' -> 'geekkeeping'; line 1: 'cors' -> 'cores'; line 4: '' -> 'is'; line 4: 'three thousand' -> ''; line 4: 'eight thousand' -> ''; line 12: 'add' -> 'at'
+   pitch: 1:239 2:129 3:320 4:128 5:165 6:129 7:232 8:142 9:250 10:134 11:256 12:131 13:200 14:142 15:250 16:158

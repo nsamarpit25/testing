@@ -1,0 +1,77 @@
+{
+ "prompt": "AUDIO PROFILE\nCleo: a young woman software developer in her mid twenties. Soft, natural, conversational voice. Real and understated, never cartoonish.\nClaude: a young man's voice. Calm, warm and gently dry-witted, never theatrical. Few words.\n\nTHE SCENE, END TO END\nEvening at her desk, lit by her monitor. Cleo launched her portfolio website, but everyone says the link is broken; it works perfectly for her. Claude, a small companion on her desk, asks to see the link: it starts with localhost, so it only ever opens her own computer.\n\nLINE BY LINE\n1. Cleo, bewildered, a bit personal.\n2. Claude, calm curiosity.\n3. Cleo, disappointed.\n4. Claude, practical.\n5. Cleo, defensive precision.\n6. Claude, soft emphasis on 'this'.\n7. Cleo, earnest.\n8. Claude, completely straight.\n9. Cleo, offering stronger evidence.\n10. Claude, neutral.\n11. Cleo, fond, then tired.\n12. Claude, quiet suspicion.\n13. Cleo, reads it without concern.\n14. Claude, clear, gentle explanation.\n15. Cleo, understanding arrives halfway.\n16. Claude, warm confirmation.\n17. Cleo, almost a whisper.\n18. Claude, calm marketing assessment.\n\nDIRECTOR'S NOTES\nA natural, conversational pace, like two friends at a desk; not rushed, not slow. Let the jokes land with a short beat before the dry lines. Leave a short beat at every [medium pause] and at every \"...\"; never read the bracketed tags aloud. Speak every word of the dialogue exactly as written, nothing added.",
+ "turns": [
+  [
+   "Cleo",
+   "Claude, my website hates visitors."
+  ],
+  [
+   "Claude",
+   "What happens?"
+  ],
+  [
+   "Cleo",
+   "Everyone says the link is broken."
+  ],
+  [
+   "Claude",
+   "Does it open here?"
+  ],
+  [
+   "Cleo",
+   "Perfectly. I've checked six times. Everything works."
+  ],
+  [
+   "Claude",
+   "On this computer?"
+  ],
+  [
+   "Cleo",
+   "In two different browsers. I'm being scientific."
+  ],
+  [
+   "Claude",
+   "Very thorough."
+  ],
+  [
+   "Cleo",
+   "I even sent it to my sister."
+  ],
+  [
+   "Claude",
+   "What did she say?"
+  ],
+  [
+   "Cleo",
+   "\"Maybe the internet's down.\" She's trying to be supportive."
+  ],
+  [
+   "Claude",
+   "Show me the link."
+  ],
+  [
+   "Cleo",
+   "It starts with localhost."
+  ],
+  [
+   "Claude",
+   "That means the visitor's own computer."
+  ],
+  [
+   "Cleo",
+   "So hers is looking for my website... on hers?"
+  ],
+  [
+   "Claude",
+   "Exactly."
+  ],
+  [
+   "Cleo",
+   "I announced this on LinkedIn."
+  ],
+  [
+   "Claude",
+   "Your target audience is you."
+  ]
+ ]
+}

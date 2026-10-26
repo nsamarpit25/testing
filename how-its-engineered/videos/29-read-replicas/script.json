@@ -1,0 +1,25 @@
+{
+ "topic": "Read replicas",
+ "lines": [
+  [{"say": "Your app gets popular, and your database, where all your data lives, can't keep up. But look at what it's doing. Most of it is reading.",
+    "show": "Your app gets *popular,* and your database, where all your data lives, [can't keep up.] But look at what it's doing. Most of it is *reading.*"}],
+  [{"say": "Loading a feed, opening a profile, searching. Those read data. Posting writes new data. Most apps read far more than they write.",
+    "show": "Loading a feed, opening a profile, searching. Those *read* data. Posting *writes* new data. Most apps [read far more] than they write."}],
+  [{"say": "So you add read replicas: copies of your database that get every change from the main one, called the primary.",
+    "show": "So you add [read replicas:] copies of your database that get every *change* from the main one, called the [primary.]"}],
+  [{"say": "Every write still goes to the primary. It sends each change onto the copies.",
+    "show": "Every *write* still goes to the [primary.] It sends each change onto the *copies.*"}],
+  [{"say": "Reads are spread across the copies. Need more reads? Add another copy.",
+    "show": "Reads are *spread* across the copies. Need more reads? [Add another copy.]"}],
+  [{"say": "The catch: copying takes a moment, so a replica can be a little behind. That's called replication lag.",
+    "show": "The catch: copying takes a moment, so a replica can be a little *behind.* That's called [replication lag.]"}],
+  [{"say": "You post a comment, refresh, and the copy you read from doesn't have it yet. The fix: right after someone writes, read their own data from the primary for a few seconds.",
+    "show": "You post a comment, refresh, and the copy you read from [doesn't have it yet.] The fix: right after someone *writes,* read their own data from the [primary] for a few seconds."}],
+  [{"say": "Like students copying a teacher's board. You ask a student, from their notes, so the teacher keeps writing. But a student might be a line behind.",
+    "show": "Like students copying a [teacher's board.] You ask a student, from their *notes,* so the teacher keeps *writing.* But a student might be a [line behind.]"}],
+  [{"say": "Replicas help with reads, not writes. Every write still lands on that one primary.",
+    "show": "Replicas help with *reads,* not writes. Every write still lands on that [one primary.]"}],
+  [{"say": "If you're a vibe coder, follow for the system design your AI skipped.",
+    "show": "If you're a vibe coder, follow for the system design your AI [skipped.]"}]
+ ]
+}

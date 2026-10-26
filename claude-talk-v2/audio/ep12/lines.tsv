@@ -1,0 +1,17 @@
+cleo	Claude, I've been centering this box for two hours.
+claude	Where is it now?
+cleo	Top left. Exactly where it started.
+claude	What have you tried?
+cleo	Margin auto. Text align center. Praying.
+claude	Anything work?
+cleo	Praying moved it three pixels.
+claude	Impressive.
+cleo	Then I tried position absolute. It left the screen.
+claude	Where did it go?
+cleo	I don't know. It's just gone. Like my evening.
+claude	Make the parent a grid. Place items center.
+cleo	Okay... grid... place items center... it's centered.
+claude	Two lines.
+cleo	Two hours. Two lines. Great.
+cleo	Oh no. The designer wants it slightly to the left.
+claude	I'll start praying.

@@ -1,0 +1,58 @@
+[
+ {
+  "li": 0,
+  "pi": 0,
+  "say": "A stranger opened everyone's orders in your food app, without logging in. One service forgot one check.",
+  "show": "A *stranger* opened [everyone's orders] in your food app, without logging in. One service [forgot one check.]",
+  "start": 0.0,
+  "end": 6.06
+ },
+ {
+  "li": 1,
+  "pi": 0,
+  "say": "Big apps run separate services: orders, payments, menu. If each one checks logins by itself, sooner or later one gets missed.",
+  "show": "Big apps run separate *services:* orders, payments, menu. If each one checks logins by itself, sooner or later one gets [missed.]",
+  "start": 6.78,
+  "end": 14.0
+ },
+ {
+  "li": 2,
+  "pi": 0,
+  "say": "An API gateway puts one front door in front of all of them. Every request, like show my orders, passes through it.",
+  "show": "An *API gateway* puts *one front door* in front of all of them. Every request, like *show my orders,* passes through it.",
+  "start": 14.48,
+  "end": 20.3
+ },
+ {
+  "li": 3,
+  "pi": 0,
+  "say": "Think airport security: nobody reaches the gate without passing it.",
+  "show": "Think *airport security:* nobody reaches the gate without passing it.",
+  "start": 20.62,
+  "end": 23.66
+ },
+ {
+  "li": 4,
+  "pi": 0,
+  "say": "It checks every request for a valid login. No login? Blocked at the door. The orders service still checks whose orders you can see.",
+  "show": "It checks every request for a *valid login.* No login? [Blocked at the door.] The orders service still checks *whose orders* you can see.",
+  "start": 24.02,
+  "end": 30.28
+ },
+ {
+  "li": 5,
+  "pi": 0,
+  "say": "It also sends each request to the right service, and can slow down anyone sending too many.",
+  "show": "It also *sends* each request to the *right service,* and can *slow down* anyone sending too many.",
+  "start": 30.76,
+  "end": 35.02
+ },
+ {
+  "li": 6,
+  "pi": 0,
+  "say": "If AI writes your code, follow for the system design it leaves out.",
+  "show": "If AI writes your code, *follow* for the system design it [leaves out.]",
+  "start": 35.52,
+  "end": 38.22
+ }
+]

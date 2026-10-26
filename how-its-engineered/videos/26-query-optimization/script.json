@@ -1,0 +1,47 @@
+{
+ "topic": "Query optimization",
+ "lines": [
+  [
+   {
+    "say": "Your orders page takes nine seconds to load. The problem might be one request asking for way too much.",
+    "show": "Your orders page takes [nine seconds] to load. The problem might be one request asking for *way too much.*"
+   }
+  ],
+  [
+   {
+    "say": "Your app asks its database, where all your data is stored, for everyone's orders, with every detail. Then it throws almost all of it away.",
+    "show": "Your app asks its *database,* where all your data is stored, for *everyone's orders,* with every detail. Then it [throws almost all of it away.]"
+   }
+  ],
+  [
+   {
+    "say": "That request is called a query. A better query asks only for what the screen shows: your last ten orders, with just the details on screen.",
+    "show": "That request is called a *query.* A better query asks only for what the screen shows: [your last ten orders,] with just the details on screen."
+   }
+  ],
+  [
+   {
+    "say": "Like a shopping list. You ask for milk and eggs, not the whole shop delivered to your door.",
+    "show": "Like a *shopping list.* You ask for milk and eggs, not [the whole shop] delivered to your door."
+   }
+  ],
+  [
+   {
+    "say": "That's one part of query optimization: less data to send, and less for your app to handle.",
+    "show": "That's one part of [query optimization:] less data to send, and less for your app to *handle.*"
+   }
+  ],
+  [
+   {
+    "say": "To see how the database will find your data, put EXPLAIN in front of a query. It shows you the plan.",
+    "show": "To see how the database will *find your data,* put [EXPLAIN] in front of a query. It shows you the *plan.*"
+   }
+  ],
+  [
+   {
+    "say": "If you're a vibe coder, follow for the system design your AI skipped.",
+    "show": "If you're a vibe coder, follow for the system design your AI [skipped.]"
+   }
+  ]
+ ]
+}

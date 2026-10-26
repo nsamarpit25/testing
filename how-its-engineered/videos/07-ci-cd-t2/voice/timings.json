@@ -1,0 +1,66 @@
+[
+ {
+  "li": 0,
+  "pi": 0,
+  "say": "Friday, 6 PM. You change one letter, and two minutes later your whole app is down.",
+  "show": "Friday, 6 PM. You change *one letter,* and 2 minutes later your whole app is [down.]",
+  "start": 0.0,
+  "end": 4.2
+ },
+ {
+  "li": 1,
+  "pi": 0,
+  "say": "The change went straight to users. Nothing stood in between to catch the mistake.",
+  "show": "The change went *straight to users.* Nothing stood in between to catch the [mistake.]",
+  "start": 4.76,
+  "end": 7.78
+ },
+ {
+  "li": 2,
+  "pi": 0,
+  "say": "C-I-C-D is the automatic safety net between your code and your users.",
+  "show": "*CI/CD* is the automatic *safety net* between your code and your users.",
+  "start": 8.48,
+  "end": 11.44
+ },
+ {
+  "li": 3,
+  "pi": 0,
+  "say": "First, it builds the app. Build fails? It stops.",
+  "show": "First, it *builds* the app. Build fails? It [stops.]",
+  "start": 12.1,
+  "end": 14.48
+ },
+ {
+  "li": 4,
+  "pi": 0,
+  "say": "Then automated tests check that features like login still work. A test fails? It stops again.",
+  "show": "Then *automated tests* check that features like login still work. A test fails? It [stops again.]",
+  "start": 15.04,
+  "end": 19.32
+ },
+ {
+  "li": 5,
+  "pi": 0,
+  "say": "Everything passes? The update is ready to release, automatically or with one-click approval.",
+  "show": "Everything passes? The update is *ready to release,* automatically or with one-click *approval.*",
+  "start": 19.84,
+  "end": 23.4
+ },
+ {
+  "li": 6,
+  "pi": 0,
+  "say": "So that one-letter typo? If the build or a test catches it, your users never see it.",
+  "show": "So that one-letter typo? If the build or a test *catches it,* your users [never see it.]",
+  "start": 23.96,
+  "end": 27.54
+ },
+ {
+  "li": 7,
+  "pi": 0,
+  "say": "If AI writes your code, follow for the system design it leaves out.",
+  "show": "If AI writes your code, *follow* for the system design it leaves out.",
+  "start": 28.0,
+  "end": 30.6
+ }
+]

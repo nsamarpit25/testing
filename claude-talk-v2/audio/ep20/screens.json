@@ -1,0 +1,12 @@
+{
+ "m1": {"kind": "page", "url": "lifereset.shop/checkout", "accent": "#7048e8", "title": "Life Reset Planner",
+        "body": ["Order total: $89.00", "Card ending 4417"], "big": {"text": "BLOCKED BY CLAUDE", "color": "#d64545"}},
+ "m2": {"kind": "page", "url": "orders", "accent": "#495057", "title": "Your Orders: Planners (6)",
+        "body": ["Dream Big Planner · unopened", "90-Day Reset · unopened", "Glow-Up Journal · unopened", "Focus Planner Pro · unopened",
+                 "Habit Matrix · unopened", "The Last Planner · unopened"]},
+ "m3": {"kind": "page", "url": "notes / rules-for-1am-me", "accent": "#e8a400", "title": "RULES FOR 1 AM ME",
+        "body": ["1. Block the card.", "2. If I say it's a gift, I'm lying.", "", "Me, Sunday 2 PM, feeling great"]},
+ "m4": {"kind": "page", "url": "notes / rules-for-1am-me", "accent": "#e8a400", "title": "RULES FOR 1 AM ME",
+        "body": ["1. Block the card.", "2. If I say it's a gift, I'm lying.", "3. She'll say I was having a good day.", "", "Me, Sunday 2 PM, feeling great"]},
+ "p1": {"kind": "phone", "app": "Bank", "title": "Card paused", "body": "Life Reset Planner, $89. Blocked by Claude.", "size": 44, "time": "1:14"}
+}

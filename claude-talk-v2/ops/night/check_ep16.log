@@ -1,0 +1,15 @@
+== output/ep16_takes/take1.wav  74.7s
+   speakers: line 8 (Claude) sounds like the other voice (181 Hz)
+   gemini words: line 1: 'claude' -> 'code'; line 1: 'a hundred and twenty eight' -> ''; line 6: 'git' -> 'get'; line 6: 'git' -> 'get'; line 8: 'git' -> 'get'; line 10: 'a hundred and twenty eight' -> ''; line 11: 'cleanup' -> 'clean up'
+   whisper words: line 1: 'checkout's' -> 'checkouts'; line 1: 'a hundred and twenty eight' -> ''; line 10: 'a hundred and twenty eight' -> ''
+   pitch: 1:235 2:133 3:148 4:258 5:125 6:160 7:190 8:181 9:205 10:145 11:250 12:145
+== output/ep16_takes/take2.wav  72.6s
+   speakers: line 10 (Claude) sounds like the other voice (180 Hz)
+   gemini words: line 1: 'a hundred and twenty eight' -> ''; line 6: 'git' -> 'get'; line 10: 'a hundred and twenty eight' -> ''
+   whisper words: line 1: 'checkout's' -> 'checkouts'; line 1: 'a hundred and twenty eight' -> ''; line 3: 'four' -> ''; line 10: 'a hundred and twenty eight' -> ''; line 10: 'seven' -> ''
+   pitch: 1:239 2:154 3:158 4:237 5:152 6:145 7:174 8:149 9:208 10:180 11:267 12:158
+== output/ep16_takes/take3.wav  68.4s
+   speakers: OK
+   gemini words: line 1: 'claude checkout's' -> 'claud checkout'; line 1: 'a hundred and twenty eight' -> ''; line 6: 'git' -> 'get'; line 10: 'a hundred and twenty eight' -> ''
+   whisper words: line 1: 'checkout's' -> 'checkouts'; line 1: 'a hundred and twenty eight' -> ''; line 6: 'git' -> 'get'; line 6: 'git' -> 'get'; line 10: 'a hundred and twenty eight' -> ''; line 10: 'seven' -> ''; line 11: 'cleanup' -> 'clean up'
+   pitch: 1:244 2:127 3:144 4:230 5:124 6:125 7:213 8:136 9:222 10:128 11:262 12:126

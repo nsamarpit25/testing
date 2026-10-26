@@ -1,0 +1,57 @@
+{
+  "topic": "Long polling",
+  "lines": [
+    [
+      {
+        "say": "Your app asked the server, any new messages? It didn't answer. For thirty seconds, on purpose.",
+        "show": "Your app asked the server, any new messages? It [didn't answer.] For *thirty seconds,* on purpose."
+      },
+      {
+        "say": "Why would a server do that?",
+        "show": "[Why] would a server do that?"
+      }
+    ],
+    [
+      {
+        "say": "Without it, your app keeps asking, and almost every time there's nothing new. That's a lot of wasted trips.",
+        "show": "Without it, your app *keeps asking,* and almost every time there's nothing new. That's a lot of [wasted trips.]"
+      }
+    ],
+    [
+      {
+        "say": "Long polling flips that around. The server holds on to your question, and waits.",
+        "show": "*Long polling* flips that around. The server *holds on* to your question, and waits."
+      }
+    ],
+    [
+      {
+        "say": "The moment a message arrives, it answers. Your app shows it, then asks again right away.",
+        "show": "The *moment* a message arrives, it *answers.* Your app shows it, then asks again right away."
+      }
+    ],
+    [
+      {
+        "say": "If nothing happens within a time limit, say thirty seconds, the server answers: nothing yet. And your app asks again.",
+        "show": "If nothing happens within a *time limit,* say thirty seconds, the server answers: [nothing yet.] And your app asks again."
+      }
+    ],
+    [
+      {
+        "say": "Like a kid asking are we there yet every minute, versus asking once and hearing the answer the moment you arrive.",
+        "show": "Like a kid asking [are we there yet] every minute, versus asking *once* and hearing the answer the moment you *arrive.*"
+      }
+    ],
+    [
+      {
+        "say": "Telegram bots can get their messages this way, over plain web requests.",
+        "show": "*Telegram bots* can get their messages this way, over *plain web requests.*"
+      }
+    ],
+    [
+      {
+        "say": "If AI writes your code, follow for the system design it leaves out.",
+        "show": "If AI writes your code, *follow* for the system design it leaves out."
+      }
+    ]
+  ]
+}

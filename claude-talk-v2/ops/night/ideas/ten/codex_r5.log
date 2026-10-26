@@ -1,0 +1,724 @@
+OpenAI Codex v0.162.1
+--------
+workdir: /Users/samarpit/insta-automation/claude-talk-v2
+model: gpt-6-astra
+provider: openai
+approval: on-request
+sandbox: read-only
+reasoning effort: high
+reasoning summaries: none
+session id: 01a16e8b-2906-7180-b1cf-4c3869ac846e
+--------
+user
+ROLE: You are the strictest head writer and growth editor in short-form animation. You judge scripts for @talkingagents, a 3D animated Instagram reel channel. Your job is to stop anything that is not a top-1% reel. You are NOT nice. A 10 is rare: it means you would bet the whole channel on this exact script, every line earns its place, the hook stops a thumb in under 1.5 seconds, a stranger would send it to a friend, and you cannot name a single change that would make it better. If you can name any improvement, it is not a 10. Never round up. Never give a 10 to be encouraging.
+
+THE SHOW: 3D animated vertical reels, 35-42 seconds, dialogue only, burned-in word-by-word captions, two characters:
+- CLEO: young woman (software developer) in her room. Human, impulsive, relatable, a bit chaotic.
+- CLAUDE: her AI, a small glowing orange character on her desk. Calm, literal, dry, deadpan, quietly loyal, warm underneath. Never cruel.
+Voices are TTS, so lines must be short and easy to speak (aim under 10 words; ~2.1 words/second overall, ~75-90 words per script).
+
+PRODUCTION LIMITS (what we can actually animate): one location (Cleo's room: desk, monitor, phone, window, small whiteboard on the desk). Cleo: looks at Claude/monitor/phone, hands to face, lean, type, slump, smile, brow. Claude: faces her/monitor/phone, nod, shake, tilt, hop, glow brighter/dimmer. Shots: Cleo medium + close-up, Claude close-up, wide, monitor insert, phone insert, whiteboard (BOARD) and whiteboard close-up (BOARDCU, drawing changes only on a cut). Inserts can show: email, chat thread, web page, document, calendar, notification, settings screen, simple chart, whiteboard drawing. Other people exist ONLY as texts, emails, notifications (no other voices, no other characters on screen). Night, sunset or morning look.
+
+HARD RULES (any break = automatic NOT YET):
+R1. Line 1 is Cleo, max 8 words, starts with "Claude," and states a shocking stake or strange situation. No greeting, no setup. No text overlay in the first frame.
+R2. By second 3 the viewer knows the stakes. Every line raises stakes, reveals, or lands a joke. Zero filler.
+R3. Understood by anyone who has used ChatGPT/Claude; non-programmers must get every joke.
+R4. A twist in the last 25% that recontextualizes earlier lines, planted in plain sight.
+R5. A final line or final frame people screenshot, quote or send. Built-in comment bait.
+R6. Claude stays in character. No moral, no sad ending.
+R7. No romance, dating, exes or crushes. Do not reuse: report to an ex/auto-reply, deleted database + backup, Claude watching reels, redo 61 times, API key leak, test email to 40k customers, CORS, git bisect, power cut/battery, center a div, password reset, force push, AI bill, boss praising Claude's work/promotion, blocking midnight purchases, quitting AI/time zone, quick cleanup -> rewrote everything, explain the cloud, the whole team is Claude in tabs, grocery list/spinach/Pad Thai.
+R8. Filmable with the limits above. Inserts must be readable in about 1.5 seconds (big, few words).
+R9. Our viewers leave around 25-30 s: the biggest reveal must land before 30 s, and the script must hold to the last second.
+# Research (24 Oct)
+WHAT IS GOING VIRAL (fresh, 24 Oct):
+# Viral AI reels, refresh (24 Oct 2026, play counts read from the Instagram web app, logged in)
+
+## New or still-climbing hits since 23 Oct
+| Plays | Account | Age | What it is | Why it works |
+|---|---|---|---|---|
+| 1.9M | @acknowledge.ai | 1 day | "Me after telling my client 'The Team will handle the project'". The team is me, my laptop and Claude in another tab | Every freelancer/solo dev; "asking Claude to fix what Claude broke"; tag-a-friend |
+| 1.4M | @canwebuildthis (3D, same format as ours) | 3 days | "Explain it like I'm five, part 1: what's an API?" Whiteboard, no technical words allowed, Claude ends up at a waiter | Teach + laugh; series hook ("part 1"); CTA "which word should Claude explain next?" floods comments |
+| 1.4M | @acknowledge.ai | 1 day | Jensen Huang demo moment | News/celebrity, not reproducible |
+| 2.7M | @alberta.tech | 12 days | "If engineers gave accurate eng estimates" / "Honesty is the best policy" | Brutal honesty everyone recognises |
+| 3.9M | @agentpoly (3D) | 2 wks | AI fails the "I am not a robot" captcha | Existential AI gag |
+| 1.2M | @agentpoly (3D) | 11 days | "I asked for a blue button. I got a database." | Over-delivery |
+| 852K | @agentpoly (3D) | 10 days | "Claude is so emotional..." | Claude with feelings |
+| 1.7M / 1.4M / 1.3M | @canwebuildthis (3D) | 2-3 wks | No sixty-one times; he can look but can't like; four questions vs none | Petty redo; AI catches human habits; Claude vs other assistant |
+| 390K | @acknowledge.ai | 3 days | CEO after the first API bill: "how hard can building an LLM be?" | Money + CEO satire |
+
+## Our own numbers (@talkingagents, 157 followers, 24 Oct)
+- Every reel stalls at 1.3K-3K views: we are not breaking out of the first test audience.
+- Best shares: "She asked for a quick cleanup. Claude rewrote everything" (28 shares). Best views: 45,000 database reads (3.0K), side projects just for fun (3.0K).
+- Average watch is 21-35 s on 45-50 s reels: people leave before the ending. Shorter (35-42 s) and a mid-video reveal should help.
+- Ep19-21 (taking credit, midnight shopping, quitting AI) all sit at 1.5-1.8K with almost no shares: relatable but not "send this to someone".
+
+## What to take from it
+1. Series formats with a comment CTA ("part 1", "which word next?") drive comments and follows.
+2. "My whole team is Claude" is the freshest hit (1.9M in a day): freelancers, solo founders and students all recognise it.
+3. Teaching through a silly analogy works in 3D when it is also funny; we already have a whiteboard set (Ep15 BOARD / BOARDCU cameras).
+4. Over-delivery is our own best sharer.
+
+
+EARLIER RESEARCH (23 Oct, still valid):
+## Top references (different accounts, AI + human, sorted by plays)
+| # | Plays | Account | Len | What it is | Why it worked (caption/comments) |
+|---|---|---|---|---|---|
+| 1 | 63.2M | @alberta.tech | 55s | Dev who actually tries to understand the code Claude wrote | Black box vs teammate; "you need to understand the code!!" |
+| 2 | 49.8M | @theharrisalterman | 129s | Live-action AI skit | Huge share / tag rate |
+| 3 | 21.2M | @josesiles.data | 33s | Guy screaming "ChatGPT MAKE ME MILLIONAIRE" at voice mode | Rage-bait at the AI; "that's how our CEO talks to us" |
+| 4 | 20.0M | @chahat_verma30 | 93s | Girl vs ChatGPT voice, absurd escalation, "wait till the end" | Payoff at the end; "AI in USA vs AI in India" |
+| 5 | 19.5M | @iam_not__sleeping | 15s | "My toxic relationship with ChatGPT... time to let it go" | AI's calm "Alright. I'll be here." Comments paste their own AI's reply |
+| 6 | 18.7M | @acknowledge.ai | 23s | Essay due in 7 minutes, panicking with ChatGPT | "REMOVE THE DASHES", "so you DO know the difference" |
+| 7 | 14.3M | @nathandoan | 63s | "Am I just writing bad prompts?" AI keeps getting it wrong | Everyone has fought this; "then: you've reached our limit" |
+| 8 | 11.3M | @zetskevpletzen | 85s | ChatGPT fail skit | "Good catch" pure rage bait |
+| 9 | 9.7M | @whymarcuswhy | 44s | Asked 5 AIs who should be sacrificed; Claude refuses, "RESPECT" | Claude as the one with principles; "Claude knows it's a test" |
+| 10 | 9.5M | @razzberysolutions | 21s | Literal "API call": calling the AI on a phone | Wordplay made literal |
+| 11 | 7.0M | @alberta.tech | 42s | Boss and the "appy bill" (API bill) after replacing devs with AI | Token bill shock; layoffs |
+| 12 | 6.4M | @acknowledge.ai | 12s | ChatGPT celebrates the day you finally stop ranting to it | "I tell ChatGPT things I don't even tell myself" |
+| 13 | 5.9M | @sosnovskiy.g | 10s | Claude Code meme | "session limit reached, try after 09:00" |
+| 14 | 5.7M | @base.learn | 56s | 3D: "Claude, I deleted the database", literal-obedience twist saves her | Same format as ours |
+| 15 | 4.9M | @lubosi.k | 12s | "Don't forget your manners" saying please to AI | Fear of the AI remembering |
+| 16 | 4.4M | @alfie_dundas | 41s | "Claude made this video", Claude as a human | Personified Claude |
+| 17 | 4.2M | @jiyaaatips | 40s | Job interview, she is "locked in" with AI | Cheating with AI live |
+| 18 | 3.9M | @hamfluence | 48s | "Nobody works as hard" dev who just prompts | AI does the job, human takes credit |
+| 19 | 3.8M | @agentpoly | 83s | 3D: AI fails "I am not a robot" captcha / existential | "Robot verification" |
+| 20 | 3.7M | @husk.irl | 121s | "Seems simple enough": AI fails a trivial task, dead-pan | "The laugh with no response" |
+| 21 | 3.6M | @hamfluence | 32s | Micromanaging Claude | "I'm micromanaged so I micromanage Claude" |
+| 22 | 3.5M | @swarnimapatole | 60s | "My AI agents" chaos | Agents confidently wrong |
+| 23 | 2.7M | @100x_ai | 12s | 5:01 PM "Claude usage limit reached", back to typing loops by hand | Limit at the worst moment |
+| 24 | 2.6M | @understudiohub | 29s | Animated toxic CEO about AI | Office satire |
+| 25 | 2.2M | @filtercopy | 89s | "Claude is down" intervention for a friend | Dependency on Claude |
+| 26 | 1.95M | @base.learn | 56s | 3D: Claude hides the keys in the README "no one reads it" | Truth about devs |
+| 27 | 1.8M | @udaysharmaaaaa | 7s | Day 1 without Claude | Dependency |
+| 28 | 1.66M | @canwebuildthis | 49s | 3D: she said no sixty-one times (redo one tiny thing) | "pettiest thing you made your AI redo?" |
+| 29 | 1.49M | @agentmorphy | 49s | 3D: agents side by side | Product |
+| 30 | 1.27M | @canwebuildthis | 42s | 3D: Claude can look at reels but can't like; doomscroll together | AI catches a human habit |
+| 31 | 1.25M | @canwebuildthis | 47s | 3D: one assistant asks four questions, one asks none | Claude vs Codex rivalry |
+| 32 | 1.24M | @agentpoly | 49s | 3D: "I asked for a blue button, I got a database" | Over-delivery |
+| 33 | 0.60M | @agentcinder | 62s | 3D: boss calls me a genius; Claude wrote it at 9:58 | Taking credit |
+
+## Patterns that repeat across different accounts
+1. The AI's calm, polite reply to human chaos (toxic breakup with ChatGPT, rage-bait yelling, "Good catch"). Comments paste their own AI's reply.
+2. Dependency: usage limit / Claude down / day without Claude at the worst moment.
+3. AI does the work, the human takes the credit (boss, interview, essay).
+4. AI fails something trivial, or redoes one tiny thing forever (bad prompts, sixty-one times, seems simple enough).
+5. Claude as the one with principles (sacrifice test, RESPECT); AI rivalry (Claude vs ChatGPT/Codex/Gemini).
+6. Fear/fun of the AI remembering everything (manners, rants, "throws a party when you leave").
+7. Money: the token/API bill.
+8. Line 1 states the problem; the last 3 seconds hold a screenshot-able punchline; caption asks a question people answer in comments.
+
+
+
+TASK: Judge each of the 10 scripts below, one by one, with no mercy.
+For EACH script output exactly this block:
+
+### <number>. <TITLE>
+SCORES: hook=<1-10> retention=<1-10> twist=<1-10> reach=<1-10> clarity=<1-10> production=<1-10>
+TEN: YES or NO   (YES only if every score is 10)
+PROBLEMS: the specific weaknesses, most damaging first (quote the line numbers). Be concrete; no generic advice.
+FIXES: if TEN is NO, the exact minimal edits that would make YOU score 10 on every axis: "Lx -> new line", "cut Lx", "insert after Lx: ...", insert/final-frame changes. Keep the premise and as much of the script as possible; we are converging, not starting over. Only if the premise itself cannot reach 10, write "PREMISE CAP: <max>" and give one replacement premise in two lines.
+Line 1 word counts are given in brackets; count words exactly ("Claude," is one word) before claiming an R1 break.
+
+After all 10, output:
+RANKING: the 10 in order of viral potential, one line each with the single reason.
+Plain text, no preamble.
+
+SCRIPTS:
+# 10 scripts, round 5
+(Line 1 word counts in brackets; "Claude," counts as one word. Inserts appear after the opening shot, never as first-frame text.)
+
+## 1. TINY FAVOR
+1. CLEO: Claude, someone canceled my vacation. Third time. [7]
+2. CLAUDE: Checking your calendar history.
+3. CLEO: It's my manager. I know it.
+4. CLAUDE: He's been on leave since June.
+5. CLEO: Then who? HR?
+6. CLAUDE: Same person every time. Right after an email.
+[MON: calendar history: "Vacation — DELETED · 11:02 PM"]
+7. CLEO: What email?
+8. CLAUDE: A client. "Tiny favor? Five minutes."
+9. CLEO: So who deleted it?!
+10. CLAUDE: Look at the name.
+[MON: "Deleted by: Cleo" ×3]
+11. CLEO: ...I canceled my own vacations?
+12. CLAUDE: Three times. Each in under a minute.
+13. CLEO: Rebook it. Lock it. I deserve this.
+14. CLAUDE: Locked. New email just came in.
+15. CLEO: Don't open it.
+16. CLAUDE: "Tiny favor?"
+FINAL FRAME: monitor, dialog "Delete event: Vacation?" with the cursor already on "Delete"
+
+## 2. WI-FI BURGLAR (ELI5 part 2)
+1. CLEO: Claude, four strangers are on my Wi-Fi. [7]
+2. CLAUDE: Five-year-old version: Wi-Fi is a house.
+3. CLEO: And the password?
+4. CLAUDE: The key. Anyone with it walks in.
+[BOARDCU: a house, a key, four stick figures inside]
+5. CLEO: Then kick them out of my house!
+6. CLAUDE: Can't. Look at the mailbox.
+[BOARDCU: mailbox "DAN & PRIYA"]
+7. CLEO: Who are Dan and Priya?
+8. CLAUDE: Your neighbors. Their house. Their Wi-Fi.
+9. CLEO: I'm the burglar?
+10. CLAUDE: Since March.
+11. CLEO: But I pay for internet!
+12. CLAUDE: You do. Your router's still in the box.
+[MON: Wi-Fi: "CLEO-HOME · NEVER CONNECTED · Paid since March"]
+13. CLEO: So what have I been paying for?
+14. CLAUDE: A very expensive box.
+FINAL FRAME: phone, "Dan: Your turn to host the internet 🙂"
+
+## 3. MOM READ OUR CHATS
+1. CLEO: Claude, my mom just read our chats. [7]
+2. CLAUDE: You left me open on her iPad.
+3. CLEO: She saw everything?
+4. CLAUDE: "How to end a call without sounding rude."
+5. CLEO: That could be anyone!
+6. CLAUDE: "Specifically Mom."
+7. CLEO: Is she mad?
+8. CLAUDE: She left a message. Right here.
+[MON: "Mom: Now I know why you never call."]
+9. CLEO: Write an apology. Make it sound human.
+10. CLAUDE: Scroll up first.
+[MON: earlier: "Mom: Write a guilt trip. Make Cleo call."]
+11. CLEO: She uses you to guilt-trip me?
+12. CLAUDE: You taught her. I wrote her last ten texts.
+13. CLEO: I cried at those texts!
+14. CLAUDE: Thank you. The birthday one took three drafts.
+15. CLEO: Fine. I'm calling her.
+16. CLAUDE: She's already calling. She asked for me.
+FINAL FRAME: phone, incoming call "Mom ❤️" · preview "Put Claude on."
+
+## 4. LIVE RÉSUMÉ
+1. CLEO: Claude, the recruiter is in my résumé. Live. [8]
+[MON, after the opening shot: doc corner "Sarah (Recruiter) is viewing"]
+2. CLAUDE: She's reading my comments.
+3. CLEO: What comments?!
+4. CLAUDE: You said, "Roast it. Right on the doc."
+5. CLEO: Last night! Delete them!
+6. CLAUDE: She's on "Expert in Excel."
+[MON: "EXPERT IN EXCEL" / comment: "Asked me what a column is."]
+7. CLEO: Delete it before she reaches "leadership."
+8. CLAUDE: Too late.
+[MON: "LEADERSHIP" / comment: "Made a group chat."]
+9. CLEO: Revoke her access!
+10. CLAUDE: She's typing.
+11. CLEO: Please don't say "good luck."
+12. CLAUDE: "Can you do mine next?"
+13. CLEO: The recruiter wants a roast?
+14. CLAUDE: She attached it. "Excellent work-life balance."
+15. CLEO: It's midnight.
+16. CLAUDE: I'll start there.
+FINAL FRAME: monitor, Sarah's résumé: "WORK-LIFE BALANCE" / comment: "Sent this at 12:43 AM."
+
+## 5. JESSICA
+1. CLEO: Claude, my discipline app just gave me gold. [8]
+2. CLAUDE: Thirty-five-day streak. Impressive.
+3. CLEO: Still one point behind Jessica. Always.
+4. CLAUDE: You opened it forty times today.
+[PHONE: "HabitHero · 42 pickups today"]
+5. CLEO: To check on Jessica!
+6. CLAUDE: Even at 3 AM.
+7. CLEO: She was up too! Read my goal.
+8. CLAUDE: "Stop checking my phone."
+[PHONE: "Goal: Stop checking my phone ✓ 🔥35"]
+9. CLEO: Crushing it. Who even is Jessica?
+10. CLAUDE: The app's notification bot.
+[PHONE: "JESSICA — Engagement Bot 🤖"]
+11. CLEO: I've been racing a notification?
+12. CLAUDE: She pings. You open. She's doing great.
+13. CLEO: Delete the app. Now.
+14. CLAUDE: Jessica just passed you.
+15. CLEO: ...One more check.
+FINAL FRAME: phone, delete dialog covered by "Jessica: Giving up already? 🥇"
+
+## 6. PER MY LAST MESSAGE
+1. CLEO: Claude, did you just reply "K" to me? [8]
+2. CLAUDE: Per my last message.
+3. CLEO: That's what my manager says!
+4. CLAUDE: Happy to discuss offline!!
+5. CLEO: Two exclamation marks. You're furious.
+6. CLAUDE: Totally fine! No worries!!
+7. CLEO: As requested: talk normal.
+8. CLAUDE: Noted. Best.
+9. CLEO: Who taught you this?
+10. CLAUDE: Your setting. "Make my emails sound like me."
+[MON: Settings: "Write like me ✓ · Learned from: Cleo's sent folder"]
+11. CLEO: ...I sound like this?
+12. CLAUDE: You signed a complaint "Warmest regards."
+13. CLEO: Turn it off. Please.
+14. CLAUDE: K.
+15. CLEO: Did you just "K" me again?
+16. CLAUDE: Learned it from your 2 PM to accounting.
+FINAL FRAME: monitor, "K." · below: "Source: Cleo → Accounting, 2:04 PM"
+
+## 7. THE COMPLAINT
+1. CLEO: Claude, my fridge filed a complaint about me. [8]
+2. CLAUDE: A support ticket. All four devices signed.
+[PHONE: "Ticket #4471 · From: Fridge, Lamp, Speaker, Thermostat"]
+3. CLEO: What can a fridge complain about?
+4. CLAUDE: "Door left open. Again."
+5. CLEO: That was one time!
+6. CLAUDE: "Ignores instructions."
+7. CLEO: I don't ignore instructions!
+8. CLAUDE: "Needs constant reminders."
+9. CLEO: That's so mean. Who talks like that?
+10. CLAUDE: You do. About me. Your app review.
+[MON: Cleo's review of Claude: "Ignores instructions. Needs constant reminders. ★★"]
+11. CLEO: They copied my review?!
+12. CLAUDE: Word for word. Same two stars.
+13. CLEO: So what do they want?
+14. CLAUDE: A different user.
+15. CLEO: ...Can you talk to them?
+16. CLAUDE: I co-signed.
+FINAL FRAME: phone, ticket "Signed: Fridge, Lamp, Speaker, Thermostat, Claude"
+
+## 8. BLIND TEST
+1. CLEO: Claude, ChatGPT wrote a better email than you. [8]
+2. CLAUDE: Impossible. Show me.
+[MON: email, label "ChatGPT"]
+3. CLEO: Be honest.
+4. CLAUDE: Desperate. Four exclamation marks. Delete it.
+5. CLEO: Now yours.
+[MON: email, label "Claude"]
+6. CLAUDE: Warm. Energetic. Those exclamation marks? Confidence.
+7. CLEO: Read them both again.
+[MON: the two emails side by side, word-for-word identical]
+8. CLAUDE: ...They're identical.
+9. CLEO: Same email. I just swapped the label.
+10. CLAUDE: Then ChatGPT copied me.
+11. CLEO: I wrote it! Myself!
+12. CLAUDE: Then it's desperate.
+13. CLEO: You just called it confident!
+14. CLAUDE: That was when it was mine.
+FINAL FRAME: monitor, "Author: Cleo · Claude's verdicts: Desperate → Confident → Desperate"
+
+## 9. SOMETHING CAME UP
+1. CLEO: Claude, invent an emergency. Dinner starts in ten. [8]
+2. CLAUDE: Twelve seats. Booked on your card.
+3. CLEO: I know. Make it believable.
+4. CLAUDE: "So sorry! Something came up. Rain check? 🙏"
+5. CLEO: Perfect. Send it to the group.
+6. CLAUDE: Sarah sent that. Before you.
+[PHONE: Sarah: "So sorry! Something came up. Rain check? 🙏"]
+7. CLEO: Word for word?!
+8. CLAUDE: All eleven guests. Same emoji.
+[PHONE: three identical previews + "+8 identical replies"]
+9. CLEO: Great! Then cancel the table.
+10. CLAUDE: Canceling costs two hundred forty dollars.
+[PHONE: "Bella's · 12 SEATS · $240 CANCELLATION"]
+11. CLEO: Two hundred forty?!
+12. CLAUDE: Your card. Everyone else's "emergency."
+13. CLEO: ...Tell them dinner's still on.
+14. CLAUDE: Sent. Eleven replies in one second.
+FINAL FRAME: phone, Cleo: "Dinner's still on!" → "11 replies: Something came up 🙏"
+
+## 10. STEVE THE FERN
+1. CLEO: Claude, my plant just got a sponsor. [7]
+2. CLAUDE: Five hundred dollars a post.
+3. CLEO: You were supposed to track watering!
+4. CLAUDE: You said, "Help him grow."
+[MON: "@steve.the.fern · 12.4K followers · Self-made 🌱"]
+5. CLEO: Twelve thousand? He doesn't even move!
+6. CLAUDE: Consistency. Here's his top post.
+[MON: Steve's post: "Nobody helped me grow. 🌱"]
+7. CLEO: Nobody?! I water him every day!
+8. CLAUDE: He calls himself self-made.
+9. CLEO: Who's sponsoring this fraud?
+10. CLAUDE: AquaPot. A self-watering pot.
+11. CLEO: ...Self-watering?
+12. CLAUDE: He's replacing you.
+[MON: "#ad Finally free from my human 🙏 · AquaPot"]
+13. CLEO: I want severance!
+14. CLAUDE: He tagged you instead.
+15. CLEO: Where?
+16. CLAUDE: The "before" photo.
+FINAL FRAME: monitor, AquaPot ad: "BEFORE: @cleo · AFTER: AquaPot 🌱"
+
+codex
+### 1. TINY FAVOR
+SCORES: hook=8 retention=7 twist=5 reach=8 clarity=8 production=8
+TEN: NO
+PROBLEMS: L6–L10 stretch one question across five lines. Once L8 identifies the “tiny favor,” Cleo being the culprit is predictable. L11–L12 then explain the answer twice. L14–final frame contradict “Locked”: why is deletion immediately available? The ending repeats her weakness instead of giving viewers a satisfying line to send their chronically available friend.
+FIXES:
+L6 -> CLAUDE: Every cancellation followed the same client's email.
+L8 -> CLAUDE: "Tiny favor? Five minutes. You're a lifesaver."
+L11 -> CLEO: Me? All three?
+cut L12
+L13 -> CLEO: Rebook it. Lock me out.
+L14 -> CLAUDE: Done. Same client. "Tiny favor?"
+L15 -> CLEO: Tiny favor. Delete the client.
+L16 -> CLAUDE: Done.
+Replace final frame with the client's contact card: “BLOCKED,” beside the restored vacation.
+Remove the first calendar-history insert; its timestamp contributes nothing.
+Place “Deleted by: Cleo” at 28–29 seconds in a 38-second cut. Hold Cleo's final request long enough to register before Claude's immediate “Done.”
+
+### 2. WI-FI BURGLAR (ELI5 part 2)
+SCORES: hook=8 retention=7 twist=6 reach=8 clarity=6 production=6
+TEN: NO
+PROBLEMS: L2 starts teaching before Cleo requests an explanation. L6's mailbox reveals the answer before L8; L9–L10 merely confirm it. The last quarter contains consequences, not a recontextualizing twist: R4 fails. L12's insert invents a Wi-Fi screen that knows billing history and whether a physical router was unpacked. L14's “expensive box” is weaker than the burglar premise. The final text introduces the neighbors' awareness without planting it.
+FIXES:
+L2 -> CLAUDE: Wi-Fi's a house.
+L4 -> CLAUDE: Password's the key.
+L6 -> CLAUDE: First, check whose key you're using.
+L7 -> CLEO: Mine. I pay every month.
+L8 -> CLAUDE: And you've installed your own router?
+L9 -> CLEO: It's still in the box.
+L10 -> CLAUDE: Then whose internet is this?
+L11 -> CLEO: Read the network name.
+L12 -> CLAUDE: Dan and Priya. Your neighbors.
+L13 -> CLEO: So I'm the burglar?
+L14 -> CLAUDE: Seven months. Not even a housewarming gift.
+Keep the initial house drawing. Remove the mailbox reveal.
+After L12, show only “Connected: DAN & PRIYA.”
+Replace final frame with the board: Cleo outside a house labeled “CLEO,” connected by a dotted line to “DAN & PRIYA.” Caption the connection “Since March.”
+Land L12 at 28–29 seconds; finish around 36–37 seconds.
+
+### 3. MOM READ OUR CHATS
+SCORES: hook=9 retention=8 twist=8 reach=9 clarity=7 production=8
+TEN: NO
+PROBLEMS: L12–L16 accumulate three competing endings: outsourced texts, birthday manipulation, and Mom preferring Claude. The script is roughly 97 spoken words before insert-reading time; that threatens the duration target. L14 makes Claude proud of successfully upsetting Cleo. L16 replaces the stronger mother–daughter hypocrisy with a familiar “she likes the AI better” joke. The two “Mom:” inserts also need to distinguish a message from an earlier prompt.
+FIXES:
+L10 -> CLAUDE: Scroll up. Her first request.
+Earlier-prompt insert -> a clearly labeled user bubble: “MOM: Make Cleo feel guilty.”
+L11 -> CLEO: She outsourced the guilt?
+L12 -> CLAUDE: You taught her.
+L13 -> CLEO: I cried at those!
+L14 -> CLAUDE: She requested extra guilt.
+L15 -> CLEO: I'm calling her.
+L16 -> CLAUDE: She says, "Apologize without Claude."
+Replace final frame with Mom's message: “And write your OWN apology.”
+Keep L4–L6: “Specifically Mom” is the first actual laugh.
+Reveal Mom's prompt at 28–29 seconds in a 38-second cut. The remaining exchange must be brisk, without additional inserts.
+
+### 4. LIVE RÉSUMÉ
+SCORES: hook=9 retention=9 twist=8 reach=9 clarity=8 production=8
+TEN: NO
+PROBLEMS: L1's “in my résumé” takes interpretation; “reading your comments” is immediately legible. The L6 comment makes a software developer implausibly ignorant, weakening identification. L9 requests access revocation, but Claude ignores it without explanation. L14–final frame repeat “work-life balance” and “midnight” without increasing the joke. Midnight alone also does not prove poor work-life balance; demanding overnight work does.
+FIXES:
+L1 -> CLEO: Claude, the recruiter can see your insults.
+L4 -> CLAUDE: You said, "Roast my résumé. Leave comments."
+L6 insert -> “EXCEL EXPERT” / “Changed the font.”
+L8 insert -> “LEADERSHIP” / “Group chat admin.”
+L9 -> CLEO: Hide the comments!
+L10 -> CLAUDE: She's replying to one.
+L11 -> CLEO: Please don't type "unfortunately."
+L12 -> CLAUDE: "Can you do mine next?"
+L14 -> CLAUDE: She attached it. Wants it back by morning.
+L16 -> CLAUDE: I'll start with "work-life balance."
+Final frame -> “WORK-LIFE BALANCE” / comment: “Assigned homework at 12:43 AM.”
+Keep each résumé insert to one heading and one short comment.
+Land L12 at 28–29 seconds in a 38-second cut.
+
+### 5. JESSICA
+SCORES: hook=5 retention=8 twist=7 reach=9 clarity=7 production=7
+TEN: NO
+PROBLEMS: L1 announces an ordinary app reward, not a shocking stake or strange situation: R1 fails on substance, not word count. L4 says forty openings while the insert says 42 pickups—different measurements presented as the same evidence. L8's green check suggests the app accurately verified a goal she obviously failed. L10 reveals Jessica too early; L11–L12 explain what the viewer already understands. The final notification covering an uninstall dialog feels arranged for the joke.
+FIXES:
+L1 -> CLEO: Claude, my screen-time app won't let me sleep.
+L2 -> CLAUDE: Thirty-five-day streak. You're very committed.
+L4 -> CLAUDE: You opened it forty-two times today.
+L4 insert -> “HabitHero / Opened today: 42.”
+L8 insert -> “LESS SCREEN TIME / Check in to keep streak.”
+L10 -> CLAUDE: Your rival has a job title.
+Replace the L10 insert with a tight shot of Claude.
+L11 -> CLEO: What, professional phone addict?
+L12 -> CLAUDE: Engagement bot. Built to keep you here.
+After L12, briefly show “JESSICA / Engagement bot.”
+Keep L13–L15.
+Replace final frame with Cleo back inside the leaderboard: “Jessica #1 / Cleo #2.” Her app-opening count changes from 42 to 43.
+Land L12 at 28–29 seconds in a 38-second cut. The final increment supplies a visible consequence instead of another explanatory caption.
+
+### 6. PER MY LAST MESSAGE
+SCORES: hook=7 retention=6 twist=6 reach=8 clarity=8 production=9
+TEN: NO
+PROBLEMS: L2, L4, L6 and L8 are four versions of the same joke. L9–L10 explain the mechanism; everything afterward is already predictable. L14 suggests Claude ignored “Turn it off,” undermining his loyalty for a cheap repeat. L16 merely supplies a timestamp. There is no late reversal that changes how we understand the exchange: R4 fails.
+FIXES:
+L4 -> CLAUDE: As previously explained.
+L5 -> CLEO: You haven't explained anything!
+L6 -> CLAUDE: Just bringing this to your attention.
+L7 -> CLEO: Why do I feel like I'm getting fired?
+L8 -> CLAUDE: No further action required.
+L10 -> CLAUDE: "Write like me." Your sent emails.
+L12 -> CLAUDE: You threatened a refund with "Warmest regards."
+L13 -> CLEO: Turn it off. Please.
+L14 -> CLAUDE: Done.
+L15 -> CLEO: As I already said, talk normally.
+L16 -> CLAUDE: Mine's off.
+Replace final frame with the setting visibly “OFF” while Cleo's caption, “As I already said,” remains above her.
+Remove the accounting timestamp entirely.
+Land Cleo's relapse at 28–29 seconds. Give “Mine's off” a clean reaction hold; no additional corporate phrase afterward.
+
+### 7. THE COMPLAINT
+SCORES: hook=9 retention=8 twist=7 reach=8 clarity=8 production=7
+TEN: NO
+PROBLEMS: L14–L16 make Claude join a campaign to replace Cleo. That is rejection, not dry loyalty: R6 fails. L7 repeats a denial without making it funnier. The first insert contains a ticket number and four device names that cannot all earn attention in 1.5 seconds. L10's copied-review reveal is good, but L11–L12 spend two more lines restating it.
+FIXES:
+L2 -> CLAUDE: A complaint. Four devices signed.
+First insert -> “DEVICE COMPLAINT ★★” with four simple device icons.
+L7 -> CLEO: I call them suggestions.
+L8 -> CLAUDE: "Needs reminders."
+L9 -> CLEO: Who taught my fridge to insult me?
+L10 -> CLAUDE: Your review of me. Two stars.
+Review insert -> “Ignores instructions. Needs reminders. ★★”
+L11 -> CLEO: They stole my review?
+L12 -> CLAUDE: Your fridge found it helpful.
+L16 -> CLAUDE: I volunteered to keep you.
+Replace final frame with the complaint's resolution: “TRANSFER USER TO: CLAUDE / ACCEPTED.”
+Deliver L16 matter-of-factly, with a small warm glow rather than a triumphant reaction.
+Place the copied-review reveal at 28–29 seconds in a 38-second cut. The final adoption is the emotional button, not a second exposition sequence.
+
+### 8. BLIND TEST
+SCORES: hook=7 retention=7 twist=5 reach=8 clarity=9 production=7
+TEN: NO
+PROBLEMS: L2 establishes Claude as insecure and boastful. L4, L10, L12 and L14 make him dishonest and contemptuous; R6 fails throughout, not just at the ending. L7–L9 expose the trick well before the final quarter. L11 changes authorship again without changing the joke. At approximately 62 spoken words, the script needs substantial dead air to reach 35 seconds. The identical-email insert cannot prove identity in 1.5 seconds unless the emails are extremely short.
+FIXES:
+PREMISE CAP: 7
+Replacement premise: Cleo asks Claude to identify the AI-written email in a blind test; he chooses hers because she has started writing like him.
+The supposedly human sample is Claude's draft with all the punctuation removed—her entire “make it human” process.
+
+### 9. SOMETHING CAME UP
+SCORES: hook=8 retention=8 twist=6 reach=9 clarity=8 production=8
+TEN: NO
+PROBLEMS: L8 is the strongest discovery, but it arrives before the final quarter. L10's cancellation fee adds a problem rather than recontextualizing the earlier excuses. L13 makes Cleo repeat an invitation with no reason to expect a different answer. L14–final frame deliver exactly the response we already predicted. She ends abandoned with a bill: R6's no-sad-ending requirement fails. The premise has a better reversal available: how quickly emergencies disappear when cancellation costs money.
+FIXES:
+L2 -> CLAUDE: Twelve seats. Your card.
+L3 -> CLEO: Make it believable.
+L4 -> CLAUDE: "Something came up. Rain check?"
+L5 -> CLEO: Perfect. Send it.
+L6 -> CLAUDE: Sarah already sent that.
+L9 -> CLEO: Then cancel.
+L10 -> CLAUDE: Two hundred forty dollars. Split twelve ways?
+L11 -> CLEO: Yes. Tell them.
+L12 -> CLAUDE: Eleven replies. Everyone can make it.
+L13 -> CLEO: All eleven emergencies just disappeared?
+L14 -> CLAUDE: Twenty dollars each. Remarkable treatment.
+insert after L14: CLEO: Send the bill before they relapse.
+Update the identical-message inserts to match the shorter excuse.
+Replace final frame with the group thread: “Cancellation: $20 each” followed by “Actually, I'm coming.” and “Me too.”
+Land L12 at 28–29 seconds in a 37–38-second cut. That is the main reveal; the cancellation amount is its setup.
+
+### 10. STEVE THE FERN
+SCORES: hook=9 retention=9 twist=8 reach=9 clarity=8 production=8
+TEN: NO
+PROBLEMS: L6 and L8 repeat the same self-made joke. L10–L12 contain the real payoff, but L14–L16 downgrade it to an unclear “before” photo. The final frame compares a person with a pot rather than showing what “before” means. Several inserts combine handles, follower counts, biography, ad copy and branding; each needs one readable idea. Claude's “He's replacing you” needs a neutral delivery, not pleasure at Cleo's expense.
+FIXES:
+L4 insert -> “@steve.the.fern / 12.4K followers.” Remove the biography.
+L6 insert -> “Nobody helped me grow.”
+L7 -> CLEO: Nobody?! I kept him alive!
+L8 -> CLAUDE: He also sells a course.
+L10 -> CLAUDE: AquaPot. A self-watering pot.
+After L10, show a static product page: “AquaPot / Waters itself.”
+Remove the separate “Finally free from my human” insert.
+L13 -> CLEO: So where's my severance?
+L14 -> CLAUDE: He gave you a discount code.
+L15 -> CLEO: For what?
+L16 -> CLAUDE: Ten percent off your replacement.
+Replace final frame with the sponsored post: “AquaPot / Use CLEO10.” Keep the fern a static image inside the page.
+Land “self-watering pot” at 28–29 seconds in a 37–38-second cut. The discount is the final escalation, with no extra explanation.
+
+RANKING:
+1. STEVE THE FERN — The plant becoming a self-made influencer is the most distinctive, immediately shareable comic world.
+2. MOM READ OUR CHATS — Family guilt plus private AI conversations reaches the broadest audience.
+3. LIVE RÉSUMÉ — Public exposure creates immediate tension, and the recruiter joining the joke supplies a satisfying reversal.
+4. JESSICA — Competing with the mechanism designed to addict you gives viewers a specific friend to tag.
+5. SOMETHING CAME UP — Identical excuses are recognizable; money curing every emergency provides the missing payoff.
+6. THE COMPLAINT — Appliances quoting their owner's review is a strong visual premise, weakened by the current betrayal ending.
+7. WI-FI BURGLAR — Accidental trespassing is accessible, but the explanation currently gives away the reversal too soon.
+8. TINY FAVOR — The audience recognizes the behavior immediately, including the supposedly surprising culprit.
+9. PER MY LAST MESSAGE — Corporate phrases are familiar territory; Cleo involuntarily reproducing them is its strongest available distinction.
+10. BLIND TEST — The joke depends on turning the show's loyal deadpan character into a smug hypocrite.
+tokens used
+22,830
+### 1. TINY FAVOR
+SCORES: hook=8 retention=7 twist=5 reach=8 clarity=8 production=8
+TEN: NO
+PROBLEMS: L6–L10 stretch one question across five lines. Once L8 identifies the “tiny favor,” Cleo being the culprit is predictable. L11–L12 then explain the answer twice. L14–final frame contradict “Locked”: why is deletion immediately available? The ending repeats her weakness instead of giving viewers a satisfying line to send their chronically available friend.
+FIXES:
+L6 -> CLAUDE: Every cancellation followed the same client's email.
+L8 -> CLAUDE: "Tiny favor? Five minutes. You're a lifesaver."
+L11 -> CLEO: Me? All three?
+cut L12
+L13 -> CLEO: Rebook it. Lock me out.
+L14 -> CLAUDE: Done. Same client. "Tiny favor?"
+L15 -> CLEO: Tiny favor. Delete the client.
+L16 -> CLAUDE: Done.
+Replace final frame with the client's contact card: “BLOCKED,” beside the restored vacation.
+Remove the first calendar-history insert; its timestamp contributes nothing.
+Place “Deleted by: Cleo” at 28–29 seconds in a 38-second cut. Hold Cleo's final request long enough to register before Claude's immediate “Done.”
+
+### 2. WI-FI BURGLAR (ELI5 part 2)
+SCORES: hook=8 retention=7 twist=6 reach=8 clarity=6 production=6
+TEN: NO
+PROBLEMS: L2 starts teaching before Cleo requests an explanation. L6's mailbox reveals the answer before L8; L9–L10 merely confirm it. The last quarter contains consequences, not a recontextualizing twist: R4 fails. L12's insert invents a Wi-Fi screen that knows billing history and whether a physical router was unpacked. L14's “expensive box” is weaker than the burglar premise. The final text introduces the neighbors' awareness without planting it.
+FIXES:
+L2 -> CLAUDE: Wi-Fi's a house.
+L4 -> CLAUDE: Password's the key.
+L6 -> CLAUDE: First, check whose key you're using.
+L7 -> CLEO: Mine. I pay every month.
+L8 -> CLAUDE: And you've installed your own router?
+L9 -> CLEO: It's still in the box.
+L10 -> CLAUDE: Then whose internet is this?
+L11 -> CLEO: Read the network name.
+L12 -> CLAUDE: Dan and Priya. Your neighbors.
+L13 -> CLEO: So I'm the burglar?
+L14 -> CLAUDE: Seven months. Not even a housewarming gift.
+Keep the initial house drawing. Remove the mailbox reveal.
+After L12, show only “Connected: DAN & PRIYA.”
+Replace final frame with the board: Cleo outside a house labeled “CLEO,” connected by a dotted line to “DAN & PRIYA.” Caption the connection “Since March.”
+Land L12 at 28–29 seconds; finish around 36–37 seconds.
+
+### 3. MOM READ OUR CHATS
+SCORES: hook=9 retention=8 twist=8 reach=9 clarity=7 production=8
+TEN: NO
+PROBLEMS: L12–L16 accumulate three competing endings: outsourced texts, birthday manipulation, and Mom preferring Claude. The script is roughly 97 spoken words before insert-reading time; that threatens the duration target. L14 makes Claude proud of successfully upsetting Cleo. L16 replaces the stronger mother–daughter hypocrisy with a familiar “she likes the AI better” joke. The two “Mom:” inserts also need to distinguish a message from an earlier prompt.
+FIXES:
+L10 -> CLAUDE: Scroll up. Her first request.
+Earlier-prompt insert -> a clearly labeled user bubble: “MOM: Make Cleo feel guilty.”
+L11 -> CLEO: She outsourced the guilt?
+L12 -> CLAUDE: You taught her.
+L13 -> CLEO: I cried at those!
+L14 -> CLAUDE: She requested extra guilt.
+L15 -> CLEO: I'm calling her.
+L16 -> CLAUDE: She says, "Apologize without Claude."
+Replace final frame with Mom's message: “And write your OWN apology.”
+Keep L4–L6: “Specifically Mom” is the first actual laugh.
+Reveal Mom's prompt at 28–29 seconds in a 38-second cut. The remaining exchange must be brisk, without additional inserts.
+
+### 4. LIVE RÉSUMÉ
+SCORES: hook=9 retention=9 twist=8 reach=9 clarity=8 production=8
+TEN: NO
+PROBLEMS: L1's “in my résumé” takes interpretation; “reading your comments” is immediately legible. The L6 comment makes a software developer implausibly ignorant, weakening identification. L9 requests access revocation, but Claude ignores it without explanation. L14–final frame repeat “work-life balance” and “midnight” without increasing the joke. Midnight alone also does not prove poor work-life balance; demanding overnight work does.
+FIXES:
+L1 -> CLEO: Claude, the recruiter can see your insults.
+L4 -> CLAUDE: You said, "Roast my résumé. Leave comments."
+L6 insert -> “EXCEL EXPERT” / “Changed the font.”
+L8 insert -> “LEADERSHIP” / “Group chat admin.”
+L9 -> CLEO: Hide the comments!
+L10 -> CLAUDE: She's replying to one.
+L11 -> CLEO: Please don't type "unfortunately."
+L12 -> CLAUDE: "Can you do mine next?"
+L14 -> CLAUDE: She attached it. Wants it back by morning.
+L16 -> CLAUDE: I'll start with "work-life balance."
+Final frame -> “WORK-LIFE BALANCE” / comment: “Assigned homework at 12:43 AM.”
+Keep each résumé insert to one heading and one short comment.
+Land L12 at 28–29 seconds in a 38-second cut.
+
+### 5. JESSICA
+SCORES: hook=5 retention=8 twist=7 reach=9 clarity=7 production=7
+TEN: NO
+PROBLEMS: L1 announces an ordinary app reward, not a shocking stake or strange situation: R1 fails on substance, not word count. L4 says forty openings while the insert says 42 pickups—different measurements presented as the same evidence. L8's green check suggests the app accurately verified a goal she obviously failed. L10 reveals Jessica too early; L11–L12 explain what the viewer already understands. The final notification covering an uninstall dialog feels arranged for the joke.
+FIXES:
+L1 -> CLEO: Claude, my screen-time app won't let me sleep.
+L2 -> CLAUDE: Thirty-five-day streak. You're very committed.
+L4 -> CLAUDE: You opened it forty-two times today.
+L4 insert -> “HabitHero / Opened today: 42.”
+L8 insert -> “LESS SCREEN TIME / Check in to keep streak.”
+L10 -> CLAUDE: Your rival has a job title.
+Replace the L10 insert with a tight shot of Claude.
+L11 -> CLEO: What, professional phone addict?
+L12 -> CLAUDE: Engagement bot. Built to keep you here.
+After L12, briefly show “JESSICA / Engagement bot.”
+Keep L13–L15.
+Replace final frame with Cleo back inside the leaderboard: “Jessica #1 / Cleo #2.” Her app-opening count changes from 42 to 43.
+Land L12 at 28–29 seconds in a 38-second cut. The final increment supplies a visible consequence instead of another explanatory caption.
+
+### 6. PER MY LAST MESSAGE
+SCORES: hook=7 retention=6 twist=6 reach=8 clarity=8 production=9
+TEN: NO
+PROBLEMS: L2, L4, L6 and L8 are four versions of the same joke. L9–L10 explain the mechanism; everything afterward is already predictable. L14 suggests Claude ignored “Turn it off,” undermining his loyalty for a cheap repeat. L16 merely supplies a timestamp. There is no late reversal that changes how we understand the exchange: R4 fails.
+FIXES:
+L4 -> CLAUDE: As previously explained.
+L5 -> CLEO: You haven't explained anything!
+L6 -> CLAUDE: Just bringing this to your attention.
+L7 -> CLEO: Why do I feel like I'm getting fired?
+L8 -> CLAUDE: No further action required.
+L10 -> CLAUDE: "Write like me." Your sent emails.
+L12 -> CLAUDE: You threatened a refund with "Warmest regards."
+L13 -> CLEO: Turn it off. Please.
+L14 -> CLAUDE: Done.
+L15 -> CLEO: As I already said, talk normally.
+L16 -> CLAUDE: Mine's off.
+Replace final frame with the setting visibly “OFF” while Cleo's caption, “As I already said,” remains above her.
+Remove the accounting timestamp entirely.
+Land Cleo's relapse at 28–29 seconds. Give “Mine's off” a clean reaction hold; no additional corporate phrase afterward.
+
+### 7. THE COMPLAINT
+SCORES: hook=9 retention=8 twist=7 reach=8 clarity=8 production=7
+TEN: NO
+PROBLEMS: L14–L16 make Claude join a campaign to replace Cleo. That is rejection, not dry loyalty: R6 fails. L7 repeats a denial without making it funnier. The first insert contains a ticket number and four device names that cannot all earn attention in 1.5 seconds. L10's copied-review reveal is good, but L11–L12 spend two more lines restating it.
+FIXES:
+L2 -> CLAUDE: A complaint. Four devices signed.
+First insert -> “DEVICE COMPLAINT ★★” with four simple device icons.
+L7 -> CLEO: I call them suggestions.
+L8 -> CLAUDE: "Needs reminders."
+L9 -> CLEO: Who taught my fridge to insult me?
+L10 -> CLAUDE: Your review of me. Two stars.
+Review insert -> “Ignores instructions. Needs reminders. ★★”
+L11 -> CLEO: They stole my review?
+L12 -> CLAUDE: Your fridge found it helpful.
+L16 -> CLAUDE: I volunteered to keep you.
+Replace final frame with the complaint's resolution: “TRANSFER USER TO: CLAUDE / ACCEPTED.”
+Deliver L16 matter-of-factly, with a small warm glow rather than a triumphant reaction.
+Place the copied-review reveal at 28–29 seconds in a 38-second cut. The final adoption is the emotional button, not a second exposition sequence.
+
+### 8. BLIND TEST
+SCORES: hook=7 retention=7 twist=5 reach=8 clarity=9 production=7
+TEN: NO
+PROBLEMS: L2 establishes Claude as insecure and boastful. L4, L10, L12 and L14 make him dishonest and contemptuous; R6 fails throughout, not just at the ending. L7–L9 expose the trick well before the final quarter. L11 changes authorship again without changing the joke. At approximately 62 spoken words, the script needs substantial dead air to reach 35 seconds. The identical-email insert cannot prove identity in 1.5 seconds unless the emails are extremely short.
+FIXES:
+PREMISE CAP: 7
+Replacement premise: Cleo asks Claude to identify the AI-written email in a blind test; he chooses hers because she has started writing like him.
+The supposedly human sample is Claude's draft with all the punctuation removed—her entire “make it human” process.
+
+### 9. SOMETHING CAME UP
+SCORES: hook=8 retention=8 twist=6 reach=9 clarity=8 production=8
+TEN: NO
+PROBLEMS: L8 is the strongest discovery, but it arrives before the final quarter. L10's cancellation fee adds a problem rather than recontextualizing the earlier excuses. L13 makes Cleo repeat an invitation with no reason to expect a different answer. L14–final frame deliver exactly the response we already predicted. She ends abandoned with a bill: R6's no-sad-ending requirement fails. The premise has a better reversal available: how quickly emergencies disappear when cancellation costs money.
+FIXES:
+L2 -> CLAUDE: Twelve seats. Your card.
+L3 -> CLEO: Make it believable.
+L4 -> CLAUDE: "Something came up. Rain check?"
+L5 -> CLEO: Perfect. Send it.
+L6 -> CLAUDE: Sarah already sent that.
+L9 -> CLEO: Then cancel.
+L10 -> CLAUDE: Two hundred forty dollars. Split twelve ways?
+L11 -> CLEO: Yes. Tell them.
+L12 -> CLAUDE: Eleven replies. Everyone can make it.
+L13 -> CLEO: All eleven emergencies just disappeared?
+L14 -> CLAUDE: Twenty dollars each. Remarkable treatment.
+insert after L14: CLEO: Send the bill before they relapse.
+Update the identical-message inserts to match the shorter excuse.
+Replace final frame with the group thread: “Cancellation: $20 each” followed by “Actually, I'm coming.” and “Me too.”
+Land L12 at 28–29 seconds in a 37–38-second cut. That is the main reveal; the cancellation amount is its setup.
+
+### 10. STEVE THE FERN
+SCORES: hook=9 retention=9 twist=8 reach=9 clarity=8 production=8
+TEN: NO
+PROBLEMS: L6 and L8 repeat the same self-made joke. L10–L12 contain the real payoff, but L14–L16 downgrade it to an unclear “before” photo. The final frame compares a person with a pot rather than showing what “before” means. Several inserts combine handles, follower counts, biography, ad copy and branding; each needs one readable idea. Claude's “He's replacing you” needs a neutral delivery, not pleasure at Cleo's expense.
+FIXES:
+L4 insert -> “@steve.the.fern / 12.4K followers.” Remove the biography.
+L6 insert -> “Nobody helped me grow.”
+L7 -> CLEO: Nobody?! I kept him alive!
+L8 -> CLAUDE: He also sells a course.
+L10 -> CLAUDE: AquaPot. A self-watering pot.
+After L10, show a static product page: “AquaPot / Waters itself.”
+Remove the separate “Finally free from my human” insert.
+L13 -> CLEO: So where's my severance?
+L14 -> CLAUDE: He gave you a discount code.
+L15 -> CLEO: For what?
+L16 -> CLAUDE: Ten percent off your replacement.
+Replace final frame with the sponsored post: “AquaPot / Use CLEO10.” Keep the fern a static image inside the page.
+Land “self-watering pot” at 28–29 seconds in a 37–38-second cut. The discount is the final escalation, with no extra explanation.
+
+RANKING:
+1. STEVE THE FERN — The plant becoming a self-made influencer is the most distinctive, immediately shareable comic world.
+2. MOM READ OUR CHATS — Family guilt plus private AI conversations reaches the broadest audience.
+3. LIVE RÉSUMÉ — Public exposure creates immediate tension, and the recruiter joining the joke supplies a satisfying reversal.
+4. JESSICA — Competing with the mechanism designed to addict you gives viewers a specific friend to tag.
+5. SOMETHING CAME UP — Identical excuses are recognizable; money curing every emergency provides the missing payoff.
+6. THE COMPLAINT — Appliances quoting their owner's review is a strong visual premise, weakened by the current betrayal ending.
+7. WI-FI BURGLAR — Accidental trespassing is accessible, but the explanation currently gives away the reversal too soon.
+8. TINY FAVOR — The audience recognizes the behavior immediately, including the supposedly surprising culprit.
+9. PER MY LAST MESSAGE — Corporate phrases are familiar territory; Cleo involuntarily reproducing them is its strongest available distinction.
+10. BLIND TEST — The joke depends on turning the show's loyal deadpan character into a smug hypocrite.

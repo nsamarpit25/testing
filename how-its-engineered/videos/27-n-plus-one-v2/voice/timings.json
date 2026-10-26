@@ -1,0 +1,74 @@
+[
+ {
+  "li": 0,
+  "pi": 0,
+  "say": "Your orders page makes a hundred and one trips to the database, where your app keeps its data. It only needed two.",
+  "show": "Your orders page makes [101 trips] to the database, where your app keeps its data. It only needed *two.*",
+  "start": 0.0,
+  "end": 5.24
+ },
+ {
+  "li": 1,
+  "pi": 0,
+  "say": "First, your code asks for the last hundred orders. That's one trip.",
+  "show": "First, your code asks for the last *100 orders.* That's [one trip.]",
+  "start": 5.82,
+  "end": 8.32
+ },
+ {
+  "li": 2,
+  "pi": 0,
+  "say": "Then, for each order, it goes back and asks: who's the customer? One trip per order. A hundred more.",
+  "show": "Then, for *each order,* it goes back and asks: who's the customer? *One trip per order.* [A hundred more.]",
+  "start": 8.74,
+  "end": 13.38
+ },
+ {
+  "li": 3,
+  "pi": 0,
+  "say": "Every trip waits on the network and the database. A hundred small waits add up to a slow page.",
+  "show": "Every trip *waits* on the network and the database. A hundred small waits add up to [a slow page.]",
+  "start": 14.1,
+  "end": 17.94
+ },
+ {
+  "li": 4,
+  "pi": 0,
+  "say": "Each request is called a query. This is the N plus one problem: one query for the list, then one more for each of the N orders.",
+  "show": "Each request is called a *query.* This is the [N+1 problem:] *one* query for the list, then one more for each of the *N* orders.",
+  "start": 18.5,
+  "end": 24.16
+ },
+ {
+  "li": 5,
+  "pi": 0,
+  "say": "Like a waiter who fetches plates one at a time, instead of carrying them all on one tray.",
+  "show": "Like a waiter who fetches plates *one at a time,* instead of carrying them all on [one tray.]",
+  "start": 24.64,
+  "end": 27.64
+ },
+ {
+  "li": 6,
+  "pi": 0,
+  "say": "The fix: get the orders, then ask for all their customers together, in one query. Two trips total. Your ORM, the library that writes your queries, usually has an option for this, often called eager loading.",
+  "show": "The fix: get the orders, then ask for [all their customers together,] in one query. *Two trips* total. Your ORM, the library that writes your queries, usually has an option for this, often called *eager loading.*",
+  "start": 28.46,
+  "end": 37.7
+ },
+ {
+  "li": 7,
+  "pi": 0,
+  "say": "AI-written code can do this too. Log your database queries and check: does a page make a few, or hundreds?",
+  "show": "AI-written code can do this too. Log your database queries and check: does a page make *a few,* or [hundreds?]",
+  "start": 38.26,
+  "end": 42.62
+ },
+ {
+  "li": 8,
+  "pi": 0,
+  "say": "If you're a vibe coder, follow for the system design your AI skipped.",
+  "show": "If you're a vibe coder, follow for the system design your AI [skipped.]",
+  "start": 43.2,
+  "end": 45.86
+ }
+]

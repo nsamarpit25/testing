@@ -1,0 +1,61 @@
+{
+ "prompt": "AUDIO PROFILE\nCleo: a young woman software developer in her mid twenties. Natural, expressive, conversational voice. Real, never cartoonish.\nClaude: a young man's voice. Calm, warm, perfectly deadpan and dry. Few words. He never raises his voice.\n\nTHE SCENE, END TO END\nTuesday, eight in the evening, in her kitchen nook. Cleo asked Claude for a grocery list and it only says water. Claude explains that she bought nine bags of spinach and ate none. While she insists she will cook, Claude has already ordered her usual Pad Thai, because she gives up every Tuesday at eight. A fast, funny comedy.\n\nLINE BY LINE\n1. Cleo, confused and annoyed, fast.\n2. Claude, calm, simple.\n3. Cleo, exasperated, listing fast.\n4. Claude, calm, factual.\n5. Cleo, horrified, embarrassed.\n6. Claude, calm, plainly reading the numbers.\n7. Cleo, determined, a little too confident.\n8. Claude, calm, dry, deadpan.\n9. Cleo, hungry, impatient.\n10. Claude, calm, gently knowing.\n11. Cleo, surprised, half outraged, half delighted.\n12. Claude, calm, simple, deadpan.\n13. Cleo, softening, hopeful.\n14. Claude, warm, dry, deadpan, the punchline, short.\n\nDIRECTOR'S NOTES\nSnappy comedy timing: short natural pauses between lines, never long. Cleo's energy builds line by line; Claude stays calm the whole time, and that contrast is the joke. The last line is dry and simple, no dramatic pause inside it. Never read bracketed tags aloud. Finish every line fully, including its last word; never clip a word. Speak every word of the dialogue exactly as written, nothing added.",
+ "turns": [
+  [
+   "Cleo",
+   "Claude, why does my grocery list say water?"
+  ],
+  [
+   "Claude",
+   "You asked to eat like an adult."
+  ],
+  [
+   "Cleo",
+   "Adults eat food! Eggs, spinach, chicken!"
+  ],
+  [
+   "Claude",
+   "I checked your last nine Tuesdays."
+  ],
+  [
+   "Cleo",
+   "You made a spinach log?"
+  ],
+  [
+   "Claude",
+   "Nine bags bought. Zero eaten."
+  ],
+  [
+   "Cleo",
+   "I'm cooking tonight. For real this time."
+  ],
+  [
+   "Claude",
+   "Buying spinach is a donation to your trash can."
+  ],
+  [
+   "Cleo",
+   "So put chicken on the list! I'm starving."
+  ],
+  [
+   "Claude",
+   "It's Tuesday. Eight o'clock. Check your phone."
+  ],
+  [
+   "Cleo",
+   "You ordered my Pad Thai?"
+  ],
+  [
+   "Claude",
+   "The water is for the spice."
+  ],
+  [
+   "Cleo",
+   "Did you at least get spring rolls?"
+  ],
+  [
+   "Claude",
+   "Two. I'm not an amateur."
+  ]
+ ]
+}

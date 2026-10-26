@@ -1,0 +1,57 @@
+{
+ "topic": "Saga pattern",
+ "lines": [
+  [
+   {
+    "say": "Your flight and hotel are paid for. Then the car booking fails.",
+    "show": "Your *flight* and *hotel* are paid for. Then the car booking [fails.]"
+   },
+   {
+    "say": "Who gets your money back?",
+    "show": "Who gets your [money back?]"
+   }
+  ],
+  [
+   {
+    "say": "Separate programs handle each booking and keep their own records. There's no shared undo button.",
+    "show": "*Separate programs* handle each booking and keep their own records. There's no [shared undo button.]"
+   }
+  ],
+  [
+   {
+    "say": "The saga pattern runs the steps one by one, with a cleanup plan for each step if something fails.",
+    "show": "The [saga pattern] runs the steps *one by one,* with a [cleanup plan] for each step if something fails."
+   }
+  ],
+  [
+   {
+    "say": "First, the flight and hotel bookings succeed. Then the car booking fails.",
+    "show": "First, the *flight* and *hotel* bookings succeed. Then the car booking [fails.]"
+   }
+  ],
+  [
+   {
+    "say": "So the saga cleans up backwards: cancel the hotel, then the flight, and request your refunds.",
+    "show": "So the saga cleans up [backwards:] cancel the hotel, then the flight, and request your *refunds.*"
+   }
+  ],
+  [
+   {
+    "say": "Like a travel agent cancelling your trip step by step, in reverse.",
+    "show": "Like a *travel agent* cancelling your trip step by step, [in reverse.]"
+   }
+  ],
+  [
+   {
+    "say": "These cleanup steps are called compensating actions, and you write them. AWS Step Functions can run the whole saga.",
+    "show": "These cleanup steps are called [compensating actions,] and *you write them.* *AWS Step Functions* can run the whole saga."
+   }
+  ],
+  [
+   {
+    "say": "If you're a vibe coder, follow for the system design your AI skipped.",
+    "show": "If you're a vibe coder, follow for the system design your AI [skipped.]"
+   }
+  ]
+ ]
+}

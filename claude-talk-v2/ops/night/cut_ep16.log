@@ -1,0 +1,24 @@
+01 cleo   cut   0.00-  6.96  speech   0.00-  6.74 | Claude, checkout's extinct. A hundred and twenty-eight commits. I'm checking them one by one.
+02 claude cut   6.96- 11.76  speech   7.52- 11.62 | Here we observe the junior developer, in her natural habitat.
+03 claude cut  11.76- 18.83  speech  12.22- 18.14 | She is on commit four. At this pace, she will finish on Thursday.
+04 cleo   cut  18.83- 21.39  speech  19.20- 21.12 | Are you... narrating me?
+05 claude cut  21.39- 23.74  speech  21.60- 23.74 | The developer has noticed us.
+06 claude cut  23.74- 34.49  speech  23.74- 34.42 | Run git bisect start. Mark an earlier commit good, the broken one bad. Git picks between them.
+07 cleo   cut  34.49- 35.99  speech  34.94- 35.74 | And then?
+08 claude cut  35.99- 44.28  speech  36.46- 43.96 | Test checkout. Tell Git good or bad. Repeat. Each test roughly halves the suspects.
+09 cleo   cut  44.28- 50.52  speech  44.96- 50.30 | Bad. Good. Good. Bad. Good. Bad. Bad.
+10 claude cut  50.52- 56.71  speech  52.02- 56.42 | A hundred and twenty-eight suspects. Seven checks. Remarkable.
+11 cleo   cut  56.71- 65.15  speech  57.30- 64.54 | Found it! "Small harmless cleanup." Who wrote... oh. It's me.
+12 claude cut  65.15- 68.37  speech  65.58- 67.72 | Cause of extinction: the developer.
+01 cleo    6.48s 15w 2.32w/s  | Claude, checkout's extinct. A hundred and twenty-eight commits. I'm checking them one by one.
+02 claude  4.46s 10w 2.24w/s  | Here we observe the junior developer, in her natural habitat.
+03 claude  6.87s 13w 1.89w/s  | She is on commit four. At this pace, she will finish on Thursday.
+04 cleo    1.98s  4w 2.02w/s  | Are you... narrating me?
+05 claude  2.10s  5w 2.38w/s  | The developer has noticed us.
+06 claude 10.08s 17w 1.69w/s  | Run git bisect start. Mark an earlier commit good, the broken one bad. Git picks between them.
+07 cleo    0.64s  2w 3.11w/s  | And then?
+08 claude  8.18s 14w 1.71w/s  | Test checkout. Tell Git good or bad. Repeat. Each test roughly halves the suspects.
+09 cleo    5.52s  7w 1.27w/s <-- CHECK | Bad. Good. Good. Bad. Good. Bad. Bad.
+10 claude  5.67s  9w 1.59w/s <-- CHECK | A hundred and twenty-eight suspects. Seven checks. Remarkable.
+11 cleo    7.67s 10w 1.30w/s <-- CHECK | Found it! "Small harmless cleanup." Who wrote... oh. It's me.
+12 claude  2.86s  5w 1.75w/s  | Cause of extinction: the developer.

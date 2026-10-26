@@ -1,0 +1,66 @@
+[
+ {
+  "li": 0,
+  "pi": 0,
+  "say": "In February twenty-ten, South Koreans were reported tapping iPhones with snack sausages, to keep their gloves on.",
+  "show": "In February 2010, South Koreans were reported tapping iPhones with *snack sausages,* to keep [their gloves on.]",
+  "start": 0.0,
+  "end": 6.46
+ },
+ {
+  "li": 1,
+  "pi": 0,
+  "say": "Because your phone ignores a wool glove, however hard you press. So what is your screen feeling for?",
+  "show": "Because your phone ignores a *wool glove,* however hard you press. So what is your screen [feeling for?]",
+  "start": 7.02,
+  "end": 11.64
+ },
+ {
+  "li": 2,
+  "pi": 0,
+  "say": "Under the glass sits an invisible grid of see-through wires: rows one way, columns the other.",
+  "show": "Under the glass sits an *invisible grid* of see-through wires: rows one way, [columns the other.]",
+  "start": 12.3,
+  "end": 16.58
+ },
+ {
+  "li": 3,
+  "pi": 0,
+  "say": "The phone sends tiny electric pulses along the rows, and measures what reaches each column, many times a second.",
+  "show": "The phone sends tiny *electric pulses* along the rows, and measures what reaches each column, [many times a second.]",
+  "start": 17.12,
+  "end": 22.26
+ },
+ {
+  "li": 4,
+  "pi": 0,
+  "say": "Your finger is mostly salty water, so charge moves through it. Bring it close, and it draws away part of the signal at the crossings under it.",
+  "show": "Your finger is mostly *salty water,* so charge moves through it. Bring it close, and it draws away part of the signal [at the crossings under it.]",
+  "start": 23.02,
+  "end": 29.22
+ },
+ {
+  "li": 5,
+  "pi": 0,
+  "say": "By comparing neighbouring crossings, the phone finds the centre of your touch, even between wires.",
+  "show": "By comparing neighbouring crossings, the phone finds the *centre of your touch,* [even between wires.]",
+  "start": 29.22,
+  "end": 34.2
+ },
+ {
+  "li": 6,
+  "pi": 0,
+  "say": "A wool glove or a fingernail barely changes the signal. Water can, so a wet screen sometimes taps by itself.",
+  "show": "A wool glove or a fingernail *barely changes* the signal. Water can, so a wet screen sometimes [taps by itself.]",
+  "start": 34.94,
+  "end": 40.6
+ },
+ {
+  "li": 7,
+  "pi": 0,
+  "say": "And the sausage? Salty, moist meat changes that signal too. Your screen never knew it was your finger. It only feels a change in the signal, and a sausage can fake that.",
+  "show": "And the sausage? *Salty, moist meat* changes that signal too. Your screen never knew it was your finger. It only feels a change in the signal, and [a sausage can fake that.]",
+  "start": 41.38,
+  "end": 49.4
+ }
+]

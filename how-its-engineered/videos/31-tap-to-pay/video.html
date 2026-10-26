@@ -1,0 +1,397 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- 31 Tap to pay, solid low-poly dioramas (kit.js + scenes.js + tappay.js). Story: your card has no battery; the
+     machine makes a changing magnetic field; a coil round the card's edge turns it into electricity and wakes the chip;
+     the chip answers through the same field with your number and a one-time code; normally the machine asks your bank;
+     London's Tube gates (2014) check the card is genuine on the spot and let the bank check later; the twist: before
+     the machine takes your money, it gives your card electricity. Beats come from voice/words.js. -->
+<link rel="stylesheet" href="../_ember/fonts.css">
+<link rel="stylesheet" href="lib/reel.css">
+<style>
+#stage { background: #0b0a09; }
+#vig { background: radial-gradient(120% 82% at 50% 44%, rgba(8,6,4,0) 52%, rgba(8,6,4,0.72) 100%); }
+#hud { pointer-events: none; }
+/* HUD: dark glass cards with a short accent bar; the label carries the beat's colour, the value stays white */
+.hc { position: absolute; left: 0; top: 0; display: none; padding: 9px 15px 10px 17px; border-radius: 10px; background: linear-gradient(180deg, rgba(36,33,31,0.93), rgba(19,17,16,0.93)); border: 1px solid rgba(255,255,255,0.075); box-shadow: 0 12px 30px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06); white-space: nowrap; transform-origin: 0 0; }
+.hc::before { content: ''; position: absolute; left: 7px; top: 10px; bottom: 10px; width: 3px; border-radius: 2px; background: var(--c); box-shadow: 0 0 8px var(--cg); }
+.hc .k { font: 650 9.5px/1 Inter; letter-spacing: 1.5px; color: var(--c); text-transform: uppercase; }
+.hc .v { font: 750 19px/1.05 Inter; letter-spacing: -0.3px; margin-top: 6px; color: #f5f4f3; }
+.hc.big .v { font-size: 24px; }
+.hc .v.mono { font-family: Mono; letter-spacing: 1px; }
+.hp { position: absolute; left: 0; top: 0; display: none; font: 600 11px/1 Inter; padding: 6px 10px 6px 9px; border-radius: 20px; background: rgba(24,22,20,0.9); border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 6px 16px rgba(0,0,0,0.4); color: #e6e3e0; white-space: nowrap; transform-origin: 0 0; }
+.hp::before { content: ''; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--c); margin-right: 6px; vertical-align: 1px; }
+.hp.hot { border-color: var(--cg); }
+#cap .box { left: 50%; right: auto; transform: translateX(-50%); padding: 0 10px; background: none; }
+#cap .box::before, #cap .box::after { content: ''; position: absolute; width: 8px; height: 8px; border: 1.6px solid #ff6a1f; }
+#cap .box::before { left: -2px; top: -4px; border-width: 1.6px 0 0 1.6px; }
+#cap .box::after { right: -2px; bottom: -4px; border-width: 0 1.6px 1.6px 0; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="world">
+    <canvas id="cv" width="1080" height="1920"></canvas>
+    <div class="layer" id="lbls"></div>
+  </div>
+</div>
+<script src="../../tools/lib.js"></script>
+<script src="voice/words.js"></script>
+<script src="lib/three.js"></script>
+<script src="../_ember/world.js"></script>
+<script src="lib/base.js"></script>
+<script src="kit.js"></script>
+<script src="scenes.js"></script>
+<script src="tappay.js"></script>
+<script>
+for (let i = 0; i < 18; i++) { const m = new TH.Mesh(new TH.RingGeometry(0.9, 1, 96), new TH.MeshBasicMaterial({ color: 0xffffff, transparent: true, blending: TH.AdditiveBlending, depthWrite: false, toneMapped: false, side: TH.DoubleSide })); m.visible = false; scene.add(m); RINGS.push(m); }
+// Signals: crisp thin rings that open out from a device, and thin lines that draw themselves from one device to the
+// next with a bright head on the tip. No wide halos, no light beams.
+const RING_TX = ctex(512, 512, (g, w, h) => {
+  const gr = g.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, w / 2);
+  gr.addColorStop(0, 'rgba(255,255,255,0)'); gr.addColorStop(0.8, 'rgba(255,255,255,0.025)'); gr.addColorStop(0.985, 'rgba(255,255,255,0.06)'); gr.addColorStop(1, 'rgba(255,255,255,0)');
+  g.fillStyle = gr; g.fillRect(0, 0, w, h);
+  g.strokeStyle = '#ffffff'; g.lineWidth = 3.2; g.beginPath(); g.arc(w / 2, h / 2, w / 2 - 6, 0, 7); g.stroke();
+});
+const RING_G = new TH.PlaneGeometry(2, 2);
+for (const m of RINGS) { m.geometry = RING_G; m.material.map = RING_TX; m.material.needsUpdate = true; }
+function ripple(t, t0, x, y, z, col, maxR, dur = 0.9) {
+  const p = prog(t, t0, t0 + dur); if (p <= 0 || p >= 1 || ringI >= RINGS.length) return;
+  const m = RINGS[ringI++], r = maxR * (0.1 + 0.9 * ease.out(p));
+  m.visible = true; m.position.set(x, y, z); m.scale.set(r, r, 1); m.material.color.set(col); m.material.opacity = 0.85 * Math.pow(1 - p, 1.3) * Math.min(1, p * 12);
+}
+// a ring placed directly (the field's rising rings)
+function ringAt(x, y, z, r, col, a) {
+  if (a <= 0.01 || ringI >= RINGS.length) return;
+  const m = RINGS[ringI++]; m.visible = true; m.position.set(x, y, z); m.scale.set(r, r, 1); m.material.color.set(col); m.material.opacity = a;
+}
+// signal lines: a pool of pixel-width lines (core + faint halo) whose segments are rewritten in place each frame
+const LMAX = 8, LINKS = [];
+const dotSprite = () => { const sp = new TH.Sprite(new TH.SpriteMaterial({ map: TX_ORB, transparent: true, blending: TH.AdditiveBlending, depthWrite: false, depthTest: false, toneMapped: false })); sp.visible = false; sp.renderOrder = 6; scene.add(sp); return sp; };
+for (let i = 0; i < 8; i++) {
+  const geo = new TH.LineGeometry(); geo.setPositions(new Array(LMAX * 3).fill(0).map((_, k) => k));
+  const core = new TH.Line2(geo, lineMat(O, 3.4)), halo = new TH.Line2(geo, lineMat(O, 11, { add: true, op: 0.16 }));
+  core.renderOrder = 5; halo.renderOrder = 4;
+  for (const l of [core, halo]) { l.frustumCulled = false; l.visible = false; scene.add(l); }
+  LINKS.push({ geo, core, halo, head: dotSprite(), end: dotSprite() });
+}
+let linkI = 0;
+function linksReset() { linkI = 0; for (const L of LINKS) L.core.visible = L.halo.visible = L.head.visible = L.end.visible = false; }
+function subLine(pts, q0, q1) {
+  const d = [0]; for (let i = 1; i < pts.length; i++) d.push(d[i - 1] + Math.hypot(...[0, 1, 2].map((j) => pts[i][j] - pts[i - 1][j])));
+  const L = d[d.length - 1], at_ = (u) => { let i = 1; while (i < pts.length - 1 && d[i] < u) i++; const k = (u - d[i - 1]) / Math.max(1e-6, d[i] - d[i - 1]); return [0, 1, 2].map((j) => lerp(pts[i - 1][j], pts[i][j], clamp(k))); };
+  const u0 = q0 * L, u1 = q1 * L, out = [at_(u0)];
+  for (let i = 1; i < pts.length - 1; i++) if (d[i] > u0 && d[i] < u1) out.push(pts[i]);
+  out.push(at_(u1)); return out;
+}
+// link(t, pts, t0, dur, t1, col): draws on along pts over [t0, t0+dur] (eased), holds, fades out at t1. o.travel: the
+// tail follows the head, so it reads as one message moving; o.a: opacity
+function link(t, pts, t0, dur, t1, col, o = {}) {
+  if (t < t0 || t > t1 || linkI >= LINKS.length) return null;
+  const L = LINKS[linkI++], q = ease.inOut(prog(t, t0, t0 + dur)), q0 = o.travel ? ease.inOut(prog(t, t0 + dur * 0.35, t0 + dur * 1.25)) : 0;
+  const a = (o.a ?? 1) * (1 - ep(t, t1 - 0.25, t1)) * (o.travel ? 1 - ep(t, t0 + dur * 1.05, t0 + dur * 1.25) : 1);
+  if (q <= 0.001 || a <= 0.01) return null;
+  const part = subLine(pts, q0, q).slice(0, LMAX), arr = L.geo.attributes.instanceStart.data.array;
+  for (let i = 0; i < part.length - 1; i++) arr.set([...part[i], ...part[i + 1]], i * 6);
+  L.geo.attributes.instanceStart.data.needsUpdate = true; L.geo.instanceCount = part.length - 1;
+  for (const [l, k] of [[L.core, 1], [L.halo, 0.16]]) { l.visible = true; l.material.color.set(col); l.material.opacity = a * k; }
+  const tip = part[part.length - 1], px = 1 / cam.s;
+  if (q < 0.999 || o.travel) { L.head.visible = true; L.head.position.set(...tip); L.head.material.color.set(mixHex(col, '#ffffff', 0.5)); L.head.material.opacity = a; L.head.scale.set(16 * px, 16 * px, 1); }
+  if (q >= 0.999 && !o.travel) { const k = ease.out(prog(t, t0 + dur, t0 + dur + 0.25)); L.end.visible = true; L.end.position.set(...tip); L.end.material.color.set(col); L.end.material.opacity = a * (0.6 + 0.4 * (1 - k)); L.end.scale.set((10 + 14 * (1 - k)) * px, (10 + 14 * (1 - k)) * px, 1); }
+  return tip;
+}
+
+/* ---------------- beats */
+const T = {
+  no: at('no'), battery: at('battery'), so1: at('so'), talk: at('talk'), machine1: at('machine'), tap1: at('tap'),
+  the2: at('the', 3), powers: at('powers'), invisible: at('invisible'), magnetic: at('magnetic'), keeps: at('keeps'), changing: at('changing'),
+  hidden: at('hidden'), edge: at('edge'), coil: at('coil'), wire: at('wire'),
+  bring: at('bring'), close: at('close'), creates: at('creates'), elec1: at('electricity'), wake: at('wake'), chip2: at('chip', 2),
+  answers: at('answers'), field3: at('field', 3), doesnt: at("doesn't"), number: at('number'), adds: at('adds'), one: at('one'), only: at('only'), payment: at('payment'),
+  usually: at('usually'), sends: at('sends'), bank2: at('bank', 2), checks1: at('checks'), approves: at('approves'), declines: at('declines'), within: at('within'), seconds: at('seconds'),
+  in2: at('in', 2), y2014: at('2014'), london: at('london'), tap2: at('tap', 2), bank3: at('bank', 3), tube: at('tube'),
+  but: at('but'), gate: at('gate'), cant: at("can't"), wait: at('wait'), so2: at('so', 2), checks2: at('checks', 2), genuine: at('genuine'), fast: at('fast'), keep2: at('keep'), walking: at('walking'),
+  bank5: at('bank', 5), later: at('later'),
+  so3: at('so', 3), before: at('before'), take: at('take'), money: at('money'), give: at('give'), something: at('something'), first: at('first'), elec2: at('electricity', 2), follow: at('follow'),
+};
+const CUT = { CAFE: T.so1 - 0.05, FIELD: T.the2 - 0.06, COIL: T.hidden - 0.1, CLOSE: T.bring - 0.08, ANS: T.answers - 0.3, SEND: T.usually - 0.08,
+  BANK: T.bank2 - 0.26, APPR: T.within - 0.36, TUBE: T.in2 - 0.14, GATE: T.but - 0.12, WALK: T.fast - 0.12, LATER: T.bank5 - 0.12, TWIST: T.so3 - 0.1, END: T.follow - 0.15 };
+
+/* ---------------- build */
+const ST = buildTapStudio(), DC = buildDC(), CF = buildCafe(), TB = buildTube();
+const SC = ST.scrW, CARD = ST.card;
+// set the café machine right under your outstretched hand
+reach(CF.you, 1); CF.you.root.updateMatrixWorld(true);
+{ const cp = wpos(CF.card); CF.term.g.position.set(cp[0] - 1, cp[1] - 2, 105); CF.term.g.updateMatrixWorld(true); const v = new TH.Vector3(...CF.term.scr); CF.term.g.localToWorld(v); CF.scrW = [v.x, v.y, v.z]; }
+const HOLO = { lock: holo(ICO.lock, 34, O), bolt: holo((g, S, col) => { g.fillStyle = col; g.shadowColor = col; g.shadowBlur = 10; g.beginPath(); g.moveTo(S * 0.56, S * 0.1); g.lineTo(S * 0.28, S * 0.56); g.lineTo(S * 0.48, S * 0.56); g.lineTo(S * 0.42, S * 0.9); g.lineTo(S * 0.72, S * 0.42); g.lineTo(S * 0.52, S * 0.42); g.closePath(); g.fill(); }, 44, O), bank: holo((g, S, col) => { g.strokeStyle = col; g.fillStyle = col; g.lineWidth = S * 0.05; g.shadowColor = col; g.shadowBlur = 8; g.beginPath(); g.moveTo(S * 0.18, S * 0.36); g.lineTo(S * 0.5, S * 0.16); g.lineTo(S * 0.82, S * 0.36); g.closePath(); g.fill(); for (let i = 0; i < 4; i++) g.fillRect(S * (0.24 + i * 0.15), S * 0.42, S * 0.06, S * 0.3); g.fillRect(S * 0.18, S * 0.76, S * 0.64, S * 0.06); }, 120, RED) };
+
+/* ---------------- screens */
+const S6 = (g, S, x, y, fn, col) => { g.save(); g.translate(x - S / 2, y - S / 2); fn(g, S, col); g.restore(); };
+const UI = { tx: '#f5f4f3', tx2: '#a39e99', tx3: '#6f6a66' };
+function rr(g, x, y, w, h, r, fill, stroke, lw = 2) { g.beginPath(); g.roundRect(x, y, w, h, r); if (fill) { g.fillStyle = fill; g.fill(); } if (stroke) { g.strokeStyle = stroke; g.lineWidth = lw; g.stroke(); } }
+function dot(g, x, y, r, fill) { g.beginPath(); g.arc(x, y, r, 0, 7); g.fillStyle = fill; g.fill(); }
+function tx(g, s, x, y, font, col, al = 'left', bl = 'alphabetic') { g.font = font; g.fillStyle = col; g.textAlign = al; g.textBaseline = bl; g.fillText(s, x, y); }
+function check(g, x, y, s, col) { g.strokeStyle = col; g.lineWidth = s * 0.14; g.lineCap = 'round'; g.lineJoin = 'round'; g.beginPath(); g.moveTo(x - s * 0.3, y); g.lineTo(x - s * 0.08, y + s * 0.22); g.lineTo(x + s * 0.32, y - s * 0.24); g.stroke(); }
+function waves(g, x, y, s, col) { g.strokeStyle = col; g.lineWidth = s * 0.09; g.lineCap = 'round'; for (let i = 0; i < 4; i++) { g.beginPath(); g.arc(x - s * 0.3 + i * s * 0.16, y, s * (0.12 + i * 0.16), -0.75, 0.75); g.stroke(); } }
+// the machine's screen in a 600-wide design space: the four contactless lights along the top, then the step it is on
+// mode 'pay' | 'read' | 'send' | 'ok'; lights = how many of the four are lit
+function termScreen(g, W0, H0, mode, lights, t) {
+  const k = W0 / 600; g.scale(k, k); const W = 600, H = H0 / k;
+  g.fillStyle = '#0d0c0b'; g.fillRect(0, 0, W, H);
+  const gr = g.createRadialGradient(W / 2, H * 0.55, 10, W / 2, H * 0.55, 420); gr.addColorStop(0, 'rgba(255,106,31,0.12)'); gr.addColorStop(1, 'rgba(255,106,31,0)'); g.fillStyle = gr; g.fillRect(0, 0, W, H);
+  for (let i = 0; i < 4; i++) { const x = 168 + i * 88, on = i < lights; if (on) { g.save(); g.shadowColor = O; g.shadowBlur = 24; dot(g, x, 56, 17, O); g.restore(); } else dot(g, x, 56, 17, '#2a2725'); }
+  if (mode === 'pay') {
+    tx(g, '£4.20', W / 2, 220, '800 128px Inter', UI.tx, 'center');
+    waves(g, W / 2 - 10, 360, 150, O);
+    tx(g, 'Hold card here', W / 2, 500, '650 44px Inter', UI.tx2, 'center');
+  }
+  if (mode === 'read') {
+    tx(g, '£4.20', W / 2, 200, '800 104px Inter', UI.tx, 'center');
+    const p = (t * 1.6) % 1; g.strokeStyle = '#2a2725'; g.lineWidth = 16; g.beginPath(); g.arc(W / 2, 340, 66, 0, 7); g.stroke();
+    g.strokeStyle = O; g.lineCap = 'round'; g.beginPath(); g.arc(W / 2, 340, 66, p * 6.28, p * 6.28 + 1.9); g.stroke();
+    tx(g, 'Reading card', W / 2, 500, '650 44px Inter', UI.tx2, 'center');
+  }
+  if (mode === 'send') {
+    tx(g, '£4.20', W / 2, 200, '800 104px Inter', UI.tx, 'center');
+    for (let i = 0; i < 3; i++) dot(g, W / 2 - 60 + i * 60, 340, 16, (Math.floor(t * 5) % 3) === i ? O : '#3a3633');
+    tx(g, 'Asking your bank', W / 2, 500, '650 44px Inter', UI.tx2, 'center');
+  }
+  if (mode === 'ok') {
+    g.save(); g.shadowColor = O; g.shadowBlur = 30; dot(g, W / 2, 250, 112, O); g.restore();
+    check(g, W / 2, 250, 160, '#fff');
+    tx(g, 'Approved', W / 2, 450, '800 72px Inter', UI.tx, 'center');
+    tx(g, '£4.20', W / 2, 520, '650 44px Inter', UI.tx2, 'center');
+  }
+}
+function paintTerm(TM, t, mode, lights) { const key = mode + lights + (mode === 'read' || mode === 'send' ? Math.floor(t * 20) : ''); TM.s.draw(key, (g, W, H) => termScreen(g, W, H, mode, lights, t)); }
+
+/* ---------------- camera */
+const CUTS = [];
+const cut = (t, f, s, o = {}) => CUTS.push({ t, f, s, ...o });
+const SCz = (dz, dx = 0, dy = 0) => [SC[0] + dx, SC[1] + dy, SC[2] + dz];
+// the hero commuter at the gate: walks in slowly, taps, is checked, the paddles open, walks on at full pace
+const HX0 = -190, HV0 = 45, HT1 = T.genuine + 0.35;
+function heroX(t) {
+  if (t < CUT.GATE - 0.3) return -9000;
+  const t0 = CUT.GATE, xr = -98, tr = t0 + (xr - HX0) / HV0;   // walks up to the reader, holds the card there until it's checked
+  if (t < tr) return HX0 + HV0 * (t - t0);
+  if (t < HT1) return xr + 8 * ep(t, tr, HT1);
+  const d = t - HT1, ramp = 0.5; // then off at full pace, 0 → 140 cm/s
+  return xr + 8 + 140 * (d < ramp ? d * d / (2 * ramp) : ramp / 2 + (d - ramp));
+}
+cut(0, SCz(42, 0, -4), 2.15, { push: 1.1, a: -0.62, e: 0.52, sy: 430 });
+cut(CUT.CAFE, [CF.scrW[0] - 30, CF.scrW[1] + 10, 95], 1.55, { push: 1.1, a: -0.62, e: 0.5, sy: 440 });
+cut(CUT.FIELD, SCz(46), 1.55, { a: -0.62, e: 0.36, push: 1.08, sy: 470 });
+cut(CUT.COIL, SCz(72, 0, 0), 4.0, { a: -0.5, e: 0.5, push: 1.06, sy: 440 });
+cut(CUT.CLOSE, SCz(40), 2.3, { a: -0.62, e: 0.42, push: 1.06, sy: 450 });
+cut(CUT.ANS, SCz(22, -12, 0), 3.0, { a: -0.55, e: 0.5, sy: 450, keys: [{ t: T.adds - 0.25, d: 0.7, f: SCz(24, -16, 4), s: 3.7 }] });
+cut(CUT.SEND, SCz(150), 1.05, { a: -0.62, e: 0.42, push: 1.05, sy: 520 });
+cut(CUT.BANK, [DC.hotTop[0], DC.hotTop[1], 120], 0.95, { push: 1.06, sy: 440 });
+cut(CUT.APPR, SCz(0, 0, 0), 4.6, { a: -0.5, e: 1.0, push: 1.04, sy: 420 });
+cut(CUT.TUBE, wz('TUBE', 20, 0, 70), 0.95, { a: -0.82, e: 0.5, push: 1.06, sy: 520 });
+cut(CUT.GATE, wz('TUBE', -90, -30, 95), 2.1, { a: -0.75, e: 0.44, push: 1.05, sy: 450 });
+cut(CUT.WALK, wz('TUBE', heroX(CUT.WALK) + 30, 0, 95), 1.6, { a: -0.8, e: 0.42, pan: [heroX(CUT.LATER) - heroX(CUT.WALK) - 20, 0, 0], sy: 450 });
+cut(CUT.LATER, wz('TUBE', 40, 0, 230), 0.72, { a: -0.82, e: 0.42, push: 1.05, sy: 520 });
+cut(CUT.TWIST, SCz(34), 1.9, { a: -0.62, e: 0.46, push: 1.22, sy: 440 });
+const SHOTS = [];
+CUTS.forEach((c, i) => {
+  const nx = CUTS[i + 1] ? CUTS[i + 1].t : DURATION + 1, k = { t: c.t, d: 0, f: c.f, s: c.s, a: c.a ?? -0.7, e: c.e ?? 0.6, sy: c.sy ?? 450 };
+  const pv = CUTS[i - 1], near = pv && Math.hypot(c.f[0] - pv.f[0], c.f[1] - pv.f[1]) < 1500 && !c.cut;
+  if (near) { k.d = Math.min(0.55, (nx - c.t) * 0.4); k.ez = ease.inOut; k.g = true; }
+  SHOTS.push(k);
+  if (c.keys) c.keys.forEach((q) => SHOTS.push(q));
+  else if (c.to) SHOTS.push({ t: c.t + 0.001, d: c.dur, ez: c.ez, ...c.to });
+  else SHOTS.push({ t: c.t + 0.001, d: nx - c.t, ez: (x) => x, f: c.pan ? c.f.map((v, j) => v + c.pan[j]) : c.f, s: c.s * (c.push || 1), a: k.a + (c.da || 0), e: k.e, sy: k.sy });
+});
+const inShot = (t, a, b) => t >= a && t < b;
+
+/* ---------------- the world, frame by frame */
+const PING_P = 1.5;
+const glowAt = (t, s) => Math.exp(-Math.pow((t - s - 0.1) / 0.2, 2));
+function pings(t, t0, t1, p, col, R, dur = 1.8, period = PING_P) {
+  if (t < t0 || t > t1 + dur) return 0;
+  let hit = 0;
+  for (let s = t0 + Math.floor((t - t0) / period) * period; s >= t0 && s > t - dur; s -= period) { if (s <= t1) { ripple(t, s, p[0], p[1], p[2], col, R, dur); hit = Math.max(hit, glowAt(t, s)); } }
+  return hit;
+}
+// the card's state through the studio shots: height over the screen, tilt, explode, see-through, coil power, chip
+function cardState(t) {
+  const s = { h: 70, tilt: 0.32, rz: 0.06 * Math.sin(t * 0.9), e: 0, see: 0, p: 0, awake: 0, on: false };
+  if (t < CUT.CAFE) { s.on = true; s.h = 64 - 6 * ep(t, 0, CUT.CAFE); s.tilt = 0.34; }
+  else if (inShot(t, CUT.COIL, CUT.CLOSE)) { s.on = true; s.h = 72; s.tilt = 0.24; s.e = ep(t, T.edge - 0.35, T.edge + 0.35, ease.inOut); s.p = 0.45 * pulse(t, T.coil, 1.6) + 0.12 * ep(t, T.coil - 0.2, T.coil + 0.3); }
+  else if (inShot(t, CUT.CLOSE, CUT.SEND)) {
+    s.on = true; s.h = lerp(72, 24, ep(t, T.bring, T.close + 0.55, ease.inOut)); s.tilt = lerp(0.24, 0.1, ep(t, T.bring, T.close + 0.5));
+    s.e = lerp(1, 0.55, ep(t, T.bring, T.close + 0.6)); s.see = 1;
+    s.p = ep(t, T.creates - 0.1, T.elec1 + 0.35) * (0.85 + 0.15 * Math.sin(t * 9)); s.awake = ep(t, T.wake, T.wake + 0.25) * (0.85 + 0.15 * Math.sin(t * 7));
+  } else if (inShot(t, CUT.SEND, CUT.BANK)) { s.on = true; s.h = 24 + 30 * ep(t, CUT.SEND, CUT.SEND + 0.8, ease.inOut); s.tilt = 0.12; s.e = 0.55 - 0.55 * ep(t, CUT.SEND, CUT.SEND + 0.6); s.see = 1 - ep(t, CUT.SEND, CUT.SEND + 0.6); s.p = 0.6 * (1 - ep(t, CUT.SEND, CUT.SEND + 0.8)); }
+  else if (t >= CUT.TWIST) {
+    s.on = true; s.h = lerp(62, 30, ep(t, T.before, T.money + 0.4, ease.inOut)); s.tilt = lerp(0.3, 0.16, ep(t, T.before, T.money));
+    s.e = 0.55 * ep(t, T.give - 0.2, T.something + 0.2, ease.inOut); s.see = s.e / 0.55;
+    s.p = ep(t, T.give - 0.1, T.elec2) * (0.85 + 0.15 * Math.sin(t * 9)); s.awake = ep(t, T.elec2 - 0.1, T.elec2 + 0.2);
+  }
+  return s;
+}
+let cS = cardState(0);
+function world(t) {
+  linksReset();
+  cam3(t, SHOTS);
+  /* studio: the card machine, its field and the card */
+  const inStu = t < CUT.CAFE || inShot(t, CUT.FIELD, CUT.BANK) || inShot(t, CUT.APPR, CUT.TUBE) || t >= CUT.TWIST;
+  cS = cardState(t);
+  CARD.g.visible = cS.on && inStu;
+  CARD.g.position.set(SC[0], SC[1], SC[2] + cS.h); CARD.g.rotation.set(cS.tilt, 0, cS.rz);
+  CARD.explode(cS.e, cS.see); CARD.power(cS.p, cS.awake);
+  ST.cardL.position.set(SC[0], SC[1] - 20, SC[2] + cS.h + 20); ST.cardL.intensity = CARD.g.visible ? 40 + 260 * cS.p : 0;
+  // the field: on from "magnetic field" in the field shot, on while the card is near, on again in the twist
+  const fA = inShot(t, CUT.FIELD, CUT.COIL) ? ep(t, T.invisible - 0.1, T.magnetic + 0.3)
+    : inShot(t, CUT.COIL, CUT.CLOSE) ? 0.3 : inShot(t, CUT.CLOSE, CUT.SEND) ? 0.55 + 0.45 * ep(t, T.bring, T.creates) - 0.4 * ep(t, T.answers - 0.3, T.answers)
+    : t >= CUT.TWIST ? ep(t, T.before - 0.1, T.give) : 0;
+  const fq = t > T.keeps - 0.1 && t < CUT.COIL ? 1.1 : 0.75;
+  const F = ST.field.set(t, inStu ? fA : 0, t * fq * Math.PI * 2);
+  ST.term.ant.material.opacity = inStu ? 0.2 + 0.8 * fA * Math.abs(F.s) : 0;
+  ST.rimM.emissiveIntensity = 0.8 + 1.2 * fA * Math.abs(F.s);
+  // rings riding up the field, up or down with it
+  if (inStu && fA > 0.05) for (let i = 0; i < 4; i++) {
+    const u = ((t * 0.55 * Math.sign(F.s || 1) + i / 4) % 1 + 1) % 1;
+    ringAt(SC[0], SC[1], SC[2] + 2 + u * 110, 36 + 50 * Math.sin(u * Math.PI), F.s >= 0 ? O : AMB, 0.5 * fA * Math.sin(u * Math.PI));
+  }
+  // current running round the coil, then into the chip
+  if (CARD.g.visible && cS.p > 0.25) { const W = CARD.coil.map((p) => CARD.at(p)); for (let j = 0; j < 3; j++) orb(W, ((t * 0.45 + j / 3) % 1), O, cS.p, 0.55); }
+  const chipW = CARD.at(CARD.chip);
+  if (inShot(t, CUT.CLOSE, CUT.SEND)) { ripple(t, T.wake + 0.05, chipW[0], chipW[1], chipW[2] + 1, O, 26, 0.8); pings(t, T.answers, CUT.SEND - 0.4, [chipW[0], chipW[1], SC[2] + 2], O2, 70, 1.1, 0.55); }
+  if (t >= CUT.TWIST) ripple(t, T.elec2, chipW[0], chipW[1], chipW[2] + 1, O, 40, 1.0);
+  // the one-time code locks: a small lock rises off the chip
+  HOLO.lock.show([chipW[0], chipW[1], chipW[2] + 26 + 3 * Math.sin(t * 3)], inShot(t, CUT.ANS, CUT.SEND) ? ep(t, T.only - 0.1, T.only + 0.2) : 0, 0.8 + 0.2 * ease.back(prog(t, T.only - 0.1, T.only + 0.3)));
+  HOLO.bolt.show([CARD.at([CARD.w * 0.18, 0, 0])[0], SC[1], SC[2] + cS.h + 36 + 3 * Math.sin(t * 4)], t >= CUT.TWIST ? ep(t, T.elec2 - 0.15, T.elec2 + 0.15) : inShot(t, CUT.CLOSE, CUT.ANS) ? ep(t, T.elec1 - 0.1, T.elec1 + 0.2) * (1 - ep(t, T.wake, T.wake + 0.3)) : 0, 0.8 + 0.2 * ease.back(prog(t, T.elec2 - 0.15, T.elec2 + 0.3)));
+  // the hero machine's screen
+  const lights = inShot(t, CUT.ANS, CUT.SEND) ? Math.min(4, Math.floor(Math.max(0, t - T.answers) / 0.45) + 1) : inShot(t, CUT.CLOSE, CUT.ANS) ? (t > T.wake ? 1 : 0) : t >= CUT.SEND && t < CUT.TUBE ? 4 : 0;
+  const mode = t < CUT.CLOSE ? 'pay' : t < CUT.ANS ? (t > T.wake ? 'read' : 'pay') : t < CUT.SEND ? 'read' : t < CUT.APPR ? (t > T.sends ? 'send' : 'read') : t < CUT.TUBE ? 'ok' : 'pay';
+  if (inStu) paintTerm(ST.term, t, mode, t >= CUT.TWIST ? (t > T.elec2 ? 1 : 0) : lights);
+  if (inShot(t, CUT.APPR, CUT.TUBE)) ripple(t, CUT.APPR + 0.15, SC[0], SC[1], SC[2] + 1, O, 60, 0.9);
+  // "sends that to your bank": a line goes up out of the machine
+  if (inShot(t, CUT.SEND, CUT.BANK)) link(t, [[SC[0], SC[1], SC[2] + 4], [SC[0], SC[1], SC[2] + 1400]], T.sends - 0.05, 0.6, CUT.BANK, O);
+  /* the bank: the line comes down onto one rack, it checks the code and answers */
+  const inB = inShot(t, CUT.BANK, CUT.APPR), land = CUT.BANK + 0.32;
+  if (inB) {
+    DC.draw(t, Math.max(pulse(t, land, 2.5), 0.8 * pulse(t, T.approves, 2)));
+    link(t, [[DC.hotTop[0], DC.hotTop[1], 1600], DC.hotTop], CUT.BANK - 0.05, 0.37, T.approves, O);
+    ripple(t, land, DC.hotTop[0], DC.hotTop[1], 216, O, 110, 0.8);
+    link(t, [DC.hotTop, [DC.hotTop[0], DC.hotTop[1], 1600]], T.approves - 0.05, 0.5, CUT.APPR, O, { travel: true });
+    pings(t, T.checks1, T.approves - 0.2, [DC.hotTop[0], DC.hotTop[1], 216], AMB, 80, 0.8, 0.4);
+  }
+  /* café: you reach out and tap */
+  const inC = inShot(t, CUT.CAFE, CUT.FIELD);
+  const r = ep(t, CUT.CAFE + 0.05, T.machine1 + 0.1, ease.inOut), dip = window01(t, T.tap1 - 0.15, T.tap1 + 0.35, 0.15);
+  reach(CF.you, inC ? r : 0, dip);
+  CF.barista.pose('talk', t * 6); CF.queue.pose('phone');
+  CF.cardEdge.emissiveIntensity = inC ? 2.5 * pulse(t, T.tap1, 3) : 0;
+  paintTerm(CF.term, t, inC && t > T.tap1 + 0.05 ? 'read' : 'pay', inC && t > T.tap1 + 0.05 ? Math.min(4, Math.floor((t - T.tap1) / 0.2) + 1) : 0);
+  if (inC) { ripple(t, T.tap1 + 0.02, CF.scrW[0], CF.scrW[1], CF.scrW[2] + 0.5, O, 26, 0.8); ripple(t, T.tap1 + 0.25, CF.scrW[0], CF.scrW[1], CF.scrW[2] + 0.5, O, 40, 0.9); }
+  /* the Tube: commuters stream through the gates; each taps as they pass the reader */
+  const inT = t >= CUT.TUBE && t < CUT.TWIST, open = [0, 0, 0], rd = [0, 0, 0];
+  const tapAt = -93, step = (P_, li, x, v) => {
+    const dx = x - tapAt, tk = Math.exp(-Math.pow(dx / 30, 2));
+    P_.root.position.set(x, TB.lanes[li], 0); P_.root.rotation.z = 0; commuterPose(P_, x, tk);
+    if (dx > 0 && dx < v * 0.9) { const tr = TB.readerAt(li); ripple(t, t - dx / v, tr[0], tr[1], tr[2] + 0.5, O, 26, 0.7); rd[li] = Math.max(rd[li], 1 - dx / (v * 0.9)); }
+    open[li] = Math.max(open[li], window01(x, -70, 50, 22));
+  };
+  const heroIn = t >= CUT.GATE - 0.3;
+  TB.ppl.forEach((q, k) => {
+    const x = ((t * q.v + q.ph * 1700) % 1700) - 850;
+    if (!inT || (heroIn && q.li === 1)) { q.p.root.position.set(-99999, 0, 0); return; }
+    step(q.p, q.li, x, q.v);
+  });
+  const hx = heroX(t);
+  if (inT && heroIn) {
+    const tk = window01(t, T.checks2 - 0.5, HT1 + 0.15, 0.3);
+    TB.hero.root.position.set(hx, TB.lanes[1], 0); commuterPose(TB.hero, hx, tk);
+    open[1] = ep(t, T.genuine + 0.1, T.genuine + 0.45, ease.inOut) * (1 - ep(t, CUT.LATER + 0.6, CUT.LATER + 1.0));
+    rd[1] = Math.max(rd[1], window01(t, T.checks2 - 0.1, T.genuine + 0.5, 0.15));
+  } else TB.hero.root.position.set(-99999, 0, 0);
+  TB.gates.forEach((g, li) => g.open(ease.inOut(clamp(open[li]))));
+  TB.readerM.forEach((m) => (m.emissiveIntensity = 0.6));
+  rd.forEach((v, li) => { TB.readerM[li].emissiveIntensity = 0.6 + 2.2 * v; });
+  const hr = TB.readerAt(1);
+  if (inShot(t, CUT.GATE, CUT.WALK)) {
+    // waiting for the bank would take seconds: a red line climbs away and never comes back
+    link(t, [[hr[0], hr[1], hr[2] + 2], [hr[0], hr[1], hr[2] + 1500]], T.gate - 0.05, 1.6, T.so2 + 0.1, RED, { a: 0.85 });
+    ripple(t, T.genuine - 0.05, hr[0], hr[1], hr[2] + 0.5, O, 44, 0.9); ripple(t, T.genuine + 0.2, hr[0], hr[1], hr[2] + 0.5, O, 64, 1.0);
+    pings(t, T.checks2, T.genuine - 0.2, [hr[0], hr[1], hr[2] + 0.5], AMB, 30, 0.7, 0.35);
+  }
+  if (inShot(t, CUT.LATER, CUT.TWIST)) link(t, [[hr[0], hr[1], hr[2] + 2], [hr[0], hr[1], hr[2] + 2400]], T.bank5 - 0.05, 0.9, CUT.TWIST, AMB, { travel: true, a: 0.85 });
+}
+
+/* ---------------- HUD */
+const K = (k, v, c, o) => ({ k, v, c, ...o });
+const CODES = ['3C81 E07B', '9A4D 12F6', 'E5B0 7C33', '06F9 A2D4', 'B71E 5C08', '7F3A 91C2'];
+function tags(t) {
+  hud.begin();
+  const H = (key, o) => hud.card(key, o, t), CH = (key, o) => hud.chip(key, o, t);
+  const cc = CARD.at([0, 0, 0]), chipW = CARD.at(CARD.chip), coilC = CARD.at(CARD.coil[1]);
+  // hook
+  H('bat', K('Bank card', 'No battery ✕', RED, { w: cc, x: 280, y: 200, a: T.no - 0.1, b: CUT.CAFE, big: true }));
+  CH('cm', { s: 'Card machine', w: CF.scrW, x: 30, y: 40, rel: true, a: T.machine1 - 0.05, b: CUT.FIELD });
+  CH('tap', { s: 'Tap', w: CF.scrW, x: -70, y: -70, rel: true, a: T.tap1 - 0.05, b: CUT.FIELD, hot: true, c: O });
+  // the field
+  H('pow', K('The machine', 'Powers the card', O, { w: SCz(2), x: 290, y: 600, a: T.powers - 0.05, b: CUT.COIL }));
+  H('mag', K('Magnetic field', 'Invisible', O, { w: SCz(70, 60), x: 30, y: 190, a: T.magnetic - 0.05, b: CUT.COIL, big: true }));
+  CH('chg', { s: 'Cycles 13.56 million times a second', x: 30, y: 270, a: T.keeps - 0.05, b: CUT.COIL, hot: true, c: AMB });
+  // the coil
+  H('coil', K('Hidden in your card', 'A coil of wire', O, { w: coilC, x: 280, y: 190, a: T.coil - 0.1, b: CUT.CLOSE, big: true }));
+  CH('chipc', { s: 'Chip', w: chipW, x: -80, y: 60, rel: true, a: T.coil + 0.35, b: CUT.CLOSE });
+  CH('edg', { s: 'Round the edge', w: CARD.at(CARD.coil[3]), x: -40, y: 50, rel: true, a: T.edge + 0.25, b: CUT.CLOSE });
+  H('elec', K('The field makes', 'Electricity ⚡', O, { w: coilC, x: 290, y: 190, a: T.elec1 - 0.1, b: CUT.ANS }));
+  H('wake', K('The chip', 'Awake ✓', OK, { w: chipW, x: 30, y: 600, a: T.wake - 0.05, b: CUT.ANS, big: true }));
+  // the answer
+  H('ans', K('The chip answers', 'Through the field', O, { w: chipW, x: 30, y: 190, a: T.answers - 0.05, b: T.number - 0.6 }));
+  H('num', K('Card number', '•••• 4821', WH, { x: 30, y: 190, a: T.number - 0.3, b: CUT.SEND }));
+  const ci = t < T.only ? Math.floor(Math.max(0, t - T.one) * 9) % (CODES.length - 1) : CODES.length - 1;
+  H('otc', K('One-time code', CODES[ci], t < T.only ? AMB : O, { w: chipW, x: 30, y: 272, a: T.one - 0.1, b: CUT.SEND, big: true }));
+  CH('only', { s: 'Only for this payment', w: chipW, x: 40, y: 60, rel: true, a: T.only + 0.05, b: CUT.SEND, hot: true, c: O });
+  // to the bank and back
+  H('send', K('The machine', 'Asks your bank', O, { w: SCz(4), x: 30, y: 190, a: T.sends - 0.1, b: CUT.BANK }));
+  const wt = Math.max(0, Math.min(t, T.approves + 0.3) - T.sends);
+  H('clock', K('Waiting', wt.toFixed(1) + ' s', t > T.approves ? OK : AMB, { x: 380, y: 190, a: T.sends + 0.1, b: CUT.TUBE }));
+  H('chk', K('Your bank', 'Checks the code', AMB, { w: DC.hotTop, x: 30, y: 190, a: T.checks1 - 0.1, b: CUT.APPR }));
+  H('apv', K('The bank says', 'Approved ✓', OK, { w: DC.hotTop, x: 30, y: 590, a: T.approves - 0.05, b: CUT.APPR, big: true }));
+  CH('dec', { s: 'or Declined', x: 46, y: 662, a: T.declines - 0.05, b: CUT.APPR, c: GR });
+  H('sec', K('Round trip', 'Within seconds', OK, { x: 30, y: 600, a: T.within - 0.05, b: CUT.TUBE, big: true }));
+  // the Tube
+  CH('bc', { s: 'Tap card here', w: TB.readerAt(0), x: -100, y: 50, rel: true, a: T.bank3 - 0.05, b: CUT.GATE, hot: true, c: O });
+  CH('gt', { s: 'Ticket gate', w: wz('TUBE', 20, 135, 96), x: 10, y: -60, rel: true, a: T.tube - 0.1, b: CUT.GATE });
+  const hr = TB.readerAt(1);
+  H('wait', K('Waiting for the bank', 'Takes seconds ✕', RED, { x: 30, y: 190, a: T.cant - 0.1, b: T.genuine - 0.1 }));
+  CH('rd', { s: 'Reader', w: hr, x: 40, y: 40, rel: true, a: CUT.GATE + 0.2, b: T.checks2 });
+  H('gen', K('The gate checks', 'Genuine card ✓', OK, { w: hr, x: 30, y: 190, a: T.genuine - 0.1, b: CUT.WALK, big: true }));
+  CH('kw', { s: 'Keeps walking', w: [Z.TUBE[0] + heroX(t), 0, 150], x: 20, y: -50, rel: true, a: T.keep2 - 0.1, b: CUT.LATER, hot: true, c: O });
+  H('later', K('The bank checks', 'Later', AMB, { x: 30, y: 190, a: T.bank5 - 0.05, b: CUT.TWIST, big: true }));
+  // the twist
+  H('mon', K('Before it takes', 'Your £4.20', WH, { w: SCz(2), x: 30, y: 190, a: T.take - 0.1, b: CUT.END }));
+  H('gives', K('First it gives your card', 'Electricity ⚡', OK, { w: coilC, x: 30, y: 590, a: T.elec2 - 0.1, b: CUT.END, big: true }));
+  hud.end();
+}
+
+/* ---------------- reel config */
+const CARDSVG = '<svg width="44" height="44" viewBox="0 0 44 44" fill="none" stroke="#ff6a1f" stroke-width="2.4" stroke-linejoin="round"><rect x="5" y="11" width="34" height="23" rx="3"/><rect x="10" y="17" width="7" height="6" rx="1"/><path d="M24 20 q3 2.5 0 5 M28 18 q5 4.5 0 9"/></svg>';
+const REEL = {
+  shots: [{ t: 0, f: [0, 0, 0], s: 1, a: -0.7, e: 0.6, sy: 480 }], world, tags,
+  tools: [
+    { a: T.in2 - 0.05, b: CUT.GATE + 0.05, svg: CARDSVG, name: 'Tap a bank card at the gate', sub: 'THE WHOLE TUBE TOOK CONTACTLESS IN 2014', src: 'TRANSPORT FOR LONDON · CONTACTLESS ON THE WHOLE NETWORK · 16 SEP 2014' },
+  ],
+  bad: ['no', 'battery', 'wait'],
+  good: ['electricity', 'genuine', 'approves', 'chip'],
+  tiles: [['◎', 'AIRTAGS'], ['⇄', 'IDEMPO-<br>TENCY'], ['⚡', 'CIRCUIT<br>BREAKERS']],
+  end: CUT.END, follow: T.follow,
+  cover: { k: 'HOW IT WORKS', t: 'TAP TO PAY', at: T.elec2 + 0.4, zoom: 0.95, dy: 40 },
+};
+</script>
+<script src="lib/overlay.js"></script>
+<script>
+// paint the canvas textures again once the web fonts are in
+{ const r0 = window.ready; window.ready = async () => { await r0(); ctexRedraw(); for (const d of [ST.term.s, CF.term.s]) d._k = null; }; }
+if (/cover/.test(location.hash)) { const c = document.createElement('style'); c.textContent = '#hud { display: none !important; } #stage { background: #070707 !important; }'; document.head.appendChild(c); }
+</script>
+<script src="../_ember/play.js"></script>
+</body>
+</html>

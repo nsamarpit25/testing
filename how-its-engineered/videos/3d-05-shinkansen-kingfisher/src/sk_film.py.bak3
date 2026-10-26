@@ -1,0 +1,316 @@
+# ----------------------------------------------------------------------------------------------- film
+# blender -b --factory-startup -P sk.py -- film <outdir> <height> <samples> <a-b | f,f,f>
+BG = 'nodes["BG"].inputs[1].default_value'
+SUN = 4.5
+VT = 70.0                              # train speed in the valley shots (m/s, ~250 km/h)
+
+
+def sk_world():
+    return build_sk()
+
+
+def parts(W, key):
+    return [o for k, o in W[key].items() if k != "root"]
+
+
+def defaults(t, S, W):
+    M = W["M"]
+    put(S, W["world"].node_tree, BG, 0.35)
+    mset(S, W["world"], STU=0.0)
+    put(S, W["sun"].data, "energy", SUN)
+    for ob in W["valley"] + [W["tunnel"]]:
+        put(S, ob, "hide_render", 0, const=True)
+    for ob in parts(W, "A") + parts(W, "B") + W["river"] + [W["rings"], W["shock"]] + list(W["beak"].children):
+        put(S, ob, "hide_render", 1, const=True)
+    for key in ("A", "B"):
+        for i, v in enumerate((-3000.0, 0.0, ZR)):
+            put(S, W[key]["root"], "location", v, i)
+    for i, v in enumerate(RV + V(0, 0, 0.6)):
+        put(S, W["beak"], "location", v, i)
+    for i in range(3):
+        put(S, W["beak"], "rotation_euler", 0.0, i)
+        put(S, W["shock"], "scale", 0.0, i)
+        put(S, W["B"]["root"], "rotation_euler", 0.0, i)
+    mset(S, M["tunnel"], XA=0.0)
+    mset(S, M["rings"], NX=-500.0, WX=-500.0, WW=4.0, AMP=0.0, NC=0.0)
+    mset(S, M["B"], BK=0.0)
+    mset(S, M["shock"], S=0.0)
+    mset(S, M["spark"], S=0.0)
+    mset(S, M["water"], RR=0.0, RA=0.0)
+    put(S, W["B"]["lead"].data.shape_keys, 'key_blocks["beak"].value', 0.0)
+    for lt in W["lights"]:
+        put(S, lt.data, "energy", 0.0)
+    put(S, W["beakkey"].data, "energy", 0.0)
+
+
+def train(S, W, key, x):
+    """train key's nose tip at x on the line"""
+    put(S, W[key]["root"], "location", x, 0)
+    for ob in parts(W, key):
+        if ob.name != "Spark":
+            put(S, ob, "hide_render", 0, const=True)
+
+
+def xray(S, W, k=1.0):
+    """the mountain goes away: the bore turns to glass in a dark void and the air rings show"""
+    for ob in W["valley"]:
+        put(S, ob, "hide_render", 1, const=True)
+    put(S, W["rings"], "hide_render", 0, const=True)
+    put(S, W["world"].node_tree, BG, lerp(0.35, 0.012, k))
+    mset(S, W["M"]["tunnel"], XA=k)
+
+
+def rings(S, W, nx, wx, ww, amp, nc=0.0):
+    mset(S, W["M"]["rings"], NX=nx, WX=wx, WW=ww, AMP=amp, NC=nc)
+
+
+def burst(S, W, t, t0, size, strength, dur=0.32):
+    """the shock ring leaves the exit portal at t0"""
+    if t < t0:
+        return
+    k = eout(clamp((t - t0) / dur))
+    put(S, W["shock"], "hide_render", 0, const=True)
+    for i in range(3):
+        put(S, W["shock"], "scale", 0.3 + size * k, i)
+    mset(S, W["M"]["shock"], S=strength * (1 - clamp((t - t0) / (dur * 1.6))) ** 1.5)
+
+
+def river(S, W, beak=True):
+    for ob in W["valley"] + [W["tunnel"]]:
+        put(S, ob, "hide_render", 1, const=True)
+    put(S, W["beakkey"].data, "energy", 25.0)
+    for ob in W["river"]:
+        put(S, ob, "hide_render", 0, const=True)
+    if beak:
+        for ob in W["beak"].children:
+            put(S, ob, "hide_render", 0, const=True)
+
+
+def beak_at(S, W, p, tilt):
+    for i in range(3):
+        put(S, W["beak"], "location", p[i], i)
+    put(S, W["beak"], "rotation_euler", rad(tilt), 1)
+
+
+def studio(S, W):
+    for ob in W["valley"] + [W["tunnel"]]:
+        put(S, ob, "hide_render", 1, const=True)
+    mset(S, W["world"], STU=1.0)
+    put(S, W["sun"].data, "energy", 0.0)
+    for lt in W["lights"]:
+        put(S, lt.data, "energy", {"Key": 9000.0, "Rim": 14000.0, "Top": 5000.0}[lt.name])
+    for i, v in enumerate(ST):
+        put(S, W["B"]["root"], "location", v, i)
+
+
+def shots(W):
+    M = W["M"]
+    L = []
+    PORT = V(X1T + HOOD, 0, ZT - 1.0)
+
+    def A(t, S):     # "Four hundred metres from a tunnel": high over the houses, looking back up the line to the exit
+        u = ss(seg(t, 0.0, 1.8))
+        train(S, W, "A", -760.0)
+        cam(S, V(lerp(1010, 975, u), lerp(-300, -285, u), lerp(105, 96, u)), V(lerp(560, 540, u), -20, 12), lens=30,
+            fstop=16, clip=1.0)
+        label(S, "home", V(752, -120, ground(752, -120) + 5.0))
+        label(S, "portal", V(X1T + HOOD, 0, ZT))
+    L.append((0.0, 1.8, A))
+
+    def B(t, S):     # "homes heard": low by the track as it blasts past, whipping round to the portal
+        nx = -230 + VT * (t - 1.8)
+        train(S, W, "A", nx)
+        w = ss(seg(t, 2.55, 3.3))
+        tg = V(nx + 6, 0, ZR + 1.8).lerp(V(X0T - HOOD, 0, ZT), w)
+        cam(S, V(lerp(-152, -146, seg(t, 1.8, 3.3)), -15.0, ZR + 0.9), tg, lens=30, fstop=11, clip=0.3)
+    L.append((1.8, 3.3, B))
+
+    def C(t, S):     # "Japan's bullet train boom": the far portal from the houses, a burst on "boom"
+        burst(S, W, t, 4.0, 7.0, 40.0)
+        sh = 1.6 * seg(t, 4.0, 4.12) * (1 - seg(t, 4.12, 4.6))
+        cam(S, PORT + V(lerp(150, 142, seg(t, 3.3, 4.62)), -22.0, 26.0), PORT + V(0, 0, 3.0), lens=50, fstop=32,
+            clip=1.0, shake=sh, t=t * 3)
+    L.append((3.3, 4.62, C))
+
+    def D(t, S):     # "Its blunt nose squeezed the air": x-ray, side on, the rings bunch ahead of the nose
+        xray(S, W, ss(seg(t, 4.62, 5.0)))
+        u = seg(t, 4.62, 6.25)
+        nx = lerp(-6, 40, u)
+        train(S, W, "A", nx)
+        rings(S, W, nx, nx + lerp(6, 34, u), 5.0, lerp(0.3, 0.85, u), lerp(0.3, 0.8, u))
+        cam(S, V(nx - 1, -11.5, ZT + 0.8), V(nx + 6, 0, ZT), lens=20, fstop=16, clip=0.5)
+    L.append((4.62, 6.25, D))
+
+    def E(t, S):     # "...inside the tunnel": close on the blunt face, the air piling up red against it
+        xray(S, W)
+        u = seg(t, 6.25, 7.85)
+        nx = lerp(36, 44, u)
+        train(S, W, "A", nx)
+        rings(S, W, nx, nx + lerp(36, 50, u), 4.0, 1.0, lerp(0.8, 1.1, u))
+        cam(S, V(nx + lerp(13, 10, ss(u)), -6.5, ZR + 2.2), V(nx - 1.5, 0, ZR + 1.9), lens=35, fstop=4, clip=0.1)
+    L.append((6.25, 7.85, E))
+
+    def F(t, S):     # "That squeeze raced ahead at the speed of sound": the front breaks away, whip with it
+        xray(S, W)
+        u = seg(t, 7.85, 9.1)
+        nx = lerp(46, 52, u)
+        wx = nx + lerp(52, 190, ein(u))
+        train(S, W, "A", nx)
+        rings(S, W, nx, wx, 3.0, 1.0, 0.9)
+        cam(S, V(lerp(70, 215, ss(u)), -38.0, ZT + 2.0), V(wx, 0, ZT), lens=28, fstop=16, clip=0.5)
+    L.append((7.85, 9.1, F))
+
+    def G(t, S):     # ...riding ahead of the front, looking back as it steepens
+        xray(S, W)
+        u = seg(t, 9.1, 10.3)
+        wx = lerp(250, 335, u)
+        rings(S, W, 56.0, wx, lerp(3.0, 1.2, u), lerp(1.0, 1.25, u))
+        cam(S, V(wx + 16, 1.2, ZT + 0.6), V(wx - 30, 0, ZT - 0.5), lens=24, fstop=16, clip=0.1)
+    L.append((9.1, 10.3, G))
+
+    def H(t, S):     # "and burst from the exit": inside the bore, the front racing for the daylight
+        put(S, W["rings"], "hide_render", 0, const=True)
+        u = seg(t, 10.3, 11.75)
+        wx = lerp(318, 375, u)
+        rings(S, W, 56.0, wx, 1.5, 1.1)
+        cam(S, V(lerp(298, 330, ss(u)), 0.8, ZT + 0.3), V(X1T + 40, 0, ZT + 1.2), lens=30, fstop=16, clip=0.1)
+    L.append((10.3, 11.75, H))
+
+    def I(t, S):     # "Boom.": the burst out of the portal, hard shake
+        burst(S, W, t, 11.93, 13.0, 60.0)
+        sh = 2.6 * seg(t, 11.93, 11.99) * (1 - seg(t, 11.99, 12.42))
+        cam(S, PORT + V(lerp(58, 54, seg(t, 11.75, 12.42)), -6.0, 6.0), PORT + V(0, 0, 1.5), lens=35, fstop=16, clip=0.5, shake=sh,
+            t=t * 4)
+    L.append((11.75, 12.42, I))
+
+    def J(t, S):     # "Engineer Eiji Nakatsu, a birdwatcher": a still river at golden hour
+        river(S, W, beak=False)
+        u = ss(seg(t, 12.42, 14.0))
+        cam(S, RV + V(lerp(-3.2, -2.0, u), -2.2, 0.16), RV + V(0.6, 3.0, 0.75), lens=30, fstop=5.6, clip=0.02)
+    L.append((12.42, 14.0, J))
+
+    def K(t, S):     # "thought of the kingfisher": the beak, high over the water, catching the sun
+        river(S, W)
+        beak_at(S, W, RV + V(0, 0, 0.6), 14.0)
+        u = ss(seg(t, 14.0, 16.0))
+        a = rad(lerp(-118, -72, u))
+        c = RV + V(lerp(-0.1, -0.035, u), 0, lerp(0.598, 0.604, u))
+        d = lerp(0.62, 0.27, u)
+        cam(S, c + V(d * math.cos(a), d * math.sin(a), lerp(0.07, 0.03, u)), c, lens=85, fstop=lerp(5.6, 2.8, u),
+            clip=0.005)
+    L.append((14.0, 16.0, K))
+
+    def Lb(t, S):    # "which dives from air into water": tip first
+        river(S, W)
+        u = seg(t, 16.0, 17.3)
+        z = lerp(0.6, 0.06, ein(u))
+        beak_at(S, W, RV + V(0, 0, z), lerp(14, 88, ss(u)))
+        cam(S, RV + V(0.06, -0.42, lerp(0.56, 0.1, ss(u))), RV + V(0, 0, z - 0.02), lens=60, fstop=4, clip=0.005)
+    L.append((16.0, 17.3, Lb))
+
+    def Mw(t, S):    # "with barely a splash": slow motion at the waterline, one clean ripple
+        river(S, W)
+        u = seg(t, 17.3, 19.05)
+        z = lerp(0.03, -0.035, u)
+        beak_at(S, W, RV + V(0, 0, z), 88.0)
+        k = seg(t, 17.55, 19.05)
+        mset(S, M["water"], RR=0.14 * eout(k), RA=0.006 * (1 - k) * (k > 0))
+        cam(S, RV + V(0.03, -0.42, 0.12), RV + V(0, 0, 0.035), lens=50, fstop=5.6, clip=0.005)
+    L.append((17.3, 19.05, Mw))
+
+    def N(t, S):     # "So the five hundred Series": in the studio the beak turns and grows into the nose
+        studio(S, W)
+        put(S, W["B"]["lead"], "hide_render", 0, const=True)
+        m = ss(seg(t, 19.55, 20.9))
+        put(S, W["B"]["lead"].data.shape_keys, 'key_blocks["beak"].value', 1 - m)
+        mset(S, M["B"], BK=1 - ss(seg(t, 20.1, 21.0)))
+        put(S, W["B"]["root"], "rotation_euler", rad(lerp(24, 0, m)), 2)
+        put(S, W["B"]["root"], "rotation_euler", rad(lerp(-10, 0, m)), 1)
+        u = ss(seg(t, 19.05, 21.0))
+        cam(S, ST + V(lerp(13, 8, u), lerp(-21, -24, u), lerp(4.5, 3.4, u)), ST + V(lerp(-7, -8, u), 0, 2.0), lens=40,
+            fstop=8, clip=0.1)
+    L.append((19.05, 21.0, N))
+
+    def O(t, S):     # "got a fifteen-metre beak for a nose": side on, the whole nose and the cars behind it
+        studio(S, W)
+        train(S, W, "B", ST.x)
+        u = ss(seg(t, 21.0, 22.1))
+        cam(S, ST + V(lerp(-6.5, -8.5, u), -24.0, 2.6), ST + V(lerp(-7.2, -7.8, u), 0, 2.2), lens=24, fstop=11, clip=0.1)
+        label(S, "tip", ST + V(0.0, 0, 1.25))
+        label(S, "base", ST + V(-NB, 0, BODY_Z))
+    L.append((21.0, 22.1, O))
+
+    def P(t, S):     # back in the valley: the 500 Series rockets at the camera
+        nx = -205 + VT * (t - 22.1)
+        train(S, W, "B", nx)
+        cam(S, V(-150, -3.9, ZR + 1.1), V(nx - 4, 0, ZR + 1.6), lens=28, fstop=11, clip=0.2)
+    L.append((22.1, 22.8, P))
+
+    def Q(t, S):     # "Now the air is squeezed gently": the same x-ray, a soft wide gradient, no sharp front
+        xray(S, W, ss(seg(t, 22.8, 23.15)))
+        u = seg(t, 22.8, 25.1)
+        nx = lerp(-6, 40, u)
+        train(S, W, "B", nx)
+        rings(S, W, nx, nx + lerp(25, 110, u), 45.0, 0.32, 0.12)
+        cam(S, V(nx - 1, -11.5, ZT + 0.8), V(nx + 6, 0, ZT), lens=20, fstop=16, clip=0.5)
+    L.append((22.8, 25.1, Q))
+
+    def R(t, S):     # "The boom fades": the same exit, only a faint soft ring, no shake
+        burst(S, W, t, 25.35, 4.0, 3.0, dur=0.6)
+        cam(S, PORT + V(lerp(58, 54, seg(t, 25.1, 26.34)), -6.0, 6.0), PORT + V(0, 0, 1.5), lens=35, fstop=16, clip=0.5)
+    L.append((25.1, 26.34, R))
+
+    def Sp(t, S):    # "Ten percent faster": out of the portal into the light, whip-follow along the viaduct
+        nx = 372 + VT * (t - 26.34)
+        train(S, W, "B", nx)
+        u = ss(seg(t, 26.34, 28.0))
+        cam(S, V(max(X1T + 16, nx - lerp(34, 14, u)), -9.5, ZR + 3.5), V(nx - 4, 0, ZR + 2.0), lens=28, fstop=16, clip=0.3)
+        label(S, "speed", V(nx - 6, 0, ZR + 4.2))
+    L.append((26.34, 28.0, Sp))
+
+    def T(t, S):     # "on fifteen percent less power": the pantograph on the wire, a spark
+        x = 520 + VT * (t - 28.0)
+        train(S, W, "B", x)
+        put(S, W["B"]["spark"], "hide_render", 0, const=True)
+        mset(S, M["spark"], S=30.0 * max(0.0, math.sin(t * 41.0)) ** 8)
+        r = V(x, 0, ZR)
+        cam(S, r + V(lerp(-33.0, -35.0, seg(t, 28.0, 29.7)), -5.2, 6.6), r + V(-37.4, 0, 4.9), lens=40, fstop=5.6,
+            clip=0.1)
+        label(S, "panto", r + V(-37.4, 0, 5.0))
+    L.append((28.0, 29.7, T))
+
+    def U(t, S):     # "Follow for how the world is really engineered": crane up and away down the valley
+        u = seg(t, 29.7, T_END)
+        x = 690 + VT * (t - 29.7)
+        train(S, W, "B", x)
+        cam(S, V(lerp(740, 520, ss(u)), lerp(-60, -430, ss(u)), lerp(24, 250, ss(u))), V(lerp(760, 1050, ss(u)), 0,
+            lerp(14, 70, ss(u))), lens=30, fstop=16, clip=1.0)
+    L.append((29.7, T_END + 0.1, U))
+    return L
+
+
+def camcheck(W):
+    """camera clearance over the valley terrain, per sampled frame (valley shots only)"""
+    L = shots(W)
+    for f in range(1, F_END + 1, 6):
+        t = (f - 1) / FPS
+        fn = next(fn for t0, t1, fn in L if t0 <= t < t1)
+        S = {}
+        defaults(t, S, W)
+        fn(t, S)
+        eye = S["cam"][0]
+        if abs(eye.y) < 1500:
+            clr = eye.z - ground(eye.x, eye.y)
+            print("CC %4d %5.2f %-3s clr %7.1f %s" % (f, t, fn.__name__, clr, "UNDERGROUND" if clr < 0 else ""))
+
+
+if __name__ == "__main__" and sys.argv[sys.argv.index("--") + 1] == "film":
+    argv = sys.argv[sys.argv.index("--") + 1:]
+    W = sk_world()
+    if os.environ.get("CAMCHECK"):
+        camcheck(W)
+        sys.exit(0)
+    bake(W, os.path.join(os.path.dirname(os.path.abspath(argv[1])) or ".", "labels_sk.json"))
+    if os.environ.get("BAKEONLY"):
+        sys.exit(0)
+    render(argv[1], int(argv[2]), int(argv[3]), argv[4])

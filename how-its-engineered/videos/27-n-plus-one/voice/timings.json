@@ -1,0 +1,58 @@
+[
+ {
+  "li": 0,
+  "pi": 0,
+  "say": "One page. 101 trips to your database, where your app keeps its data. Two trips would do.",
+  "show": "One page. [101 trips] to your database, where your app keeps its data. *Two trips* would do.",
+  "start": 0.0,
+  "end": 4.9
+ },
+ {
+  "li": 1,
+  "pi": 0,
+  "say": "Your code fetches 100 orders, then asks the database for each order's customer name, one at a time.",
+  "show": "Your code fetches 100 orders, then asks the database for each order's customer name, [one at a time.]",
+  "start": 5.34,
+  "end": 10.06
+ },
+ {
+  "li": 2,
+  "pi": 0,
+  "say": "That's the N plus 1 problem. N is the number of orders, plus one request for the list.",
+  "show": "That's the [N+1 problem.] *N* is the number of orders, plus *one* request for the list.",
+  "start": 10.3,
+  "end": 14.8
+ },
+ {
+  "li": 3,
+  "pi": 0,
+  "say": "Like getting a shopping list, then making a separate trip to the shop for every item.",
+  "show": "Like getting a shopping list, then making a [separate trip] to the shop for *every item.*",
+  "start": 15.16,
+  "end": 18.32
+ },
+ {
+  "li": 4,
+  "pi": 0,
+  "say": "The fix: ask for all the names together, in one request, or in the same request as the orders.",
+  "show": "The fix: ask for [all the names together,] in one request, or in the *same request* as the orders.",
+  "start": 18.7,
+  "end": 22.86
+ },
+ {
+  "li": 5,
+  "pi": 0,
+  "say": "Even AI-written code does this. So check how many database requests each page makes.",
+  "show": "Even *AI-written code* does this. So check [how many database requests] each page makes.",
+  "start": 23.22,
+  "end": 27.06
+ },
+ {
+  "li": 6,
+  "pi": 0,
+  "say": "If you're a vibe coder, follow for the system design your AI skipped.",
+  "show": "If you're a vibe coder, follow for the system design your AI [skipped.]",
+  "start": 27.32,
+  "end": 29.94
+ }
+]

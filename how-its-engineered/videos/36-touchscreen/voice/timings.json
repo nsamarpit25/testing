@@ -1,0 +1,74 @@
+[
+ {
+  "li": 0,
+  "pi": 0,
+  "say": "Your phone ignores a wool glove, however hard you press. But one winter, people found a strange fix in the snack aisle. So what is your screen feeling for?",
+  "show": "Your phone ignores a *wool glove,* however hard you press. But one winter, people found a strange fix in the snack aisle. So what is your screen [feeling for?]",
+  "start": 0.0,
+  "end": 8.96
+ },
+ {
+  "li": 1,
+  "pi": 0,
+  "say": "Under the glass sits an invisible grid of see-through wires: rows one way, columns the other.",
+  "show": "Under the glass sits an *invisible grid* of see-through wires: rows one way, [columns the other.]",
+  "start": 9.72,
+  "end": 14.54
+ },
+ {
+  "li": 2,
+  "pi": 0,
+  "say": "The phone sends tiny electric pulses along the rows, and measures what reaches each column, many times a second.",
+  "show": "The phone sends tiny *electric pulses* along the rows, and measures what reaches each column, [many times a second.]",
+  "start": 15.24,
+  "end": 20.62
+ },
+ {
+  "li": 3,
+  "pi": 0,
+  "say": "Your finger is mostly salty water, so charge moves through it. Bring it close, and it draws away part of the signal at the crossings under it.",
+  "show": "Your finger is mostly *salty water,* so charge moves through it. Bring it close, and it draws away part of the signal [at the crossings under it.]",
+  "start": 21.56,
+  "end": 28.12
+ },
+ {
+  "li": 4,
+  "pi": 0,
+  "say": "By comparing neighbouring crossings, the phone finds the centre of your touch, even between wires.",
+  "show": "By comparing neighbouring crossings, the phone finds [the centre of your touch,] even between wires.",
+  "start": 28.54,
+  "end": 33.06
+ },
+ {
+  "li": 5,
+  "pi": 0,
+  "say": "A wool glove or a fingernail barely changes the signal. Water can, so a wet screen sometimes taps by itself.",
+  "show": "A wool glove or a fingernail *barely changes* the signal. Water can, so a wet screen [sometimes taps by itself.]",
+  "start": 34.02,
+  "end": 39.68
+ },
+ {
+  "li": 6,
+  "pi": 0,
+  "say": "The snack-aisle fix? In February twenty-ten, South Koreans were reported tapping iPhones with snack sausages, to keep their gloves on. Salty, moist meat changes that signal too.",
+  "show": "The *snack-aisle fix?* In February 2010, South Koreans were reported tapping iPhones with snack sausages, to keep their gloves on. [Salty, moist meat] changes that signal too.",
+  "start": 40.42,
+  "end": 50.12
+ },
+ {
+  "li": 7,
+  "pi": 0,
+  "say": "So your screen never knew it was your finger. It only feels a change in the signal, and a sausage can fake that.",
+  "show": "So your screen never knew it was *your finger.* It only feels a change in the signal, and [a sausage can fake that.]",
+  "start": 50.64,
+  "end": 55.72
+ },
+ {
+  "li": 7,
+  "pi": 1,
+  "say": "Follow for how everyday tech really works.",
+  "show": "Follow for how [everyday tech] really works.",
+  "start": 55.72,
+  "end": 58.28
+ }
+]

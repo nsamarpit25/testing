@@ -1,0 +1,215 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- 13 Circuit breakers (v2), in the ember style. World: YOUR phone (a shop page: product, price, reviews), the shop SERVER
+     with six waiting-work slots on its face, a small BREAKER box on the road, and the REVIEWS server (slow, not broken).
+     Hook: requests pile onto the server while reviews is slow and the shop goes down. Then the same pile-up, slower.
+     The breaker appears (closed), counts slow requests, trips open: requests bounce off it instantly, the server drains,
+     the page skips reviews and loads. Later a few test requests get through, reviews is fast again, it resumes.
+     Beats come from voice/words.json via at(). -->
+<link rel="stylesheet" href="../_ember/fonts.css">
+<link rel="stylesheet" href="../_ember/reel.css">
+</head>
+<body>
+<div id="stage">
+  <div id="world">
+    <canvas id="cv" width="1080" height="1920"></canvas>
+    <div class="layer" id="lbls"></div>
+  </div>
+</div>
+<script src="../../tools/lib.js"></script>
+<script src="voice/words.js"></script>
+<script src="../_ember/three.js"></script>
+<script src="../_ember/world.js"></script>
+<script src="../_ember/base.js"></script>
+<script>
+for (let i = 0; i < 16; i++) ORBS.push({ core: orbSprite(9), glow: orbSprite(34), trail: [0, 1, 2, 3, 4].map(() => orbSprite(10)) });
+
+/* ---------------- beats */
+const T = {
+  down: at('down'), reviews1: at('reviews'), slow1: at('slow'), broken: at('broken'), slow2: at('slow', 2),
+  your2: at('your', 2), waits: at('waits'), another: at('another'), piles: at('piles'), stops1: at('stops'), loading: at('loading'),
+  circuit: at('circuit'), breaker: at('breaker'), house: at('house'), power: at('power'), software: at('software'), stops2: at('stops', 2), struggling: at('struggling'),
+  too: at('too'), slowor: at('slower') /* whisper hears "slow or" as "slower" */, failed: at('failed'), pauses: at('pauses'), whilee: at('while'),
+  code: at('code'), instead: at('instead'), skip: at('skip'), rest: at('rest'), page: at('page'),
+  later: at('later'), lets: at('lets'), few: at('few'), fast: at('fast'), resume: at('resume'), otherwise: at('otherwise'),
+  that: at('that'), keeps: at('keeps'), sinking: at('syncing') /* "sinking" */, app: at('app'), ifv: at('if'), follow: at('follow'),
+};
+const CUT = { WAIT: T.your2 - 0.3, FIX: T.circuit - 0.4, COUNT: T.too - 0.3, SKIP: T.code - 0.3, HALF: T.later - 0.3, KEEP: T.that - 0.2, END: T.ifv - 0.15 };
+
+/* ---------------- layout */
+const YOU = [-205, 20], SRV = [-15, 40], BRK = [92, 42], REV = [200, 45];
+const P_YS = [[YOU[0] + 42, YOU[1], 85], [SRV[0] - 55, SRV[1], 90]], P_SY = [...P_YS].reverse();
+const P_SB = [[SRV[0] + 55, SRV[1], 90], [BRK[0] - 31, BRK[1], 50]], P_BS = [...P_SB].reverse();
+const P_BR = [[BRK[0] + 31, BRK[1], 50], [REV[0] - 42, REV[1], 80]], P_RB = [...P_BR].reverse();
+const LIMIT = 5;
+// requests: [start, legs [[path, seconds, colour]...], what they do]
+const REQ = [];
+const go = (t0, legs, k) => REQ.push({ t0, legs, k, end: t0 + legs.reduce((s, l) => s + l[1], 0) });
+for (let k = 0; k < 6; k++) go(0.05 + k * 0.06, [[P_YS, 0.2, O2], [P_SB, 0.15, O2], [P_BR, 0.15, AMB]], 'hook');
+const STEP = (T.stops1 - 0.8 - T.waits) / 5;
+for (let k = 0; k < 6; k++) go(T.waits + k * STEP, [[P_YS, 0.35, O2], [P_SB, 0.22, O2], [P_BR, 0.23, AMB]], 'wait');
+const CSTEP = (T.pauses - 0.55 - T.too) / (LIMIT - 1);
+for (let k = 0; k < LIMIT; k++) go(T.too + k * CSTEP, [[P_SB, 0.25, AMB], [P_BR, 0.3, AMB]], 'count');
+for (let a = T.pauses + 0.5; a < T.later - 0.6; a += 0.75) go(a, [[P_YS, 0.3, O2], [P_SB, 0.22, O2], [P_BS, 0.18, OK], [P_SY, 0.3, OK]], 'open');
+for (let k = 0; k < 3; k++) go(T.lets + k * 0.45, [[P_SB, 0.2, AMB], [P_BR, 0.22, AMB], [P_RB, 0.18, OK], [P_BS, 0.18, OK]], 'test');
+for (let a = T.resume + 0.3; a < T.ifv + 1.5; a += 0.7) go(a, [[P_YS, 0.25, O2], [P_SB, 0.18, O2], [P_BR, 0.18, O2], [P_RB, 0.16, OK], [P_BS, 0.16, OK], [P_SY, 0.25, OK]], 'ok');
+const arrived = (k, t) => REQ.filter((r) => r.k === k && t >= r.end).length;
+const bounceAt = REQ.filter((r) => r.k === 'open').map((r) => r.t0 + r.legs[0][1] + r.legs[1][1]);
+
+// how full the server is (0..6 waiting slots)
+function slotsAt(t) {
+  if (t < CUT.WAIT) return Math.min(6, arrived('hook', t));
+  if (t < T.pauses + 0.1) return Math.min(6, arrived('wait', t));
+  return Math.round(6 * (1 - prog(t, T.pauses + 0.2, T.pauses + 1.4)));
+}
+const brkState = (t) => (t < T.pauses ? 'CLOSED' : t < T.later ? 'OPEN' : t < T.resume ? 'TESTING' : 'CLOSED');
+const revSlow = (t) => t < T.lets + 0.3;
+
+/* ---------------- camera */
+const SHOTS = [
+  { t: 0, d: 0, f: [0, -20, 60], s: 0.9, a: -0.38, e: 0.58, sy: 480 },
+  { t: CUT.WAIT, d: 1.0, f: [-20, -15, 60], s: 0.96, a: -0.42, e: 0.58, sy: 480 },
+  { t: CUT.FIX, d: 1.0, f: [40, -20, 60], s: 1.0, a: -0.42, e: 0.6, sy: 480 },
+  { t: CUT.COUNT, d: 1.0, f: [10, -20, 60], s: 0.92, a: -0.42, e: 0.6, sy: 480 },
+  { t: CUT.SKIP, d: 1.0, f: [10, -20, 60], s: 0.94, a: -0.42, e: 0.6, sy: 480 },
+  { t: CUT.HALF, d: 1.0, f: [40, -20, 60], s: 1.0, a: -0.42, e: 0.6, sy: 480 },
+  { t: CUT.KEEP, d: 1.0, f: [0, -25, 60], s: 0.9, a: -0.42, e: 0.6, sy: 520 },
+  { t: CUT.END, d: 2.0, f: [0, -30, 60], s: 0.86, a: -0.42, e: 0.6, sy: 580 },
+];
+const KICKS = [[T.down, 0.05], [T.broken, 0.03], [T.slow2, 0.03], [T.piles, 0.03], [T.stops1, 0.04], [T.circuit, 0.05], [T.house, 0.03],
+  [T.software, 0.03], [T.pauses, 0.05], [T.skip, 0.04], [T.lets, 0.03], [T.resume, 0.05], [T.keeps, 0.03]];
+const SHAKES = [[T.down, 2, 0.3], [T.stops1, 2, 0.25]];
+
+/* ---------------- build the world */
+const label = (g, W_, H_, txt, col, size, y = H_ / 2) => { g.fillStyle = col; g.font = `800 ${size}px Mono`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.shadowColor = col; g.shadowBlur = 12; g.fillText(txt, W_ / 2, y); g.shadowBlur = 0; g.textAlign = 'left'; };
+const mk = (p, w, d, h, col, k = 5) => { const b = emberBox(p[0], p[1], w, d, h, col); const f = decal(w, h, 'front', k, b.g); f.m.position.set(0, -d / 2 - 0.3, h / 2); return { b, f, pl: pool(p[0], p[1], w * 1.3, col), p }; };
+const you = mk(YOU, 84, 18, 140, O, 5), srv = mk(SRV, 110, 66, 150, O, 4), brk = mk(BRK, 62, 38, 84, OK, 6), rev = mk(REV, 84, 44, 130, AMB, 5);
+const rYS = road(P_YS, O2), rSB = road(P_SB, O2), rBR = road(P_BR, O2);
+
+function phoneDraw(g, W_, H_, col, rows, status, stCol) {
+  g.strokeStyle = col + 'aa'; g.lineWidth = 6; rrect(g, 14, 14, W_ - 28, H_ - 28, 34); g.stroke();
+  label(g, W_, H_, 'SHOP', col, 50, 80);
+  rows.forEach(([txt, c], i) => { const y = 190 + i * 120; g.strokeStyle = c + '66'; g.lineWidth = 4; rrect(g, 44, y - 44, W_ - 88, 88, 14); g.stroke(); label(g, W_, H_, txt, c, 38, y); });
+  if (status) label(g, W_, H_, status, stCol || col, 40, H_ - 90);
+}
+function srvDraw(g, W_, H_, col, n, full, st, stCol) {
+  label(g, W_, H_, 'SERVER', col, 50, H_ * 0.1);
+  label(g, W_, H_, 'waiting work', GR, 28, H_ * 0.19);
+  for (let k = 0; k < 6; k++) {
+    const y = H_ * 0.25 + k * H_ * 0.085, on = k < n, c = on ? (full ? RED : AMB) : col + '55';
+    g.strokeStyle = c; g.lineWidth = 4; rrect(g, 34, y, W_ - 68, H_ * 0.06, 6); g.stroke();
+    if (on) { g.fillStyle = c + '44'; rrect(g, 34, y, W_ - 68, H_ * 0.06, 6); g.fill(); }
+  }
+  if (st) label(g, W_, H_, st, stCol || col, 38, H_ * 0.85);
+}
+function brkDraw(g, W_, H_, col, st, sub) {
+  label(g, W_, H_, 'BREAKER', col, 38, 44);
+  // the switch: knob up = closed (requests flow), down = open (paused), middle = testing
+  const y = st === 'CLOSED' ? 0.33 : st === 'OPEN' ? 0.6 : 0.47;
+  g.strokeStyle = col + '99'; g.lineWidth = 5; rrect(g, W_ / 2 - 34, H_ * 0.22, 68, H_ * 0.5, 14); g.stroke();
+  g.fillStyle = col; g.shadowColor = col; g.shadowBlur = 16; rrect(g, W_ / 2 - 26, H_ * y - 26 + H_ * 0.02, 52, 52, 10); g.fill(); g.shadowBlur = 0;
+  label(g, W_, H_, st, col, 40, H_ * 0.82);
+  if (sub) label(g, W_, H_, sub, sub.startsWith('slow') ? AMB : col, 30, H_ * 0.93);
+}
+function revDraw(g, W_, H_, col, st, sub) {
+  label(g, W_, H_, 'REVIEWS', col, 44, 54);
+  label(g, W_, H_, '★★★★☆', col + 'aa', 46, 170);
+  label(g, W_, H_, st, col, 52, 340);
+  if (sub) label(g, W_, H_, sub, GR, 32, 440);
+}
+
+/* ---------------- the world, frame by frame */
+function world(t) {
+  const thru = (pts, t0, dur, col, size = 1) => { const q = (t - t0) / dur; if (q > -0.02 && q < 1.1) orb(pts, clamp(q), col, clamp(q / 0.08) * (1 - clamp((q - 1) / 0.1)), size); };
+  const q0 = ease.back(prog(t, 0.05, 0.4));
+  const n = slotsAt(t);
+  const overloaded = n >= 6 && ((t > T.down - 0.05 && t < CUT.WAIT) || (t > CUT.WAIT && t < T.pauses + 0.3));
+  const bs = brkState(t);
+  // the server
+  const sCol = overloaded ? mixHex(O, RED, 0.6 + 0.3 * Math.sin(t * 9)) : n > 0 ? mixHex(O, AMB, 0.4) : t > T.pauses ? mixHex(O, OK, 0.35) : O;
+  srv.b.g.visible = q0 > 0.01; srv.b.g.scale.set(1, 1, Math.max(0.01, q0)); srv.b.setLook(sCol, 1.2 + 2 * Math.max(pulse(t, T.down), pulse(t, T.stops1), pulse(t, T.pauses + 1.4)), 1);
+  const sSt = overloaded ? 'OVERLOADED' : n > 0 ? 'WAITING…' : t > T.pauses + 1.2 && t < T.later ? 'CALM' : '';
+  srv.f.m.visible = srv.b.g.visible; srv.f.draw((g, W_, H_) => srvDraw(g, W_, H_, sCol, n, overloaded, sSt, overloaded ? RED : sSt === 'CALM' ? OK : AMB)); srv.pl.set(sCol, 0.5 * q0);
+  // reviews: slow (not broken), then recovered
+  const rCol = revSlow(t) ? (t > T.pauses && t < T.later ? mixHex(AMB, DIM, 0.45) : mixHex(AMB, O, 0.3 + 0.3 * Math.sin(t * 6))) : OK;
+  const rSt = revSlow(t) ? (t > T.pauses && t < T.later ? 'resting' : '⏳ SLOW') : '✓ FAST';
+  const rSub = revSlow(t) ? (t > T.pauses && t < T.later ? 'no new requests' : 'not broken') : '';
+  rev.b.g.visible = q0 > 0.01; rev.b.g.scale.set(1, 1, Math.max(0.01, q0)); rev.b.setLook(rCol, 1.2 + 2 * pulse(t, T.lets + 0.3), 1);
+  rev.f.m.visible = rev.b.g.visible; rev.f.draw((g, W_, H_) => revDraw(g, W_, H_, rCol, rSt, rSub)); rev.pl.set(rCol, 0.45 * q0);
+  // the breaker: appears with "circuit breaker"
+  const qb = ease.back(prog(t, T.circuit - 0.1, T.circuit + 0.4));
+  const bCol = bs === 'OPEN' ? RED : bs === 'TESTING' ? AMB : OK;
+  const nSlow = arrived('count', t);
+  const bSub = t > T.too - 0.1 && t < T.pauses ? `slow ${nSlow}/${LIMIT}` : bs === 'OPEN' ? 'paused' : bs === 'TESTING' ? `${arrived('test', t)}/3 test` : '';
+  brk.b.g.visible = qb > 0.01; brk.b.g.scale.set(1, 1, Math.max(0.01, qb)); brk.b.setLook(bCol, 1.3 + 2.5 * Math.max(pulse(t, T.circuit), pulse(t, T.pauses), pulse(t, T.later), pulse(t, T.resume), ...bounceAt.map((b) => 0.5 * pulse(t, b, 6))), 1);
+  brk.f.m.visible = brk.b.g.visible; brk.f.draw((g, W_, H_) => brkDraw(g, W_, H_, bCol, bs, bSub)); brk.pl.set(bCol, 0.5 * qb);
+  // your phone
+  const X = [RED, '✕'], W = [GR, '…'], Y = [OK, '✓'];
+  let st = 'LOADING…', stCol = GR, rows = [['product …', GR], ['price …', GR], ['reviews …', GR]];
+  const set = (a, b, c) => { rows = [[`product ${a[1]}`, a[0]], [`price ${b[1]}`, b[0]], [c[1], c[0]]]; };
+  if ((t > T.down && t < CUT.WAIT) || (t > T.stops1 && t < T.pauses + 0.8)) { set(X, X, [RED, 'reviews ✕']); st = '✕ WON’T LOAD'; stCol = RED; }
+  else if (t > T.skip - 0.1 && t < T.resume + 0.3) { set(Y, Y, [GR, 'reviews hidden']); st = '✓ PAGE LOADED'; stCol = OK; }
+  else if (t >= T.resume + 0.3) { set(Y, Y, [OK, 'reviews ★4.1']); st = '✓ PAGE LOADED'; stCol = OK; }
+  const yCol = rows[0][1] === RED ? mixHex(O, RED, 0.45) : rows[0][1] === OK ? mixHex(O, OK, 0.35) : O;
+  you.b.g.visible = q0 > 0.01; you.b.g.scale.set(1, 1, Math.max(0.01, q0)); you.b.setLook(yCol, 1.2 + 2 * Math.max(pulse(t, T.skip), pulse(t, T.resume + 0.3)), 1);
+  you.f.m.visible = you.b.g.visible; you.f.draw((g, W_, H_) => phoneDraw(g, W_, H_, yCol, rows, st, stCol)); you.pl.set(yCol, 0.5 * q0);
+  // roads: the breaker-to-reviews road goes dark while it is open
+  rYS.set(1, overloaded ? RED : O2, 0.7 * q0, t);
+  rSB.set(1, bs === 'OPEN' ? mixHex(O2, OK, 0.3) : O2, 0.7 * q0, t);
+  rBR.set(1, bs === 'OPEN' ? DIM : revSlow(t) ? AMB : OK, (bs === 'OPEN' ? 0.18 : 0.7) * q0, t);
+  for (const r of REQ) { let s = r.t0; for (const [pts, d, c] of r.legs) { thru(pts, s, d, c, 0.8); s += d; } }
+  bounceAt.forEach((b) => ripple(t, b, BRK[0], BRK[1], 2, RED, 55, 0.45));
+  ripple(t, T.pauses, BRK[0], BRK[1], 2, RED, 100, 0.7); sparks(t, T.pauses, BRK[0], BRK[1], 70, RED, 14, 3, 120, 0.6);
+  ripple(t, T.resume, BRK[0], BRK[1], 2, OK, 100, 0.7);
+  ripple(t, T.down, SRV[0], SRV[1], 2, RED, 110, 0.7); ripple(t, T.stops1, SRV[0], SRV[1], 2, RED, 110, 0.7);
+}
+
+/* ---------------- world tags */
+function tags(t) {
+  const Y_T = [YOU[0], YOU[1], 175], S_T = [SRV[0], SRV[1], 190], B_T = [BRK[0], BRK[1], 120], R_T = [REV[0] - 70, REV[1], 170];
+  const big = (c) => `font-size:15px;padding:9px 13px;letter-spacing:1px;border-color:${c}`;
+  tag('down', `<span style="color:${RED}">SHOP DOWN</span>`, big(RED), S_T, t, T.down, CUT.WAIT + 0.1);
+  tag('notb', `<span style="color:${AMB}">NOT BROKEN · JUST SLOW</span>`, big(AMB), R_T, t, T.broken - 0.1, CUT.WAIT + 0.1);
+  tag('pile', `<span style="color:${AMB}">WAITING WORK PILES UP</span>`, big(AMB), S_T, t, T.piles - 0.1, T.stops1 - 0.1);
+  tag('stop', `<span style="color:${RED}">EVEN WORKING PAGES STOP</span>`, big(RED), S_T, t, T.stops1, CUT.FIX + 0.2);
+  tag('house', `<span style="color:${AMB}">HOUSE BREAKER · CUTS THE POWER</span>`, big(AMB), B_T, t, T.house - 0.1, T.software - 0.1);
+  tag('soft', `<span style="color:${OK}">THIS ONE · STOPS REQUESTS</span>`, big(OK), B_T, t, T.software, CUT.COUNT + 0.2);
+  tag('trip', `<span style="color:${RED}">TRIPPED · REQUESTS PAUSED</span>`, big(RED), B_T, t, T.pauses - 0.05, CUT.SKIP + 0.2);
+  tag('calm', `<span style="color:${OK}">SERVER CLEARS</span>`, `border-color:${OK}88`, S_T, t, T.pauses + 1.3, CUT.SKIP + 0.2);
+  tag('skip', `<span style="color:${OK}">SKIP REVIEWS · LOAD THE REST</span>`, big(OK), [YOU[0] + 70, YOU[1], 180], t, T.skip - 0.1, CUT.HALF + 0.2);
+  tag('test', `<span style="color:${AMB}">A FEW TEST REQUESTS</span>`, big(AMB), B_T, t, T.lets - 0.1, T.resume - 0.1);
+  tag('res', `<span style="color:${OK}">FAST AGAIN → RESUME</span>`, big(OK), B_T, t, T.resume - 0.05, T.otherwise - 0.1);
+  tag('oth', `<span style="color:${AMB}">STILL SLOW? PAUSE AGAIN</span>`, big(AMB), B_T, t, T.otherwise - 0.1, CUT.KEEP + 0.2);
+  tag('up', `<span style="color:${OK}">ONE SLOW FEATURE · SHOP STAYS UP</span>`, big(OK), S_T, t, T.keeps - 0.1, CUT.END + 0.3);
+}
+
+/* ---------------- reel config */
+const REEL = {
+  shots: SHOTS, kicks: KICKS, shakes: SHAKES, world, tags,
+  code: [
+    [T.too - 0.2, T.later - 0.1, 'shop.js', 'load the page', [[0, 'CLOSED', OK], [T.pauses, 'OPEN', RED]],
+      [['reviews = breaker.call(getReviews)'], ['breaker.fallback(() => null)', T.code - 0.2], ['render(product, price, reviews)', T.rest - 0.2]],
+      [[T.too, 1, (t) => `slow ${arrived('count', t)}/${LIMIT}`, 'amb'], [T.pauses, 1, 'paused', 'bad'], [T.skip - 0.1, 2, '✓ skip reviews', 'good'], [T.rest, 3, '✓ loads', 'good']], 'type'],
+    [T.later - 0.1, CUT.KEEP - 0.1, 'breaker', 'after a pause', [[0, 'TESTING', AMB], [T.resume, 'CLOSED', OK]],
+      [['let a few requests through'], ['fast again? → resume', T.fast - 0.2], ['still slow? → pause again', T.otherwise - 0.2]],
+      [[T.lets, 1, (t) => `${arrived('test', t)}/3 sent`, 'run'], [T.resume, 2, '✓ resumed', 'good'], [T.otherwise, 3, 'pause', 'amb']]],
+  ],
+  hl: /\b(breaker|call|fallback|render|reviews|resume|pause)\b/g,
+  tools: [],
+  slams: [
+    { a: T.circuit - 0.15, b: T.house - 0.15, text: 'circuit breaker', sub: 'STOPS REQUESTS TO A STRUGGLING SERVER', size: 64 },
+  ],
+  bad: ['down', 'slow', 'loading'],
+  good: ['breaker', 'skip', 'resume'],
+  tiles: [['⚡', 'CIRCUIT<br>BREAKERS'], ['♥', 'HEALTH<br>CHECKS'], ['≋', 'MESSAGE<br>QUEUES']],
+  end: CUT.END, follow: T.follow,
+  cover: { t: 'CIRCUIT BREAKERS', at: T.pauses + 1.6, zoom: 0.95, dy: 40 },
+  flash: (t) => 0.07 * pulse(t, T.down, 7) + 0.06 * pulse(t, T.pauses, 7),
+};
+</script>
+<script src="../_ember/overlay.js"></script>
+<script src="../_ember/play.js"></script>
+</body>
+</html>

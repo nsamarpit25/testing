@@ -1,0 +1,82 @@
+{
+ "m1": {
+  "kind": "page",
+  "url": "mail \u00b7 Northwind Corp",
+  "accent": "#1c7ed6",
+  "title": "Northwind Corp",
+  "body": [
+   "\u201cBefore we sign,",
+   "can we meet your",
+   "12 employees?\u201d"
+  ]
+ },
+ "m2": {
+  "kind": "page",
+  "url": "cleo studio \u00b7 org chart",
+  "accent": "#7048e8",
+  "title": "Cleo Studio \u00b7 12 employees",
+  "body": [
+   "DESIGN TEAM  =  Claude, tab 1",
+   "FINANCE TEAM  =  Claude, tab 2",
+   "LEGAL TEAM  =  Claude, tab 3",
+   "HR  =  Claude, tab 4"
+  ]
+ },
+ "m3": {
+  "kind": "page",
+  "url": "mail \u00b7 draft",
+  "accent": "#7048e8",
+  "title": "Re: The logo",
+  "big": {
+   "text": "Sure! Here's a bold reply:",
+   "color": "#d64545",
+   "top": true
+  },
+  "body": [
+   "The logo is bold. That's the point.",
+   "\u2014 Design Team"
+  ],
+  "badge": {
+   "text": "DELETE FIRST LINE",
+   "color": "#d64545"
+  }
+ },
+ "m4": {
+  "kind": "page",
+  "url": "mail \u00b7 sent",
+  "accent": "#2f9e44",
+  "title": "Re: Your $8,000 invoice",
+  "body": [
+   "Please pay first.  \u2014 Finance Team",
+   "We agree.  \u2014 Legal Team"
+  ],
+  "badge": {
+   "text": "SENT",
+   "color": "#2f9e44"
+  }
+ },
+ "m5": {
+  "kind": "page",
+  "url": "mail \u00b7 Northwind Legal Team",
+  "accent": "#1c7ed6",
+  "title": "Northwind Legal Team",
+  "big": {
+   "text": "Sure! Here's your legal reply:",
+   "color": "#d64545",
+   "top": true
+  },
+  "body": [
+   "Dear Cleo Studio,",
+   "We have reviewed your invoice.",
+   "\u2014 Legal Team"
+  ]
+ },
+ "p1": {
+  "kind": "phone",
+  "time": "5:40",
+  "app": "Calendar",
+  "title": "Call with Northwind Corp",
+  "body": "Today 6:00 PM \u00b7 Bring your whole team",
+  "size": 38
+ }
+}

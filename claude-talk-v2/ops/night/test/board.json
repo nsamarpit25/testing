@@ -1,0 +1,3 @@
+{"b_test": [["box", 300, 260, 360, 170, "blue"], ["text", 300, 240, "Your page", 56, "blue"], ["text", 300, 300, "localhost:3000", 40, "black"],
+            ["box", 900, 260, 330, 170, "green"], ["text", 900, 240, "API", 64, "green"], ["text", 900, 300, ":8000", 44, "black"],
+            ["arrow", 490, 260, 725, 260, "black"], ["text", 600, 560, "Different origin = stranger", 60, "red"], ["x", 600, 420, 40, "red"]]}

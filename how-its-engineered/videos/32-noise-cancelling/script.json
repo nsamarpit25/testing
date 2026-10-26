@@ -1,0 +1,55 @@
+{
+ "topic": "How Noise Cancelling Works",
+ "lines": [
+  [
+   {
+    "say": "Noise-cancelling headphones make a plane quieter by playing more sound into your ears.",
+    "show": "Noise-cancelling headphones make a plane *quieter* by playing [more sound] into your ears."
+   }
+  ],
+  [
+   {
+    "say": "Sound is just air pushing and pulling against your eardrum, in waves.",
+    "show": "Sound is just air *pushing* and *pulling* against your eardrum, [in waves.]"
+   }
+  ],
+  [
+   {
+    "say": "Tiny microphones built into the headphones listen to the engine roar.",
+    "show": "Tiny *microphones* built into the headphones [listen to the engine roar.]"
+   }
+  ],
+  [
+   {
+    "say": "A chip flips that wave upside down. Where the engine pushes, the headphones pull.",
+    "show": "A chip flips that wave *upside down.* Where the engine *pushes,* the headphones [pull.]"
+   }
+  ],
+  [
+   {
+    "say": "The speaker plays this opposite sound, even with no music on. At your ear, the two waves meet, and much of the roar cancels out.",
+    "show": "The speaker plays this *opposite sound,* even with no music on. At your ear, the two waves meet, and much of the roar [cancels out.]"
+   },
+   {
+    "say": "It works best on low, steady rumble, like engines. Voices change too quickly to match perfectly.",
+    "show": "It works best on *low, steady rumble,* like engines. [Voices] change too quickly to match perfectly."
+   }
+  ],
+  [
+   {
+    "say": "In nineteen seventy-eight, engineer Amar Bose tried the airline's new headphones on a flight to Boston, but the engines drowned out his music. He started sketching the maths to fix it before the plane landed.",
+    "show": "In 1978, engineer *Amar Bose* tried the airline's new headphones on a flight to Boston, but the engines drowned out his music. He started *sketching the maths* to fix it [before the plane landed.]"
+   }
+  ],
+  [
+   {
+    "say": "So that quiet isn't the absence of sound. It's two sound waves meeting at your ear, and mostly cancelling each other out.",
+    "show": "So that quiet isn't the absence of sound. It's *two sound waves* meeting at your ear, and [mostly cancelling each other out.]"
+   },
+   {
+    "say": "Follow for how everyday tech really works.",
+    "show": "Follow for how [everyday tech] really works."
+   }
+  ]
+ ]
+}

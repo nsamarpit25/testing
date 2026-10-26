@@ -1,0 +1,59 @@
+{
+ "topic": "N+1 queries",
+ "lines": [
+  [
+   {
+    "say": "Your orders page makes a hundred and one trips to the database, where your app keeps its data. It only needed two.",
+    "show": "Your orders page makes [101 trips] to the database, where your app keeps its data. It only needed *two.*"
+   }
+  ],
+  [
+   {
+    "say": "First, your code asks for the last hundred orders. That's one trip.",
+    "show": "First, your code asks for the last *100 orders.* That's [one trip.]"
+   }
+  ],
+  [
+   {
+    "say": "Then, for each order, it goes back and asks: who's the customer? One trip per order. A hundred more.",
+    "show": "Then, for *each order,* it goes back and asks: who's the customer? *One trip per order.* [A hundred more.]"
+   }
+  ],
+  [
+   {
+    "say": "Every trip waits on the network and the database. A hundred small waits add up to a slow page.",
+    "show": "Every trip *waits* on the network and the database. A hundred small waits add up to [a slow page.]"
+   }
+  ],
+  [
+   {
+    "say": "Each request is called a query. This is the N plus one problem: one query for the list, then one more for each of the N orders.",
+    "show": "Each request is called a *query.* This is the [N+1 problem:] *one* query for the list, then one more for each of the *N* orders."
+   }
+  ],
+  [
+   {
+    "say": "Like a waiter who fetches plates one at a time, instead of carrying them all on one tray.",
+    "show": "Like a waiter who fetches plates *one at a time,* instead of carrying them all on [one tray.]"
+   }
+  ],
+  [
+   {
+    "say": "The fix: get the orders, then ask for all their customers together, in one query. Two trips total. Your ORM, the library that writes your queries, usually has an option for this, often called eager loading.",
+    "show": "The fix: get the orders, then ask for [all their customers together,] in one query. *Two trips* total. Your ORM, the library that writes your queries, usually has an option for this, often called *eager loading.*"
+   }
+  ],
+  [
+   {
+    "say": "AI-written code can do this too. Log your database queries and check: does a page make a few, or hundreds?",
+    "show": "AI-written code can do this too. Log your database queries and check: does a page make *a few,* or [hundreds?]"
+   }
+  ],
+  [
+   {
+    "say": "If you're a vibe coder, follow for the system design your AI skipped.",
+    "show": "If you're a vibe coder, follow for the system design your AI [skipped.]"
+   }
+  ]
+ ]
+}

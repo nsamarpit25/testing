@@ -1,0 +1,8 @@
+Host fridge
+  HostName 3.89.246.112
+  User ubuntu
+  IdentityFile ~/.ssh/ctv2-bench.pem
+  UserKnownHostsFile /dev/null
+  StrictHostKeyChecking no
+  LogLevel ERROR
+  ServerAliveInterval 30

@@ -1,0 +1,64 @@
+{
+ "c1": {
+  "kind": "code",
+  "title": "styles.css",
+  "lines": [
+   ".box {",
+   "  margin: auto;",
+   "  text-align: center;",
+   "  /* please */",
+   "}"
+  ],
+  "hi": [
+   3
+  ]
+ },
+ "c2": {
+  "kind": "code",
+  "title": "styles.css",
+  "lines": [
+   ".box {",
+   "  margin: auto;",
+   "  text-align: center;",
+   "  position: absolute;",
+   "  /* where did it go */",
+   "}"
+  ],
+  "hi": [
+   3
+  ]
+ },
+ "c3": {
+  "kind": "code",
+  "title": "styles.css",
+  "lines": [
+   ".parent {",
+   "  display: grid;",
+   "  place-items: center;",
+   "}"
+  ],
+  "ok": [
+   1,
+   2
+  ]
+ },
+ "c4": {
+  "kind": "page",
+  "url": "localhost:5173",
+  "accent": "#7048e8",
+  "title": "Cleo's Portfolio",
+  "body": [
+   ""
+  ],
+  "big": {
+   "text": "Centered.",
+   "color": "#2f9e44"
+  }
+ },
+ "p1": {
+  "kind": "phone",
+  "app": "Slack",
+  "title": "Mia (Designer)",
+  "body": "Love it! Can we move it slightly to the left?"
+ }
+}

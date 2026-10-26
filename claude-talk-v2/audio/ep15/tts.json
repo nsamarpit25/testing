@@ -1,0 +1,69 @@
+{
+ "prompt": "AUDIO PROFILE\nCleo: a young woman software developer in her mid twenties. Soft, natural, conversational voice. Real and understated, never cartoonish.\nClaude: a young man's voice. Calm, warm and gently dry-witted, never theatrical. Few words.\n\nTHE SCENE, END TO END\nMorning at her desk. Cleo's API works in Postman but Chrome blocks it with a CORS error. Claude, a small companion on her desk, has a little whiteboard and teaches her like a tiny professor: different port means different origin, the API keeps a guest list, and the fix belongs on the server.\n\nLINE BY LINE\n1. Cleo, frustrated.\n2. Claude, quietly delighted.\n3. Cleo, puzzled.\n4. Claude, teacher, pointing at the board.\n5. Cleo, flat.\n6. Claude, clear.\n7. Cleo, curious.\n8. Claude, patient, explaining.\n9. Cleo, skeptical.\n10. Claude, simple.\n11. Cleo, hopeful.\n12. Claude, clear, then dry.\n13. Cleo, typing, then relieved.\n14. Claude, teacher, pleased.\n15. Cleo, wary.\n16. Claude, dry, gentle.\n\nDIRECTOR'S NOTES\nClaude is enjoying his new whiteboard: a little proud, like a teacher, but still calm and warm. A natural, conversational pace, like two friends at a desk; not rushed, not slow. Let the jokes land with a short beat before the dry lines. Leave a short beat at every \"...\"; never read bracketed tags aloud. Finish every line fully, including its last word; never clip a word. Speak every word of the dialogue exactly as written, nothing added.",
+ "turns": [
+  [
+   "Cleo",
+   "Claude, Chrome's gatekeeping. My API works in Postman. Here? CORS."
+  ],
+  [
+   "Claude",
+   "Finally. Board time."
+  ],
+  [
+   "Cleo",
+   "Since when do you have a board?"
+  ],
+  [
+   "Claude",
+   "Since now. Your page: localhost, port three thousand. Your API: same host, port eight thousand."
+  ],
+  [
+   "Cleo",
+   "Same laptop."
+  ],
+  [
+   "Claude",
+   "Different port, different origin. And Chrome checks the API's guest list."
+  ],
+  [
+   "Cleo",
+   "So Chrome blocks the request?"
+  ],
+  [
+   "Claude",
+   "Sometimes a preflight check stops it. Otherwise, Chrome hides the response unless your origin is on the list."
+  ],
+  [
+   "Cleo",
+   "And Postman?"
+  ],
+  [
+   "Claude",
+   "Postman isn't a browser. It never checks the guest list."
+  ],
+  [
+   "Cleo",
+   "So I fix it in the front end?"
+  ],
+  [
+   "Claude",
+   "Server side. Add Access-Control-Allow-Origin with your page's exact origin. Guests don't write the guest list."
+  ],
+  [
+   "Cleo",
+   "Allowed my page's exact origin on the server... It loaded!"
+  ],
+  [
+   "Claude",
+   "Next lesson: production."
+  ],
+  [
+   "Cleo",
+   "Same guest list?"
+  ],
+  [
+   "Claude",
+   "New address. Back outside."
+  ]
+ ]
+}

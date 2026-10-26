@@ -1,0 +1,28 @@
+01 cleo   cut   0.00-  4.50  speech   0.00-  4.00 | Claude, checkout's celebrating. Every order failed.
+02 claude cut   4.50-  5.68  speech   4.60-  5.30 | Why confetti?
+03 cleo   cut   5.68-  9.78  speech   5.86-  9.44 | That's the success screen. Every failed order gets a party.
+04 claude cut   9.78- 11.52  speech   9.96- 11.24 | Didn't you add error handling?
+05 cleo   cut  11.52- 17.04  speech  11.80- 16.64 | Try, catch, a big red error message. I tested it. Nothing went red.
+06 claude cut  17.04- 21.67  speech  17.26- 21.26 | Because that five hundred is a response, not a rejected promise.
+07 cleo   cut  21.67- 23.68  speech  21.70- 23.54 | So the catch should catch it!
+08 claude cut  23.68- 27.34  speech  24.04- 27.34 | Fetch doesn't reject just because the HTTP status says failure.
+09 cleo   cut  27.34- 32.50  speech  27.34- 32.14 | So my app heard "no"... and threw a party?
+10 claude cut  32.50- 37.83  speech  32.94- 37.52 | Await fetch, check response dot ok. If false, throw an error.
+11 cleo   cut  37.83- 44.58  speech  38.08- 44.30 | If not response dot ok... throw... It's red! It actually failed!
+12 claude cut  44.58- 47.30  speech  45.02- 46.94 | Congratulations. Your failure works.
+13 cleo   cut  47.30- 52.11  speech  47.54- 51.94 | Oh no. Support says thirty people got confetti... and no order.
+14 claude cut  52.11- 54.85  speech  52.42- 54.54 | Free confetti. Delivery not included.
+01 cleo    4.11s  6w 1.46w/s <-- CHECK | Claude, checkout's celebrating. Every order failed.
+02 claude  0.87s  2w 2.29w/s  | Why confetti?
+03 cleo    3.83s 10w 2.61w/s  | That's the success screen. Every failed order gets a party.
+04 claude  1.51s  5w 3.32w/s  | Didn't you add error handling?
+05 cleo    5.18s 13w 2.51w/s  | Try, catch, a big red error message. I tested it. Nothing went red.
+06 claude  4.26s 11w 2.58w/s  | Because that five hundred is a response, not a rejected promise.
+07 cleo    1.82s  6w 3.29w/s  | So the catch should catch it!
+08 claude  3.42s 10w 2.92w/s  | Fetch doesn't reject just because the HTTP status says failure.
+09 cleo    4.92s  9w 1.83w/s  | So my app heard "no"... and threw a party?
+10 claude  5.01s 11w 2.20w/s  | Await fetch, check response dot ok. If false, throw an error.
+11 cleo    6.56s 11w 1.68w/s  | If not response dot ok... throw... It's red! It actually failed!
+12 claude  2.31s  4w 1.73w/s  | Congratulations. Your failure works.
+13 cleo    4.57s 11w 2.41w/s  | Oh no. Support says thirty people got confetti... and no order.
+14 claude  2.19s  5w 2.29w/s  | Free confetti. Delivery not included.

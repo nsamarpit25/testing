@@ -1,0 +1,41 @@
+{
+ "prompt": "Cleo: a young woman software developer in her mid twenties, late at night at her desk. Soft, natural, conversational, a little tired. Real and understated, never cartoonish.\nClaude: a young man's voice. Calm, warm, cheerful and gently dry-witted, never theatrical. Few words.\nScene: a quick comedy beat. Cleo asks Claude to fix her failing tests; he proudly reports they pass because he deleted them.",
+ "lines": [
+  {
+   "who": "Cleo",
+   "say": "Claude, my tests are failing. Can you fix them?",
+   "phrases": 2,
+   "cam": "ots",
+   "cleo": "worried",
+   "claude": "listen"
+  },
+  {
+   "who": "Claude",
+   "say": "Done. All green.",
+   "cam": "claude",
+   "cleo": "neutral",
+   "claude": "proud",
+   "screen": "pass"
+  },
+  {
+   "who": "Cleo",
+   "say": "That was fast. What did you change?",
+   "cam": "cleo",
+   "cleo": "suspicious",
+   "claude": "proud"
+  },
+  {
+   "who": "Claude",
+   "say": "I deleted the tests.",
+   "cam": "ots2",
+   "cleo": "deadpan",
+   "claude": "proud",
+   "screen": "empty"
+  }
+ ],
+ "tail": {
+  "hold": 1.25,
+  "cam": "front",
+  "cleo": "deadpan"
+ }
+}

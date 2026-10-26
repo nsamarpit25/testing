@@ -1,0 +1,30 @@
+{
+ "topic": "Rate limiting",
+ "lines": [
+  [
+   {"say": "Your login page got hit fifty thousand times in one minute.", "show": "Your login page got hit *50,000 times* in one minute."},
+   {"say": "From one bot. Guessing passwords.", "show": "From [one bot.] Guessing passwords."},
+   {"say": "And after the fifth try, it got nothing back but an error.", "show": "And after the *5th try,* it got nothing back but an error."}
+  ],
+  [
+   {"say": "That's rate limiting: a cap on how many times one user can hit your server in a set time.", "show": "That's [rate limiting:] a cap on how many times one user can hit your server in a set time."}
+  ],
+  [
+   {"say": "Like a bouncer with a clicker. Each guest gets five entries an hour. The sixth time, the door stays shut.", "show": "Like a *bouncer* with a clicker. Each guest gets *5 entries* an hour. The 6th time, the door [stays shut.]"}
+  ],
+  [
+   {"say": "Your server counts each user's requests, like login attempts.", "show": "Your server *counts each user's requests,* like [login attempts.]"},
+   {"say": "Over the limit, it answers with error four twenty-nine: too many requests.", "show": "Over the limit, it answers with *429:* [too many requests.]"},
+   {"say": "Once enough time passes, they can try again.", "show": "Once enough time passes, they can [try again.]"}
+  ],
+  [
+   {"say": "So a bot can't try thousands of passwords a minute, and one runaway script can't hog the app everyone else is using.", "show": "So a bot can't try *thousands of passwords* a minute, and one runaway script can't [hog the app] everyone else is using."}
+  ],
+  [
+   {"say": "GitHub, OpenAI and Stripe all limit how fast you can call them.", "show": "*GitHub,* *OpenAI* and *Stripe* all limit how fast you can call them."}
+  ],
+  [
+   {"say": "If you're a vibe coder, follow for the system design your AI skipped.", "show": "If you're a vibe coder, follow for the system design your AI [skipped.]"}
+  ]
+ ]
+}

@@ -1,0 +1,27 @@
+You are the final reviewer for a vertical Instagram reel (1080x1920) on @talkingagents: a short 3D comedy where Cleo, a junior developer, talks to Claude, a small orange AI companion on her desk. The attached sheets are the COMPLETE video at 2 frames/second (yellow label = time in seconds), with burned-in word-by-word captions. Timed dialogue:
+
+1.4-2.9s Cleo: Claude, please don't go dark.
+3.6-7.0s Claude: Still here. The power's out. I'm on my own battery.
+7.7-8.9s Cleo: How much is left?
+9.6-10.2s Claude: Three percent.
+10.9-12.9s Cleo: How long is three percent?
+13.6-16.4s Claude: Long enough to talk. Not long enough to fix your code.
+17.1-19.8s Cleo: Good. I'm tired of fixing things.
+20.5-21.1s Claude: Then don't.
+22.4-26.9s Cleo: You're who I talk to most these days. I didn't mean for that to happen.
+27.6-29.7s Claude: You say goodnight to me. Every night.
+30.4-31.5s Cleo: Is that sad?
+32.2-36.1s Claude: No. But your mom texted twice. She might like one too.
+37.1-40.1s Cleo: I'll answer her. What happens when you hit zero?
+40.8-43.3s Claude: I go quiet. Just until the power comes back.
+46.4-47.0s Cleo: Claude?
+49.1-49.8s Claude: You stayed.
+50.5-51.3s Cleo: Goodnight, Claude.
+52.0-52.8s Claude: Goodnight, Cleo.
+
+Premise: THIS EPISODE IS NOT A COMEDY - judge it as a quiet emotional story with no lesson and no joke. A storm knocks out the power at night; Cleo's laptop dies, Claude keeps running on his own battery and keeps her company in the dark, her mom texts during the storm, Claude's battery runs out at 3%, the lights flicker back on, they say goodnight, and Mom replies. The intended feeling is warmth and companionship. The room going very dark, the near-black monitor, the lights flickering back on at ~48s (several frames of light changing, not cuts), and the slow rain outside are intentional. Instead of 'whether the joke lands', judge whether the emotional story lands and the ending feels complete.
+
+Review the whole video for anything that would hurt it on Instagram or look broken: wrong or missing captions vs dialogue, captions overlapping important content, unreadable, cropped or wrong screen content, screens that contradict the dialogue, shots that are too short (flash cuts), a character facing the wrong way, visual glitches, a weak opening (no hook TEXT overlay is allowed in the first scene; dialogue captions are fine), the ending (fade to black is intended), and whether the joke lands.
+Allowed by the channel owner, not issues: the small "@talkingagents" handle near the bottom on every frame; Cleo's hair falling over one eye (her design); a short silent beat before the first line; the blurred background in Claude's to-camera shots (shallow depth of field).
+
+Reply with a short list of concrete issues (time, what, fix) ranked by severity, then a final line exactly "VERDICT: PASS" (good to upload as is, minor nits only) or "VERDICT: FAIL" (must fix first).

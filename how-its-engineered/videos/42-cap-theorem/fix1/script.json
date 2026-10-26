@@ -1,0 +1,11 @@
+{
+ "topic": "CAP fix",
+ "lines": [
+  [
+   {
+    "say": "That's the CAP theorem. Consistency: every read sees the latest write. Availability: every request gets a real answer, never an error. Partition tolerance: the system keeps working when the network splits.",
+    "show": "That's the [CAP theorem.] *Consistency:* every read sees the latest write. *Availability:* every request gets a real answer, never an *error.* *Partition tolerance:* the system keeps working when the network [splits.]"
+   }
+  ]
+ ]
+}

@@ -1,0 +1,29 @@
+/Users/samarpit/insta-automation/how-its-engineered/videos/3d-05-shinkansen-kingfisher/sk.py:78: DeprecationWarning: 'Material.use_nodes' is expected to be removed in Blender 6.0
+  m.use_nodes = True
+/Users/samarpit/insta-automation/how-its-engineered/videos/3d-05-shinkansen-kingfisher/sk.py:3000: DeprecationWarning: 'World.use_nodes' is expected to be removed in Blender 6.0
+  w.use_nodes = True
+01:13.136  render           | Saved: 'st1/f_0030.png'
+01:14.667  render           | Saved: 'st1/f_0070.png'
+01:16.741  render           | Saved: 'st1/f_0122.png'
+01:17.846  render           | Saved: 'st1/f_0170.png'
+01:20.005  render           | Saved: 'st1/f_0210.png'
+01:20.942  render           | Saved: 'st1/f_0260.png'
+01:22.069  render           | Saved: 'st1/f_0300.png'
+01:26.707  render           | Saved: 'st1/f_0330.png'
+01:29.680  render           | Saved: 'st1/f_0362.png'
+01:31.659  render           | Saved: 'st1/f_0400.png'
+01:33.743  render           | Saved: 'st1/f_0450.png'
+01:35.716  render           | Saved: 'st1/f_0500.png'
+01:38.465  render           | Saved: 'st1/f_0560.png'
+01:39.176  render           | Saved: 'st1/f_0600.png'
+01:39.851  render           | Saved: 'st1/f_0640.png'
+01:41.843  render           | Saved: 'st1/f_0675.png'
+01:42.801  render           | Saved: 'st1/f_0720.png'
+01:45.480  render           | Saved: 'st1/f_0770.png'
+01:47.535  render           | Saved: 'st1/f_0820.png'
+01:50.118  render           | Saved: 'st1/f_0870.png'
+01:51.817  render           | Saved: 'st1/f_0940.png'
+BAKED 74 tracks 76294 keys
+Blender 5.2.2 LTS (hash d13f752e3b9c built 2026-09-15 01:49:19)
+
+Blender quit

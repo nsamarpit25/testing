@@ -1,0 +1,57 @@
+{
+ "topic": "Database indexing (t2: paradox-first, new take)",
+ "lines": [
+  [
+   {
+    "say": "A hundred million users, and your app finds your account in milliseconds. Now drop one email index. The same logins can take seconds.",
+    "show": "*100 million* users, and your app finds your account in *milliseconds.* Now drop one email index. The same logins can take *seconds.*"
+   },
+   {
+    "say": "What's an index?",
+    "show": "[What's an index?]"
+   }
+  ],
+  [
+   {
+    "say": "Your users live in one big table, one row each, in no order. Without an index, the database may scan the entire table, row after row. A hundred million rows to read, on every login.",
+    "show": "Your users live in one big table, *one row each,* in no order. Without an index, the database may scan the *entire table,* row after row. *100 million rows* to read, [on every login.]"
+   }
+  ],
+  [
+   {
+    "say": "The fix: one line of SQL builds an index: a separate list of one column, like email, kept sorted. Each entry points back to its row.",
+    "show": "The fix is one line of SQL that builds an [index:] a separate list of one column, like email, kept *sorted.* Each entry *points* back to its row."
+   }
+  ],
+  [
+   {
+    "say": "Because it's sorted, the database doesn't start at the top. It jumps to the S section, narrows it down in a few hops, and lands on your exact row.",
+    "show": "Because it's sorted, the database doesn't start at the top. It *jumps* straight to the *S* section, narrows it down in [a few hops,] and lands on your exact row."
+   }
+  ],
+  [
+   {
+    "say": "Like the index in a book: find the word, get the page, skip the rest.",
+    "show": "It works like the index in a book: find the word, get the page, [skip the rest.]"
+   }
+  ],
+  [
+   {
+    "say": "The catch? Every index takes space, and makes saving new users a bit slower, because each index must be updated too. So index what you search by, not everything.",
+    "show": "But there's a catch. Every index takes up *space,* and makes saving new users a bit *slower,* because each index must be updated too. So index [what you search by,] not everything."
+   }
+  ],
+  [
+   {
+    "say": "Postgres and MySQL index your primary key for you, usually the ID. Search by email, or anything else? Make sure it has its own index.",
+    "show": "*Postgres* and *MySQL* index your *primary key* for you, usually the ID. Search by email, or anything else? [Make sure it has its own index.]"
+   }
+  ],
+  [
+   {
+    "say": "If you build with AI, follow for the system design it skipped.",
+    "show": "If you build with AI, follow for the system design it skipped."
+   }
+  ]
+ ]
+}

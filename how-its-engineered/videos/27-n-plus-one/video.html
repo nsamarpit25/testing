@@ -1,0 +1,168 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- 27 N+1 queries, in the ember style. World: YOUR APP (an orders page with a big "database trips" counter) on the left
+     and the DATABASE cylinder on the right, joined by a road. Hook: trips race back and forth and the counter runs to 101.
+     Then slowly: one trip brings back 100 orders, and a trip per order fetches each customer's name (the counter climbs,
+     names fill in). N+1 card and shopping-list tags. Fix: one trip for the list, one for all the names together (2), or
+     a single joined request (1). Last: count the database requests per page. Beats from voice/words.json via at(). -->
+<link rel="stylesheet" href="../_ember/fonts.css">
+<link rel="stylesheet" href="../_ember/reel.css">
+</head>
+<body>
+<div id="stage">
+  <div id="world">
+    <canvas id="cv" width="1080" height="1920"></canvas>
+    <div class="layer" id="lbls"></div>
+  </div>
+</div>
+<script src="../../tools/lib.js"></script>
+<script src="voice/words.js"></script>
+<script src="../_ember/three.js"></script>
+<script src="../_ember/world.js"></script>
+<script src="../_ember/base.js"></script>
+<script>
+for (let i = 0; i < 24; i++) ORBS.push({ core: orbSprite(8), glow: orbSprite(28), trail: [0, 1, 2].map(() => orbSprite(9)) });
+
+/* ---------------- beats */
+const T = {
+  n101: at('101'), trips1: at('trips'), two: at('two'), fetches: at('fetches'), each: at('each'), customer: at('customer'), time: at('time'),
+  thats: at('thats'), problem: at('problem'), n2: at('n', 2), number: at('number'), plus2: at('plus', 2), list1: at('list'),
+  like: at('like'), shopping: at('shopping'), separate: at('separate'), every: at('every'), item: at('item'),
+  fix: at('fix'), ask: at('ask'), names: at('names'), together: at('together'), same: at('same'),
+  even: at('even'), check: at('check'), many: at('many'), page2: at('page', 2), ifv: at('if'), follow: at('follow'),
+};
+const CUT = { SLOW: T.fetches - 0.6, NP1: T.thats - 0.3, SHOP: T.like - 0.3, FIX: T.fix - 0.3, CHECK: T.even - 0.3, END: T.ifv - 0.15 };
+
+/* ---------------- layout */
+const APP = [-200, 25], DB = [165, 40];
+const P_AD = [[APP[0] + 52, APP[1] + 8, 80], [DB[0] - 62, DB[1] + 8, 80]];
+const P_DA = [[DB[0] - 62, DB[1] - 14, 55], [APP[0] + 52, APP[1] - 14, 55]];
+const RT = 0.22;
+// trips: { a, d, kind: 'list' | 'one' | 'names' | 'join', run }
+const TRIPS = [];
+for (let k = 0; k < 101; k++) TRIPS.push({ a: 0.25 + k * 0.032, d: 0.3, kind: k ? 'one' : 'list', run: 'hook' });
+TRIPS.push({ a: T.fetches - 0.1, d: 0.5, kind: 'list', run: 'slow' });
+const S0 = T.customer - 0.2, S3 = S0 + 3 * 0.5, SEND = T.list1 - 0.1;
+for (let k = 0; k < 100; k++) TRIPS.push({ a: k < 3 ? S0 + k * 0.5 : S3 + (k - 3) * ((SEND - S3) / 97), d: k < 3 ? 0.45 : 0.3, kind: 'one', run: 'slow', k });
+TRIPS.push({ a: T.ask - 0.1, d: 0.5, kind: 'list', run: 'fix' });
+TRIPS.push({ a: T.names - 0.1, d: 0.55, kind: 'names', run: 'fix' });
+TRIPS.push({ a: T.same - 0.1, d: 0.55, kind: 'join', run: 'join' });
+TRIPS.forEach((r) => (r.back = r.a + r.d));
+const RUN = { hook: [0, CUT.SLOW], slow: [CUT.SLOW, CUT.FIX], fix: [CUT.FIX, T.same - 0.15], join: [T.same - 0.15, 99] };
+const countAt = (t) => { const run = Object.keys(RUN).find((k) => t >= RUN[k][0] && t < RUN[k][1]); return { run, n: TRIPS.filter((r) => r.run === run && t >= r.back).length }; };
+const NAMES_ = ['Asha', 'Ravi', 'Meena', 'Kabir'];
+
+/* ---------------- camera */
+const SHOTS = [
+  { t: 0, d: 0, f: [-20, 20, 50], s: 0.98, a: -0.4, e: 0.58, sy: 520 },
+  { t: CUT.SLOW, d: 1.0, f: [-20, 20, 50], s: 0.98, a: -0.42, e: 0.58, sy: 520 },
+  { t: CUT.NP1, d: 1.0, f: [-20, 20, 50], s: 0.95, a: -0.42, e: 0.6, sy: 540 },
+  { t: CUT.FIX, d: 1.0, f: [-30, 20, 50], s: 1.0, a: -0.42, e: 0.6, sy: 520 },
+  { t: CUT.CHECK, d: 1.0, f: [-20, 20, 50], s: 0.98, a: -0.42, e: 0.6, sy: 520 },
+  { t: CUT.END, d: 2.0, f: [-15, 15, 50], s: 0.88, a: -0.42, e: 0.6, sy: 580 },
+];
+const KICKS = [[T.n101, 0.05], [T.two, 0.04], [T.fetches + 0.4, 0.03], [T.time, 0.03], [T.problem, 0.05], [T.separate, 0.03], [T.together, 0.05], [T.same, 0.04], [T.check, 0.04]];
+const SHAKES = [[T.n101 + 0.5, 2, 0.2]];
+
+/* ---------------- build the world */
+const label = (g, W_, H_, txt, col, size, y = H_ / 2) => { g.fillStyle = col; g.font = `800 ${size}px Mono`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.shadowColor = col; g.shadowBlur = 12; g.fillText(txt, W_ / 2, y); g.shadowBlur = 0; g.textAlign = 'left'; };
+const mk = (p, w, d, h, col, k = 5) => { const b = emberBox(p[0], p[1], w, d, h, col); const f = decal(w, h, 'front', k, b.g); f.m.position.set(0, -d / 2 - 0.3, h / 2); return { b, f, pl: pool(p[0], p[1], w * 1.3, col), p }; };
+const app = mk(APP, 104, 30, 170, O, 5);
+const db = emberCyl(DB[0], DB[1], 62, 150, O, { bands: [0, 50, 100, 150] });
+const dbF = decal(110, 130, 'front', 4, db.g); dbF.m.position.set(0, -63, 75);
+const dbPool = pool(DB[0], DB[1], 90, O);
+const rAD = road(P_AD, O2), rDA = road(P_DA, O2);
+
+function appDraw(g, W_, H_, col, n, nCol, sub, rows) {
+  g.strokeStyle = col + 'aa'; g.lineWidth = 6; rrect(g, 14, 14, W_ - 28, H_ - 28, 26); g.stroke();
+  label(g, W_, H_, 'YOUR APP', col, 44, 66);
+  label(g, W_, H_, 'database trips', GR, 30, 130);
+  label(g, W_, H_, String(n), nCol, 130, 240);
+  if (sub) label(g, W_, H_, sub, nCol, 32, 330);
+  rows.forEach(([txt, c], i) => label(g, W_, H_, txt, c, 32, 420 + i * 62));
+}
+
+/* ---------------- the world, frame by frame */
+function world(t) {
+  const thru = (pts, t0, dur, col, size = 1) => { const q = (t - t0) / dur; if (q > -0.02 && q < 1.1) orb(pts, clamp(q), col, clamp(q / 0.08) * (1 - clamp((q - 1) / 0.1)), size); };
+  const q0 = ease.back(prog(t, 0.05, 0.4));
+  const { run, n } = countAt(t);
+  // trips in flight
+  for (const r of TRIPS) {
+    if (r.run !== run) continue;
+    const big = r.kind !== 'one';
+    const col = r.kind === 'one' ? AMB : OK;
+    thru(P_AD, r.a, r.d / 2, O2, big ? 0.9 : 0.55);
+    thru(P_DA, r.a + r.d / 2, r.d / 2, col, big ? 1.5 : 0.55);
+  }
+  // the database
+  const busy = run === 'hook' ? t < TRIPS[100].back + 0.2 : run === 'slow' ? t > T.customer - 0.3 && t < SEND + 0.4 : false;
+  const dCol = busy ? mixHex(O, AMB, 0.45 + 0.3 * Math.sin(t * 9)) : O;
+  db.update(); db.setLook(dCol, 1.3 + 2 * Math.max(pulse(t, T.n101), pulse(t, T.together), pulse(t, T.same)), 1); dbPool.set(dCol, 0.45 * q0);
+  db.g.scale.set(1, 1, Math.max(0.01, q0));
+  dbF.draw((g, W_, H_) => { label(g, W_, H_, 'DATABASE', dCol, 40, 40); label(g, W_, H_, 'orders', dCol + 'cc', 34, 120); label(g, W_, H_, 'customers', dCol + 'cc', 34, 190); label(g, W_, H_, busy ? 'busy…' : '', AMB, 34, 330); });
+  // the app: the counter and the first orders
+  let nCol = n > 2 ? (n > 50 ? RED : AMB) : n ? OK : GR, sub = '', rows = [];
+  if (run === 'hook') sub = n >= 101 ? 'for ONE page' : '';
+  if (run === 'slow') {
+    const got = n >= 1;
+    const named = TRIPS.filter((r) => r.run === 'slow' && r.kind === 'one' && t >= r.back).length;
+    sub = got ? (named ? `1 list + ${named}` : '100 orders ✓') : '';
+    rows = got ? NAMES_.map((nm, i) => [`#${i + 1}  ${named > i ? nm : '…'}`, named > i ? AMB : GR]) : [];
+  }
+  if (run === 'fix') { sub = n >= 2 ? 'list + all names' : n ? 'list ✓' : ''; nCol = OK; rows = n >= 2 ? NAMES_.map((nm, i) => [`#${i + 1}  ${nm}`, OK]) : []; }
+  if (run === 'join') { sub = n ? 'one joined request' : 'or…'; nCol = OK; rows = n ? NAMES_.map((nm, i) => [`#${i + 1}  ${nm}`, OK]) : []; }
+  const aCol = nCol === RED ? mixHex(O, RED, 0.4) : nCol === OK && n ? mixHex(O, OK, 0.35) : O;
+  app.b.g.visible = q0 > 0.01; app.b.g.scale.set(1, 1, Math.max(0.01, q0)); app.b.setLook(aCol, 1.2 + 2 * Math.max(pulse(t, T.n101), pulse(t, T.together + 0.4), pulse(t, T.same + 0.45)), 1);
+  app.f.m.visible = app.b.g.visible; app.f.draw((g, W_, H_) => appDraw(g, W_, H_, aCol, n, nCol, sub, rows)); app.pl.set(aCol, 0.5 * q0);
+  // roads
+  rAD.set(1, busy ? AMB : O2, 0.6 * q0, t); rDA.set(1, busy ? AMB : run === 'fix' || run === 'join' ? OK : O2, 0.6 * q0, t);
+  ripple(t, T.together + 0.45, APP[0], APP[1], 2, OK, 100, 0.7); ripple(t, T.same + 0.45, APP[0], APP[1], 2, OK, 100, 0.7);
+}
+
+/* ---------------- world tags */
+function tags(t) {
+  const A_T = [APP[0] + 80, APP[1], 230], D_T = [DB[0] - 90, DB[1], 200], M_T = [10, 20, 150];
+  const big = (c) => `font-size:15px;padding:9px 13px;letter-spacing:1px;border-color:${c}`;
+  tag('101', `<span style="color:${RED}">101 TRIPS · ONE PAGE</span>`, big(RED), A_T, t, T.trips1, T.two - 0.1);
+  tag('two', `<span style="color:${OK}">2 WOULD DO</span>`, big(OK), A_T, t, T.two - 0.05, CUT.SLOW + 0.1);
+  tag('one', `<span style="color:${AMB}">ONE NAME PER TRIP</span>`, big(AMB), M_T, t, T.time - 0.4, CUT.NP1 + 0.2);
+  tag('shop', `<span style="color:${AMB}">A SEPARATE TRIP FOR EVERY ITEM</span>`, big(AMB), D_T, t, T.separate - 0.1, CUT.FIX + 0.1);
+  tag('tog', `<span style="color:${OK}">ALL NAMES IN ONE TRIP</span>`, big(OK), M_T, t, T.together - 0.1, T.same - 0.2);
+  tag('join', `<span style="color:${OK}">OR ONE JOINED REQUEST</span>`, big(OK), M_T, t, T.same, CUT.CHECK + 0.2);
+  tag('chk', `<span style="color:${AMB}">COUNT DATABASE TRIPS PER PAGE</span>`, big(AMB), A_T, t, T.check - 0.1, CUT.END + 0.3);
+}
+
+/* ---------------- reel config */
+const REEL = {
+  shots: SHOTS, kicks: KICKS, shakes: SHAKES, world, tags,
+  code: [
+    [CUT.SLOW, CUT.NP1 - 0.1, 'orders.js', 'load the page', [[0, 'N+1', RED]],
+      [["orders = query('… LIMIT 100')"], ['for (const o of orders)', T.each - 0.3], ["  o.name = query('… id = ?')", T.customer - 0.3]],
+      [[T.fetches + 0.4, 1, '1 trip', 'amb'], [S0, 3, (t) => `×${TRIPS.filter((r) => r.run === 'slow' && r.kind === 'one' && t >= r.back).length}`, 'bad']], 'type'],
+    [T.thats - 0.2, CUT.FIX - 0.1, 'the math', 'N + 1', [[0, '101 TRIPS', RED]],
+      [['1   request for the list'], ['N   = 100 orders, one each', T.n2 - 0.1], ['1 + N = 101', T.plus2 - 0.1]],
+      [[T.list1, 1, '+1', 'amb'], [T.number, 2, '+100', 'bad'], [T.plus2, 3, '101', 'bad']]],
+    [T.fix - 0.2, CUT.END - 0.1, 'orders.js', 'the fix', [[0, 'FIXING', AMB], [T.together + 0.4, '2 TRIPS', OK], [T.same + 0.45, '1 TRIP', OK]],
+      [["orders = query('… LIMIT 100')"], ["names = query('… WHERE id IN (…)')", T.names - 0.3], ['// or one JOIN: orders + names', T.same - 0.2]],
+      [[T.ask + 0.4, 1, '1', 'good'], [T.together + 0.4, 2, '2 total', 'good'], [T.same + 0.45, 3, '1 total', 'good']], 'type'],
+  ],
+  hl: /\b(query|for|const|of|LIMIT|WHERE|IN|JOIN|orders|names)\b/g,
+  tools: [],
+  slams: [
+    { a: T.problem - 0.5, b: T.n2 - 0.1, text: 'N+1', sub: 'ONE REQUEST FOR THE LIST, PLUS ONE PER ITEM', size: 96 },
+  ],
+  bad: ['101', 'separate'],
+  good: ['together', 'names'],
+  tiles: [['⌕', 'N+1<br>QUERIES'], ['⌕', 'QUERY<br>OPTIMIZATION'], ['⚡', 'CACHING']],
+  end: CUT.END, follow: T.follow,
+  cover: { t: 'N+1 QUERIES', at: T.n101 + 1.6, zoom: 0.95, dy: 40 },
+  flash: (t) => 0.07 * pulse(t, T.n101 + 0.5, 7) + 0.06 * pulse(t, T.together + 0.4, 7),
+};
+</script>
+<script src="../_ember/overlay.js"></script>
+<script src="../_ember/play.js"></script>
+</body>
+</html>

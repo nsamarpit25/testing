@@ -1,0 +1,70 @@
+{
+ "c1": {
+  "kind": "page",
+  "url": "myapp.dev/reset-password",
+  "accent": "#5b5bd6",
+  "title": "Reset password",
+  "body": [
+   "cleo@example.com"
+  ],
+  "big": {
+   "text": "\u2713 Check your inbox.",
+   "color": "#2f9e44"
+  }
+ },
+ "c2": {
+  "kind": "mail",
+  "app": "Mail",
+  "from": "Search: password reset",
+  "subject": "No results",
+  "body": [
+   "Inbox  \u2014  0 messages",
+   "Spam  \u2014  0 messages"
+  ]
+ },
+ "c3": {
+  "kind": "code",
+  "title": "routes/reset.js",
+  "lines": [
+   "router.post(\"/reset\", async (req, res) => {",
+   "  const { email } = req.body;",
+   "  res.json(await requestReset(email));",
+   "});"
+  ]
+ },
+ "c4": {
+  "kind": "code",
+  "title": "requestReset.js",
+  "lines": [
+   "async function requestReset(email) {",
+   "  // TODO (2019): send the email",
+   "  return {",
+   "    ok: true,",
+   "    message: \"Check your inbox.\"",
+   "  };",
+   "}"
+  ],
+  "hi": [
+   1
+  ]
+ },
+ "c5": {
+  "kind": "code",
+  "title": "requestReset.js",
+  "lines": [
+   "async function requestReset(email) {",
+   "  // TODO (2019): send the email",
+   "  return {",
+   "    ok: true,",
+   "    message: \"Check your inbox.\"",
+   "  };",
+   "}"
+  ],
+  "hi": [
+   1
+  ],
+  "ok": [
+   4
+  ]
+ }
+}

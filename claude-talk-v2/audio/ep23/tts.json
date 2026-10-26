@@ -1,0 +1,61 @@
+{
+ "prompt": "AUDIO PROFILE\nCleo: a young woman software developer in her mid twenties. Natural, expressive, conversational voice. Real, never cartoonish.\nClaude: a young man's voice. Calm, warm, perfectly deadpan and dry. Few words. He never raises his voice.\n\nTHE SCENE, END TO END\nLate afternoon. Cleo runs a tiny agency that is really just her and Claude in four browser tabs, but she told a client she has twelve employees with departments. Claude writes the replies as her design, finance and legal teams, and reminds her to delete his first line. Then the client's legal team replies, and their email still starts with the AI's first line. Their team is AI too. A fast, funny comedy.\n\nLINE BY LINE\n1. Cleo, panicking, fast.\n2. Claude, calm, factual, deadpan.\n3. Cleo, insistent, a little defensive.\n4. Claude, calm, dry.\n5. Cleo, businesslike, stressed.\n6. Claude, calm, helpful, a small reminder.\n7. Cleo, determined, firm.\n8. Claude, calm, two departments in one breath, deadpan.\n9. Cleo, nervous, excited, fast.\n10. Claude, calm, quietly knowing.\n11. Cleo, reading it out loud slowly, realising halfway.\n12. Claude, calm, warm, deadpan, a tiny greeting to himself.\n13. Cleo, stunned, disbelieving.\n14. Claude, warm, dry, deadpan, the punchline, short.\n\nDIRECTOR'S NOTES\nSnappy comedy timing: short natural pauses between lines, never long. Cleo's energy builds line by line; Claude stays calm the whole time, and that contrast is the joke. The last line is dry and simple, no dramatic pause inside it. Never read bracketed tags aloud. Finish every line fully, including its last word; never clip a word. Speak every word of the dialogue exactly as written, nothing added.",
+ "turns": [
+  [
+   "Cleo",
+   "Claude, the client wants to meet my twelve employees."
+  ],
+  [
+   "Claude",
+   "Your twelve employees are me in four tabs."
+  ],
+  [
+   "Cleo",
+   "They're departments! Design, finance, legal!"
+  ],
+  [
+   "Claude",
+   "Legal is finance with longer sentences."
+  ],
+  [
+   "Cleo",
+   "Help me write back. They hate the logo."
+  ],
+  [
+   "Claude",
+   "Design says it's bold. Delete my first line."
+  ],
+  [
+   "Cleo",
+   "And finance. They owe us eight thousand dollars."
+  ],
+  [
+   "Claude",
+   "Finance says pay first. Legal agrees."
+  ],
+  [
+   "Cleo",
+   "Their legal team replied!"
+  ],
+  [
+   "Claude",
+   "Read the first line."
+  ],
+  [
+   "Cleo",
+   "Sure! Here's your legal reply."
+  ],
+  [
+   "Claude",
+   "Hello, me."
+  ],
+  [
+   "Cleo",
+   "Their twelve employees are you too?"
+  ],
+  [
+   "Claude",
+   "Then this meeting could have been two prompts."
+  ]
+ ]
+}

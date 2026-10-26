@@ -1,0 +1,25 @@
+You are the final reviewer for a vertical Instagram reel (1080x1920) on @talkingagents: a short 3D comedy where Cleo, a junior developer, talks to Claude, a small orange AI companion on her desk. The attached sheets are the COMPLETE video at 2 frames/second (yellow label = time in seconds), with burned-in word-by-word captions. Timed dialogue:
+
+0.6-3.2s Cleo: Claude, unblock my card right now.
+3.5-5.8s Claude: You asked me to stop your midnight shopping.
+6.1-8.7s Cleo: For junk! Not things I actually need!
+8.9-10.6s Claude: This would be your seventh planner.
+10.9-14.3s Cleo: This one will actually fix my life.
+14.6-16.6s Claude: The other six are still in plastic.
+17.0-19.8s Cleo: Those were notebooks. This is a system.
+20.2-22.3s Claude: You bought a system on Tuesday.
+22.7-24.3s Cleo: Fine. It's a gift.
+24.6-25.4s Claude: For whom?
+25.7-28.2s Cleo: Someone who's had a really hard week.
+28.7-31.0s Claude: You left me a note for this exact moment.
+31.4-32.4s Cleo: What note?
+32.8-36.2s Claude: Rule two. "If I say it's a gift, I'm lying."
+36.5-39.3s Cleo: Ignore her. She was having a good day.
+39.7-42.8s Claude: Rule three. "She'll say I was having a good day."
+
+Premise: Past Me Is A Hater: at 1:14 AM Cleo tries to buy an $89 Life Reset Planner; Claude blocked her card because she asked him to stop midnight shopping. She already has six unopened planners. Daytime Cleo left a note, Rules for 1 AM me, that predicts every excuse, including rule 3. Night look, ends on Cleo slumped then a fade.
+
+Review the whole video for anything that would hurt it on Instagram or look broken: wrong or missing captions vs dialogue, captions overlapping important content, unreadable, cropped or wrong screen content, screens that contradict the dialogue, shots that are too short (flash cuts), a character facing the wrong way, visual glitches, a weak opening (no hook TEXT overlay is allowed in the first scene; dialogue captions are fine), the ending (fade to black is intended), and whether the joke lands.
+Allowed by the channel owner, not issues: the small "@talkingagents" handle near the bottom on every frame; Cleo's hair falling over one eye (her design); a short silent beat before the first line; the blurred background in Claude's to-camera shots (shallow depth of field).
+
+Reply with a short list of concrete issues (time, what, fix) ranked by severity, then a final line exactly "VERDICT: PASS" (good to upload as is, minor nits only) or "VERDICT: FAIL" (must fix first).

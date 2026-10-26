@@ -1,0 +1,23 @@
+{
+ "topic": "How Your Touchscreen Knows It's Your Finger",
+ "lines": [
+  [{"say": "Your phone ignores a wool glove, however hard you press. But one winter, people found a strange fix in the snack aisle. So what is your screen feeling for?",
+    "show": "Your phone ignores a *wool glove,* however hard you press. But one winter, people found a strange fix in the snack aisle. So what is your screen [feeling for?]"}],
+  [{"say": "Under the glass sits an invisible grid of see-through wires: rows one way, columns the other.",
+    "show": "Under the glass sits an *invisible grid* of see-through wires: rows one way, [columns the other.]"}],
+  [{"say": "The phone sends tiny electric pulses along the rows, and measures what reaches each column, many times a second.",
+    "show": "The phone sends tiny *electric pulses* along the rows, and measures what reaches each column, [many times a second.]"}],
+  [{"say": "Your finger is mostly salty water, so charge moves through it. Bring it close, and it draws away part of the signal at the crossings under it.",
+    "show": "Your finger is mostly *salty water,* so charge moves through it. Bring it close, and it draws away part of the signal [at the crossings under it.]"}],
+  [{"say": "By comparing neighbouring crossings, the phone finds the centre of your touch, even between wires.",
+    "show": "By comparing neighbouring crossings, the phone finds [the centre of your touch,] even between wires."}],
+  [{"say": "A wool glove or a fingernail barely changes the signal. Water can, so a wet screen sometimes taps by itself.",
+    "show": "A wool glove or a fingernail *barely changes* the signal. Water can, so a wet screen [sometimes taps by itself.]"}],
+  [{"say": "The snack-aisle fix? In February twenty-ten, South Koreans were reported tapping iPhones with snack sausages, to keep their gloves on. Salty, moist meat changes that signal too.",
+    "show": "The *snack-aisle fix?* In February 2010, South Koreans were reported tapping iPhones with snack sausages, to keep their gloves on. [Salty, moist meat] changes that signal too."}],
+  [{"say": "So your screen never knew it was your finger. It only feels a change in the signal, and a sausage can fake that.",
+    "show": "So your screen never knew it was *your finger.* It only feels a change in the signal, and [a sausage can fake that.]"},
+   {"say": "Follow for how everyday tech really works.",
+    "show": "Follow for how [everyday tech] really works."}]
+ ]
+}

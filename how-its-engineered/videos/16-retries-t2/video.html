@@ -1,0 +1,187 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- 16 Retries (v2), in the ember style. World: eight PHONES (weather apps) in two rows on the left and the WEATHER SERVER
+     on the right with a load meter. Hook: the server stops answering for a second, every app retries at once, wave after
+     wave, the meter hits 100 % and it goes down. Then one app: the connection drops, it tries again and it works. The
+     storm again (slam). Fixes on one card: stop after three retries (one phone counts 1/3 → error), wait longer each time
+     (synchronised waves get sparser, the server recovers), and jitter (the retries spread out, the meter stays low).
+     Beats come from voice/words.json via at(). -->
+<link rel="stylesheet" href="../_ember/fonts.css">
+<link rel="stylesheet" href="../_ember/reel.css">
+</head>
+<body>
+<div id="stage">
+  <div id="world">
+    <canvas id="cv" width="1080" height="1920"></canvas>
+    <div class="layer" id="lbls"></div>
+  </div>
+</div>
+<script src="../../tools/lib.js"></script>
+<script src="voice/words.js"></script>
+<script src="../_ember/three.js"></script>
+<script src="../_ember/world.js"></script>
+<script>window.TAIL = 0.9;</script>
+<script src="../_ember/base.js"></script>
+<script>
+for (let i = 0; i < 34; i++) ORBS.push({ core: orbSprite(8), glow: orbSprite(28), trail: [0, 1, 2].map(() => orbSprite(9)) });
+
+/* ---------------- beats */
+const T = {
+  stopped: at('stopped'), second1: at('second'), then1: at('then'), thousands: at('thousands'), same: at('same'), down: at('down'),
+  retrying: at('retrying'), helps: at('helps'), drops: at('drops'), moment2: at('moment', 2),
+  but: at('but'), instantly: at('instantly'), overwhelm: at('overwhelm'), retry: at('retry'), storm: at('storm'),
+  fix1: at('fix'), stop: at('stop'), works: at('works'), three: at('three'), retries: at('retries'),
+  fix2: at('fix', 2), wait1: at('wait'), one3: at('one', 3), two2: at('two', 2), four: at('four'), recover: at('recover'),
+  fix3: at('fix', 3), randomness: at('randomness'), together: at('together'), ifv: at('if'), follow: at('follow'),
+};
+const CUT = { HELP: T.retrying - 0.3, STORM: T.but - 0.1, FIX1: T.fix1 - 0.3, FIX2: T.fix2 - 0.3, FIX3: T.fix3 - 0.3, END: T.ifv - 0.15 };
+
+/* ---------------- layout */
+const SRV = [140, 35];
+const PHN = []; for (let r = 0; r < 2; r++) for (let c = 0; c < 4; c++) PHN.push([-238 + c * 52 + r * 26, 120 - r * 140]);
+const TRIP = 0.5;
+const path = (i) => [[PHN[i][0] + 20, PHN[i][1], 40], [SRV[0] - 58, SRV[1] + (PHN[i][1] - SRV[1]) * 0.25, 70]];
+const back = (i) => [...path(i)].reverse();
+// requests: { a, i (phone), res: 'ok' | 'fail' | 'lost' }
+const REQ = [];
+const wave = (a, res = 'fail') => PHN.forEach((_, i) => REQ.push({ a: a + i * 0.015, i, res }));
+REQ.push({ a: 0.2, i: 2, res: 'ok' }); REQ.push({ a: 0.35, i: 5, res: 'ok' });
+for (let w = 0; w < 4; w++) wave(T.then1 + w * 0.6);
+REQ.push({ a: T.helps - 0.3, i: 0, res: 'lost' }); REQ.push({ a: T.moment2 - 0.2, i: 0, res: 'ok' });
+for (let a = T.but; a < T.overwhelm + 0.6; a += 0.42) wave(a);
+const TRIES = [T.fix1 + 0.05, T.stop + 0.05, T.works + 0.15, T.three - 0.05];
+TRIES.forEach((a) => REQ.push({ a, i: 0, res: 'fail' }));
+[T.one3 - 0.1, T.two2 - 0.1, T.four - 0.1].forEach((a, k) => wave(a, k < 2 ? 'fail' : 'ok'));
+const JIT = PHN.map((_, i) => T.randomness - 0.2 + ((i * 0.618) % 1) * (T.together + 0.2 - T.randomness));
+JIT.forEach((a, i) => REQ.push({ a, i, res: 'ok' }));
+for (let a = CUT.END - 0.4; a < CUT.END + 3; a += 0.9) REQ.push({ a, i: Math.floor((a * 7) % 8), res: 'ok' });
+REQ.forEach((r) => (r.hit = r.a + TRIP));
+const ERR = T.retries + 0.3;
+
+// server load (0..1), by keyframes
+const LK = [[0, 0.2], [T.then1, 0.2], [T.then1 + 0.5, 0.55], [T.then1 + 1.1, 0.8], [T.then1 + 1.7, 0.95], [T.down, 1], [CUT.HELP, 1], [CUT.HELP + 0.6, 0.2],
+  [T.but, 0.2], [T.instantly, 0.65], [T.overwhelm, 1], [CUT.FIX1, 1], [CUT.FIX1 + 0.6, 0.35], [T.one3 + 0.4, 0.85], [T.one3 + 0.8, 0.5], [T.two2 + 0.4, 0.75],
+  [T.two2 + 0.8, 0.4], [T.four + 0.4, 0.55], [T.recover, 0.25], [T.randomness, 0.25], [T.together, 0.35], [CUT.END, 0.25], [99, 0.25]];
+const loadAt = (t) => { for (let i = 0; i < LK.length - 1; i++) if (t <= LK[i + 1][0]) return lerp(LK[i][1], LK[i + 1][1], prog(t, LK[i][0], LK[i + 1][0])); return 0.25; };
+const blink = (t) => t > T.stopped - 0.1 && t < T.second1 + 0.2;
+
+/* ---------------- camera */
+const SHOTS = [
+  { t: 0, d: 0, f: [-35, 25, 50], s: 1.0, a: -0.4, e: 0.58, sy: 500 },
+  { t: CUT.HELP, d: 1.0, f: [-40, 25, 50], s: 1.04, a: -0.42, e: 0.58, sy: 500 },
+  { t: CUT.STORM, d: 1.0, f: [-35, 25, 50], s: 1.0, a: -0.42, e: 0.6, sy: 500 },
+  { t: CUT.FIX1, d: 1.0, f: [-40, 25, 50], s: 1.04, a: -0.42, e: 0.6, sy: 500 },
+  { t: CUT.FIX2, d: 1.0, f: [-35, 25, 50], s: 1.0, a: -0.42, e: 0.6, sy: 500 },
+  { t: CUT.FIX3, d: 1.0, f: [-35, 25, 50], s: 1.0, a: -0.42, e: 0.6, sy: 500 },
+  { t: CUT.END, d: 2.0, f: [-30, 20, 50], s: 0.88, a: -0.42, e: 0.6, sy: 580 },
+];
+// t2 remake: every shot re-angled (azimuth, elevation, zoom) so no frame matches the original
+const REANGLE = [[0.14, -0.05, 1.05], [-0.16, 0.05, 1.05], [0.12, 0.06, 1.06], [-0.13, -0.04, 1.04], [0.15, 0.05, 1.05], [-0.12, 0.06, 1.06], [0.16, 0.04, 1.04]];  // zoomed in so the scene fills more of the frame
+SHOTS.forEach((s, i) => { const r = REANGLE[i % REANGLE.length]; s.a += r[0]; s.e = Math.min(1.0, Math.max(0.3, s.e + r[1])); s.s *= r[2]; });
+
+const KICKS = [[T.stopped, 0.04], [T.then1, 0.04], [T.down, 0.06], [T.drops, 0.03], [T.moment2 + 0.3, 0.03], [T.overwhelm, 0.05], [T.storm, 0.04],
+  [ERR, 0.04], [T.recover, 0.04], [T.randomness, 0.04], [T.together, 0.03]];
+const SHAKES = [[T.down, 2, 0.3], [T.overwhelm, 2, 0.25]];
+
+/* ---------------- build the world */
+const label = (g, W_, H_, txt, col, size, y = H_ / 2) => { g.fillStyle = col; g.font = `800 ${size}px Mono`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.shadowColor = col; g.shadowBlur = 12; g.fillText(txt, W_ / 2, y); g.shadowBlur = 0; g.textAlign = 'left'; };
+const mk = (p, w, d, h, col, k = 5) => { const b = emberBox(p[0], p[1], w, d, h, col); const f = decal(w, h, 'front', k, b.g); f.m.position.set(0, -d / 2 - 0.3, h / 2); return { b, f, pl: pool(p[0], p[1], w * 1.3, col), p }; };
+const srv = mk(SRV, 116, 70, 160, O, 4);
+const phones = PHN.map((p) => mk(p, 38, 12, 70, O, 6));
+
+function srvDraw(g, W_, H_, col, load, st, stCol) {
+  label(g, W_, H_, 'WEATHER', col, 46, H_ * 0.1); label(g, W_, H_, 'SERVER', col, 34, H_ * 0.17);
+  g.strokeStyle = col + 'aa'; g.lineWidth = 6; g.beginPath(); g.arc(W_ * 0.42, H_ * 0.32, 34, Math.PI * 0.9, Math.PI * 1.9); g.arc(W_ * 0.58, H_ * 0.33, 26, Math.PI * 1.3, Math.PI * 0.3); g.lineTo(W_ * 0.36, H_ * 0.37); g.stroke();
+  const bx = 40, by = H_ * 0.48, bw = W_ - 80, bh = 46, lc = load > 0.9 ? RED : load > 0.6 ? AMB : OK;
+  g.strokeStyle = col + '88'; g.lineWidth = 4; rrect(g, bx, by, bw, bh, 10); g.stroke();
+  g.fillStyle = lc; g.shadowColor = lc; g.shadowBlur = 14; rrect(g, bx + 6, by + 6, (bw - 12) * clamp(load), bh - 12, 6); g.fill(); g.shadowBlur = 0;
+  label(g, W_, H_, `load ${Math.round(load * 100)}%`, lc, 34, by + bh + 40);
+  if (st) label(g, W_, H_, st, stCol, 42, H_ * 0.84);
+}
+
+/* ---------------- the world, frame by frame */
+function world(t) {
+  const thru = (pts, t0, dur, col, size = 1) => { const q = (t - t0) / dur; if (q > -0.02 && q < 1.1) orb(pts, clamp(q), col, clamp(q / 0.08) * (1 - clamp((q - 1) / 0.1)), size); };
+  const q0 = ease.back(prog(t, 0.05, 0.4));
+  const load = loadAt(t), down = load > 0.97, bl = blink(t);
+  // server
+  const sCol = down ? mixHex(O, RED, 0.6 + 0.3 * Math.sin(t * 10)) : bl ? mixHex(O, DIM, 0.5 + 0.4 * Math.sin(t * 22)) : load > 0.6 ? mixHex(O, AMB, 0.4) : t > T.recover - 0.2 && t < CUT.FIX3 ? mixHex(O, OK, 0.4) : O;
+  const sSt = down ? '✕ DOWN' : bl ? 'no answer…' : t > T.recover - 0.2 && t < CUT.FIX3 + 0.5 ? '✓ recovering' : load > 0.6 ? 'busy' : '✓ ok';
+  srv.b.g.visible = q0 > 0.01; srv.b.g.scale.set(1, 1, Math.max(0.01, q0)); srv.b.setLook(sCol, 1.2 + 2.5 * Math.max(pulse(t, T.down), pulse(t, T.overwhelm), pulse(t, T.recover)), 1);
+  srv.f.m.visible = srv.b.g.visible; srv.f.draw((g, W_, H_) => srvDraw(g, W_, H_, sCol, bl ? 0 : load, sSt, down ? RED : bl ? GR : sSt.startsWith('✓') ? OK : AMB)); srv.pl.set(sCol, 0.5 * q0);
+  // phones
+  phones.forEach((p, i) => {
+    const mine = REQ.filter((r) => r.i === i && t >= r.a);
+    const last = mine[mine.length - 1];
+    let st = '24°', col = O, stCol = O;
+    if (last && t < last.hit + 0.5) {
+      if (t < last.hit) { st = '…'; stCol = GR; }
+      else if (last.res === 'ok') { st = '✓ 24°'; stCol = OK; col = mixHex(O, OK, 0.4); }
+      else { st = '✕'; stCol = RED; col = mixHex(O, RED, 0.45); }
+    }
+    if (i === 0 && t > T.fix1 - 0.1 && t < CUT.FIX2) {
+      const n = TRIES.filter((a) => t >= a).length;
+      st = t > ERR ? 'error' : n <= 1 ? 'try' : `retry ${n - 1}/3`; stCol = t > ERR ? RED : AMB; col = t > ERR ? mixHex(O, RED, 0.45) : O;
+    }
+    if (i === 0 && last && last.res === 'lost' && t > T.drops && t < T.moment2 - 0.2) { st = '✕ lost'; stCol = RED; }
+    p.b.g.visible = q0 > 0.01; p.b.g.scale.set(1, 1, Math.max(0.01, q0)); p.b.setLook(col, 1.1 + 2 * (last ? pulse(t, last.a, 6) : 0), 1);
+    p.f.m.visible = p.b.g.visible; p.f.draw((g, W_, H_) => { g.strokeStyle = col + 'aa'; g.lineWidth = 6; rrect(g, 12, 12, W_ - 24, H_ - 24, 26); g.stroke(); label(g, W_, H_, 'APP', col, 40, 70); label(g, W_, H_, st, stCol, st.length > 6 ? 34 : 50, H_ * 0.58); });
+    p.pl.set(col, 0.3 * q0);
+  });
+  // requests
+  for (const r of REQ) {
+    const col = r.res === 'ok' ? O2 : AMB;
+    if (r.res === 'lost') { thru(path(r.i).map((p, k) => (k ? lerp3(path(r.i)[0], p, 0.5) : p)), r.a, TRIP * 0.5, AMB, 0.8); sparks(t, r.a + TRIP * 0.5, PHN[r.i][0] + 80, PHN[r.i][1], 45, RED, 8, 3, 70, 0.4); continue; }
+    thru(path(r.i), r.a, TRIP, col, 0.7);
+    if (r.res === 'ok') thru(back(r.i), r.hit, TRIP, OK, 0.6);
+  }
+  ripple(t, T.down, SRV[0], SRV[1], 2, RED, 120, 0.7); sparks(t, T.down, SRV[0], SRV[1], 120, RED, 16, 2, 140, 0.7);
+  ripple(t, T.overwhelm, SRV[0], SRV[1], 2, RED, 120, 0.7);
+  ripple(t, T.recover, SRV[0], SRV[1], 2, OK, 110, 0.7);
+}
+
+/* ---------------- world tags */
+function tags(t) {
+  const S_T = [SRV[0] - 75, SRV[1], 205], P_T = [-130, 40, 135], P0_T = [-120, PHN[0][1], 125];
+  const big = (c) => `font-size:15px;padding:9px 13px;letter-spacing:1px;border-color:${c}`;
+  tag('one', `<span style="color:${GR}">STOPS ANSWERING · 1 SECOND</span>`, big(GR), S_T, t, T.stopped, T.then1);
+  tag('all', `<span style="color:${AMB}">EVERY APP RETRIES AT ONCE</span>`, big(AMB), P_T, t, T.same - 0.3, CUT.HELP + 0.1);
+  tag('real', `<span style="color:${RED}">DOWN FOR REAL</span>`, big(RED), S_T, t, T.down, CUT.HELP + 0.1);
+  tag('help', `<span style="color:${OK}">CONNECTION DROPPED · TRY AGAIN · ✓</span>`, big(OK), P0_T, t, T.moment2 + 0.3, CUT.STORM + 0.1);
+  tag('stop3', `<span style="color:${AMB}">STOP ON SUCCESS · OR AFTER 3</span>`, big(AMB), P0_T, t, T.three - 0.1, CUT.FIX2 + 0.1);
+  tag('back', `<span style="color:${OK}">BACKOFF · WAIT 1 s → 2 s → 4 s</span>`, big(OK), P_T, t, T.one3 - 0.2, T.recover - 0.25);  // gives way to ROOM TO RECOVER so the pills never stack
+  tag('rec', `<span style="color:${OK}">ROOM TO RECOVER</span>`, big(OK), S_T, t, T.recover - 0.2, CUT.FIX3 + 0.1);
+  tag('spread', `<span style="color:${OK}">JITTER · RANDOM WAITS</span>`, big(OK), P_T, t, T.randomness, CUT.END - 0.1);
+}
+
+/* ---------------- reel config */
+const REEL = {
+  shots: SHOTS, kicks: KICKS, shakes: SHAKES, world, tags,
+  code: [
+    [0.3, CUT.FIX1 - 0.1, 'app.js', 'get the weather', [[0, 'OK', OK], [T.then1, 'RETRYING', AMB], [T.down, 'DOWN', RED], [CUT.HELP + 0.5, 'OK', OK], [T.instantly, 'STORM', RED]],
+      [["while (!ok) fetch('/weather')"], ['// no limit, no wait', T.instantly - 0.3]],
+      [[T.then1, 1, (t) => `retry ×${REQ.filter((r) => r.res === 'fail' && t >= r.a && t < CUT.HELP).length}`, 'bad'], [CUT.HELP, 1, '', ''], [T.but, 1, (t) => `retry ×${REQ.filter((r) => r.res === 'fail' && t >= r.a && r.a > T.but - 0.1 && r.a < CUT.FIX1).length}`, 'bad'], [T.instantly, 2, 'storm', 'bad']], 'type'],
+    [T.fix1 - 0.2, CUT.END - 0.1, 'app.js', 'retry, safely', [[0, 'LIMITED', AMB], [T.fix2, 'BACKING OFF', OK], [T.fix3, 'JITTER', OK]],
+      [['stop on success, or after 3 retries'], ['wait 1 s → 2 s → 4 s', T.fix2 - 0.1], ['+ a random bit on each wait', T.fix3 - 0.1]],
+      [[T.stop, 1, (t) => `retry ${Math.max(0, TRIES.filter((a) => t >= a).length - 1)}/3`, 'amb'], [ERR, 1, '✕ show error', 'amb'], [T.recover, 2, '✓ recovers', 'good'], [T.together, 3, '✓ spread out', 'good']]],
+  ],
+  hl: /\b(while|fetch|stop|retries|wait|random)\b/g,
+  tools: [],
+  slams: [
+    { a: T.retry - 0.1, b: T.fix1 - 0.35, text: 'retry storm', sub: 'EVERY FAILURE TURNS INTO MORE CALLS', size: 72 },
+  ],
+  bad: ['down', 'real', 'storm'],
+  good: ['randomness', 'longer'],
+  tiles: [['↻', 'RETRIES'], ['⏳', 'TIMEOUTS'], ['⚡', 'CIRCUIT<br>BREAKERS']],
+  end: CUT.END, follow: T.follow,
+  wbw: true,
+  cover: { k: 'RETRIES', t: '1 SECOND GLITCH.<br>THEN A CRASH.', at: T.down + 0.4, zoom: 0.95, dy: 0 },
+  flash: (t) => 0.08 * pulse(t, T.down, 7) + 0.05 * pulse(t, T.recover, 7),
+};
+</script>
+<script src="../_ember/overlay.js"></script>
+<script src="../_ember/play.js"></script>
+</body>
+</html>

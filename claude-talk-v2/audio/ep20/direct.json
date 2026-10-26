@@ -1,0 +1,226 @@
+{
+ "look": {
+  "base": "night",
+  "colors": {
+   "V3_Cleo_Top": "#b5523b",
+   "V3_Cleo_Trim": "#9a4532"
+  }
+ },
+ "lead": 0.6,
+ "gap": 0.32,
+ "hold": 2.3,
+ "beats": {
+  "9": 0.15,
+  "12": 0.2,
+  "14": 0.15,
+  "16": 0.0,
+  "4": -0.1
+ },
+ "open": [
+  "CLEO",
+  "t0.05 typing",
+  "t0 look monitor 1",
+  "t0 brow 0.02 6"
+ ],
+ "lines": {
+  "1": {
+   "shot": "CLEO",
+   "cleo": [
+    "1-0.35 look claude 14",
+    "1-0.2 hands r_ask 10",
+    "1.end+0.2 hands rest 12"
+   ]
+  },
+  "2": {
+   "shot": "CLAUDE",
+   "claude": [
+    "2-0.2 face her 6",
+    "2.w5 tilt 0.05 12"
+   ]
+  },
+  "3": {
+   "shot": "CLEOCU",
+   "cleo": [
+    "3 look claude 6",
+    "3 brow 0.03 6",
+    "3 hands open 8",
+    "3.end-0.1 hands rest 10"
+   ]
+  },
+  "4": {
+   "shot": "CLAUDE",
+   "claude": [
+    "4 tilt 0 10",
+    "4 face mon 8",
+    "4.w4 face her 8"
+   ]
+  },
+  "5": {
+   "shot": "CLEO",
+   "cleo": [
+    "5 look up 10",
+    "5 hands open 10",
+    "5 smile 0.3 10",
+    "5.end+0.2 hands rest 12",
+    "5.end smile 0 10"
+   ]
+  },
+  "6": {
+   "shot": "CLAUDE",
+   "claude": [
+    "6 face her 6",
+    "6.w1 face mon 8"
+   ],
+   "cleo": [
+    "6.w2 look monitor 8"
+   ]
+  },
+  "7": {
+   "shot": "MON",
+   "cleo": [
+    "7 look claude 6",
+    "7.w3 hands open 8",
+    "7.end+0.2 hands rest 12"
+   ]
+  },
+  "8": {
+   "shot": "CLAUDE",
+   "claude": [
+    "8 face her 6",
+    "8.w3 nod"
+   ]
+  },
+  "9": {
+   "shot": "CLEO",
+   "cleo": [
+    "9 look down 8",
+    "9.w1 smile 0.25 8",
+    "9.w1 look claude 8",
+    "9.end smile 0 10"
+   ]
+  },
+  "10": {
+   "shot": "CLAUDE",
+   "claude": [
+    "10 tilt 0.07 8"
+   ]
+  },
+  "11": {
+   "shot": "CLEOCU",
+   "cleo": [
+    "11 look down 8",
+    "11 hands open 8",
+    "11 brow 0.025 8",
+    "11.w4 look claude 8",
+    "11.end+0.2 hands rest 12"
+   ]
+  },
+  "12": {
+   "shot": "CLAUDE",
+   "claude": [
+    "12 tilt 0 8",
+    "12 face her 6",
+    "12.w4 face mon 8"
+   ]
+  },
+  "13": {
+   "shot": "CLEO",
+   "cleo": [
+    "13 look monitor 6",
+    "13 brow 0.025 6"
+   ]
+  },
+  "14": {
+   "shot": "CLAUDE",
+   "claude": [
+    "14 face mon 6"
+   ],
+   "cleo": [
+    "14.w2 look monitor 6"
+   ]
+  },
+  "15": {
+   "shot": "CLEOCU",
+   "cleo": [
+    "15 look claude 6",
+    "15 hands push 8",
+    "15 brow 0.02 8",
+    "15.end+0.2 hands rest 12"
+   ]
+  },
+  "16": {
+   "shot": "CLAUDE",
+   "claude": [
+    "16 face her 6",
+    "16.w1 face mon 8"
+   ],
+   "cleo": [
+    "16.w2 look monitor 8"
+   ]
+  }
+ },
+ "cuts": [
+  [
+   "1.w2",
+   "MON"
+  ],
+  [
+   "7.w3",
+   "CLEO"
+  ],
+  [
+   "14.w2",
+   "MON"
+  ],
+  [
+   "16.w2",
+   "MON"
+  ],
+  [
+   "16.end+0.4",
+   "CLEO"
+  ]
+ ],
+ "mon": [
+  [
+   "0",
+   "m1"
+  ],
+  [
+   "6",
+   "m2"
+  ],
+  [
+   "12",
+   "m3"
+  ],
+  [
+   "15",
+   "m4"
+  ]
+ ],
+ "phone": [
+  [
+   "0",
+   "p1"
+  ]
+ ],
+ "sfx": [
+  [
+   "t0.15",
+   "error"
+  ],
+  [
+   "1.w2",
+   "softbuzz"
+  ]
+ ],
+ "tail_cleo": [
+  "16.end+0.4 look slump 12",
+  "16.end+0.5 brow 0 10"
+ ],
+ "tail_claude": [
+  "16.end+0.6 face her 10",
+  "16.end+1.6 tilt 0.06 12"
+ ]
+}

@@ -1,0 +1,52 @@
+{
+ "b1": {
+  "kind": "page",
+  "tab": "Cleo \u2014 Developer",
+  "accent": "#2b6cb0",
+  "title": "Cleo \u2014 Developer",
+  "body": [
+   "I build things for the web.",
+   "",
+   "Projects   \u00b7   About   \u00b7   Contact"
+  ]
+ },
+ "b3": {
+  "kind": "page",
+  "url": "http://localhost:3000",
+  "url_hi": true,
+  "accent": "#2b6cb0",
+  "title": "Cleo \u2014 Developer",
+  "body": [
+   "I build things for the web.",
+   "",
+   "Projects   \u00b7   About   \u00b7   Contact"
+  ]
+ },
+ "b5": {
+  "kind": "page",
+  "url": "linkedin.com/feed",
+  "accent": "#0a66c2",
+  "title": "Cleo \u00b7 Developer",
+  "body": [
+   "Excited to launch my portfolio!",
+   "Check it out:",
+   "http://localhost:3000"
+  ],
+  "badge": {
+   "text": "3 reactions",
+   "color": "#0a66c2"
+  }
+ },
+ "p1": {
+  "kind": "phone",
+  "app": "Messages",
+  "title": "Maya",
+  "body": "Your portfolio link won't open."
+ },
+ "p2": {
+  "kind": "phone",
+  "app": "Messages",
+  "title": "Maya",
+  "body": "Maybe the internet's down."
+ }
+}

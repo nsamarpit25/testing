@@ -1,0 +1,47 @@
+{
+ "a1": {
+  "kind": "mail",
+  "app": "Mail \u2014 Sent",
+  "from": "To: All customers (40,312)",
+  "subject": "test test please ignore",
+  "body": [
+   "hi",
+   "",
+   "testing the new template"
+  ],
+  "badge": {
+   "text": "Sent to 40,312 people",
+   "color": "#d64545"
+  }
+ },
+ "a2": {
+  "kind": "mail",
+  "app": "Mail \u2014 Inbox (214)",
+  "from": "From: CEO",
+  "subject": "RE: test test please ignore",
+  "body": [
+   "What is this?"
+  ]
+ },
+ "a3": {
+  "kind": "page",
+  "url": "mail.cleo.dev/campaigns",
+  "accent": "#5b5bd6",
+  "title": "Campaign stats",
+  "body": [
+   "test test please ignore",
+   "",
+   "Marketing's best: 12%"
+  ],
+  "big": {
+   "text": "61% opened",
+   "color": "#2f9e44"
+  }
+ },
+ "p1": {
+  "kind": "phone",
+  "app": "Slack",
+  "title": "Marketing team",
+  "body": "What subject line did you use?? We need it."
+ }
+}

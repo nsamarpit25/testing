@@ -1,0 +1,12 @@
+01 13/14 matched | Claude,@0.00 checkout's@0.90 extinct.@1.52 A@2.58 hundred@2.64 and@2.96 twenty-eight@3.24 commits.@3.66 I'm@4.50 checking@4.66 them@4.90 one@5.18 by@5.66 one.@5.98
+02 10/10 matched | Here@0.00 we@0.26 observe@0.48 the@0.92 junior@1.18 developer,@1.48 in@2.46 her@3.06 natural@3.22 habitat.@3.76
+03 8/13 matched | She@0.00 is@0.39 on@0.78 commit@1.16 four.@1.55 At@1.94 this@2.78 pace,@3.62 she@4.54 will@4.68 finish@4.84 on@5.26 Thursday.@5.66
+04 4/4 matched | Are@0.00 you...@0.18 narrating@1.06 me?@1.62
+05 5/5 matched | The@0.00 developer@0.24 has@0.80 noticed@1.10 us.@1.54
+06 17/17 matched | Run@0.00 git@0.52 bisect@1.10 start.@2.06 Mark@3.40 an@3.66 earlier@3.90 commit@4.30 good,@4.86 the@6.04 broken@6.20 one@6.54 bad.@6.98 Git@8.42 picks@8.78 between@9.16 them.@9.66
+07 2/2 matched | And@0.00 then?@0.26
+08 14/14 matched | Test@0.00 checkout.@0.40 Tell@1.58 Git@1.84 good@2.16 or@2.72 bad.@3.36 Repeat.@4.38 Each@5.44 test@5.66 roughly@6.18 halves@6.86 the@7.26 suspects.@7.48
+09 7/7 matched | Bad.@0.00 Good.@0.76 Good.@1.72 Bad.@2.48 Good.@3.42 Bad.@4.12 Bad.@5.14
+10 7/8 matched | A@0.00 hundred@0.22 and@0.70 twenty-eight@1.00 suspects.@1.60 Seven@3.08 checks.@3.38 Remarkable.@4.74
+11 10/10 matched | Found@0.00 it!@0.28 "Small@1.48 harmless@1.76 cleanup."@2.34 Who@3.98 wrote...@4.14 oh.@5.04 It's@6.40 me.@6.96
+12 5/5 matched | Cause@0.00 of@0.32 extinction:@0.52 the@1.90 developer.@2.00

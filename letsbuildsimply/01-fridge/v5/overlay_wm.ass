@@ -1,0 +1,806 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 480
+PlayResY: 854
+WrapStyle: 2
+ScaledBorderAndShadow: yes
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Cap,Poppins Black,28,&H00FFFFFF,&H00FFFFFF,&H000A0B0B,&H80000000,0,0,0,0,100,100,0,0,1,3.0,1.4,5,10,10,10,1
+Style: Lab,Poppins Black,21,&H004DC3FF,&H004DC3FF,&H00000000,&H78000000,0,0,0,0,100,100,1,0,1,2.7,1.1,2,10,10,10,1
+
+Style: WM,Poppins SemiBold,15,&H00FFFFFF,&H00FFFFFF,&H00000000,&H80000000,0,0,0,0,100,100,1,0,1,0.8,0.8,8,10,10,10,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 2,0:00:00.00,0:00:00.22,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}Your {\alpha&HFF&}fridge {\alpha&HFF&}has {\alpha&HFF&}never
+Dialogue: 2,0:00:00.22,0:00:00.52,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}Your {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}fridge {\alpha&HFF&}has {\alpha&HFF&}never
+Dialogue: 2,0:00:00.52,0:00:00.82,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}Your {\alpha&H00&\c&HFFFFFF&\fscy100}fridge {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}has {\alpha&HFF&}never
+Dialogue: 2,0:00:00.82,0:00:01.14,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}Your {\alpha&H00&\c&HFFFFFF&\fscy100}fridge {\alpha&H00&\c&HFFFFFF&\fscy100}has {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}never
+Dialogue: 2,0:00:01.14,0:00:01.40,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}made {\alpha&HFF&}anything {\alpha&HFF&}cold
+Dialogue: 2,0:00:01.40,0:00:01.80,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}made {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}anything {\alpha&HFF&}cold
+Dialogue: 2,0:00:01.80,0:00:02.44,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}made {\alpha&H00&\c&HFFFFFF&\fscy100}anything {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}cold
+Dialogue: 2,0:00:02.44,0:00:02.90,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}Not {\alpha&HFF&}once
+Dialogue: 2,0:00:02.90,0:00:04.06,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}Not {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}once
+Dialogue: 2,0:00:04.06,0:00:04.52,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}A {\alpha&HFF&}hundred {\alpha&HFF&}years {\alpha&HFF&}ago
+Dialogue: 2,0:00:04.52,0:00:04.68,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}A {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}hundred {\alpha&HFF&}years {\alpha&HFF&}ago
+Dialogue: 2,0:00:04.68,0:00:04.84,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}A {\alpha&H00&\c&HFFFFFF&\fscy100}hundred {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}years {\alpha&HFF&}ago
+Dialogue: 2,0:00:04.84,0:00:05.14,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}A {\alpha&H00&\c&HFFFFFF&\fscy100}hundred {\alpha&H00&\c&HFFFFFF&\fscy100}years {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}ago
+Dialogue: 2,0:00:05.14,0:00:05.30,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}a {\alpha&HFF&}fridge {\alpha&HFF&}was {\alpha&HFF&}this
+Dialogue: 2,0:00:05.30,0:00:05.50,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}a {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}fridge {\alpha&HFF&}was {\alpha&HFF&}this
+Dialogue: 2,0:00:05.50,0:00:05.76,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}a {\alpha&H00&\c&HFFFFFF&\fscy100}fridge {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}was {\alpha&HFF&}this
+Dialogue: 2,0:00:05.76,0:00:06.20,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}a {\alpha&H00&\c&HFFFFFF&\fscy100}fridge {\alpha&H00&\c&HFFFFFF&\fscy100}was {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}this
+Dialogue: 2,0:00:06.20,0:00:06.66,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}a {\alpha&HFF&}wooden {\alpha&HFF&}box
+Dialogue: 2,0:00:06.66,0:00:06.82,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}a {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}wooden {\alpha&HFF&}box
+Dialogue: 2,0:00:06.82,0:00:07.10,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}a {\alpha&H00&\c&HFFFFFF&\fscy100}wooden {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}box
+Dialogue: 2,0:00:07.10,0:00:07.42,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}and {\alpha&HFF&}a {\alpha&HFF&}block {\alpha&HFF&}of {\alpha&HFF&}ice
+Dialogue: 2,0:00:07.42,0:00:07.54,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}and {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}a {\alpha&HFF&}block {\alpha&HFF&}of {\alpha&HFF&}ice
+Dialogue: 2,0:00:07.54,0:00:07.68,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}and {\alpha&H00&\c&HFFFFFF&\fscy100}a {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}block {\alpha&HFF&}of {\alpha&HFF&}ice
+Dialogue: 2,0:00:07.68,0:00:07.86,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}and {\alpha&H00&\c&HFFFFFF&\fscy100}a {\alpha&H00&\c&HFFFFFF&\fscy100}block {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}of {\alpha&HFF&}ice
+Dialogue: 2,0:00:07.86,0:00:08.36,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}and {\alpha&H00&\c&HFFFFFF&\fscy100}a {\alpha&H00&\c&HFFFFFF&\fscy100}block {\alpha&H00&\c&HFFFFFF&\fscy100}of {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}ice
+Dialogue: 2,0:00:08.36,0:00:08.82,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}It {\alpha&HFF&}worked {\alpha&HFF&}brilliantly
+Dialogue: 2,0:00:08.82,0:00:09.02,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}It {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}worked {\alpha&HFF&}brilliantly
+Dialogue: 2,0:00:09.02,0:00:09.70,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}It {\alpha&H00&\c&HFFFFFF&\fscy100}worked {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}brilliantly
+Dialogue: 2,0:00:09.70,0:00:10.16,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}for {\alpha&HFF&}about {\alpha&HFF&}two {\alpha&HFF&}days
+Dialogue: 2,0:00:10.16,0:00:10.34,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}for {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}about {\alpha&HFF&}two {\alpha&HFF&}days
+Dialogue: 2,0:00:10.34,0:00:10.62,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}for {\alpha&H00&\c&HFFFFFF&\fscy100}about {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}two {\alpha&HFF&}days
+Dialogue: 2,0:00:10.62,0:00:11.32,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}for {\alpha&H00&\c&HFFFFFF&\fscy100}about {\alpha&H00&\c&HFFFFFF&\fscy100}two {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}days
+Dialogue: 2,0:00:11.32,0:00:11.78,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}Then {\alpha&HFF&}the {\alpha&HFF&}ice {\alpha&HFF&}was
+Dialogue: 2,0:00:11.78,0:00:11.88,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}Then {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}the {\alpha&HFF&}ice {\alpha&HFF&}was
+Dialogue: 2,0:00:11.88,0:00:12.08,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}Then {\alpha&H00&\c&HFFFFFF&\fscy100}the {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}ice {\alpha&HFF&}was
+Dialogue: 2,0:00:12.08,0:00:12.26,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}Then {\alpha&H00&\c&HFFFFFF&\fscy100}the {\alpha&H00&\c&HFFFFFF&\fscy100}ice {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}was
+Dialogue: 2,0:00:12.26,0:00:12.42,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}a {\alpha&HFF&}puddle
+Dialogue: 2,0:00:12.42,0:00:12.76,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}a {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}puddle
+Dialogue: 2,0:00:12.76,0:00:13.02,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}and {\alpha&HFF&}the {\alpha&HFF&}milk {\alpha&HFF&}was {\alpha&HFF&}yogurt
+Dialogue: 2,0:00:13.02,0:00:13.16,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}and {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}the {\alpha&HFF&}milk {\alpha&HFF&}was {\alpha&HFF&}yogurt
+Dialogue: 2,0:00:13.16,0:00:13.36,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}and {\alpha&H00&\c&HFFFFFF&\fscy100}the {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}milk {\alpha&HFF&}was {\alpha&HFF&}yogurt
+Dialogue: 2,0:00:13.36,0:00:13.50,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}and {\alpha&H00&\c&HFFFFFF&\fscy100}the {\alpha&H00&\c&HFFFFFF&\fscy100}milk {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}was {\alpha&HFF&}yogurt
+Dialogue: 2,0:00:13.50,0:00:14.44,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}and {\alpha&H00&\c&HFFFFFF&\fscy100}the {\alpha&H00&\c&HFFFFFF&\fscy100}milk {\alpha&H00&\c&HFFFFFF&\fscy100}was {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}yogurt
+Dialogue: 2,0:00:14.44,0:00:14.90,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}Here's {\alpha&HFF&}the {\alpha&HFF&}thing
+Dialogue: 2,0:00:14.90,0:00:14.96,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}Here's {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}the {\alpha&HFF&}thing
+Dialogue: 2,0:00:14.96,0:00:15.24,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}Here's {\alpha&H00&\c&HFFFFFF&\fscy100}the {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}thing
+Dialogue: 2,0:00:15.24,0:00:15.64,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}you {\alpha&HFF&}can't {\alpha&HFF&}make {\alpha&HFF&}cold
+Dialogue: 2,0:00:15.64,0:00:15.96,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}you {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}can't {\alpha&HFF&}make {\alpha&HFF&}cold
+Dialogue: 2,0:00:15.96,0:00:16.18,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}you {\alpha&H00&\c&HFFFFFF&\fscy100}can't {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}make {\alpha&HFF&}cold
+Dialogue: 2,0:00:16.18,0:00:16.76,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}you {\alpha&H00&\c&HFFFFFF&\fscy100}can't {\alpha&H00&\c&HFFFFFF&\fscy100}make {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}cold
+Dialogue: 2,0:00:16.76,0:00:17.18,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}You {\alpha&HFF&}can {\alpha&HFF&}only {\alpha&HFF&}move
+Dialogue: 2,0:00:17.18,0:00:17.28,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}You {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}can {\alpha&HFF&}only {\alpha&HFF&}move
+Dialogue: 2,0:00:17.28,0:00:17.46,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}You {\alpha&H00&\c&HFFFFFF&\fscy100}can {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}only {\alpha&HFF&}move
+Dialogue: 2,0:00:17.46,0:00:17.68,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}You {\alpha&H00&\c&HFFFFFF&\fscy100}can {\alpha&H00&\c&HFFFFFF&\fscy100}only {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}move
+Dialogue: 2,0:00:17.68,0:00:17.96,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}heat {\alpha&HFF&}out
+Dialogue: 2,0:00:17.96,0:00:18.84,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}heat {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}out
+Dialogue: 2,0:00:18.84,0:00:19.30,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}So {\alpha&HFF&}swap {\alpha&HFF&}the {\alpha&HFF&}ice
+Dialogue: 2,0:00:19.30,0:00:19.56,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}So {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}swap {\alpha&HFF&}the {\alpha&HFF&}ice
+Dialogue: 2,0:00:19.56,0:00:19.72,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}So {\alpha&H00&\c&HFFFFFF&\fscy100}swap {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}the {\alpha&HFF&}ice
+Dialogue: 2,0:00:19.72,0:00:20.00,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}So {\alpha&H00&\c&HFFFFFF&\fscy100}swap {\alpha&H00&\c&HFFFFFF&\fscy100}the {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}ice
+Dialogue: 2,0:00:20.00,0:00:20.26,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}for {\alpha&HFF&}a {\alpha&HFF&}pipe
+Dialogue: 2,0:00:20.26,0:00:20.36,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}for {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}a {\alpha&HFF&}pipe
+Dialogue: 2,0:00:20.36,0:00:20.66,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}for {\alpha&H00&\c&HFFFFFF&\fscy100}a {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}pipe
+Dialogue: 2,0:00:20.66,0:00:21.12,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}filled {\alpha&HFF&}with {\alpha&HFF&}a {\alpha&HFF&}liquid
+Dialogue: 2,0:00:21.12,0:00:21.30,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}filled {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}with {\alpha&HFF&}a {\alpha&HFF&}liquid
+Dialogue: 2,0:00:21.30,0:00:21.40,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}filled {\alpha&H00&\c&HFFFFFF&\fscy100}with {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}a {\alpha&HFF&}liquid
+Dialogue: 2,0:00:21.40,0:00:21.64,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}filled {\alpha&H00&\c&HFFFFFF&\fscy100}with {\alpha&H00&\c&HFFFFFF&\fscy100}a {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}liquid
+Dialogue: 2,0:00:21.64,0:00:21.86,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}that {\alpha&HFF&}boils {\alpha&HFF&}at {\alpha&HFF&}minus
+Dialogue: 2,0:00:21.86,0:00:22.16,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}that {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}boils {\alpha&HFF&}at {\alpha&HFF&}minus
+Dialogue: 2,0:00:22.16,0:00:22.42,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}that {\alpha&H00&\c&HFFFFFF&\fscy100}boils {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}at {\alpha&HFF&}minus
+Dialogue: 2,0:00:22.42,0:00:22.78,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}that {\alpha&H00&\c&HFFFFFF&\fscy100}boils {\alpha&H00&\c&HFFFFFF&\fscy100}at {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}minus
+Dialogue: 2,0:00:22.78,0:00:23.20,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}twenty {\alpha&HFF&}six
+Dialogue: 2,0:00:23.20,0:00:24.02,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}twenty {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}six
+Dialogue: 2,0:00:24.02,0:00:24.48,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}Boiling {\alpha&HFF&}soaks {\alpha&HFF&}up {\alpha&HFF&}heat
+Dialogue: 2,0:00:24.48,0:00:24.94,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}Boiling {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}soaks {\alpha&HFF&}up {\alpha&HFF&}heat
+Dialogue: 2,0:00:24.94,0:00:25.08,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}Boiling {\alpha&H00&\c&HFFFFFF&\fscy100}soaks {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}up {\alpha&HFF&}heat
+Dialogue: 2,0:00:25.08,0:00:25.44,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}Boiling {\alpha&H00&\c&HFFFFFF&\fscy100}soaks {\alpha&H00&\c&HFFFFFF&\fscy100}up {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}heat
+Dialogue: 2,0:00:25.44,0:00:25.82,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}so {\alpha&HFF&}it {\alpha&HFF&}drinks
+Dialogue: 2,0:00:25.82,0:00:25.96,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}so {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}it {\alpha&HFF&}drinks
+Dialogue: 2,0:00:25.96,0:00:26.22,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}so {\alpha&H00&\c&HFFFFFF&\fscy100}it {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}drinks
+Dialogue: 2,0:00:26.22,0:00:26.40,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}the {\alpha&HFF&}warmth {\alpha&HFF&}right {\alpha&HFF&}out
+Dialogue: 2,0:00:26.40,0:00:26.64,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}the {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}warmth {\alpha&HFF&}right {\alpha&HFF&}out
+Dialogue: 2,0:00:26.64,0:00:26.92,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}the {\alpha&H00&\c&HFFFFFF&\fscy100}warmth {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}right {\alpha&HFF&}out
+Dialogue: 2,0:00:26.92,0:00:27.12,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}the {\alpha&H00&\c&HFFFFFF&\fscy100}warmth {\alpha&H00&\c&HFFFFFF&\fscy100}right {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}out
+Dialogue: 2,0:00:27.12,0:00:27.28,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}of {\alpha&HFF&}your {\alpha&HFF&}food
+Dialogue: 2,0:00:27.28,0:00:27.32,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}of {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}your {\alpha&HFF&}food
+Dialogue: 2,0:00:27.32,0:00:27.78,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}of {\alpha&H00&\c&HFFFFFF&\fscy100}your {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}food
+Dialogue: 2,0:00:27.78,0:00:28.24,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}This {\alpha&HFF&}is {\alpha&HFF&}the {\alpha&HFF&}evaporator
+Dialogue: 2,0:00:28.24,0:00:28.52,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}This {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}is {\alpha&HFF&}the {\alpha&HFF&}evaporator
+Dialogue: 2,0:00:28.52,0:00:28.68,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}This {\alpha&H00&\c&HFFFFFF&\fscy100}is {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}the {\alpha&HFF&}evaporator
+Dialogue: 2,0:00:28.68,0:00:29.96,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}This {\alpha&H00&\c&HFFFFFF&\fscy100}is {\alpha&H00&\c&HFFFFFF&\fscy100}the {\alpha&H00&\c&H1F6AFF&\fscy122\t(0,140,\fscy106)}evaporator
+Dialogue: 2,0:00:29.96,0:00:30.10,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}But {\alpha&HFF&}now {\alpha&HFF&}it's {\alpha&HFF&}gas
+Dialogue: 2,0:00:30.10,0:00:30.22,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}But {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}now {\alpha&HFF&}it's {\alpha&HFF&}gas
+Dialogue: 2,0:00:30.22,0:00:30.34,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}But {\alpha&H00&\c&HFFFFFF&\fscy100}now {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}it's {\alpha&HFF&}gas
+Dialogue: 2,0:00:30.34,0:00:30.72,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}But {\alpha&H00&\c&HFFFFFF&\fscy100}now {\alpha&H00&\c&HFFFFFF&\fscy100}it's {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}gas
+Dialogue: 2,0:00:30.72,0:00:31.10,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}and {\alpha&HFF&}gas {\alpha&HFF&}wants {\alpha&HFF&}to {\alpha&HFF&}escape
+Dialogue: 2,0:00:31.10,0:00:31.34,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}and {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}gas {\alpha&HFF&}wants {\alpha&HFF&}to {\alpha&HFF&}escape
+Dialogue: 2,0:00:31.34,0:00:31.56,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}and {\alpha&H00&\c&HFFFFFF&\fscy100}gas {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}wants {\alpha&HFF&}to {\alpha&HFF&}escape
+Dialogue: 2,0:00:31.56,0:00:31.72,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}and {\alpha&H00&\c&HFFFFFF&\fscy100}gas {\alpha&H00&\c&HFFFFFF&\fscy100}wants {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}to {\alpha&HFF&}escape
+Dialogue: 2,0:00:31.72,0:00:32.30,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}and {\alpha&H00&\c&HFFFFFF&\fscy100}gas {\alpha&H00&\c&HFFFFFF&\fscy100}wants {\alpha&H00&\c&HFFFFFF&\fscy100}to {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}escape
+Dialogue: 2,0:00:32.30,0:00:32.70,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}So {\alpha&HFF&}trap {\alpha&HFF&}it {\alpha&HFF&}and {\alpha&HFF&}crush
+Dialogue: 2,0:00:32.70,0:00:32.94,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}So {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}trap {\alpha&HFF&}it {\alpha&HFF&}and {\alpha&HFF&}crush
+Dialogue: 2,0:00:32.94,0:00:33.16,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}So {\alpha&H00&\c&HFFFFFF&\fscy100}trap {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}it {\alpha&HFF&}and {\alpha&HFF&}crush
+Dialogue: 2,0:00:33.16,0:00:33.38,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}So {\alpha&H00&\c&HFFFFFF&\fscy100}trap {\alpha&H00&\c&HFFFFFF&\fscy100}it {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}and {\alpha&HFF&}crush
+Dialogue: 2,0:00:33.38,0:00:33.62,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}So {\alpha&H00&\c&HFFFFFF&\fscy100}trap {\alpha&H00&\c&HFFFFFF&\fscy100}it {\alpha&H00&\c&HFFFFFF&\fscy100}and {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}crush
+Dialogue: 2,0:00:33.62,0:00:33.82,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}it {\alpha&HFF&}with {\alpha&HFF&}a {\alpha&HFF&}pump
+Dialogue: 2,0:00:33.82,0:00:33.94,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}it {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}with {\alpha&HFF&}a {\alpha&HFF&}pump
+Dialogue: 2,0:00:33.94,0:00:34.02,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}it {\alpha&H00&\c&HFFFFFF&\fscy100}with {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}a {\alpha&HFF&}pump
+Dialogue: 2,0:00:34.02,0:00:34.46,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}it {\alpha&H00&\c&HFFFFFF&\fscy100}with {\alpha&H00&\c&HFFFFFF&\fscy100}a {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}pump
+Dialogue: 2,0:00:34.46,0:00:34.86,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}This {\alpha&HFF&}is {\alpha&HFF&}the {\alpha&HFF&}compressor
+Dialogue: 2,0:00:34.86,0:00:35.02,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}This {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}is {\alpha&HFF&}the {\alpha&HFF&}compressor
+Dialogue: 2,0:00:35.02,0:00:35.12,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}This {\alpha&H00&\c&HFFFFFF&\fscy100}is {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}the {\alpha&HFF&}compressor
+Dialogue: 2,0:00:35.12,0:00:36.28,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}This {\alpha&H00&\c&HFFFFFF&\fscy100}is {\alpha&H00&\c&HFFFFFF&\fscy100}the {\alpha&H00&\c&H1F6AFF&\fscy122\t(0,140,\fscy106)}compressor
+Dialogue: 2,0:00:36.28,0:00:36.68,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}Squeezed {\alpha&HFF&}gas {\alpha&HFF&}gets {\alpha&HFF&}hot
+Dialogue: 2,0:00:36.68,0:00:36.84,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}Squeezed {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}gas {\alpha&HFF&}gets {\alpha&HFF&}hot
+Dialogue: 2,0:00:36.84,0:00:37.10,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}Squeezed {\alpha&H00&\c&HFFFFFF&\fscy100}gas {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}gets {\alpha&HFF&}hot
+Dialogue: 2,0:00:37.10,0:00:37.54,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}Squeezed {\alpha&H00&\c&HFFFFFF&\fscy100}gas {\alpha&H00&\c&HFFFFFF&\fscy100}gets {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}hot
+Dialogue: 2,0:00:37.54,0:00:37.94,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}Hot {\alpha&HFF&}enough {\alpha&HFF&}to {\alpha&HFF&}burn
+Dialogue: 2,0:00:37.94,0:00:38.10,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}Hot {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}enough {\alpha&HFF&}to {\alpha&HFF&}burn
+Dialogue: 2,0:00:38.10,0:00:38.28,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}Hot {\alpha&H00&\c&HFFFFFF&\fscy100}enough {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}to {\alpha&HFF&}burn
+Dialogue: 2,0:00:38.28,0:00:38.40,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}Hot {\alpha&H00&\c&HFFFFFF&\fscy100}enough {\alpha&H00&\c&HFFFFFF&\fscy100}to {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}burn
+Dialogue: 2,0:00:38.40,0:00:38.48,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}your {\alpha&HFF&}fingers
+Dialogue: 2,0:00:38.48,0:00:39.16,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}your {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}fingers
+Dialogue: 2,0:00:39.16,0:00:40.06,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}Perfect
+Dialogue: 2,0:00:40.06,0:00:40.46,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}Snake {\alpha&HFF&}it {\alpha&HFF&}up {\alpha&HFF&}the {\alpha&HFF&}back
+Dialogue: 2,0:00:40.46,0:00:40.58,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}Snake {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}it {\alpha&HFF&}up {\alpha&HFF&}the {\alpha&HFF&}back
+Dialogue: 2,0:00:40.58,0:00:40.70,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}Snake {\alpha&H00&\c&HFFFFFF&\fscy100}it {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}up {\alpha&HFF&}the {\alpha&HFF&}back
+Dialogue: 2,0:00:40.70,0:00:40.76,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}Snake {\alpha&H00&\c&HFFFFFF&\fscy100}it {\alpha&H00&\c&HFFFFFF&\fscy100}up {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}the {\alpha&HFF&}back
+Dialogue: 2,0:00:40.76,0:00:41.08,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}Snake {\alpha&H00&\c&HFFFFFF&\fscy100}it {\alpha&H00&\c&HFFFFFF&\fscy100}up {\alpha&H00&\c&HFFFFFF&\fscy100}the {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}back
+Dialogue: 2,0:00:41.08,0:00:41.26,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}and {\alpha&HFF&}the {\alpha&HFF&}heat {\alpha&HFF&}pours
+Dialogue: 2,0:00:41.26,0:00:41.32,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}and {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}the {\alpha&HFF&}heat {\alpha&HFF&}pours
+Dialogue: 2,0:00:41.32,0:00:41.50,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}and {\alpha&H00&\c&HFFFFFF&\fscy100}the {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}heat {\alpha&HFF&}pours
+Dialogue: 2,0:00:41.50,0:00:41.96,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}and {\alpha&H00&\c&HFFFFFF&\fscy100}the {\alpha&H00&\c&HFFFFFF&\fscy100}heat {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}pours
+Dialogue: 2,0:00:41.96,0:00:42.10,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}into {\alpha&HFF&}your {\alpha&HFF&}kitchen
+Dialogue: 2,0:00:42.10,0:00:42.26,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}into {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}your {\alpha&HFF&}kitchen
+Dialogue: 2,0:00:42.26,0:00:42.82,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}into {\alpha&H00&\c&HFFFFFF&\fscy100}your {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}kitchen
+Dialogue: 2,0:00:42.82,0:00:43.22,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}This {\alpha&HFF&}is {\alpha&HFF&}the {\alpha&HFF&}condenser
+Dialogue: 2,0:00:43.22,0:00:43.38,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}This {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}is {\alpha&HFF&}the {\alpha&HFF&}condenser
+Dialogue: 2,0:00:43.38,0:00:43.48,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}This {\alpha&H00&\c&HFFFFFF&\fscy100}is {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}the {\alpha&HFF&}condenser
+Dialogue: 2,0:00:43.48,0:00:44.28,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}This {\alpha&H00&\c&HFFFFFF&\fscy100}is {\alpha&H00&\c&HFFFFFF&\fscy100}the {\alpha&H00&\c&H1F6AFF&\fscy122\t(0,140,\fscy106)}condenser
+Dialogue: 2,0:00:44.28,0:00:44.68,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}That's {\alpha&HFF&}why {\alpha&HFF&}the {\alpha&HFF&}back
+Dialogue: 2,0:00:44.68,0:00:44.76,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}That's {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}why {\alpha&HFF&}the {\alpha&HFF&}back
+Dialogue: 2,0:00:44.76,0:00:44.92,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}That's {\alpha&H00&\c&HFFFFFF&\fscy100}why {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}the {\alpha&HFF&}back
+Dialogue: 2,0:00:44.92,0:00:45.10,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}That's {\alpha&H00&\c&HFFFFFF&\fscy100}why {\alpha&H00&\c&HFFFFFF&\fscy100}the {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}back
+Dialogue: 2,0:00:45.10,0:00:45.22,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}of {\alpha&HFF&}your {\alpha&HFF&}fridge {\alpha&HFF&}feels {\alpha&HFF&}warm
+Dialogue: 2,0:00:45.22,0:00:45.32,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}of {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}your {\alpha&HFF&}fridge {\alpha&HFF&}feels {\alpha&HFF&}warm
+Dialogue: 2,0:00:45.32,0:00:45.54,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}of {\alpha&H00&\c&HFFFFFF&\fscy100}your {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}fridge {\alpha&HFF&}feels {\alpha&HFF&}warm
+Dialogue: 2,0:00:45.54,0:00:45.72,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}of {\alpha&H00&\c&HFFFFFF&\fscy100}your {\alpha&H00&\c&HFFFFFF&\fscy100}fridge {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}feels {\alpha&HFF&}warm
+Dialogue: 2,0:00:45.72,0:00:46.44,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}of {\alpha&H00&\c&HFFFFFF&\fscy100}your {\alpha&H00&\c&HFFFFFF&\fscy100}fridge {\alpha&H00&\c&HFFFFFF&\fscy100}feels {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}warm
+Dialogue: 2,0:00:46.44,0:00:46.84,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}As {\alpha&HFF&}it {\alpha&HFF&}cools
+Dialogue: 2,0:00:46.84,0:00:46.98,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}As {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}it {\alpha&HFF&}cools
+Dialogue: 2,0:00:46.98,0:00:47.38,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}As {\alpha&H00&\c&HFFFFFF&\fscy100}it {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}cools
+Dialogue: 2,0:00:47.38,0:00:47.56,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}it {\alpha&HFF&}turns {\alpha&HFF&}back {\alpha&HFF&}into {\alpha&HFF&}liquid
+Dialogue: 2,0:00:47.56,0:00:47.80,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}it {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}turns {\alpha&HFF&}back {\alpha&HFF&}into {\alpha&HFF&}liquid
+Dialogue: 2,0:00:47.80,0:00:48.00,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}it {\alpha&H00&\c&HFFFFFF&\fscy100}turns {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}back {\alpha&HFF&}into {\alpha&HFF&}liquid
+Dialogue: 2,0:00:48.00,0:00:48.22,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}it {\alpha&H00&\c&HFFFFFF&\fscy100}turns {\alpha&H00&\c&HFFFFFF&\fscy100}back {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}into {\alpha&HFF&}liquid
+Dialogue: 2,0:00:48.22,0:00:48.66,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}it {\alpha&H00&\c&HFFFFFF&\fscy100}turns {\alpha&H00&\c&HFFFFFF&\fscy100}back {\alpha&H00&\c&HFFFFFF&\fscy100}into {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}liquid
+Dialogue: 2,0:00:48.66,0:00:49.06,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}But {\alpha&HFF&}it's {\alpha&HFF&}still {\alpha&HFF&}squeezed
+Dialogue: 2,0:00:49.06,0:00:49.28,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}But {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}it's {\alpha&HFF&}still {\alpha&HFF&}squeezed
+Dialogue: 2,0:00:49.28,0:00:49.48,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}But {\alpha&H00&\c&HFFFFFF&\fscy100}it's {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}still {\alpha&HFF&}squeezed
+Dialogue: 2,0:00:49.48,0:00:49.76,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}But {\alpha&H00&\c&HFFFFFF&\fscy100}it's {\alpha&H00&\c&HFFFFFF&\fscy100}still {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}squeezed
+Dialogue: 2,0:00:49.76,0:00:50.56,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}tight
+Dialogue: 2,0:00:50.56,0:00:50.96,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}So {\alpha&HFF&}push {\alpha&HFF&}it {\alpha&HFF&}through
+Dialogue: 2,0:00:50.96,0:00:51.14,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}So {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}push {\alpha&HFF&}it {\alpha&HFF&}through
+Dialogue: 2,0:00:51.14,0:00:51.26,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}So {\alpha&H00&\c&HFFFFFF&\fscy100}push {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}it {\alpha&HFF&}through
+Dialogue: 2,0:00:51.26,0:00:51.38,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}So {\alpha&H00&\c&HFFFFFF&\fscy100}push {\alpha&H00&\c&HFFFFFF&\fscy100}it {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}through
+Dialogue: 2,0:00:51.38,0:00:51.50,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}a {\alpha&HFF&}pipe {\alpha&HFF&}thinner {\alpha&HFF&}than
+Dialogue: 2,0:00:51.50,0:00:51.70,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}a {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}pipe {\alpha&HFF&}thinner {\alpha&HFF&}than
+Dialogue: 2,0:00:51.70,0:00:52.04,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}a {\alpha&H00&\c&HFFFFFF&\fscy100}pipe {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}thinner {\alpha&HFF&}than
+Dialogue: 2,0:00:52.04,0:00:52.26,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}a {\alpha&H00&\c&HFFFFFF&\fscy100}pipe {\alpha&H00&\c&HFFFFFF&\fscy100}thinner {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}than
+Dialogue: 2,0:00:52.26,0:00:52.92,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}spaghetti
+Dialogue: 2,0:00:52.92,0:00:53.32,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}The {\alpha&HFF&}pressure {\alpha&HFF&}drops
+Dialogue: 2,0:00:53.32,0:00:53.54,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}The {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}pressure {\alpha&HFF&}drops
+Dialogue: 2,0:00:53.54,0:00:53.98,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}The {\alpha&H00&\c&HFFFFFF&\fscy100}pressure {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}drops
+Dialogue: 2,0:00:53.98,0:00:54.26,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}and {\alpha&HFF&}it's {\alpha&HFF&}ice {\alpha&HFF&}cold {\alpha&HFF&}again
+Dialogue: 2,0:00:54.26,0:00:54.42,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}and {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}it's {\alpha&HFF&}ice {\alpha&HFF&}cold {\alpha&HFF&}again
+Dialogue: 2,0:00:54.42,0:00:54.56,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}and {\alpha&H00&\c&HFFFFFF&\fscy100}it's {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}ice {\alpha&HFF&}cold {\alpha&HFF&}again
+Dialogue: 2,0:00:54.56,0:00:54.76,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}and {\alpha&H00&\c&HFFFFFF&\fscy100}it's {\alpha&H00&\c&HFFFFFF&\fscy100}ice {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}cold {\alpha&HFF&}again
+Dialogue: 2,0:00:54.76,0:00:55.24,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}and {\alpha&H00&\c&HFFFFFF&\fscy100}it's {\alpha&H00&\c&HFFFFFF&\fscy100}ice {\alpha&H00&\c&HFFFFFF&\fscy100}cold {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}again
+Dialogue: 2,0:00:55.24,0:00:55.64,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}This {\alpha&HFF&}is {\alpha&HFF&}the {\alpha&HFF&}capillary {\alpha&HFF&}tube
+Dialogue: 2,0:00:55.64,0:00:55.80,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}This {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}is {\alpha&HFF&}the {\alpha&HFF&}capillary {\alpha&HFF&}tube
+Dialogue: 2,0:00:55.80,0:00:55.92,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}This {\alpha&H00&\c&HFFFFFF&\fscy100}is {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}the {\alpha&HFF&}capillary {\alpha&HFF&}tube
+Dialogue: 2,0:00:55.92,0:00:56.26,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}This {\alpha&H00&\c&HFFFFFF&\fscy100}is {\alpha&H00&\c&HFFFFFF&\fscy100}the {\alpha&H00&\c&H1F6AFF&\fscy122\t(0,140,\fscy106)}capillary {\alpha&HFF&}tube
+Dialogue: 2,0:00:56.26,0:00:57.08,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}This {\alpha&H00&\c&HFFFFFF&\fscy100}is {\alpha&H00&\c&HFFFFFF&\fscy100}the {\alpha&H00&\c&H1F6AFF&\fscy100}capillary {\alpha&H00&\c&H1F6AFF&\fscy122\t(0,140,\fscy106)}tube
+Dialogue: 2,0:00:57.08,0:00:57.48,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}Round {\alpha&HFF&}and {\alpha&HFF&}round {\alpha&HFF&}it {\alpha&HFF&}goes
+Dialogue: 2,0:00:57.48,0:00:57.60,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}Round {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}and {\alpha&HFF&}round {\alpha&HFF&}it {\alpha&HFF&}goes
+Dialogue: 2,0:00:57.60,0:00:57.74,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}Round {\alpha&H00&\c&HFFFFFF&\fscy100}and {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}round {\alpha&HFF&}it {\alpha&HFF&}goes
+Dialogue: 2,0:00:57.74,0:00:57.90,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}Round {\alpha&H00&\c&HFFFFFF&\fscy100}and {\alpha&H00&\c&HFFFFFF&\fscy100}round {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}it {\alpha&HFF&}goes
+Dialogue: 2,0:00:57.90,0:00:58.30,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}Round {\alpha&H00&\c&HFFFFFF&\fscy100}and {\alpha&H00&\c&HFFFFFF&\fscy100}round {\alpha&H00&\c&HFFFFFF&\fscy100}it {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}goes
+Dialogue: 2,0:00:58.30,0:00:58.70,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}Forever
+Dialogue: 2,0:00:58.70,0:00:59.38,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}Which {\alpha&HFF&}is {\alpha&HFF&}a {\alpha&HFF&}problem
+Dialogue: 2,0:00:59.38,0:00:59.68,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}Which {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}is {\alpha&HFF&}a {\alpha&HFF&}problem
+Dialogue: 2,0:00:59.68,0:00:59.76,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}Which {\alpha&H00&\c&HFFFFFF&\fscy100}is {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}a {\alpha&HFF&}problem
+Dialogue: 2,0:00:59.76,0:01:00.28,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}Which {\alpha&H00&\c&HFFFFFF&\fscy100}is {\alpha&H00&\c&HFFFFFF&\fscy100}a {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}problem
+Dialogue: 2,0:01:00.28,0:01:00.68,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}Your {\alpha&HFF&}lettuce {\alpha&HFF&}is {\alpha&HFF&}now
+Dialogue: 2,0:01:00.68,0:01:00.92,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}Your {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}lettuce {\alpha&HFF&}is {\alpha&HFF&}now
+Dialogue: 2,0:01:00.92,0:01:01.14,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}Your {\alpha&H00&\c&HFFFFFF&\fscy100}lettuce {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}is {\alpha&HFF&}now
+Dialogue: 2,0:01:01.14,0:01:01.32,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}Your {\alpha&H00&\c&HFFFFFF&\fscy100}lettuce {\alpha&H00&\c&HFFFFFF&\fscy100}is {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}now
+Dialogue: 2,0:01:01.32,0:01:01.42,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}a {\alpha&HFF&}glass {\alpha&HFF&}sculpture
+Dialogue: 2,0:01:01.42,0:01:01.60,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}a {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}glass {\alpha&HFF&}sculpture
+Dialogue: 2,0:01:01.60,0:01:02.56,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}a {\alpha&H00&\c&HFFFFFF&\fscy100}glass {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}sculpture
+Dialogue: 2,0:01:02.56,0:01:02.96,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}So {\alpha&HFF&}add {\alpha&HFF&}a {\alpha&HFF&}sensor
+Dialogue: 2,0:01:02.96,0:01:03.16,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}So {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}add {\alpha&HFF&}a {\alpha&HFF&}sensor
+Dialogue: 2,0:01:03.16,0:01:03.28,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}So {\alpha&H00&\c&HFFFFFF&\fscy100}add {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}a {\alpha&HFF&}sensor
+Dialogue: 2,0:01:03.28,0:01:03.50,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}So {\alpha&H00&\c&HFFFFFF&\fscy100}add {\alpha&H00&\c&HFFFFFF&\fscy100}a {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}sensor
+Dialogue: 2,0:01:03.50,0:01:03.74,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}that {\alpha&HFF&}cuts {\alpha&HFF&}the {\alpha&HFF&}pump
+Dialogue: 2,0:01:03.74,0:01:03.96,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}that {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}cuts {\alpha&HFF&}the {\alpha&HFF&}pump
+Dialogue: 2,0:01:03.96,0:01:04.10,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}that {\alpha&H00&\c&HFFFFFF&\fscy100}cuts {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}the {\alpha&HFF&}pump
+Dialogue: 2,0:01:04.10,0:01:04.32,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}that {\alpha&H00&\c&HFFFFFF&\fscy100}cuts {\alpha&H00&\c&HFFFFFF&\fscy100}the {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}pump
+Dialogue: 2,0:01:04.32,0:01:04.48,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}when {\alpha&HFF&}it's {\alpha&HFF&}cold {\alpha&HFF&}enough
+Dialogue: 2,0:01:04.48,0:01:04.60,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}when {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}it's {\alpha&HFF&}cold {\alpha&HFF&}enough
+Dialogue: 2,0:01:04.60,0:01:04.74,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}when {\alpha&H00&\c&HFFFFFF&\fscy100}it's {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}cold {\alpha&HFF&}enough
+Dialogue: 2,0:01:04.74,0:01:05.16,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}when {\alpha&H00&\c&HFFFFFF&\fscy100}it's {\alpha&H00&\c&HFFFFFF&\fscy100}cold {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}enough
+Dialogue: 2,0:01:05.16,0:01:05.56,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}This {\alpha&HFF&}is {\alpha&HFF&}the {\alpha&HFF&}thermostat
+Dialogue: 2,0:01:05.56,0:01:05.74,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}This {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}is {\alpha&HFF&}the {\alpha&HFF&}thermostat
+Dialogue: 2,0:01:05.74,0:01:05.88,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}This {\alpha&H00&\c&HFFFFFF&\fscy100}is {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}the {\alpha&HFF&}thermostat
+Dialogue: 2,0:01:05.88,0:01:06.82,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}This {\alpha&H00&\c&HFFFFFF&\fscy100}is {\alpha&H00&\c&HFFFFFF&\fscy100}the {\alpha&H00&\c&H1F6AFF&\fscy122\t(0,140,\fscy106)}thermostat
+Dialogue: 2,0:01:06.82,0:01:07.22,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}That's {\alpha&HFF&}the {\alpha&HFF&}click
+Dialogue: 2,0:01:07.22,0:01:07.30,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}That's {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}the {\alpha&HFF&}click
+Dialogue: 2,0:01:07.30,0:01:07.54,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}That's {\alpha&H00&\c&HFFFFFF&\fscy100}the {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}click
+Dialogue: 2,0:01:07.54,0:01:07.78,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}and {\alpha&HFF&}the {\alpha&HFF&}hum
+Dialogue: 2,0:01:07.78,0:01:07.94,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}and {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}the {\alpha&HFF&}hum
+Dialogue: 2,0:01:07.94,0:01:08.08,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}and {\alpha&H00&\c&HFFFFFF&\fscy100}the {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}hum
+Dialogue: 2,0:01:08.08,0:01:08.20,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}that {\alpha&HFF&}stops {\alpha&HFF&}at {\alpha&HFF&}night
+Dialogue: 2,0:01:08.20,0:01:08.46,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}that {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}stops {\alpha&HFF&}at {\alpha&HFF&}night
+Dialogue: 2,0:01:08.46,0:01:08.60,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}that {\alpha&H00&\c&HFFFFFF&\fscy100}stops {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}at {\alpha&HFF&}night
+Dialogue: 2,0:01:08.60,0:01:09.24,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}that {\alpha&H00&\c&HFFFFFF&\fscy100}stops {\alpha&H00&\c&HFFFFFF&\fscy100}at {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}night
+Dialogue: 2,0:01:09.24,0:01:09.64,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}Add {\alpha&HFF&}foam {\alpha&HFF&}a {\alpha&HFF&}door
+Dialogue: 2,0:01:09.64,0:01:10.14,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}Add {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}foam {\alpha&HFF&}a {\alpha&HFF&}door
+Dialogue: 2,0:01:10.14,0:01:10.40,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}Add {\alpha&H00&\c&HFFFFFF&\fscy100}foam {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}a {\alpha&HFF&}door
+Dialogue: 2,0:01:10.40,0:01:10.58,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}Add {\alpha&H00&\c&HFFFFFF&\fscy100}foam {\alpha&H00&\c&HFFFFFF&\fscy100}a {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}door
+Dialogue: 2,0:01:10.58,0:01:10.94,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}seal {\alpha&HFF&}and {\alpha&HFF&}a {\alpha&HFF&}little {\alpha&HFF&}light
+Dialogue: 2,0:01:10.94,0:01:11.22,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}seal {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}and {\alpha&HFF&}a {\alpha&HFF&}little {\alpha&HFF&}light
+Dialogue: 2,0:01:11.22,0:01:11.38,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}seal {\alpha&H00&\c&HFFFFFF&\fscy100}and {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}a {\alpha&HFF&}little {\alpha&HFF&}light
+Dialogue: 2,0:01:11.38,0:01:11.50,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}seal {\alpha&H00&\c&HFFFFFF&\fscy100}and {\alpha&H00&\c&HFFFFFF&\fscy100}a {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}little {\alpha&HFF&}light
+Dialogue: 2,0:01:11.50,0:01:12.28,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}seal {\alpha&H00&\c&HFFFFFF&\fscy100}and {\alpha&H00&\c&HFFFFFF&\fscy100}a {\alpha&H00&\c&HFFFFFF&\fscy100}little {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}light
+Dialogue: 2,0:01:12.28,0:01:13.08,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}Congratulations {\alpha&HFF&}you've
+Dialogue: 2,0:01:13.08,0:01:13.48,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}Congratulations {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}you've
+Dialogue: 2,0:01:13.48,0:01:13.70,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}built {\alpha&HFF&}a {\alpha&HFF&}fridge
+Dialogue: 2,0:01:13.70,0:01:13.82,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}built {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}a {\alpha&HFF&}fridge
+Dialogue: 2,0:01:13.82,0:01:14.48,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}built {\alpha&H00&\c&HFFFFFF&\fscy100}a {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}fridge
+Dialogue: 2,0:01:14.48,0:01:14.88,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}It {\alpha&HFF&}never {\alpha&HFF&}made {\alpha&HFF&}cold
+Dialogue: 2,0:01:14.88,0:01:15.14,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}It {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}never {\alpha&HFF&}made {\alpha&HFF&}cold
+Dialogue: 2,0:01:15.14,0:01:15.36,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}It {\alpha&H00&\c&HFFFFFF&\fscy100}never {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}made {\alpha&HFF&}cold
+Dialogue: 2,0:01:15.36,0:01:15.76,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}It {\alpha&H00&\c&HFFFFFF&\fscy100}never {\alpha&H00&\c&HFFFFFF&\fscy100}made {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}cold
+Dialogue: 2,0:01:15.76,0:01:16.14,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}It {\alpha&HFF&}just {\alpha&HFF&}moves
+Dialogue: 2,0:01:16.14,0:01:16.26,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}It {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}just {\alpha&HFF&}moves
+Dialogue: 2,0:01:16.26,0:01:16.50,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}It {\alpha&H00&\c&HFFFFFF&\fscy100}just {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}moves
+Dialogue: 2,0:01:16.50,0:01:16.68,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}the {\alpha&HFF&}heat {\alpha&HFF&}from
+Dialogue: 2,0:01:16.68,0:01:16.86,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}the {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}heat {\alpha&HFF&}from
+Dialogue: 2,0:01:16.86,0:01:17.00,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}the {\alpha&H00&\c&HFFFFFF&\fscy100}heat {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}from
+Dialogue: 2,0:01:17.00,0:01:17.14,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}your {\alpha&HFF&}milk {\alpha&HFF&}into {\alpha&HFF&}your {\alpha&HFF&}kitchen
+Dialogue: 2,0:01:17.14,0:01:17.32,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}your {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}milk {\alpha&HFF&}into {\alpha&HFF&}your {\alpha&HFF&}kitchen
+Dialogue: 2,0:01:17.32,0:01:17.78,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}your {\alpha&H00&\c&HFFFFFF&\fscy100}milk {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}into {\alpha&HFF&}your {\alpha&HFF&}kitchen
+Dialogue: 2,0:01:17.78,0:01:17.88,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}your {\alpha&H00&\c&HFFFFFF&\fscy100}milk {\alpha&H00&\c&HFFFFFF&\fscy100}into {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}your {\alpha&HFF&}kitchen
+Dialogue: 2,0:01:17.88,0:01:19.08,Cap,,0,0,0,,{\pos(240,675)}{\alpha&H00&\c&HFFFFFF&\fscy100}your {\alpha&H00&\c&HFFFFFF&\fscy100}milk {\alpha&H00&\c&HFFFFFF&\fscy100}into {\alpha&H00&\c&HFFFFFF&\fscy100}your {\alpha&H00&\c&H4DC3FF&\fscy122\t(0,140,\fscy106)}kitchen
+Dialogue: 3,0:00:22.46,0:00:22.53,Lab,,0,0,0,,{\pos(160,266)\fscx40\fscy40\t(0,110,\fscx112\fscy112)\t(110,180,\fscx100\fscy100)\alpha&H00&}-26°C BOILING POINT
+Dialogue: 3,0:00:22.53,0:00:22.59,Lab,,0,0,0,,{\pos(160,266)\alpha&H00&}-26°C BOILING POINT
+Dialogue: 3,0:00:22.59,0:00:22.66,Lab,,0,0,0,,{\pos(160,265)\alpha&H00&}-26°C BOILING POINT
+Dialogue: 3,0:00:22.66,0:00:22.73,Lab,,0,0,0,,{\pos(160,265)\alpha&H00&}-26°C BOILING POINT
+Dialogue: 3,0:00:22.73,0:00:22.79,Lab,,0,0,0,,{\pos(160,265)\alpha&H00&}-26°C BOILING POINT
+Dialogue: 3,0:00:22.79,0:00:22.86,Lab,,0,0,0,,{\pos(160,265)\alpha&H00&}-26°C BOILING POINT
+Dialogue: 3,0:00:22.86,0:00:22.93,Lab,,0,0,0,,{\pos(160,265)\alpha&H00&}-26°C BOILING POINT
+Dialogue: 3,0:00:22.93,0:00:22.99,Lab,,0,0,0,,{\pos(160,265)\alpha&H00&}-26°C BOILING POINT
+Dialogue: 3,0:00:22.99,0:00:23.06,Lab,,0,0,0,,{\pos(160,265)\alpha&H00&}-26°C BOILING POINT
+Dialogue: 3,0:00:23.06,0:00:23.13,Lab,,0,0,0,,{\pos(160,265)\alpha&H00&}-26°C BOILING POINT
+Dialogue: 3,0:00:23.13,0:00:23.19,Lab,,0,0,0,,{\pos(160,265)\alpha&H00&}-26°C BOILING POINT
+Dialogue: 3,0:00:23.19,0:00:23.26,Lab,,0,0,0,,{\pos(160,265)\alpha&H00&}-26°C BOILING POINT
+Dialogue: 3,0:00:23.26,0:00:23.33,Lab,,0,0,0,,{\pos(160,265)\alpha&H00&}-26°C BOILING POINT
+Dialogue: 3,0:00:23.33,0:00:23.39,Lab,,0,0,0,,{\pos(160,265)\alpha&H00&}-26°C BOILING POINT
+Dialogue: 3,0:00:23.39,0:00:23.46,Lab,,0,0,0,,{\pos(159,264)\alpha&H00&}-26°C BOILING POINT
+Dialogue: 3,0:00:23.46,0:00:23.53,Lab,,0,0,0,,{\pos(159,264)\alpha&H00&}-26°C BOILING POINT
+Dialogue: 3,0:00:23.53,0:00:23.59,Lab,,0,0,0,,{\pos(159,264)\alpha&H00&}-26°C BOILING POINT
+Dialogue: 3,0:00:23.59,0:00:23.66,Lab,,0,0,0,,{\pos(159,264)\alpha&H00&}-26°C BOILING POINT
+Dialogue: 3,0:00:23.66,0:00:23.73,Lab,,0,0,0,,{\pos(159,264)\alpha&H00&}-26°C BOILING POINT
+Dialogue: 3,0:00:23.73,0:00:23.79,Lab,,0,0,0,,{\pos(159,264)\alpha&H00&}-26°C BOILING POINT
+Dialogue: 3,0:00:23.79,0:00:23.86,Lab,,0,0,0,,{\pos(159,264)\alpha&H00&}-26°C BOILING POINT
+Dialogue: 3,0:00:23.86,0:00:23.93,Lab,,0,0,0,,{\pos(159,264)\alpha&H00&}-26°C BOILING POINT
+Dialogue: 3,0:00:23.93,0:00:23.99,Lab,,0,0,0,,{\pos(159,264)\alpha&H00&}-26°C BOILING POINT
+Dialogue: 3,0:00:23.99,0:00:24.06,Lab,,0,0,0,,{\pos(159,264)\alpha&H00&}-26°C BOILING POINT
+Dialogue: 3,0:00:24.06,0:00:24.13,Lab,,0,0,0,,{\pos(159,264)\alpha&H00&}-26°C BOILING POINT
+Dialogue: 3,0:00:24.13,0:00:24.19,Lab,,0,0,0,,{\pos(159,264)\alpha&H00&}-26°C BOILING POINT
+Dialogue: 3,0:00:24.19,0:00:24.26,Lab,,0,0,0,,{\pos(159,264)\alpha&H00&}-26°C BOILING POINT
+Dialogue: 3,0:00:24.26,0:00:24.33,Lab,,0,0,0,,{\pos(159,264)\alpha&H3F&}-26°C BOILING POINT
+Dialogue: 3,0:00:24.33,0:00:24.39,Lab,,0,0,0,,{\pos(159,263)\alpha&H7F&}-26°C BOILING POINT
+Dialogue: 3,0:00:24.39,0:00:24.46,Lab,,0,0,0,,{\pos(159,263)\alpha&HBF&}-26°C BOILING POINT
+Dialogue: 3,0:00:15.78,0:00:15.85,Lab,,0,0,0,,{\pos(85,339)\fscx40\fscy40\t(0,110,\fscx112\fscy112)\t(110,180,\fscx100\fscy100)\alpha&H00&}HEAT
+Dialogue: 3,0:00:15.85,0:00:15.91,Lab,,0,0,0,,{\pos(85,339)\alpha&H00&}HEAT
+Dialogue: 3,0:00:15.91,0:00:15.98,Lab,,0,0,0,,{\pos(85,339)\alpha&H00&}HEAT
+Dialogue: 3,0:00:15.98,0:00:16.05,Lab,,0,0,0,,{\pos(85,339)\alpha&H00&}HEAT
+Dialogue: 3,0:00:16.05,0:00:16.11,Lab,,0,0,0,,{\pos(85,339)\alpha&H00&}HEAT
+Dialogue: 3,0:00:16.11,0:00:16.18,Lab,,0,0,0,,{\pos(85,339)\alpha&H00&}HEAT
+Dialogue: 3,0:00:16.18,0:00:16.25,Lab,,0,0,0,,{\pos(85,339)\alpha&H00&}HEAT
+Dialogue: 3,0:00:16.25,0:00:16.31,Lab,,0,0,0,,{\pos(85,339)\alpha&H00&}HEAT
+Dialogue: 3,0:00:16.31,0:00:16.38,Lab,,0,0,0,,{\pos(85,339)\alpha&H00&}HEAT
+Dialogue: 3,0:00:16.38,0:00:16.45,Lab,,0,0,0,,{\pos(85,339)\alpha&H00&}HEAT
+Dialogue: 3,0:00:16.45,0:00:16.51,Lab,,0,0,0,,{\pos(85,339)\alpha&H00&}HEAT
+Dialogue: 3,0:00:16.51,0:00:16.58,Lab,,0,0,0,,{\pos(85,339)\alpha&H00&}HEAT
+Dialogue: 3,0:00:16.58,0:00:16.65,Lab,,0,0,0,,{\pos(85,339)\alpha&H00&}HEAT
+Dialogue: 3,0:00:16.65,0:00:16.71,Lab,,0,0,0,,{\pos(85,339)\alpha&H00&}HEAT
+Dialogue: 3,0:00:16.71,0:00:16.78,Lab,,0,0,0,,{\pos(85,340)\alpha&H00&}HEAT
+Dialogue: 3,0:00:16.78,0:00:16.85,Lab,,0,0,0,,{\pos(85,340)\alpha&H00&}HEAT
+Dialogue: 3,0:00:16.85,0:00:16.91,Lab,,0,0,0,,{\pos(85,340)\alpha&H00&}HEAT
+Dialogue: 3,0:00:16.91,0:00:16.98,Lab,,0,0,0,,{\pos(85,340)\alpha&H00&}HEAT
+Dialogue: 3,0:00:16.98,0:00:17.05,Lab,,0,0,0,,{\pos(85,340)\alpha&H00&}HEAT
+Dialogue: 3,0:00:17.05,0:00:17.11,Lab,,0,0,0,,{\pos(85,340)\alpha&H00&}HEAT
+Dialogue: 3,0:00:17.11,0:00:17.18,Lab,,0,0,0,,{\pos(85,340)\alpha&H00&}HEAT
+Dialogue: 3,0:00:17.18,0:00:17.25,Lab,,0,0,0,,{\pos(85,340)\alpha&H00&}HEAT
+Dialogue: 3,0:00:17.25,0:00:17.31,Lab,,0,0,0,,{\pos(85,340)\alpha&H00&}HEAT
+Dialogue: 3,0:00:17.31,0:00:17.38,Lab,,0,0,0,,{\pos(85,340)\alpha&H00&}HEAT
+Dialogue: 3,0:00:17.38,0:00:17.45,Lab,,0,0,0,,{\pos(85,340)\alpha&H00&}HEAT
+Dialogue: 3,0:00:17.45,0:00:17.51,Lab,,0,0,0,,{\pos(85,340)\alpha&H00&}HEAT
+Dialogue: 3,0:00:17.51,0:00:17.58,Lab,,0,0,0,,{\pos(85,340)\alpha&H00&}HEAT
+Dialogue: 3,0:00:17.58,0:00:17.65,Lab,,0,0,0,,{\pos(85,340)\alpha&H00&}HEAT
+Dialogue: 3,0:00:17.65,0:00:17.71,Lab,,0,0,0,,{\pos(85,340)\alpha&H00&}HEAT
+Dialogue: 3,0:00:17.71,0:00:17.78,Lab,,0,0,0,,{\pos(85,340)\alpha&H00&}HEAT
+Dialogue: 3,0:00:17.78,0:00:17.85,Lab,,0,0,0,,{\pos(85,340)\alpha&H00&}HEAT
+Dialogue: 3,0:00:17.85,0:00:17.91,Lab,,0,0,0,,{\pos(85,340)\alpha&H00&}HEAT
+Dialogue: 3,0:00:17.91,0:00:17.98,Lab,,0,0,0,,{\pos(85,340)\alpha&H00&}HEAT
+Dialogue: 3,0:00:17.98,0:00:18.05,Lab,,0,0,0,,{\pos(85,341)\alpha&H3F&}HEAT
+Dialogue: 3,0:00:18.05,0:00:18.11,Lab,,0,0,0,,{\pos(85,341)\alpha&H7F&}HEAT
+Dialogue: 3,0:00:18.11,0:00:18.18,Lab,,0,0,0,,{\pos(85,341)\alpha&HBF&}HEAT
+Dialogue: 3,0:00:30.55,0:00:30.61,Lab,,0,0,0,,{\pos(395,387)\alpha&H00&}GAS
+Dialogue: 3,0:00:30.61,0:00:30.68,Lab,,0,0,0,,{\pos(395,373)\alpha&H00&}GAS
+Dialogue: 3,0:00:30.68,0:00:30.75,Lab,,0,0,0,,{\pos(367,358)\alpha&H00&}GAS
+Dialogue: 3,0:00:30.75,0:00:30.81,Lab,,0,0,0,,{\pos(331,343)\alpha&H00&}GAS
+Dialogue: 3,0:00:30.81,0:00:30.88,Lab,,0,0,0,,{\pos(300,330)\alpha&H00&}GAS
+Dialogue: 3,0:00:30.88,0:00:30.95,Lab,,0,0,0,,{\pos(276,321)\alpha&H00&}GAS
+Dialogue: 3,0:00:30.95,0:00:31.01,Lab,,0,0,0,,{\pos(261,315)\alpha&H00&}GAS
+Dialogue: 3,0:00:31.01,0:00:31.08,Lab,,0,0,0,,{\pos(254,312)\alpha&H00&}GAS
+Dialogue: 3,0:00:31.08,0:00:31.15,Lab,,0,0,0,,{\pos(252,311)\alpha&H00&}GAS
+Dialogue: 3,0:00:31.15,0:00:31.21,Lab,,0,0,0,,{\pos(253,311)\alpha&H00&}GAS
+Dialogue: 3,0:00:31.21,0:00:31.28,Lab,,0,0,0,,{\pos(253,311)\alpha&H00&}GAS
+Dialogue: 3,0:00:31.28,0:00:31.35,Lab,,0,0,0,,{\pos(253,311)\alpha&H00&}GAS
+Dialogue: 3,0:00:31.35,0:00:31.41,Lab,,0,0,0,,{\pos(253,311)\alpha&H00&}GAS
+Dialogue: 3,0:00:31.41,0:00:31.48,Lab,,0,0,0,,{\pos(253,311)\alpha&H00&}GAS
+Dialogue: 3,0:00:31.48,0:00:31.55,Lab,,0,0,0,,{\pos(253,311)\alpha&H00&}GAS
+Dialogue: 3,0:00:31.55,0:00:31.61,Lab,,0,0,0,,{\pos(253,311)\alpha&H00&}GAS
+Dialogue: 3,0:00:31.61,0:00:31.68,Lab,,0,0,0,,{\pos(253,311)\alpha&H00&}GAS
+Dialogue: 3,0:00:31.68,0:00:31.75,Lab,,0,0,0,,{\pos(253,311)\alpha&H00&}GAS
+Dialogue: 3,0:00:31.75,0:00:31.81,Lab,,0,0,0,,{\pos(254,311)\alpha&H00&}GAS
+Dialogue: 3,0:00:31.81,0:00:31.88,Lab,,0,0,0,,{\pos(254,311)\alpha&H00&}GAS
+Dialogue: 3,0:00:31.88,0:00:31.95,Lab,,0,0,0,,{\pos(254,311)\alpha&H3F&}GAS
+Dialogue: 3,0:00:31.95,0:00:32.01,Lab,,0,0,0,,{\pos(254,311)\alpha&H7F&}GAS
+Dialogue: 3,0:00:32.01,0:00:32.08,Lab,,0,0,0,,{\pos(254,311)\alpha&HBF&}GAS
+Dialogue: 3,0:00:48.16,0:00:48.23,Lab,,0,0,0,,{\pos(268,450)\fscx40\fscy40\t(0,110,\fscx112\fscy112)\t(110,180,\fscx100\fscy100)\alpha&H00&}LIQUID
+Dialogue: 3,0:00:48.23,0:00:48.29,Lab,,0,0,0,,{\pos(268,450)\alpha&H00&}LIQUID
+Dialogue: 3,0:00:48.29,0:00:48.36,Lab,,0,0,0,,{\pos(268,450)\alpha&H00&}LIQUID
+Dialogue: 3,0:00:48.36,0:00:48.43,Lab,,0,0,0,,{\pos(268,450)\alpha&H00&}LIQUID
+Dialogue: 3,0:00:48.43,0:00:48.49,Lab,,0,0,0,,{\pos(267,450)\alpha&H00&}LIQUID
+Dialogue: 3,0:00:48.49,0:00:48.56,Lab,,0,0,0,,{\pos(267,450)\alpha&H00&}LIQUID
+Dialogue: 3,0:00:48.56,0:00:48.63,Lab,,0,0,0,,{\pos(267,450)\alpha&H00&}LIQUID
+Dialogue: 3,0:00:48.63,0:00:48.69,Lab,,0,0,0,,{\pos(267,450)\alpha&H00&}LIQUID
+Dialogue: 3,0:00:48.69,0:00:48.76,Lab,,0,0,0,,{\pos(267,450)\alpha&H00&}LIQUID
+Dialogue: 3,0:00:48.76,0:00:48.83,Lab,,0,0,0,,{\pos(267,450)\alpha&H00&}LIQUID
+Dialogue: 3,0:00:48.83,0:00:48.89,Lab,,0,0,0,,{\pos(267,450)\alpha&H00&}LIQUID
+Dialogue: 3,0:00:48.89,0:00:48.96,Lab,,0,0,0,,{\pos(267,450)\alpha&H00&}LIQUID
+Dialogue: 3,0:00:48.96,0:00:49.03,Lab,,0,0,0,,{\pos(267,450)\alpha&H00&}LIQUID
+Dialogue: 3,0:00:49.03,0:00:49.09,Lab,,0,0,0,,{\pos(267,450)\alpha&H00&}LIQUID
+Dialogue: 3,0:00:49.09,0:00:49.16,Lab,,0,0,0,,{\pos(267,450)\alpha&H00&}LIQUID
+Dialogue: 3,0:00:49.16,0:00:49.23,Lab,,0,0,0,,{\pos(267,450)\alpha&H00&}LIQUID
+Dialogue: 3,0:00:49.23,0:00:49.29,Lab,,0,0,0,,{\pos(267,450)\alpha&H00&}LIQUID
+Dialogue: 3,0:00:49.29,0:00:49.36,Lab,,0,0,0,,{\pos(267,450)\alpha&H00&}LIQUID
+Dialogue: 3,0:00:49.36,0:00:49.43,Lab,,0,0,0,,{\pos(267,450)\alpha&H00&}LIQUID
+Dialogue: 3,0:00:49.43,0:00:49.49,Lab,,0,0,0,,{\pos(267,450)\alpha&H00&}LIQUID
+Dialogue: 3,0:00:49.49,0:00:49.56,Lab,,0,0,0,,{\pos(267,450)\alpha&H00&}LIQUID
+Dialogue: 3,0:00:49.56,0:00:49.63,Lab,,0,0,0,,{\pos(267,450)\alpha&H00&}LIQUID
+Dialogue: 3,0:00:49.63,0:00:49.69,Lab,,0,0,0,,{\pos(267,450)\alpha&H00&}LIQUID
+Dialogue: 3,0:00:49.69,0:00:49.76,Lab,,0,0,0,,{\pos(267,450)\alpha&H00&}LIQUID
+Dialogue: 3,0:00:49.76,0:00:49.83,Lab,,0,0,0,,{\pos(267,450)\alpha&H3F&}LIQUID
+Dialogue: 3,0:00:49.83,0:00:49.89,Lab,,0,0,0,,{\pos(267,450)\alpha&H7F&}LIQUID
+Dialogue: 3,0:00:49.89,0:00:49.96,Lab,,0,0,0,,{\pos(267,450)\alpha&HBF&}LIQUID
+Dialogue: 3,0:00:44.96,0:00:45.03,Lab,,0,0,0,,{\pos(227,230)\fscx40\fscy40\t(0,110,\fscx112\fscy112)\t(110,180,\fscx100\fscy100)\alpha&H00&}40°C
+Dialogue: 3,0:00:45.03,0:00:45.09,Lab,,0,0,0,,{\pos(226,228)\alpha&H00&}40°C
+Dialogue: 3,0:00:45.09,0:00:45.16,Lab,,0,0,0,,{\pos(226,228)\alpha&H00&}40°C
+Dialogue: 3,0:00:45.16,0:00:45.23,Lab,,0,0,0,,{\pos(226,228)\alpha&H00&}40°C
+Dialogue: 3,0:00:45.23,0:00:45.29,Lab,,0,0,0,,{\pos(226,228)\alpha&H00&}40°C
+Dialogue: 3,0:00:45.29,0:00:45.36,Lab,,0,0,0,,{\pos(226,228)\alpha&H00&}40°C
+Dialogue: 3,0:00:45.36,0:00:45.43,Lab,,0,0,0,,{\pos(226,228)\alpha&H00&}40°C
+Dialogue: 3,0:00:45.43,0:00:45.49,Lab,,0,0,0,,{\pos(226,228)\alpha&H00&}40°C
+Dialogue: 3,0:00:45.49,0:00:45.56,Lab,,0,0,0,,{\pos(226,228)\alpha&H00&}40°C
+Dialogue: 3,0:00:45.56,0:00:45.63,Lab,,0,0,0,,{\pos(226,228)\alpha&H00&}40°C
+Dialogue: 3,0:00:45.63,0:00:45.69,Lab,,0,0,0,,{\pos(226,227)\alpha&H00&}40°C
+Dialogue: 3,0:00:45.69,0:00:45.76,Lab,,0,0,0,,{\pos(226,227)\alpha&H00&}40°C
+Dialogue: 3,0:00:45.76,0:00:45.83,Lab,,0,0,0,,{\pos(226,227)\alpha&H00&}40°C
+Dialogue: 3,0:00:45.83,0:00:45.89,Lab,,0,0,0,,{\pos(226,227)\alpha&H00&}40°C
+Dialogue: 3,0:00:45.89,0:00:45.96,Lab,,0,0,0,,{\pos(226,227)\alpha&H00&}40°C
+Dialogue: 3,0:00:45.96,0:00:46.03,Lab,,0,0,0,,{\pos(226,227)\alpha&H00&}40°C
+Dialogue: 3,0:00:46.03,0:00:46.09,Lab,,0,0,0,,{\pos(226,227)\alpha&H00&}40°C
+Dialogue: 3,0:00:46.09,0:00:46.16,Lab,,0,0,0,,{\pos(226,227)\alpha&H00&}40°C
+Dialogue: 3,0:00:46.16,0:00:46.23,Lab,,0,0,0,,{\pos(226,227)\alpha&H00&}40°C
+Dialogue: 3,0:00:46.23,0:00:46.29,Lab,,0,0,0,,{\pos(226,227)\alpha&H00&}40°C
+Dialogue: 3,0:00:46.29,0:00:46.36,Lab,,0,0,0,,{\pos(226,227)\alpha&H00&}40°C
+Dialogue: 3,0:00:46.36,0:00:46.43,Lab,,0,0,0,,{\pos(226,227)\alpha&H3F&}40°C
+Dialogue: 3,0:00:46.43,0:00:46.49,Lab,,0,0,0,,{\pos(226,227)\alpha&H7F&}40°C
+Dialogue: 3,0:00:46.49,0:00:46.56,Lab,,0,0,0,,{\pos(226,225)\alpha&HBF&}40°C
+Dialogue: 3,0:00:52.40,0:00:52.47,Lab,,0,0,0,,{\pos(243,392)\fscx40\fscy40\t(0,110,\fscx112\fscy112)\t(110,180,\fscx100\fscy100)\alpha&H00&}SPAGHETTI
+Dialogue: 3,0:00:52.47,0:00:52.53,Lab,,0,0,0,,{\pos(243,392)\alpha&H00&}SPAGHETTI
+Dialogue: 3,0:00:52.53,0:00:52.60,Lab,,0,0,0,,{\pos(243,392)\alpha&H00&}SPAGHETTI
+Dialogue: 3,0:00:52.60,0:00:52.67,Lab,,0,0,0,,{\pos(243,392)\alpha&H00&}SPAGHETTI
+Dialogue: 3,0:00:52.67,0:00:52.73,Lab,,0,0,0,,{\pos(243,392)\alpha&H00&}SPAGHETTI
+Dialogue: 3,0:00:52.73,0:00:52.80,Lab,,0,0,0,,{\pos(243,392)\alpha&H00&}SPAGHETTI
+Dialogue: 3,0:00:52.80,0:00:52.87,Lab,,0,0,0,,{\pos(244,392)\alpha&H00&}SPAGHETTI
+Dialogue: 3,0:00:52.87,0:00:52.93,Lab,,0,0,0,,{\pos(242,393)\alpha&H00&}SPAGHETTI
+Dialogue: 3,0:00:52.93,0:00:53.00,Lab,,0,0,0,,{\pos(242,392)\alpha&H00&}SPAGHETTI
+Dialogue: 3,0:00:53.00,0:00:53.07,Lab,,0,0,0,,{\pos(243,392)\alpha&H00&}SPAGHETTI
+Dialogue: 3,0:00:53.07,0:00:53.13,Lab,,0,0,0,,{\pos(243,392)\alpha&H00&}SPAGHETTI
+Dialogue: 3,0:00:53.13,0:00:53.20,Lab,,0,0,0,,{\pos(243,392)\alpha&H00&}SPAGHETTI
+Dialogue: 3,0:00:53.20,0:00:53.27,Lab,,0,0,0,,{\pos(244,395)\alpha&H00&}SPAGHETTI
+Dialogue: 3,0:00:53.27,0:00:53.33,Lab,,0,0,0,,{\pos(247,406)\alpha&H3F&}SPAGHETTI
+Dialogue: 3,0:00:53.33,0:00:53.40,Lab,,0,0,0,,{\pos(253,428)\alpha&H7F&}SPAGHETTI
+Dialogue: 3,0:00:53.40,0:00:53.47,Lab,,0,0,0,,{\pos(262,460)\alpha&HBF&}SPAGHETTI
+Dialogue: 3,0:00:28.72,0:00:28.79,Lab,,0,0,0,,{\pos(234,288)\fscx40\fscy40\t(0,110,\fscx112\fscy112)\t(110,180,\fscx100\fscy100)\alpha&H00&}EVAPORATOR
+Dialogue: 3,0:00:28.79,0:00:28.85,Lab,,0,0,0,,{\pos(232,288)\alpha&H00&}EVAPORATOR
+Dialogue: 3,0:00:28.85,0:00:28.92,Lab,,0,0,0,,{\pos(230,289)\alpha&H00&}EVAPORATOR
+Dialogue: 3,0:00:28.92,0:00:28.99,Lab,,0,0,0,,{\pos(229,290)\alpha&H00&}EVAPORATOR
+Dialogue: 3,0:00:28.99,0:00:29.05,Lab,,0,0,0,,{\pos(228,290)\alpha&H00&}EVAPORATOR
+Dialogue: 3,0:00:29.05,0:00:29.12,Lab,,0,0,0,,{\pos(228,290)\alpha&H00&}EVAPORATOR
+Dialogue: 3,0:00:29.12,0:00:29.19,Lab,,0,0,0,,{\pos(228,290)\alpha&H00&}EVAPORATOR
+Dialogue: 3,0:00:29.19,0:00:29.25,Lab,,0,0,0,,{\pos(228,290)\alpha&H00&}EVAPORATOR
+Dialogue: 3,0:00:29.25,0:00:29.32,Lab,,0,0,0,,{\pos(228,290)\alpha&H00&}EVAPORATOR
+Dialogue: 3,0:00:29.32,0:00:29.39,Lab,,0,0,0,,{\pos(228,290)\alpha&H00&}EVAPORATOR
+Dialogue: 3,0:00:29.39,0:00:29.45,Lab,,0,0,0,,{\pos(228,290)\alpha&H00&}EVAPORATOR
+Dialogue: 3,0:00:29.45,0:00:29.52,Lab,,0,0,0,,{\pos(228,290)\alpha&H00&}EVAPORATOR
+Dialogue: 3,0:00:29.52,0:00:29.59,Lab,,0,0,0,,{\pos(228,290)\alpha&H00&}EVAPORATOR
+Dialogue: 3,0:00:29.59,0:00:29.65,Lab,,0,0,0,,{\pos(228,290)\alpha&H00&}EVAPORATOR
+Dialogue: 3,0:00:29.65,0:00:29.72,Lab,,0,0,0,,{\pos(228,290)\alpha&H00&}EVAPORATOR
+Dialogue: 3,0:00:29.72,0:00:29.79,Lab,,0,0,0,,{\pos(228,291)\alpha&H00&}EVAPORATOR
+Dialogue: 3,0:00:29.79,0:00:29.85,Lab,,0,0,0,,{\pos(228,291)\alpha&H00&}EVAPORATOR
+Dialogue: 3,0:00:29.85,0:00:29.92,Lab,,0,0,0,,{\pos(228,291)\alpha&H00&}EVAPORATOR
+Dialogue: 3,0:00:29.92,0:00:29.99,Lab,,0,0,0,,{\pos(228,291)\alpha&H00&}EVAPORATOR
+Dialogue: 3,0:00:29.99,0:00:30.05,Lab,,0,0,0,,{\pos(228,291)\alpha&H00&}EVAPORATOR
+Dialogue: 3,0:00:30.05,0:00:30.12,Lab,,0,0,0,,{\pos(228,291)\alpha&H00&}EVAPORATOR
+Dialogue: 3,0:00:30.12,0:00:30.19,Lab,,0,0,0,,{\pos(228,291)\alpha&H00&}EVAPORATOR
+Dialogue: 3,0:00:30.19,0:00:30.25,Lab,,0,0,0,,{\pos(228,291)\alpha&H00&}EVAPORATOR
+Dialogue: 3,0:00:30.25,0:00:30.32,Lab,,0,0,0,,{\pos(226,290)\alpha&H00&}EVAPORATOR
+Dialogue: 3,0:00:30.32,0:00:30.39,Lab,,0,0,0,,{\pos(219,287)\alpha&H00&}EVAPORATOR
+Dialogue: 3,0:00:30.39,0:00:30.45,Lab,,0,0,0,,{\pos(205,281)\alpha&H00&}EVAPORATOR
+Dialogue: 3,0:00:30.45,0:00:30.52,Lab,,0,0,0,,{\pos(184,272)\alpha&H00&}EVAPORATOR
+Dialogue: 3,0:00:30.52,0:00:30.59,Lab,,0,0,0,,{\pos(158,260)\alpha&H00&}EVAPORATOR
+Dialogue: 3,0:00:30.59,0:00:30.65,Lab,,0,0,0,,{\pos(128,248)\alpha&H00&}EVAPORATOR
+Dialogue: 3,0:00:30.65,0:00:30.72,Lab,,0,0,0,,{\pos(100,235)\alpha&H00&}EVAPORATOR
+Dialogue: 3,0:00:30.72,0:00:30.79,Lab,,0,0,0,,{\pos(85,224)\alpha&H3F&}EVAPORATOR
+Dialogue: 3,0:00:30.79,0:00:30.85,Lab,,0,0,0,,{\pos(85,215)\alpha&H7F&}EVAPORATOR
+Dialogue: 3,0:00:30.85,0:00:30.92,Lab,,0,0,0,,{\pos(85,208)\alpha&HBF&}EVAPORATOR
+Dialogue: 3,0:00:35.16,0:00:35.23,Lab,,0,0,0,,{\pos(257,488)\fscx40\fscy40\t(0,110,\fscx112\fscy112)\t(110,180,\fscx100\fscy100)\alpha&H00&}COMPRESSOR
+Dialogue: 3,0:00:35.23,0:00:35.29,Lab,,0,0,0,,{\pos(257,488)\alpha&H00&}COMPRESSOR
+Dialogue: 3,0:00:35.29,0:00:35.36,Lab,,0,0,0,,{\pos(257,488)\alpha&H00&}COMPRESSOR
+Dialogue: 3,0:00:35.36,0:00:35.43,Lab,,0,0,0,,{\pos(257,488)\alpha&H00&}COMPRESSOR
+Dialogue: 3,0:00:35.43,0:00:35.49,Lab,,0,0,0,,{\pos(257,488)\alpha&H00&}COMPRESSOR
+Dialogue: 3,0:00:35.49,0:00:35.56,Lab,,0,0,0,,{\pos(257,488)\alpha&H00&}COMPRESSOR
+Dialogue: 3,0:00:35.56,0:00:35.63,Lab,,0,0,0,,{\pos(257,488)\alpha&H00&}COMPRESSOR
+Dialogue: 3,0:00:35.63,0:00:35.69,Lab,,0,0,0,,{\pos(257,488)\alpha&H00&}COMPRESSOR
+Dialogue: 3,0:00:35.69,0:00:35.76,Lab,,0,0,0,,{\pos(257,488)\alpha&H00&}COMPRESSOR
+Dialogue: 3,0:00:35.76,0:00:35.83,Lab,,0,0,0,,{\pos(257,488)\alpha&H00&}COMPRESSOR
+Dialogue: 3,0:00:35.83,0:00:35.89,Lab,,0,0,0,,{\pos(257,488)\alpha&H00&}COMPRESSOR
+Dialogue: 3,0:00:35.89,0:00:35.96,Lab,,0,0,0,,{\pos(257,488)\alpha&H00&}COMPRESSOR
+Dialogue: 3,0:00:35.96,0:00:36.03,Lab,,0,0,0,,{\pos(257,488)\alpha&H00&}COMPRESSOR
+Dialogue: 3,0:00:36.03,0:00:36.09,Lab,,0,0,0,,{\pos(257,488)\alpha&H00&}COMPRESSOR
+Dialogue: 3,0:00:36.09,0:00:36.16,Lab,,0,0,0,,{\pos(257,488)\alpha&H00&}COMPRESSOR
+Dialogue: 3,0:00:36.16,0:00:36.23,Lab,,0,0,0,,{\pos(257,488)\alpha&H00&}COMPRESSOR
+Dialogue: 3,0:00:36.23,0:00:36.29,Lab,,0,0,0,,{\pos(256,487)\alpha&H00&}COMPRESSOR
+Dialogue: 3,0:00:36.29,0:00:36.36,Lab,,0,0,0,,{\pos(254,483)\alpha&H00&}COMPRESSOR
+Dialogue: 3,0:00:36.36,0:00:36.43,Lab,,0,0,0,,{\pos(250,476)\alpha&H00&}COMPRESSOR
+Dialogue: 3,0:00:36.43,0:00:36.49,Lab,,0,0,0,,{\pos(245,467)\alpha&H00&}COMPRESSOR
+Dialogue: 3,0:00:36.49,0:00:36.56,Lab,,0,0,0,,{\pos(239,455)\alpha&H00&}COMPRESSOR
+Dialogue: 3,0:00:36.56,0:00:36.63,Lab,,0,0,0,,{\pos(232,441)\alpha&H00&}COMPRESSOR
+Dialogue: 3,0:00:36.63,0:00:36.69,Lab,,0,0,0,,{\pos(225,426)\alpha&H00&}COMPRESSOR
+Dialogue: 3,0:00:36.69,0:00:36.76,Lab,,0,0,0,,{\pos(218,413)\alpha&H00&}COMPRESSOR
+Dialogue: 3,0:00:36.76,0:00:36.83,Lab,,0,0,0,,{\pos(214,404)\alpha&H00&}COMPRESSOR
+Dialogue: 3,0:00:36.83,0:00:36.89,Lab,,0,0,0,,{\pos(211,399)\alpha&H00&}COMPRESSOR
+Dialogue: 3,0:00:36.89,0:00:36.96,Lab,,0,0,0,,{\pos(211,398)\alpha&H00&}COMPRESSOR
+Dialogue: 3,0:00:36.96,0:00:37.03,Lab,,0,0,0,,{\pos(211,398)\alpha&H00&}COMPRESSOR
+Dialogue: 3,0:00:37.03,0:00:37.09,Lab,,0,0,0,,{\pos(211,398)\alpha&H00&}COMPRESSOR
+Dialogue: 3,0:00:37.09,0:00:37.16,Lab,,0,0,0,,{\pos(211,398)\alpha&H00&}COMPRESSOR
+Dialogue: 3,0:00:37.16,0:00:37.23,Lab,,0,0,0,,{\pos(211,398)\alpha&H3F&}COMPRESSOR
+Dialogue: 3,0:00:37.23,0:00:37.29,Lab,,0,0,0,,{\pos(211,398)\alpha&H7F&}COMPRESSOR
+Dialogue: 3,0:00:37.29,0:00:37.36,Lab,,0,0,0,,{\pos(211,398)\alpha&HBF&}COMPRESSOR
+Dialogue: 3,0:00:43.52,0:00:43.59,Lab,,0,0,0,,{\pos(247,392)\fscx40\fscy40\t(0,110,\fscx112\fscy112)\t(110,180,\fscx100\fscy100)\alpha&H00&}CONDENSER
+Dialogue: 3,0:00:43.59,0:00:43.65,Lab,,0,0,0,,{\pos(247,392)\alpha&H00&}CONDENSER
+Dialogue: 3,0:00:43.65,0:00:43.72,Lab,,0,0,0,,{\pos(247,392)\alpha&H00&}CONDENSER
+Dialogue: 3,0:00:43.72,0:00:43.79,Lab,,0,0,0,,{\pos(247,392)\alpha&H00&}CONDENSER
+Dialogue: 3,0:00:43.79,0:00:43.85,Lab,,0,0,0,,{\pos(247,392)\alpha&H00&}CONDENSER
+Dialogue: 3,0:00:43.85,0:00:43.92,Lab,,0,0,0,,{\pos(247,392)\alpha&H00&}CONDENSER
+Dialogue: 3,0:00:43.92,0:00:43.99,Lab,,0,0,0,,{\pos(247,392)\alpha&H00&}CONDENSER
+Dialogue: 3,0:00:43.99,0:00:44.05,Lab,,0,0,0,,{\pos(247,392)\alpha&H00&}CONDENSER
+Dialogue: 3,0:00:44.05,0:00:44.12,Lab,,0,0,0,,{\pos(247,392)\alpha&H00&}CONDENSER
+Dialogue: 3,0:00:44.12,0:00:44.19,Lab,,0,0,0,,{\pos(247,392)\alpha&H00&}CONDENSER
+Dialogue: 3,0:00:44.19,0:00:44.25,Lab,,0,0,0,,{\pos(247,392)\alpha&H00&}CONDENSER
+Dialogue: 3,0:00:44.25,0:00:44.32,Lab,,0,0,0,,{\pos(247,392)\alpha&H00&}CONDENSER
+Dialogue: 3,0:00:44.32,0:00:44.39,Lab,,0,0,0,,{\pos(246,390)\alpha&H00&}CONDENSER
+Dialogue: 3,0:00:44.39,0:00:44.45,Lab,,0,0,0,,{\pos(244,389)\alpha&H00&}CONDENSER
+Dialogue: 3,0:00:44.45,0:00:44.52,Lab,,0,0,0,,{\pos(242,386)\alpha&H00&}CONDENSER
+Dialogue: 3,0:00:44.52,0:00:44.59,Lab,,0,0,0,,{\pos(240,383)\alpha&H00&}CONDENSER
+Dialogue: 3,0:00:44.59,0:00:44.65,Lab,,0,0,0,,{\pos(237,379)\alpha&H00&}CONDENSER
+Dialogue: 3,0:00:44.65,0:00:44.72,Lab,,0,0,0,,{\pos(234,375)\alpha&H00&}CONDENSER
+Dialogue: 3,0:00:44.72,0:00:44.79,Lab,,0,0,0,,{\pos(232,371)\alpha&H00&}CONDENSER
+Dialogue: 3,0:00:44.79,0:00:44.85,Lab,,0,0,0,,{\pos(230,367)\alpha&H00&}CONDENSER
+Dialogue: 3,0:00:44.85,0:00:44.92,Lab,,0,0,0,,{\pos(228,364)\alpha&H00&}CONDENSER
+Dialogue: 3,0:00:44.92,0:00:44.99,Lab,,0,0,0,,{\pos(227,362)\alpha&H00&}CONDENSER
+Dialogue: 3,0:00:44.99,0:00:45.05,Lab,,0,0,0,,{\pos(226,360)\alpha&H00&}CONDENSER
+Dialogue: 3,0:00:45.05,0:00:45.12,Lab,,0,0,0,,{\pos(226,360)\alpha&H00&}CONDENSER
+Dialogue: 3,0:00:45.12,0:00:45.19,Lab,,0,0,0,,{\pos(226,360)\alpha&H00&}CONDENSER
+Dialogue: 3,0:00:45.19,0:00:45.25,Lab,,0,0,0,,{\pos(226,360)\alpha&H00&}CONDENSER
+Dialogue: 3,0:00:45.25,0:00:45.32,Lab,,0,0,0,,{\pos(226,360)\alpha&H00&}CONDENSER
+Dialogue: 3,0:00:45.32,0:00:45.39,Lab,,0,0,0,,{\pos(226,360)\alpha&H00&}CONDENSER
+Dialogue: 3,0:00:45.39,0:00:45.45,Lab,,0,0,0,,{\pos(226,360)\alpha&H00&}CONDENSER
+Dialogue: 3,0:00:45.45,0:00:45.52,Lab,,0,0,0,,{\pos(226,360)\alpha&H00&}CONDENSER
+Dialogue: 3,0:00:45.52,0:00:45.59,Lab,,0,0,0,,{\pos(226,360)\alpha&H3F&}CONDENSER
+Dialogue: 3,0:00:45.59,0:00:45.65,Lab,,0,0,0,,{\pos(226,360)\alpha&H7F&}CONDENSER
+Dialogue: 3,0:00:45.65,0:00:45.72,Lab,,0,0,0,,{\pos(226,360)\alpha&HBF&}CONDENSER
+Dialogue: 3,0:00:55.96,0:00:56.03,Lab,,0,0,0,,{\pos(312,630)\fscx40\fscy40\t(0,110,\fscx112\fscy112)\t(110,180,\fscx100\fscy100)\alpha&H00&}CAPILLARY TUBE
+Dialogue: 3,0:00:56.03,0:00:56.09,Lab,,0,0,0,,{\pos(312,630)\alpha&H00&}CAPILLARY TUBE
+Dialogue: 3,0:00:56.09,0:00:56.16,Lab,,0,0,0,,{\pos(312,630)\alpha&H00&}CAPILLARY TUBE
+Dialogue: 3,0:00:56.16,0:00:56.23,Lab,,0,0,0,,{\pos(312,630)\alpha&H00&}CAPILLARY TUBE
+Dialogue: 3,0:00:56.23,0:00:56.29,Lab,,0,0,0,,{\pos(312,630)\alpha&H00&}CAPILLARY TUBE
+Dialogue: 3,0:00:56.29,0:00:56.36,Lab,,0,0,0,,{\pos(312,630)\alpha&H00&}CAPILLARY TUBE
+Dialogue: 3,0:00:56.36,0:00:56.43,Lab,,0,0,0,,{\pos(312,630)\alpha&H00&}CAPILLARY TUBE
+Dialogue: 3,0:00:56.43,0:00:56.49,Lab,,0,0,0,,{\pos(312,630)\alpha&H00&}CAPILLARY TUBE
+Dialogue: 3,0:00:56.49,0:00:56.56,Lab,,0,0,0,,{\pos(312,630)\alpha&H00&}CAPILLARY TUBE
+Dialogue: 3,0:00:56.56,0:00:56.63,Lab,,0,0,0,,{\pos(312,630)\alpha&H00&}CAPILLARY TUBE
+Dialogue: 3,0:00:56.63,0:00:56.69,Lab,,0,0,0,,{\pos(312,630)\alpha&H00&}CAPILLARY TUBE
+Dialogue: 3,0:00:56.69,0:00:56.76,Lab,,0,0,0,,{\pos(312,630)\alpha&H00&}CAPILLARY TUBE
+Dialogue: 3,0:00:56.76,0:00:56.83,Lab,,0,0,0,,{\pos(312,630)\alpha&H00&}CAPILLARY TUBE
+Dialogue: 3,0:00:56.83,0:00:56.89,Lab,,0,0,0,,{\pos(312,630)\alpha&H00&}CAPILLARY TUBE
+Dialogue: 3,0:00:56.89,0:00:56.96,Lab,,0,0,0,,{\pos(312,630)\alpha&H00&}CAPILLARY TUBE
+Dialogue: 3,0:00:56.96,0:00:57.03,Lab,,0,0,0,,{\pos(312,630)\alpha&H00&}CAPILLARY TUBE
+Dialogue: 3,0:00:57.03,0:00:57.09,Lab,,0,0,0,,{\pos(312,630)\alpha&H00&}CAPILLARY TUBE
+Dialogue: 3,0:00:57.09,0:00:57.16,Lab,,0,0,0,,{\pos(312,630)\alpha&H00&}CAPILLARY TUBE
+Dialogue: 3,0:00:57.16,0:00:57.23,Lab,,0,0,0,,{\pos(312,620)\alpha&H00&}CAPILLARY TUBE
+Dialogue: 3,0:00:57.23,0:00:57.29,Lab,,0,0,0,,{\pos(313,600)\alpha&H00&}CAPILLARY TUBE
+Dialogue: 3,0:00:57.29,0:00:57.36,Lab,,0,0,0,,{\pos(314,575)\alpha&H00&}CAPILLARY TUBE
+Dialogue: 3,0:00:57.36,0:00:57.43,Lab,,0,0,0,,{\pos(314,547)\alpha&H00&}CAPILLARY TUBE
+Dialogue: 3,0:00:57.43,0:00:57.49,Lab,,0,0,0,,{\pos(315,518)\alpha&H00&}CAPILLARY TUBE
+Dialogue: 3,0:00:57.49,0:00:57.56,Lab,,0,0,0,,{\pos(315,490)\alpha&H00&}CAPILLARY TUBE
+Dialogue: 3,0:00:57.56,0:00:57.63,Lab,,0,0,0,,{\pos(316,464)\alpha&H00&}CAPILLARY TUBE
+Dialogue: 3,0:00:57.63,0:00:57.69,Lab,,0,0,0,,{\pos(316,441)\alpha&H00&}CAPILLARY TUBE
+Dialogue: 3,0:00:57.69,0:00:57.76,Lab,,0,0,0,,{\pos(316,421)\alpha&H00&}CAPILLARY TUBE
+Dialogue: 3,0:00:57.76,0:00:57.83,Lab,,0,0,0,,{\pos(316,404)\alpha&H00&}CAPILLARY TUBE
+Dialogue: 3,0:00:57.83,0:00:57.89,Lab,,0,0,0,,{\pos(316,390)\alpha&H00&}CAPILLARY TUBE
+Dialogue: 3,0:00:57.89,0:00:57.96,Lab,,0,0,0,,{\pos(316,379)\alpha&H00&}CAPILLARY TUBE
+Dialogue: 3,0:00:57.96,0:00:58.03,Lab,,0,0,0,,{\pos(316,370)\alpha&H3F&}CAPILLARY TUBE
+Dialogue: 3,0:00:58.03,0:00:58.09,Lab,,0,0,0,,{\pos(316,364)\alpha&H7F&}CAPILLARY TUBE
+Dialogue: 3,0:00:58.09,0:00:58.16,Lab,,0,0,0,,{\pos(316,360)\alpha&HBF&}CAPILLARY TUBE
+Dialogue: 3,0:01:00.72,0:01:00.79,Lab,,0,0,0,,{\pos(288,431)\fscx40\fscy40\t(0,110,\fscx112\fscy112)\t(110,180,\fscx100\fscy100)\alpha&H00&}-18°C
+Dialogue: 3,0:01:00.79,0:01:00.85,Lab,,0,0,0,,{\pos(288,431)\alpha&H00&}-18°C
+Dialogue: 3,0:01:00.85,0:01:00.92,Lab,,0,0,0,,{\pos(288,431)\alpha&H00&}-18°C
+Dialogue: 3,0:01:00.92,0:01:00.99,Lab,,0,0,0,,{\pos(288,431)\alpha&H00&}-18°C
+Dialogue: 3,0:01:00.99,0:01:01.05,Lab,,0,0,0,,{\pos(288,431)\alpha&H00&}-18°C
+Dialogue: 3,0:01:01.05,0:01:01.12,Lab,,0,0,0,,{\pos(288,431)\alpha&H00&}-18°C
+Dialogue: 3,0:01:01.12,0:01:01.19,Lab,,0,0,0,,{\pos(288,431)\alpha&H00&}-18°C
+Dialogue: 3,0:01:01.19,0:01:01.25,Lab,,0,0,0,,{\pos(288,431)\alpha&H00&}-18°C
+Dialogue: 3,0:01:01.25,0:01:01.32,Lab,,0,0,0,,{\pos(288,431)\alpha&H00&}-18°C
+Dialogue: 3,0:01:01.32,0:01:01.39,Lab,,0,0,0,,{\pos(288,431)\alpha&H00&}-18°C
+Dialogue: 3,0:01:01.39,0:01:01.45,Lab,,0,0,0,,{\pos(288,431)\alpha&H00&}-18°C
+Dialogue: 3,0:01:01.45,0:01:01.52,Lab,,0,0,0,,{\pos(288,431)\alpha&H00&}-18°C
+Dialogue: 3,0:01:01.52,0:01:01.59,Lab,,0,0,0,,{\pos(288,431)\alpha&H00&}-18°C
+Dialogue: 3,0:01:01.59,0:01:01.65,Lab,,0,0,0,,{\pos(288,431)\alpha&H00&}-18°C
+Dialogue: 3,0:01:01.65,0:01:01.72,Lab,,0,0,0,,{\pos(288,431)\alpha&H00&}-18°C
+Dialogue: 3,0:01:01.72,0:01:01.79,Lab,,0,0,0,,{\pos(288,431)\alpha&H00&}-18°C
+Dialogue: 3,0:01:01.79,0:01:01.85,Lab,,0,0,0,,{\pos(288,431)\alpha&H00&}-18°C
+Dialogue: 3,0:01:01.85,0:01:01.92,Lab,,0,0,0,,{\pos(289,431)\alpha&H00&}-18°C
+Dialogue: 3,0:01:01.92,0:01:01.99,Lab,,0,0,0,,{\pos(289,431)\alpha&H00&}-18°C
+Dialogue: 3,0:01:01.99,0:01:02.05,Lab,,0,0,0,,{\pos(289,431)\alpha&H00&}-18°C
+Dialogue: 3,0:01:02.05,0:01:02.12,Lab,,0,0,0,,{\pos(289,431)\alpha&H00&}-18°C
+Dialogue: 3,0:01:02.12,0:01:02.19,Lab,,0,0,0,,{\pos(289,431)\alpha&H00&}-18°C
+Dialogue: 3,0:01:02.19,0:01:02.25,Lab,,0,0,0,,{\pos(289,431)\alpha&H00&}-18°C
+Dialogue: 3,0:01:02.25,0:01:02.32,Lab,,0,0,0,,{\pos(289,431)\alpha&H00&}-18°C
+Dialogue: 3,0:01:02.32,0:01:02.39,Lab,,0,0,0,,{\pos(289,431)\alpha&H3F&}-18°C
+Dialogue: 3,0:01:02.39,0:01:02.45,Lab,,0,0,0,,{\pos(289,431)\alpha&H7F&}-18°C
+Dialogue: 3,0:01:02.45,0:01:02.52,Lab,,0,0,0,,{\pos(289,431)\alpha&HBF&}-18°C
+Dialogue: 3,0:01:05.92,0:01:05.99,Lab,,0,0,0,,{\pos(255,302)\fscx40\fscy40\t(0,110,\fscx112\fscy112)\t(110,180,\fscx100\fscy100)\alpha&H00&}THERMOSTAT
+Dialogue: 3,0:01:05.99,0:01:06.05,Lab,,0,0,0,,{\pos(255,302)\alpha&H00&}THERMOSTAT
+Dialogue: 3,0:01:06.05,0:01:06.12,Lab,,0,0,0,,{\pos(255,301)\alpha&H00&}THERMOSTAT
+Dialogue: 3,0:01:06.12,0:01:06.19,Lab,,0,0,0,,{\pos(255,301)\alpha&H00&}THERMOSTAT
+Dialogue: 3,0:01:06.19,0:01:06.25,Lab,,0,0,0,,{\pos(255,301)\alpha&H00&}THERMOSTAT
+Dialogue: 3,0:01:06.25,0:01:06.32,Lab,,0,0,0,,{\pos(255,301)\alpha&H00&}THERMOSTAT
+Dialogue: 3,0:01:06.32,0:01:06.39,Lab,,0,0,0,,{\pos(255,301)\alpha&H00&}THERMOSTAT
+Dialogue: 3,0:01:06.39,0:01:06.45,Lab,,0,0,0,,{\pos(255,301)\alpha&H00&}THERMOSTAT
+Dialogue: 3,0:01:06.45,0:01:06.52,Lab,,0,0,0,,{\pos(255,301)\alpha&H00&}THERMOSTAT
+Dialogue: 3,0:01:06.52,0:01:06.59,Lab,,0,0,0,,{\pos(255,301)\alpha&H00&}THERMOSTAT
+Dialogue: 3,0:01:06.59,0:01:06.65,Lab,,0,0,0,,{\pos(255,301)\alpha&H00&}THERMOSTAT
+Dialogue: 3,0:01:06.65,0:01:06.72,Lab,,0,0,0,,{\pos(255,301)\alpha&H00&}THERMOSTAT
+Dialogue: 3,0:01:06.72,0:01:06.79,Lab,,0,0,0,,{\pos(255,301)\alpha&H00&}THERMOSTAT
+Dialogue: 3,0:01:06.79,0:01:06.85,Lab,,0,0,0,,{\pos(255,301)\alpha&H00&}THERMOSTAT
+Dialogue: 3,0:01:06.85,0:01:06.92,Lab,,0,0,0,,{\pos(255,301)\alpha&H00&}THERMOSTAT
+Dialogue: 3,0:01:06.92,0:01:06.99,Lab,,0,0,0,,{\pos(255,301)\alpha&H00&}THERMOSTAT
+Dialogue: 3,0:01:06.99,0:01:07.05,Lab,,0,0,0,,{\pos(255,301)\alpha&H00&}THERMOSTAT
+Dialogue: 3,0:01:07.05,0:01:07.12,Lab,,0,0,0,,{\pos(255,301)\alpha&H00&}THERMOSTAT
+Dialogue: 3,0:01:07.12,0:01:07.19,Lab,,0,0,0,,{\pos(254,301)\alpha&H00&}THERMOSTAT
+Dialogue: 3,0:01:07.19,0:01:07.25,Lab,,0,0,0,,{\pos(254,302)\alpha&H00&}THERMOSTAT
+Dialogue: 3,0:01:07.25,0:01:07.32,Lab,,0,0,0,,{\pos(254,303)\alpha&H00&}THERMOSTAT
+Dialogue: 3,0:01:07.32,0:01:07.39,Lab,,0,0,0,,{\pos(253,304)\alpha&H00&}THERMOSTAT
+Dialogue: 3,0:01:07.39,0:01:07.45,Lab,,0,0,0,,{\pos(252,306)\alpha&H00&}THERMOSTAT
+Dialogue: 3,0:01:07.45,0:01:07.52,Lab,,0,0,0,,{\pos(251,307)\alpha&H00&}THERMOSTAT
+Dialogue: 3,0:01:07.52,0:01:07.59,Lab,,0,0,0,,{\pos(250,309)\alpha&H00&}THERMOSTAT
+Dialogue: 3,0:01:07.59,0:01:07.65,Lab,,0,0,0,,{\pos(248,310)\alpha&H00&}THERMOSTAT
+Dialogue: 3,0:01:07.65,0:01:07.72,Lab,,0,0,0,,{\pos(247,311)\alpha&H00&}THERMOSTAT
+Dialogue: 3,0:01:07.72,0:01:07.79,Lab,,0,0,0,,{\pos(246,312)\alpha&H00&}THERMOSTAT
+Dialogue: 3,0:01:07.79,0:01:07.85,Lab,,0,0,0,,{\pos(246,312)\alpha&H00&}THERMOSTAT
+Dialogue: 3,0:01:07.85,0:01:07.92,Lab,,0,0,0,,{\pos(245,313)\alpha&H00&}THERMOSTAT
+Dialogue: 3,0:01:07.92,0:01:07.99,Lab,,0,0,0,,{\pos(245,313)\alpha&H3F&}THERMOSTAT
+Dialogue: 3,0:01:07.99,0:01:08.05,Lab,,0,0,0,,{\pos(245,313)\alpha&H7F&}THERMOSTAT
+Dialogue: 3,0:01:08.05,0:01:08.12,Lab,,0,0,0,,{\pos(245,313)\alpha&HBF&}THERMOSTAT
+Dialogue: 3,0:01:12.12,0:01:12.19,Lab,,0,0,0,,{\pos(178,168)\fscx40\fscy40\t(0,110,\fscx112\fscy112)\t(110,180,\fscx100\fscy100)\alpha&H00&}EVAPORATOR
+Dialogue: 3,0:01:12.19,0:01:12.25,Lab,,0,0,0,,{\pos(178,168)\alpha&H00&}EVAPORATOR
+Dialogue: 3,0:01:12.25,0:01:12.32,Lab,,0,0,0,,{\pos(178,168)\alpha&H00&}EVAPORATOR
+Dialogue: 3,0:01:12.32,0:01:12.39,Lab,,0,0,0,,{\pos(178,168)\alpha&H00&}EVAPORATOR
+Dialogue: 3,0:01:12.39,0:01:12.45,Lab,,0,0,0,,{\pos(178,169)\alpha&H00&}EVAPORATOR
+Dialogue: 3,0:01:12.45,0:01:12.52,Lab,,0,0,0,,{\pos(178,169)\alpha&H00&}EVAPORATOR
+Dialogue: 3,0:01:12.52,0:01:12.59,Lab,,0,0,0,,{\pos(178,170)\alpha&H00&}EVAPORATOR
+Dialogue: 3,0:01:12.59,0:01:12.65,Lab,,0,0,0,,{\pos(179,171)\alpha&H00&}EVAPORATOR
+Dialogue: 3,0:01:12.65,0:01:12.72,Lab,,0,0,0,,{\pos(179,172)\alpha&H00&}EVAPORATOR
+Dialogue: 3,0:01:12.72,0:01:12.79,Lab,,0,0,0,,{\pos(179,173)\alpha&H00&}EVAPORATOR
+Dialogue: 3,0:01:12.79,0:01:12.85,Lab,,0,0,0,,{\pos(180,174)\alpha&H00&}EVAPORATOR
+Dialogue: 3,0:01:12.85,0:01:12.92,Lab,,0,0,0,,{\pos(180,175)\alpha&H00&}EVAPORATOR
+Dialogue: 3,0:01:12.92,0:01:12.99,Lab,,0,0,0,,{\pos(180,176)\alpha&H00&}EVAPORATOR
+Dialogue: 3,0:01:12.99,0:01:13.05,Lab,,0,0,0,,{\pos(181,177)\alpha&H00&}EVAPORATOR
+Dialogue: 3,0:01:13.05,0:01:13.12,Lab,,0,0,0,,{\pos(181,178)\alpha&H00&}EVAPORATOR
+Dialogue: 3,0:01:13.12,0:01:13.19,Lab,,0,0,0,,{\pos(181,179)\alpha&H00&}EVAPORATOR
+Dialogue: 3,0:01:13.19,0:01:13.25,Lab,,0,0,0,,{\pos(181,179)\alpha&H00&}EVAPORATOR
+Dialogue: 3,0:01:13.25,0:01:13.32,Lab,,0,0,0,,{\pos(181,180)\alpha&H00&}EVAPORATOR
+Dialogue: 3,0:01:13.32,0:01:13.39,Lab,,0,0,0,,{\pos(181,180)\alpha&H00&}EVAPORATOR
+Dialogue: 3,0:01:13.39,0:01:13.45,Lab,,0,0,0,,{\pos(181,180)\alpha&H00&}EVAPORATOR
+Dialogue: 3,0:01:13.45,0:01:13.52,Lab,,0,0,0,,{\pos(181,180)\alpha&H00&}EVAPORATOR
+Dialogue: 3,0:01:13.52,0:01:13.59,Lab,,0,0,0,,{\pos(181,180)\alpha&H00&}EVAPORATOR
+Dialogue: 3,0:01:13.59,0:01:13.65,Lab,,0,0,0,,{\pos(181,180)\alpha&H00&}EVAPORATOR
+Dialogue: 3,0:01:13.65,0:01:13.72,Lab,,0,0,0,,{\pos(181,180)\alpha&H00&}EVAPORATOR
+Dialogue: 3,0:01:13.72,0:01:13.79,Lab,,0,0,0,,{\pos(181,180)\alpha&H00&}EVAPORATOR
+Dialogue: 3,0:01:13.79,0:01:13.85,Lab,,0,0,0,,{\pos(181,180)\alpha&H00&}EVAPORATOR
+Dialogue: 3,0:01:13.85,0:01:13.92,Lab,,0,0,0,,{\pos(181,179)\alpha&H00&}EVAPORATOR
+Dialogue: 3,0:01:13.92,0:01:13.99,Lab,,0,0,0,,{\pos(181,179)\alpha&H00&}EVAPORATOR
+Dialogue: 3,0:01:13.99,0:01:14.05,Lab,,0,0,0,,{\pos(181,179)\alpha&H00&}EVAPORATOR
+Dialogue: 3,0:01:14.05,0:01:14.12,Lab,,0,0,0,,{\pos(181,179)\alpha&H00&}EVAPORATOR
+Dialogue: 3,0:01:14.12,0:01:14.19,Lab,,0,0,0,,{\pos(181,179)\alpha&H00&}EVAPORATOR
+Dialogue: 3,0:01:14.19,0:01:14.25,Lab,,0,0,0,,{\pos(181,179)\alpha&H00&}EVAPORATOR
+Dialogue: 3,0:01:14.25,0:01:14.32,Lab,,0,0,0,,{\pos(181,179)\alpha&H00&}EVAPORATOR
+Dialogue: 3,0:01:14.32,0:01:14.39,Lab,,0,0,0,,{\pos(181,179)\alpha&H00&}EVAPORATOR
+Dialogue: 3,0:01:14.39,0:01:14.45,Lab,,0,0,0,,{\pos(181,179)\alpha&H3F&}EVAPORATOR
+Dialogue: 3,0:01:14.45,0:01:14.52,Lab,,0,0,0,,{\pos(181,179)\alpha&H7F&}EVAPORATOR
+Dialogue: 3,0:01:14.52,0:01:14.59,Lab,,0,0,0,,{\pos(181,179)\alpha&HBF&}EVAPORATOR
+Dialogue: 3,0:01:12.12,0:01:12.19,Lab,,0,0,0,,{\pos(344,562)\fscx40\fscy40\t(0,110,\fscx112\fscy112)\t(110,180,\fscx100\fscy100)\alpha&H00&}COMPRESSOR
+Dialogue: 3,0:01:12.19,0:01:12.25,Lab,,0,0,0,,{\pos(344,562)\alpha&H00&}COMPRESSOR
+Dialogue: 3,0:01:12.25,0:01:12.32,Lab,,0,0,0,,{\pos(344,562)\alpha&H00&}COMPRESSOR
+Dialogue: 3,0:01:12.32,0:01:12.39,Lab,,0,0,0,,{\pos(344,562)\alpha&H00&}COMPRESSOR
+Dialogue: 3,0:01:12.39,0:01:12.45,Lab,,0,0,0,,{\pos(344,562)\alpha&H00&}COMPRESSOR
+Dialogue: 3,0:01:12.45,0:01:12.52,Lab,,0,0,0,,{\pos(344,561)\alpha&H00&}COMPRESSOR
+Dialogue: 3,0:01:12.52,0:01:12.59,Lab,,0,0,0,,{\pos(344,560)\alpha&H00&}COMPRESSOR
+Dialogue: 3,0:01:12.59,0:01:12.65,Lab,,0,0,0,,{\pos(344,559)\alpha&H00&}COMPRESSOR
+Dialogue: 3,0:01:12.65,0:01:12.72,Lab,,0,0,0,,{\pos(344,558)\alpha&H00&}COMPRESSOR
+Dialogue: 3,0:01:12.72,0:01:12.79,Lab,,0,0,0,,{\pos(343,556)\alpha&H00&}COMPRESSOR
+Dialogue: 3,0:01:12.79,0:01:12.85,Lab,,0,0,0,,{\pos(343,554)\alpha&H00&}COMPRESSOR
+Dialogue: 3,0:01:12.85,0:01:12.92,Lab,,0,0,0,,{\pos(343,553)\alpha&H00&}COMPRESSOR
+Dialogue: 3,0:01:12.92,0:01:12.99,Lab,,0,0,0,,{\pos(342,551)\alpha&H00&}COMPRESSOR
+Dialogue: 3,0:01:12.99,0:01:13.05,Lab,,0,0,0,,{\pos(342,550)\alpha&H00&}COMPRESSOR
+Dialogue: 3,0:01:13.05,0:01:13.12,Lab,,0,0,0,,{\pos(342,549)\alpha&H00&}COMPRESSOR
+Dialogue: 3,0:01:13.12,0:01:13.19,Lab,,0,0,0,,{\pos(342,548)\alpha&H00&}COMPRESSOR
+Dialogue: 3,0:01:13.19,0:01:13.25,Lab,,0,0,0,,{\pos(342,547)\alpha&H00&}COMPRESSOR
+Dialogue: 3,0:01:13.25,0:01:13.32,Lab,,0,0,0,,{\pos(342,547)\alpha&H00&}COMPRESSOR
+Dialogue: 3,0:01:13.32,0:01:13.39,Lab,,0,0,0,,{\pos(342,547)\alpha&H00&}COMPRESSOR
+Dialogue: 3,0:01:13.39,0:01:13.45,Lab,,0,0,0,,{\pos(342,547)\alpha&H00&}COMPRESSOR
+Dialogue: 3,0:01:13.45,0:01:13.52,Lab,,0,0,0,,{\pos(342,547)\alpha&H00&}COMPRESSOR
+Dialogue: 3,0:01:13.52,0:01:13.59,Lab,,0,0,0,,{\pos(342,547)\alpha&H00&}COMPRESSOR
+Dialogue: 3,0:01:13.59,0:01:13.65,Lab,,0,0,0,,{\pos(342,547)\alpha&H00&}COMPRESSOR
+Dialogue: 3,0:01:13.65,0:01:13.72,Lab,,0,0,0,,{\pos(342,547)\alpha&H00&}COMPRESSOR
+Dialogue: 3,0:01:13.72,0:01:13.79,Lab,,0,0,0,,{\pos(342,547)\alpha&H00&}COMPRESSOR
+Dialogue: 3,0:01:13.79,0:01:13.85,Lab,,0,0,0,,{\pos(342,547)\alpha&H00&}COMPRESSOR
+Dialogue: 3,0:01:13.85,0:01:13.92,Lab,,0,0,0,,{\pos(342,547)\alpha&H00&}COMPRESSOR
+Dialogue: 3,0:01:13.92,0:01:13.99,Lab,,0,0,0,,{\pos(342,547)\alpha&H00&}COMPRESSOR
+Dialogue: 3,0:01:13.99,0:01:14.05,Lab,,0,0,0,,{\pos(342,547)\alpha&H00&}COMPRESSOR
+Dialogue: 3,0:01:14.05,0:01:14.12,Lab,,0,0,0,,{\pos(342,548)\alpha&H00&}COMPRESSOR
+Dialogue: 3,0:01:14.12,0:01:14.19,Lab,,0,0,0,,{\pos(342,548)\alpha&H00&}COMPRESSOR
+Dialogue: 3,0:01:14.19,0:01:14.25,Lab,,0,0,0,,{\pos(342,548)\alpha&H00&}COMPRESSOR
+Dialogue: 3,0:01:14.25,0:01:14.32,Lab,,0,0,0,,{\pos(343,548)\alpha&H00&}COMPRESSOR
+Dialogue: 3,0:01:14.32,0:01:14.39,Lab,,0,0,0,,{\pos(343,548)\alpha&H00&}COMPRESSOR
+Dialogue: 3,0:01:14.39,0:01:14.45,Lab,,0,0,0,,{\pos(343,548)\alpha&H3F&}COMPRESSOR
+Dialogue: 3,0:01:14.45,0:01:14.52,Lab,,0,0,0,,{\pos(343,548)\alpha&H7F&}COMPRESSOR
+Dialogue: 3,0:01:14.52,0:01:14.59,Lab,,0,0,0,,{\pos(343,548)\alpha&HBF&}COMPRESSOR
+Dialogue: 3,0:01:12.12,0:01:12.19,Lab,,0,0,0,,{\pos(359,382)\fscx40\fscy40\t(0,110,\fscx112\fscy112)\t(110,180,\fscx100\fscy100)\alpha&H00&}CONDENSER
+Dialogue: 3,0:01:12.19,0:01:12.25,Lab,,0,0,0,,{\pos(359,382)\alpha&H00&}CONDENSER
+Dialogue: 3,0:01:12.25,0:01:12.32,Lab,,0,0,0,,{\pos(359,382)\alpha&H00&}CONDENSER
+Dialogue: 3,0:01:12.32,0:01:12.39,Lab,,0,0,0,,{\pos(358,382)\alpha&H00&}CONDENSER
+Dialogue: 3,0:01:12.39,0:01:12.45,Lab,,0,0,0,,{\pos(358,382)\alpha&H00&}CONDENSER
+Dialogue: 3,0:01:12.45,0:01:12.52,Lab,,0,0,0,,{\pos(358,382)\alpha&H00&}CONDENSER
+Dialogue: 3,0:01:12.52,0:01:12.59,Lab,,0,0,0,,{\pos(358,382)\alpha&H00&}CONDENSER
+Dialogue: 3,0:01:12.59,0:01:12.65,Lab,,0,0,0,,{\pos(358,382)\alpha&H00&}CONDENSER
+Dialogue: 3,0:01:12.65,0:01:12.72,Lab,,0,0,0,,{\pos(358,382)\alpha&H00&}CONDENSER
+Dialogue: 3,0:01:12.72,0:01:12.79,Lab,,0,0,0,,{\pos(357,381)\alpha&H00&}CONDENSER
+Dialogue: 3,0:01:12.79,0:01:12.85,Lab,,0,0,0,,{\pos(357,381)\alpha&H00&}CONDENSER
+Dialogue: 3,0:01:12.85,0:01:12.92,Lab,,0,0,0,,{\pos(357,381)\alpha&H00&}CONDENSER
+Dialogue: 3,0:01:12.92,0:01:12.99,Lab,,0,0,0,,{\pos(356,381)\alpha&H00&}CONDENSER
+Dialogue: 3,0:01:12.99,0:01:13.05,Lab,,0,0,0,,{\pos(356,381)\alpha&H00&}CONDENSER
+Dialogue: 3,0:01:13.05,0:01:13.12,Lab,,0,0,0,,{\pos(356,381)\alpha&H00&}CONDENSER
+Dialogue: 3,0:01:13.12,0:01:13.19,Lab,,0,0,0,,{\pos(356,380)\alpha&H00&}CONDENSER
+Dialogue: 3,0:01:13.19,0:01:13.25,Lab,,0,0,0,,{\pos(355,380)\alpha&H00&}CONDENSER
+Dialogue: 3,0:01:13.25,0:01:13.32,Lab,,0,0,0,,{\pos(355,380)\alpha&H00&}CONDENSER
+Dialogue: 3,0:01:13.32,0:01:13.39,Lab,,0,0,0,,{\pos(355,380)\alpha&H00&}CONDENSER
+Dialogue: 3,0:01:13.39,0:01:13.45,Lab,,0,0,0,,{\pos(355,380)\alpha&H00&}CONDENSER
+Dialogue: 3,0:01:13.45,0:01:13.52,Lab,,0,0,0,,{\pos(355,380)\alpha&H00&}CONDENSER
+Dialogue: 3,0:01:13.52,0:01:13.59,Lab,,0,0,0,,{\pos(356,380)\alpha&H00&}CONDENSER
+Dialogue: 3,0:01:13.59,0:01:13.65,Lab,,0,0,0,,{\pos(356,380)\alpha&H00&}CONDENSER
+Dialogue: 3,0:01:13.65,0:01:13.72,Lab,,0,0,0,,{\pos(356,380)\alpha&H00&}CONDENSER
+Dialogue: 3,0:01:13.72,0:01:13.79,Lab,,0,0,0,,{\pos(356,380)\alpha&H00&}CONDENSER
+Dialogue: 3,0:01:13.79,0:01:13.85,Lab,,0,0,0,,{\pos(356,380)\alpha&H00&}CONDENSER
+Dialogue: 3,0:01:13.85,0:01:13.92,Lab,,0,0,0,,{\pos(356,380)\alpha&H00&}CONDENSER
+Dialogue: 3,0:01:13.92,0:01:13.99,Lab,,0,0,0,,{\pos(356,380)\alpha&H00&}CONDENSER
+Dialogue: 3,0:01:13.99,0:01:14.05,Lab,,0,0,0,,{\pos(356,380)\alpha&H00&}CONDENSER
+Dialogue: 3,0:01:14.05,0:01:14.12,Lab,,0,0,0,,{\pos(356,380)\alpha&H00&}CONDENSER
+Dialogue: 3,0:01:14.12,0:01:14.19,Lab,,0,0,0,,{\pos(356,380)\alpha&H00&}CONDENSER
+Dialogue: 3,0:01:14.19,0:01:14.25,Lab,,0,0,0,,{\pos(356,380)\alpha&H00&}CONDENSER
+Dialogue: 3,0:01:14.25,0:01:14.32,Lab,,0,0,0,,{\pos(356,380)\alpha&H00&}CONDENSER
+Dialogue: 3,0:01:14.32,0:01:14.39,Lab,,0,0,0,,{\pos(356,380)\alpha&H00&}CONDENSER
+Dialogue: 3,0:01:14.39,0:01:14.45,Lab,,0,0,0,,{\pos(356,380)\alpha&H3F&}CONDENSER
+Dialogue: 3,0:01:14.45,0:01:14.52,Lab,,0,0,0,,{\pos(357,380)\alpha&H7F&}CONDENSER
+Dialogue: 3,0:01:14.52,0:01:14.59,Lab,,0,0,0,,{\pos(357,380)\alpha&HBF&}CONDENSER
+Dialogue: 3,0:01:12.12,0:01:12.19,Lab,,0,0,0,,{\pos(319,460)\fscx40\fscy40\t(0,110,\fscx112\fscy112)\t(110,180,\fscx100\fscy100)\alpha&H00&}CAPILLARY TUBE
+Dialogue: 3,0:01:12.19,0:01:12.25,Lab,,0,0,0,,{\pos(319,460)\alpha&H00&}CAPILLARY TUBE
+Dialogue: 3,0:01:12.25,0:01:12.32,Lab,,0,0,0,,{\pos(319,460)\alpha&H00&}CAPILLARY TUBE
+Dialogue: 3,0:01:12.32,0:01:12.39,Lab,,0,0,0,,{\pos(319,460)\alpha&H00&}CAPILLARY TUBE
+Dialogue: 3,0:01:12.39,0:01:12.45,Lab,,0,0,0,,{\pos(319,460)\alpha&H00&}CAPILLARY TUBE
+Dialogue: 3,0:01:12.45,0:01:12.52,Lab,,0,0,0,,{\pos(319,460)\alpha&H00&}CAPILLARY TUBE
+Dialogue: 3,0:01:12.52,0:01:12.59,Lab,,0,0,0,,{\pos(318,460)\alpha&H00&}CAPILLARY TUBE
+Dialogue: 3,0:01:12.59,0:01:12.65,Lab,,0,0,0,,{\pos(318,460)\alpha&H00&}CAPILLARY TUBE
+Dialogue: 3,0:01:12.65,0:01:12.72,Lab,,0,0,0,,{\pos(318,459)\alpha&H00&}CAPILLARY TUBE
+Dialogue: 3,0:01:12.72,0:01:12.79,Lab,,0,0,0,,{\pos(318,459)\alpha&H00&}CAPILLARY TUBE
+Dialogue: 3,0:01:12.79,0:01:12.85,Lab,,0,0,0,,{\pos(318,459)\alpha&H00&}CAPILLARY TUBE
+Dialogue: 3,0:01:12.85,0:01:12.92,Lab,,0,0,0,,{\pos(317,459)\alpha&H00&}CAPILLARY TUBE
+Dialogue: 3,0:01:12.92,0:01:12.99,Lab,,0,0,0,,{\pos(317,458)\alpha&H00&}CAPILLARY TUBE
+Dialogue: 3,0:01:12.99,0:01:13.05,Lab,,0,0,0,,{\pos(317,458)\alpha&H00&}CAPILLARY TUBE
+Dialogue: 3,0:01:13.05,0:01:13.12,Lab,,0,0,0,,{\pos(316,458)\alpha&H00&}CAPILLARY TUBE
+Dialogue: 3,0:01:13.12,0:01:13.19,Lab,,0,0,0,,{\pos(316,457)\alpha&H00&}CAPILLARY TUBE
+Dialogue: 3,0:01:13.19,0:01:13.25,Lab,,0,0,0,,{\pos(316,457)\alpha&H00&}CAPILLARY TUBE
+Dialogue: 3,0:01:13.25,0:01:13.32,Lab,,0,0,0,,{\pos(316,457)\alpha&H00&}CAPILLARY TUBE
+Dialogue: 3,0:01:13.32,0:01:13.39,Lab,,0,0,0,,{\pos(316,457)\alpha&H00&}CAPILLARY TUBE
+Dialogue: 3,0:01:13.39,0:01:13.45,Lab,,0,0,0,,{\pos(316,457)\alpha&H00&}CAPILLARY TUBE
+Dialogue: 3,0:01:13.45,0:01:13.52,Lab,,0,0,0,,{\pos(316,457)\alpha&H00&}CAPILLARY TUBE
+Dialogue: 3,0:01:13.52,0:01:13.59,Lab,,0,0,0,,{\pos(316,457)\alpha&H00&}CAPILLARY TUBE
+Dialogue: 3,0:01:13.59,0:01:13.65,Lab,,0,0,0,,{\pos(316,457)\alpha&H00&}CAPILLARY TUBE
+Dialogue: 3,0:01:13.65,0:01:13.72,Lab,,0,0,0,,{\pos(316,457)\alpha&H00&}CAPILLARY TUBE
+Dialogue: 3,0:01:13.72,0:01:13.79,Lab,,0,0,0,,{\pos(316,457)\alpha&H00&}CAPILLARY TUBE
+Dialogue: 3,0:01:13.79,0:01:13.85,Lab,,0,0,0,,{\pos(316,457)\alpha&H00&}CAPILLARY TUBE
+Dialogue: 3,0:01:13.85,0:01:13.92,Lab,,0,0,0,,{\pos(316,457)\alpha&H00&}CAPILLARY TUBE
+Dialogue: 3,0:01:13.92,0:01:13.99,Lab,,0,0,0,,{\pos(316,457)\alpha&H00&}CAPILLARY TUBE
+Dialogue: 3,0:01:13.99,0:01:14.05,Lab,,0,0,0,,{\pos(317,457)\alpha&H00&}CAPILLARY TUBE
+Dialogue: 3,0:01:14.05,0:01:14.12,Lab,,0,0,0,,{\pos(317,457)\alpha&H00&}CAPILLARY TUBE
+Dialogue: 3,0:01:14.12,0:01:14.19,Lab,,0,0,0,,{\pos(317,457)\alpha&H00&}CAPILLARY TUBE
+Dialogue: 3,0:01:14.19,0:01:14.25,Lab,,0,0,0,,{\pos(317,457)\alpha&H00&}CAPILLARY TUBE
+Dialogue: 3,0:01:14.25,0:01:14.32,Lab,,0,0,0,,{\pos(317,457)\alpha&H00&}CAPILLARY TUBE
+Dialogue: 3,0:01:14.32,0:01:14.39,Lab,,0,0,0,,{\pos(317,457)\alpha&H00&}CAPILLARY TUBE
+Dialogue: 3,0:01:14.39,0:01:14.45,Lab,,0,0,0,,{\pos(317,457)\alpha&H3F&}CAPILLARY TUBE
+Dialogue: 3,0:01:14.45,0:01:14.52,Lab,,0,0,0,,{\pos(317,457)\alpha&H7F&}CAPILLARY TUBE
+Dialogue: 3,0:01:14.52,0:01:14.59,Lab,,0,0,0,,{\pos(317,457)\alpha&HBF&}CAPILLARY TUBE
+Dialogue: 3,0:01:12.12,0:01:12.19,Lab,,0,0,0,,{\pos(236,324)\fscx40\fscy40\t(0,110,\fscx112\fscy112)\t(110,180,\fscx100\fscy100)\alpha&H00&}THERMOSTAT
+Dialogue: 3,0:01:12.19,0:01:12.25,Lab,,0,0,0,,{\pos(236,324)\alpha&H00&}THERMOSTAT
+Dialogue: 3,0:01:12.25,0:01:12.32,Lab,,0,0,0,,{\pos(236,324)\alpha&H00&}THERMOSTAT
+Dialogue: 3,0:01:12.32,0:01:12.39,Lab,,0,0,0,,{\pos(236,324)\alpha&H00&}THERMOSTAT
+Dialogue: 3,0:01:12.39,0:01:12.45,Lab,,0,0,0,,{\pos(236,324)\alpha&H00&}THERMOSTAT
+Dialogue: 3,0:01:12.45,0:01:12.52,Lab,,0,0,0,,{\pos(237,324)\alpha&H00&}THERMOSTAT
+Dialogue: 3,0:01:12.52,0:01:12.59,Lab,,0,0,0,,{\pos(237,324)\alpha&H00&}THERMOSTAT
+Dialogue: 3,0:01:12.59,0:01:12.65,Lab,,0,0,0,,{\pos(237,324)\alpha&H00&}THERMOSTAT
+Dialogue: 3,0:01:12.65,0:01:12.72,Lab,,0,0,0,,{\pos(238,324)\alpha&H00&}THERMOSTAT
+Dialogue: 3,0:01:12.72,0:01:12.79,Lab,,0,0,0,,{\pos(238,324)\alpha&H00&}THERMOSTAT
+Dialogue: 3,0:01:12.79,0:01:12.85,Lab,,0,0,0,,{\pos(239,323)\alpha&H00&}THERMOSTAT
+Dialogue: 3,0:01:12.85,0:01:12.92,Lab,,0,0,0,,{\pos(240,323)\alpha&H00&}THERMOSTAT
+Dialogue: 3,0:01:12.92,0:01:12.99,Lab,,0,0,0,,{\pos(240,323)\alpha&H00&}THERMOSTAT
+Dialogue: 3,0:01:12.99,0:01:13.05,Lab,,0,0,0,,{\pos(241,323)\alpha&H00&}THERMOSTAT
+Dialogue: 3,0:01:13.05,0:01:13.12,Lab,,0,0,0,,{\pos(241,323)\alpha&H00&}THERMOSTAT
+Dialogue: 3,0:01:13.12,0:01:13.19,Lab,,0,0,0,,{\pos(241,322)\alpha&H00&}THERMOSTAT
+Dialogue: 3,0:01:13.19,0:01:13.25,Lab,,0,0,0,,{\pos(242,322)\alpha&H00&}THERMOSTAT
+Dialogue: 3,0:01:13.25,0:01:13.32,Lab,,0,0,0,,{\pos(242,322)\alpha&H00&}THERMOSTAT
+Dialogue: 3,0:01:13.32,0:01:13.39,Lab,,0,0,0,,{\pos(242,322)\alpha&H00&}THERMOSTAT
+Dialogue: 3,0:01:13.39,0:01:13.45,Lab,,0,0,0,,{\pos(242,322)\alpha&H00&}THERMOSTAT
+Dialogue: 3,0:01:13.45,0:01:13.52,Lab,,0,0,0,,{\pos(242,322)\alpha&H00&}THERMOSTAT
+Dialogue: 3,0:01:13.52,0:01:13.59,Lab,,0,0,0,,{\pos(242,322)\alpha&H00&}THERMOSTAT
+Dialogue: 3,0:01:13.59,0:01:13.65,Lab,,0,0,0,,{\pos(242,322)\alpha&H00&}THERMOSTAT
+Dialogue: 3,0:01:13.65,0:01:13.72,Lab,,0,0,0,,{\pos(242,322)\alpha&H00&}THERMOSTAT
+Dialogue: 3,0:01:13.72,0:01:13.79,Lab,,0,0,0,,{\pos(242,322)\alpha&H00&}THERMOSTAT
+Dialogue: 3,0:01:13.79,0:01:13.85,Lab,,0,0,0,,{\pos(242,322)\alpha&H00&}THERMOSTAT
+Dialogue: 3,0:01:13.85,0:01:13.92,Lab,,0,0,0,,{\pos(242,322)\alpha&H00&}THERMOSTAT
+Dialogue: 3,0:01:13.92,0:01:13.99,Lab,,0,0,0,,{\pos(242,322)\alpha&H00&}THERMOSTAT
+Dialogue: 3,0:01:13.99,0:01:14.05,Lab,,0,0,0,,{\pos(242,322)\alpha&H00&}THERMOSTAT
+Dialogue: 3,0:01:14.05,0:01:14.12,Lab,,0,0,0,,{\pos(242,322)\alpha&H00&}THERMOSTAT
+Dialogue: 3,0:01:14.12,0:01:14.19,Lab,,0,0,0,,{\pos(242,322)\alpha&H00&}THERMOSTAT
+Dialogue: 3,0:01:14.19,0:01:14.25,Lab,,0,0,0,,{\pos(243,322)\alpha&H00&}THERMOSTAT
+Dialogue: 3,0:01:14.25,0:01:14.32,Lab,,0,0,0,,{\pos(243,322)\alpha&H00&}THERMOSTAT
+Dialogue: 3,0:01:14.32,0:01:14.39,Lab,,0,0,0,,{\pos(243,322)\alpha&H00&}THERMOSTAT
+Dialogue: 3,0:01:14.39,0:01:14.45,Lab,,0,0,0,,{\pos(243,322)\alpha&H3F&}THERMOSTAT
+Dialogue: 3,0:01:14.45,0:01:14.52,Lab,,0,0,0,,{\pos(243,322)\alpha&H7F&}THERMOSTAT
+Dialogue: 3,0:01:14.52,0:01:14.59,Lab,,0,0,0,,{\pos(243,322)\alpha&HBF&}THERMOSTAT
+Dialogue: 1,0:00:00.00,0:01:30.00,WM,,0,0,0,,{\pos(240,96)\alpha&H70&}@letsbuildsimply

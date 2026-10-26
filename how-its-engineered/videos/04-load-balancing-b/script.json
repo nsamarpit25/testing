@@ -1,0 +1,67 @@
+{
+ "topic": "Load balancing",
+ "lines": [
+  [
+   {
+    "say": "A hundred thousand people opened your app at once.",
+    "show": "*100,000 people* opened your app at once."
+   },
+   {
+    "say": "It didn't even slow down. How?",
+    "show": "It [didn't even slow down.] How?"
+   }
+  ],
+  [
+   {
+    "say": "One server would struggle with that. So you run ten copies of your app on ten servers.",
+    "show": "One server would [struggle] with that. So you run *10 copies* of your app on *10 servers.*"
+   }
+  ],
+  [
+   {
+    "say": "But who decides which server gets each request, like each page load? A load balancer.",
+    "show": "But who decides which server gets each request, like each page load? A [load balancer.]"
+   }
+  ],
+  [
+   {
+    "say": "Like a supermarket manager pointing you to the shortest checkout line.",
+    "show": "Like a *supermarket manager* pointing you to the [shortest checkout line.]"
+   }
+  ],
+  [
+   {
+    "say": "The simplest rule is round robin: one, two, three, then back to one.",
+    "show": "The simplest rule is [round robin:] 1, 2, 3, then back to 1."
+   },
+   {
+    "say": "A smarter one, least connections, picks the server with the fewest open connections.",
+    "show": "A smarter one, [least connections,] picks the server with the *fewest open connections.*"
+   }
+  ],
+  [
+   {
+    "say": "It also pings every server every few seconds. If one stops answering, it gets skipped.",
+    "show": "It also *pings every server* every few seconds. If one stops answering, it [gets skipped.]"
+   }
+  ],
+  [
+   {
+    "say": "Need more power? Add servers behind it. Users keep using the same address.",
+    "show": "Need more power? *Add servers* behind it. Users keep using [the same address.]"
+   }
+  ],
+  [
+   {
+    "say": "AWS, NGINX and Cloudflare all do this.",
+    "show": "*AWS,* *NGINX* and *Cloudflare* all do this."
+   }
+  ],
+  [
+   {
+    "say": "If you're a vibe coder, follow for the system design your AI skipped.",
+    "show": "If you're a vibe coder, follow for the system design your AI [skipped.]"
+   }
+  ]
+ ]
+}

@@ -1,0 +1,461 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- 40 Replication. A perspective three.js world with bloom (own camera + post pass).
+     World: YOUR APP (a box, front) and database servers (boxes) with their data as glowing record cubes on top
+     (one InstancedMesh, 18 records per server). Hook: the one server dies, its records turn red and fall: gone.
+     Replication: the server comes back as the LEADER, two blue COPIES rise and fill with the same records; a new change
+     lands on the leader and flies to both copies. Safes card (a document copied after every edit, one building floods).
+     The copies slide away to their own pads (another rack, data centre 2, another city); a power cut on the leader's pad,
+     the copies still have it. Failover: the leader dies, requests fail for a blip, copy A is promoted and takes the traffic.
+     Saved?: code card (synchronous_standby_names) while one write waits for copy B's confirm and the next is acked right
+     away and copied later. Not waiting: three new writes sit only on the leader; if it dies now they are lost. Not a
+     backup: a DELETE wipes the leader, then copy B; a backup vault rises with last night's records.
+     A "where your data lives" meter sits on top the whole time. Beats come from voice/words.json. -->
+<link rel="stylesheet" href="../_ember/fonts.css">
+<link rel="stylesheet" href="../_ember/reel.css">
+<style>
+#cap { top: 728px !important; }
+#cap .box { background: linear-gradient(90deg, transparent, rgba(8,7,6,0.82) 16%, rgba(8,7,6,0.82) 84%, transparent); }
+#ed { top: 192px !important; }
+.lbl { background: rgba(12,11,10,0.95); }
+#mt { position: absolute; left: 70px; right: 70px; top: 114px; height: 72px; opacity: 0; padding: 8px 12px 6px; box-sizing: border-box;
+  background: rgba(14,12,11,0.95); border: 1px solid rgba(255,255,255,0.12); border-radius: 12px; box-shadow: 0 14px 34px rgba(0,0,0,0.6); }
+#mt .h { font: 800 11px/1 Mono; letter-spacing: 1.6px; color: #9c948c; text-align: center; }
+#mt .row { display: flex; justify-content: center; gap: 8px; margin-top: 8px; }
+#mt .c { display: none; flex-direction: column; align-items: center; min-width: 86px; padding: 5px 6px 4px; border-radius: 7px; border: 1px solid #2a2521; background: #15130f; }
+#mt .n { font: 800 18px/1 Inter; }
+#mt .k { font: 800 9.5px/1 Mono; letter-spacing: 1px; margin-top: 3px; color: #9c948c; white-space: nowrap; }
+.cd2 { position: absolute; left: 40px; right: 40px; top: 196px; opacity: 0; background: rgba(16,14,12,0.96); border: 1px solid rgba(111,195,255,0.4); border-radius: 14px; box-shadow: 0 20px 50px rgba(0,0,0,0.7); overflow: hidden; }
+#saf { padding: 14px 16px 12px; }
+#saf .h { font: italic 400 30px/1 Instrument; color: #efe6d8; margin-bottom: 4px; }
+#safS { display: block; width: 100%; height: 230px; }
+#safL { margin-top: 2px; font: 800 12px/1 Mono; letter-spacing: 1.2px; text-align: center; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="world">
+    <canvas id="cv" width="1080" height="1920"></canvas>
+    <div class="layer" id="lbls"></div>
+  </div>
+</div>
+<script src="../../tools/lib.js"></script>
+<script src="voice/words.js"></script>
+<script src="../_ember/three.js"></script>
+<script src="../_ember/world.js"></script>
+<script src="../_ember/base.js"></script>
+<script>
+for (let i = 0; i < 30; i++) ORBS.push({ core: orbSprite(9), glow: orbSprite(34), trail: [0, 1, 2, 3, 4].map(() => orbSprite(10)) });
+const RD = '#6FC3FF', WR = AMB;
+
+/* ---------------- beats */
+const T = {
+  dies: at('dies'), disk: at('disk'), only: at('only'), gone: at('gone'),
+  l1: line(1).start, repl: at('replication'), copies: at('copies'), leader: at('leader'), change: at('change'), sent: at('sent'),
+  l2: line(2).start, copied: at('copied'), edit: at('edit'), safes: at('safes'), buildings: at('buildings'), floods: at('floods'), still: at('still'),
+  l3: line(3).start, somewhere: at('somewhere'), rack: at('rack'), data2: at('data', 2), city: at('city'), power: at('power'), cant: at('cant'),
+  l4: line(4).start, dies2: at('dies', 2), failover: at('failover'), promoted: at('promoted'), blip: at('blip'), keeps: at('keeps'),
+  l5: line(5).start, write: at('write'), saved: at('saved'), wait: at('wait'), confirms: at('confirms'), or2: at('or', 2), done: at('done'), catch1: at('catch'),
+  l6: line(6).start, safer: at('safer'), notw: at('not'), faster: at('faster'), dies3: at('dies', 3), newest: at('newest'), lost: at('lost'),
+  l7: line(7).start, backup: at('backup'), del: at('delete'), deletes: at('deletes'), backups: at('backups'),
+  ifv: line(8).start, follow: at('follow'),
+};
+
+/* ---------------- layout: Z up */
+const APX = 0, APY = -300, APW = 170, APD = 90, APH = 52;   // your app
+const SW = 150, SD = 170, SH = 56;                           // a server box
+const RS = 24, RP = 30, NR = 18;                             // record cube, pitch, records per server
+const S0P = [0, 140], AI = [-250, 320], AF = [-290, 490], BI = [250, 320], BF = [290, 490];
+const appTop = [APX, APY + 10, APH + 6];
+function arc(a, b, h, n = 24) { return [...Array(n + 1)].map((_, i) => { const q = i / n; return [lerp(a[0], b[0], q), lerp(a[1], b[1], q), lerp(a[2], b[2], q) + h * 4 * q * (1 - q)]; }); }
+const FLY = 0.45;
+
+/* ---------------- server positions and looks */
+const moveA = (t) => ep(t, T.somewhere - 0.15, T.rack + 0.45, ease.inOut), moveB = (t) => ep(t, T.city - 0.65, T.city + 0.35, ease.inOut);
+function posOf(s, t) {
+  if (s === 1) { const q = moveA(t); return [lerp(AI[0], AF[0], q), lerp(AI[1], AF[1], q)]; }
+  if (s === 2) { const q = moveB(t); return [lerp(BI[0], BF[0], q), lerp(BI[1], BF[1], q)]; }
+  return S0P;
+}
+const topOf = (s, t, e = 0) => { const p = posOf(s, t); return [p[0], p[1], SH + RS + 10 + e]; };
+const aLead = (t) => t > T.promoted;   // copy A is the leader from here on
+const ifDown = (t) => ep(t, T.dies3 + 0.3, T.dies3 + 0.8) * (1 - ep(t, T.l7 - 0.4, T.l7));   // "if the leader dies now": it goes dark
+
+/* ---------------- records: when each one lands on / leaves each server */
+// [appear, vanish] per server (s 0 = first server / old leader, 1 = copy A, 2 = copy B, 3 = backup vault), -1 = never
+const W13 = T.wait - 0.32, W14 = T.or2 + 0.12, W15 = [0, 1, 2].map((j) => T.notw + 0.05 + j * 0.26);
+function lands(s, k) {
+  if (s === 0) return k < 12 ? 0 : k === 12 ? T.change : -1;
+  if (s === 1) return k < 12 ? T.copies + 0.15 + k * 0.06 : k === 12 ? T.sent + 0.4 : k === 13 ? W13 + FLY : k === 14 ? W14 + FLY : W15[k - 15] + FLY;
+  if (s === 2) return k < 12 ? T.copies + 0.3 + k * 0.06 : k === 12 ? T.sent + 0.45 : k === 13 ? W13 + FLY + 0.05 + FLY : k === 14 ? T.catch1 + 0.3 : -1;
+  return k <= 12 ? T.backups - 0.3 + k * 0.015 : -1;
+}
+function leaves(s, k) {
+  if (s === 0) return T.dies2 + 0.35 + k * 0.03;
+  if (s === 1) return k >= 15 ? T.lost - 0.05 + (k - 15) * 0.06 : T.del + 0.5 + k * 0.025;
+  if (s === 2) return T.deletes - 0.15 + k * 0.025;
+  return 999;
+}
+const slot = (s, k, t) => { const p = posOf(s, t); return [p[0] + ((k % 4) - 1.5) * RP, p[1] + (Math.floor(k / 4) - 2) * RP, SH + RS / 2 + 2]; };
+function rec(s, k, t) {   // → [x, y, z, colour, alpha, spin]
+  const p = slot(s, k, t), base = s === 3 ? OK : k >= 12 ? AMB : O2;
+  // the hook: the first server's records go red, then fall away; it comes back as the leader with the same records
+  if (s === 0 && t < T.l1 + 0.6) {
+    if (t < T.l1) {
+      const red = ep(t, T.dies, T.dies + 0.3), q = prog(t, T.gone - 0.3 + k * 0.035, T.gone + 0.25 + k * 0.035);
+      if (k >= 12) return [...p, base, 0, 0];
+      return [p[0], p[1], p[2] - q * q * 70, mixHex(O2, RED, red * (0.6 + 0.4 * Math.sin(t * 9 + k) ** 2)), 1 - q, q];
+    }
+    const q = ep(t, T.l1 + 0.05 + k * 0.03, T.l1 + 0.3 + k * 0.03);
+    return [p[0], p[1], p[2] + (1 - q) * 50, base, k < 12 ? q : 0, 0];
+  }
+  const a = lands(s, k); if (a < 0) return [...p, base, 0, 0];
+  const qi = ep(t, a - 0.05, a + 0.2), lv = leaves(s, k), qo = prog(t, lv, lv + 0.4);
+  let col = base;
+  if (s === 1 && k >= 15) col = mixHex(AMB, RED, ep(t, T.newest - 0.1, T.newest + 0.3) * (0.6 + 0.4 * Math.sin(t * 10 + k) ** 2));
+  if (s === 1 && k < 15) col = mixHex(col, DIM, ifDown(t));
+  if (s === 2 && t > T.lost - 0.1 && t < T.l7) col = mixHex(col, OK, 0.6 * window01(t, T.lost - 0.1, T.l7 - 0.2, 0.3));
+  if (qo > 0) col = RED;
+  if (s === 0 && t > T.dies2) col = mixHex(base, RED, ep(t, T.dies2, T.dies2 + 0.3));
+  return [p[0], p[1], p[2] + (1 - qi) * 50 - qo * qo * 60, col, qi * (1 - qo), qo];
+}
+const count = (s, t) => { let n = 0; for (let k = 0; k < NR; k++) if (rec(s, k, t)[4] > 0.5) n++; return n; };
+
+/* ---------------- traffic: [start, from, to, colour, size] (from/to: 'app' or a server index) */
+const TR = [];
+(() => {
+  for (let t = 0.2; t < T.dies - 0.3; t += 0.42) TR.push([t, 'app', 0, RD, 0.75], [t + FLY, 0, 'app', mixHex(RD, WH, 0.35), 0.5]);
+  for (let t = T.dies + 0.05; t < T.gone; t += 0.5) TR.push([t, 'app', 0, RED, 0.7, 'fail']);
+  for (let t = T.l1 + 0.6; t < T.change - 0.4; t += 0.5) TR.push([t, 'app', 0, RD, 0.75], [t + FLY, 0, 'app', mixHex(RD, WH, 0.35), 0.5]);
+  TR.push([T.change - FLY, 'app', 0, WR, 1], [T.sent - 0.05, 0, 1, WR, 0.9], [T.sent, 0, 2, WR, 0.9]);
+  for (let t = T.l3 + 0.2; t < T.dies2 - 0.3; t += 0.55) TR.push([t, 'app', 0, RD, 0.7], [t + FLY, 0, 'app', mixHex(RD, WH, 0.35), 0.5]);
+  for (let t = T.dies2 + 0.1; t < T.blip; t += 0.42) TR.push([t, 'app', 0, RED, 0.7, 'fail']);
+  for (let t = T.blip + 0.1; t < T.l5 - 0.2; t += 0.32) TR.push([t, 'app', 1, RD, 0.75], [t + FLY, 1, 'app', mixHex(RD, WH, 0.35), 0.5]);
+  // ① wait for a copy: app → leader → copy B → ack back → saved
+  TR.push([W13, 'app', 1, WR, 1.1], [W13 + FLY + 0.05, 1, 2, WR, 0.9], [W13 + 2 * FLY + 0.1, 2, 1, OK, 0.8], [W13 + 3 * FLY + 0.15, 1, 'app', OK, 1]);
+  // ② done right away: ack first, the copy catches up later
+  TR.push([W14, 'app', 1, WR, 1.1], [W14 + FLY + 0.05, 1, 'app', OK, 1], [T.catch1 + 0.3 - 0.9, 1, 2, WR, 0.8, 'slow']);
+  // not waiting: three writes land on the leader only
+  W15.forEach((w) => TR.push([w, 'app', 1, WR, 0.9], [w + FLY + 0.05, 1, 'app', OK, 0.6]));
+  // delete by mistake: the leader, then the copy
+  TR.push([T.del + 0.5 - FLY, 'app', 1, RED, 1.15], [T.deletes - 0.15 - FLY - 0.05, 1, 2, RED, 1]);
+})();
+const ptOf = (e, t) => (e === 'app' ? appTop : topOf(e, t, -8));
+
+/* ---------------- camera */
+const pcam = new TH.PerspectiveCamera(44, 540 / 960, 5, 20000); pcam.up.set(0, 0, 1);
+const WIDE = { p: [0, -1180, 1150], l: [0, 200, 0], f: 44 };
+const SHOTS = [
+  { t: 0, p: [60, -780, 760], l: [0, 120, 20], f: 44 },
+  { t: 0.01, d: 6, p: [0, -840, 820], l: [0, 110, 20], f: 44, e: ease.out },
+  { t: T.l1 - 0.2, d: 1.4, p: [0, -1080, 1050], l: [0, 170, 0], f: 44 },
+  { t: T.l3 - 0.1, d: 1.6, ...WIDE, p: [0, -1250, 1240], l: [0, 250, 0] },
+  { t: T.l5 - 0.3, d: 1.2, p: [0, -1200, 1180], l: [0, 230, 0], f: 44 },
+];
+const KICKS = [[T.dies, 0.04], [T.gone, 0.04], [T.copies, 0.03], [T.power, 0.03], [T.dies2, 0.04], [T.promoted, 0.03], [T.lost, 0.04], [T.deletes, 0.03], [T.backups, 0.03]];
+const SHAKES = [[T.dies, 4, 0.35], [T.dies2, 4, 0.35], [T.lost, 3, 0.3]];
+const _rv = new TH.Vector3();
+function shoot(t) {
+  let p = SHOTS[0].p.slice(), l = SHOTS[0].l.slice(), f = SHOTS[0].f;
+  for (let i = 1; i < SHOTS.length; i++) {
+    const k = SHOTS[i]; if (t < k.t) break;
+    const q = k.d ? (k.e || ease.inOut)(prog(t, k.t, k.t + k.d)) : 1;
+    p = p.map((v, j) => lerp(v, k.p[j], q)); l = l.map((v, j) => lerp(v, k.l[j], q)); f = lerp(f, k.f, q);
+  }
+  let kick = 0;
+  for (const [t0, amp] of KICKS) { const dt = t - t0; if (dt > 0 && dt < 1.2) kick += amp * (dt < 0.05 ? dt / 0.05 : Math.exp(-(dt - 0.05) * 6)); }
+  let sx = 0, sy = 0;
+  for (const [t0, amp, dur] of SHAKES) { const dt = t - t0; if (dt > 0 && dt < dur) { const k = amp * (1 - dt / dur); sx += k * Math.sin(t * 91); sy += k * Math.cos(t * 67); } }
+  pcam.position.set(p[0] + 6 * Math.sin(t * 0.37), p[1] + 6 * Math.cos(t * 0.29), p[2] + 4 * Math.sin(t * 0.23));
+  pcam.lookAt(l[0] + sx, l[1], l[2] + sy);
+  pcam.fov = f * (1 - kick); pcam.updateProjectionMatrix(); pcam.updateMatrixWorld();
+  cam.f = l;
+  _rv.setFromMatrixColumn(pcam.matrixWorld, 0); const n = Math.hypot(_rv.x, _rv.y) || 1; camRight = [_rv.x / n, _rv.y / n, 0];
+  const d = Math.hypot(p[0] - l[0], p[1] - l[1], p[2] - l[2]);
+  scene.fog.near = d * 0.9; scene.fog.far = d * 3.4;
+}
+const _pv = new TH.Vector3();
+P = function (x, y, z) { _pv.set(x, y, z).project(pcam); return [(_pv.x + 1) * 270, (1 - _pv.y) * 480, _pv.z]; };
+
+/* ---------------- the stage */
+floor.scale.set(2.2, 2.2, 1); floor.position.set(0, 1500, -0.5);
+const APP = emberBox(APX, APY, APW, APD, APH, O2);
+const PADS = [[S0P, O], [AF, RD], [BF, RD]].map(([p, c]) => emberBox(p[0], p[1], 250, 250, 5, c, { lw: 1.8 }));
+const SRV = [0, 1, 2, 3].map((s) => emberBox(S0P[0], S0P[1], SW, SD, SH, s === 3 ? OK : s ? RD : O));
+const POOLS = [0, 1, 2, 3].map((s) => pool(S0P[0], S0P[1], 230, O));
+const POOLA = pool(APX, APY, 190, O2);
+const PIPES = [[S0P, AI], [S0P, BI], [S0P, AF], [S0P, BF], [AF, BF]].map(([a, b]) => road([[a[0], a[1], 0], [b[0], b[1], 0]], RD));
+
+/* ---------------- record cubes: one instanced mesh, the edges glow through a bordered texture */
+const CUBES = (() => {
+  const c = document.createElement('canvas'); c.width = c.height = 64; const g = c.getContext('2d');
+  g.fillStyle = 'rgb(48,48,48)'; g.fillRect(0, 0, 64, 64);
+  g.strokeStyle = '#fff'; g.lineWidth = 6; g.strokeRect(3, 3, 58, 58);
+  g.strokeStyle = 'rgba(255,255,255,0.35)'; g.lineWidth = 2; g.strokeRect(13, 13, 38, 38);
+  const tx = new TH.CanvasTexture(c); tx.colorSpace = TH.SRGBColorSpace; tx.anisotropy = 8;
+  const m = new TH.InstancedMesh(new TH.BoxGeometry(RS, RS, RS), new TH.MeshBasicMaterial({ map: tx, toneMapped: false, fog: true, transparent: true }), 4 * NR);
+  m.instanceMatrix.setUsage(TH.DynamicDrawUsage); m.setColorAt(0, new TH.Color()); m.instanceColor.setUsage(TH.DynamicDrawUsage); m.frustumCulled = false; scene.add(m);
+  return m;
+})();
+const _o = new TH.Object3D(), _c = new TH.Color();
+
+/* ---------------- server state */
+function srvLook(s, t) {   // → [colour, glow, alpha]
+  if (s === 0) {
+    const dead1 = t > T.dies && t < T.l1, dead2 = t > T.dies2;
+    let a = ep(t, 0, 0.5) * (1 - ep(t, T.l5 - 0.4, T.l5 + 0.2)), c = O, g = 1.1;
+    if (dead1) { const k = ep(t, T.dies, T.dies + 0.25); c = t < T.gone ? mixHex(O, RED, k * (0.6 + 0.4 * Math.sin(t * 9) ** 2)) : mixHex(RED, DIM, ep(t, T.gone, T.gone + 0.6)); g = 1 + k; }
+    if (t > T.l1 - 0.3 && t < T.l1 + 0.5) c = mixHex(DIM, O, ep(t, T.l1 - 0.2, T.l1 + 0.4));
+    if (t > T.power - 0.05 && t < T.cant + 0.2) { const f = (Math.sin(t * 40) > 0.2 ? 1 : 0.15) * (t < T.cant - 0.3 ? 1 : 0) + (t >= T.cant - 0.3 ? 1 : 0); g = 0.3 + 0.8 * f; c = mixHex(DIM, O, f); }
+    if (dead2) { const k = ep(t, T.dies2, T.dies2 + 0.25); c = mixHex(mixHex(O, RED, k), DIM, ep(t, T.dies2 + 0.8, T.dies2 + 1.4)); g = 1 + k * (1 - ep(t, T.dies2 + 0.8, T.dies2 + 1.4)); }
+    return [c, g, a];
+  }
+  if (s === 3) return [OK, 1.3, ep(t, T.backups - 0.35, T.backups + 0.15)];
+  const up = ep(t, T.copies - 0.1 + (s - 1) * 0.15, T.copies + 0.35 + (s - 1) * 0.15, ease.out);
+  let c = RD, g = 1.1;
+  if (s === 1 && aLead(t)) c = mixHex(RD, O, ep(t, T.promoted, T.promoted + 0.4));
+  if (s === 1 && t > T.dies3 && t < T.l7) { const k = ep(t, T.dies3, T.dies3 + 0.2) * (1 - ep(t, T.l7 - 0.5, T.l7)); c = mixHex(mixHex(c, RED, k * (0.6 + 0.4 * Math.sin(t * 9) ** 2)), DIM, ifDown(t)); g = 1 + k * (1 - ifDown(t)); }
+  if (s === 2 && t > T.lost - 0.1 && t < T.l7) g = 1.1 + 0.6 * window01(t, T.lost - 0.1, T.l7 - 0.2, 0.3);
+  if (s === 2 && t > T.deletes - 0.2 && t < T.backups) c = mixHex(RD, RED, 0.6 * window01(t, T.deletes - 0.2, T.backups, 0.3));
+  return [c, g, up];
+}
+
+/* ---------------- the world, frame by frame */
+function world(t) {
+  APP.setLook(O2, 1, ep(t, 0, 0.5)); POOLA.set(O2, 0.4 * ep(t, 0, 0.5));
+  for (let s = 0; s < 4; s++) {
+    const [c, g, a] = srvLook(s, t), p = posOf(s, t);
+    SRV[s].g.position.set(p[0], p[1], -SH * 1.1 * (1 - a)); SRV[s].setLook(c, g, a);
+    POOLS[s].m.position.set(p[0], p[1], 0.3); POOLS[s].L.position.set(p[0], p[1], 40); POOLS[s].set(c, 0.42 * a);
+  }
+  // zone pads: data centre 1, data centre 2, another city
+  const padA = [ep(t, T.data2 - 0.3, T.data2 + 0.1), ep(t, T.data2 - 0.15, T.data2 + 0.25), ep(t, T.city - 0.1, T.city + 0.3)].map((a) => a * (1 - ep(t, T.l4 - 0.4, T.l4 + 0.1)));
+  PADS.forEach((pd, i) => { const pc = i === 0 && t > T.power - 0.05 && t < T.cant - 0.3 ? (Math.sin(t * 40) > 0.2 ? O : DIM) : i ? RD : O; pd.setLook(pc, 0.9, padA[i] * 0.8); });
+  // sync pipes along the floor: leader → copies (at the start, then after the move), new leader → copy B
+  const pa = (a, b) => ep(t, a, a + 0.4) * (1 - ep(t, b - 0.3, b));
+  PIPES[0].set(1, RD, pa(T.copies + 0.2, T.somewhere - 0.1), t); PIPES[1].set(1, RD, pa(T.copies + 0.3, T.city - 0.6), t);
+  PIPES[2].set(1, RD, pa(T.rack + 0.4, T.dies2 + 0.2), t); PIPES[3].set(1, RD, pa(T.city + 0.35, T.dies2 + 0.2), t);
+  PIPES[4].set(1, mixHex(RD, O, 0.3), pa(T.blip, T.l7 + 3), t);
+  // records
+  for (let s = 0; s < 4; s++) for (let k = 0; k < NR; k++) {
+    const [x, y, z, col, a, spin] = rec(s, k, t), i = s * NR + k, on = a > 0.02;
+    _o.position.set(on ? x : 0, on ? y : 0, on ? z : -999);
+    _o.rotation.set(spin * 1.6 * (rnd(i, 3) - 0.5) * Math.PI, spin * 1.6 * (rnd(i, 4) - 0.5) * Math.PI, 0);
+    _o.scale.setScalar(on ? 0.6 + 0.4 * a : 0.01); _o.updateMatrix(); CUBES.setMatrixAt(i, _o.matrix);
+    _c.set(col).multiplyScalar(1.25 * a + 0.05); CUBES.setColorAt(i, _c);
+  }
+  CUBES.instanceMatrix.needsUpdate = true; CUBES.instanceColor.needsUpdate = true;
+  // traffic
+  for (const [s0, f, d, col, size, kind] of TR) {
+    const dur = kind === 'slow' ? 0.9 : FLY, q = prog(t, s0, s0 + dur);
+    if (q <= 0 || q >= 1) continue;
+    const a = ptOf(f, t), b = ptOf(d, t), path = arc(a, b, f === 'app' || d === 'app' ? 130 : 90);
+    if (kind === 'fail') { const qq = Math.min(q, 0.8); orb(path, ease.inOut(qq), q > 0.7 ? RED : col, 1 - prog(q, 0.8, 1), size); continue; }
+    orb(path, ease.inOut(q), col, 1, size);
+  }
+  for (const [s0, f, d, col, , kind] of TR) {
+    const e = s0 + (kind === 'slow' ? 0.9 : FLY);
+    if (kind === 'fail' && t > s0 + FLY * 0.8 && t < s0 + FLY * 0.8 + 0.5) { const p = topOf(0, t, -10); sparks(t, s0 + FLY * 0.8, p[0], p[1], p[2], RED, 8, Math.round(s0 * 10), 140, 0.45, 220); }
+    else if (d !== 'app' && col !== RED && t > e && t < e + 0.6) { const p = posOf(d, t); ripple(t, e, p[0], p[1], SH + 4, col === OK ? OK : WR, 120, 0.6); }
+  }
+  // falls, deaths and the backup
+  const p0 = topOf(0, t, -20);
+  if (t > T.dies && t < T.dies + 0.9) sparks(t, T.dies, p0[0], p0[1], p0[2], RED, 24, 11, 220, 0.9, 240);
+  if (t > T.gone - 0.3 && t < T.gone + 0.8) sparks(t, T.gone - 0.2, p0[0], p0[1], SH, mixHex(O, RED, 0.5), 22, 13, 180, 0.8, 200);
+  if (t > T.dies2 && t < T.dies2 + 0.9) sparks(t, T.dies2, p0[0], p0[1], p0[2], RED, 24, 17, 220, 0.9, 240);
+  if (t > T.promoted && t < T.promoted + 0.8) { const p = posOf(1, t); ripple(t, T.promoted, p[0], p[1], 1, O, 190, 0.8); }
+  if (t > T.lost - 0.1 && t < T.lost + 0.8) { const p = topOf(1, t, -14); sparks(t, T.lost, p[0], p[1] + 30, p[2], RED, 22, 19, 200, 0.8, 240); }
+  if (t > T.backups - 0.3) ripple(t, T.backups - 0.2, S0P[0], S0P[1], 1, OK, 180, 0.8);
+}
+
+/* ---------------- world tags */
+const tg = (key, html, style, wp, t, a, b, dy = 0) => { const e = tag(key, html, style, wp, t, a, b, dy); if (P(...wp)[2] > 1) e.style.display = 'none'; return e; };
+function tags(t) {
+  const big = (c) => `font-size:15px;padding:9px 13px;letter-spacing:1px;border-color:${c}`;
+  const sm = (c) => `font-size:13px;padding:7px 11px;letter-spacing:1px;border-color:${c}`;
+  const sp = (c, s) => `<span style="color:${c}">${s}</span>`;
+  const appW = [APX, APY - APD / 2, 0], top = (s) => topOf(s, t, 18), pad = (p) => [p[0], p[1] - 125, 0];
+  // hook
+  tg('db', sp(O2, 'YOUR DATABASE'), big(O2), top(0), t, 0.3, T.dies - 0.1, -30);
+  tg('dead', sp(RED, '✕ SERVER DIED · DISK TOO'), big(RED), top(0), t, T.dies - 0.05, T.only - 0.15, -30);
+  tg('only', sp(RED, 'YOUR ONLY COPY'), big(RED), top(0), t, T.only - 0.1, T.l1 - 0.2, -30);
+  tg('gone', sp(RED, '✕ EVERY USER, EVERY ORDER: GONE'), big(RED), appW, t, T.gone - 0.15, T.l1 - 0.2, 30);
+  // replication
+  tg('rep', sp(WH, 'WITH REPLICATION'), big(WH), appW, t, T.repl - 0.1, T.change - 0.15, 30);
+  tg('L', sp(O, 'LEADER'), sm(O), top(0), t, T.leader - 0.05, T.l2 - 0.1, -24);
+  tg('cA', sp(RD, 'COPY'), sm(RD), top(1), t, T.copies + 0.1, T.l2 - 0.1, -24);
+  tg('cB', sp(RD, 'COPY'), sm(RD), top(2), t, T.copies + 0.25, T.l2 - 0.1, -24);
+  tg('chg', sp(AMB, 'EVERY CHANGE → THE COPIES'), big(AMB), appW, t, T.change - 0.1, T.l2 - 0.15, 30);
+  // somewhere else
+  tg('L2', sp(O, 'LEADER'), sm(O), top(0), t, T.l3 + 0.1, T.dies2 - 0.05, -24);
+  tg('cA2', sp(RD, 'COPY A'), sm(RD), top(1), t, T.l3 + 0.1, T.promoted - 0.1, -24);
+  tg('cB2', sp(RD, 'COPY B'), sm(RD), top(2), t, T.l3 + 0.15, T.l5 - 0.1, -24);
+  tg('rack', sp(WH, 'ANOTHER RACK'), big(WH), appW, t, T.rack - 0.1, T.data2 - 0.1, 30);
+  tg('z0', sp(O, 'DATA CENTER 1'), sm(O), pad(S0P), t, T.data2 - 0.2, T.l4 - 0.15, 12);
+  tg('zA', sp(RD, 'DATA CENTER 2'), sm(RD), pad(AF), t, T.data2 - 0.05, T.l4 - 0.15, 12);
+  tg('zB', sp(RD, 'ANOTHER CITY'), sm(RD), pad(BF), t, T.city - 0.05, T.l4 - 0.15, 12);
+  tg('pc', sp(RED, '⚡ POWER CUT'), big(RED), appW, t, T.power - 0.05, T.cant - 0.15, 30);
+  tg('ok', sp(OK, '✓ THE COPIES STILL HAVE IT'), big(OK), appW, t, T.cant - 0.1, T.l4 - 0.15, 30);
+  // failover
+  tg('down', sp(RED, '✕ LEADER DOWN'), sm(RED), top(0), t, T.dies2 - 0.05, T.l5 - 0.2, -24);
+  tg('fo', sp(WH, 'FAILOVER'), big(WH), appW, t, T.failover - 0.1, T.blip - 0.2, 30);
+  tg('nl', sp(O, '★ NEW LEADER'), sm(O), top(1), t, T.promoted - 0.05, T.l5 - 0.1, -24);
+  tg('blip', sp(OK, '✓ A SHORT BLIP, THEN THE APP KEEPS RUNNING'), sm(OK), appW, t, T.blip - 0.1, T.l5 - 0.15, 30);
+  // saved?
+  tg('q', sp(WH, 'WHEN IS A WRITE SAVED?'), big(WH), appW, t, T.write - 0.1, T.wait - 0.2, 30);
+  tg('w1', sp(AMB, '① WAIT FOR A COPY TO CONFIRM'), sm(AMB), appW, t, T.wait - 0.15, W13 + 3 * FLY + 0.1, 30);
+  tg('w1ok', sp(OK, '✓ SAVED · THE COPY HAS IT'), sm(OK), appW, t, W13 + 3 * FLY + 0.15, T.or2 - 0.05, 30);
+  tg('w2', sp(AMB, '② SAY DONE RIGHT AWAY'), sm(AMB), appW, t, T.or2 - 0.05, T.done + 0.25, 30);
+  tg('w2ok', sp(OK, '✓ SAVED · THE COPY CATCHES UP LATER'), sm(OK), appW, t, T.done + 0.3, T.l6 - 0.15, 30);
+  // waiting vs not
+  tg('L3', sp(O, 'LEADER'), sm(O), top(1), t, T.l6 + 0.05, T.dies3 - 0.1, -24);
+  tg('cB3', sp(RD, 'COPY B'), sm(RD), top(2), t, T.l6 + 0.05, T.lost - 0.1, -24);
+  tg('cB4', sp(OK, '✓ COPY B: 15 · NOT THE 3 NEWEST'), sm(OK), top(2), t, T.lost - 0.05, T.l7 - 0.1, -24);
+  tg('Ld', sp(RED, '✕ LEADER DOWN'), sm(RED), top(1), t, T.dies3 + 0.25, T.l7 - 0.15, -24);
+  tg('sf', sp(AMB, 'WAIT: SAFER, BUT SLOWER'), big(AMB), appW, t, T.safer - 0.15, T.notw - 0.15, 30);
+  tg('fs', sp(AMB, 'RIGHT AWAY: FASTER'), big(AMB), appW, t, T.faster - 0.2, T.dies3 - 0.15, 30);
+  tg('pend', sp(AMB, '3 NEW · NOT COPIED YET'), sm(AMB), top(1), t, T.faster - 0.1, T.dies3 + 0.2, -24);
+  tg('if', sp(RED, 'IF THE LEADER DIES NOW…'), big(RED), appW, t, T.dies3 - 0.1, T.lost - 0.15, 30);
+  tg('lost', sp(RED, '✕ THE NEWEST WRITES ARE LOST'), big(RED), appW, t, T.lost - 0.1, T.l7 - 0.15, 30);
+  // not a backup
+  tg('L4', sp(O, 'LEADER'), sm(O), top(1), t, T.l7 + 0.1, T.ifv - 0.2, -24);
+  tg('nb', sp(WH, 'REPLICATION ≠ BACKUP'), big(WH), appW, t, T.backup - 0.3, T.del - 0.15, 30);
+  tg('del', sp(RED, 'DELETE BY MISTAKE'), big(RED), appW, t, T.del - 0.1, T.backups - 0.2, 30);
+  tg('del2', sp(RED, '✕ DELETED HERE TOO'), sm(RED), top(2), t, T.deletes - 0.05, T.ifv - 0.2, -64);
+  tg('bk', sp(OK, '✓ BACKUP · LAST NIGHT'), big(OK), appW, t, T.backups - 0.05, T.ifv - 0.2, 30);
+}
+
+/* ---------------- reel config */
+const REEL = {
+  shots: [], world, tags,
+  code: [
+    [T.write - 0.4, T.or2 - 0.05, 'postgresql.conf', 'wait for a copy', [[0, 'SAVED?', AMB], [T.wait - 0.15, 'WAIT', AMB], [W13 + 3 * FLY + 0.15, 'SAVED', OK]],
+      [['# saved only after copy b has it'], ["synchronous_standby_names = 'ANY 1 (b)'"]],
+      [[T.wait - 0.1, 2, ' ', 'amb']]],
+    [T.or2 - 0.05, T.l6 - 0.15, 'postgresql.conf', 'say done right away', [[0, 'RIGHT AWAY', AMB], [T.done + 0.3, 'SAVED', OK]],
+      [['# saved right away, the copies catch up'], ["synchronous_standby_names = ''"]],
+      [[T.or2, 2, ' ', 'amb']]],
+  ],
+  hl: /\b(synchronous_standby_names|ANY)\b/g,
+  tools: [], slams: [],
+  bad: ['dies', 'disk', 'only', 'copy', 'gone', 'floods', 'lost', 'newest', 'writes', 'are', 'mistake', 'deletes', 'it', 'too', 'isnt', 'a', 'backup'],
+  good: ['replication', 'copies', 'leader', 'different', 'buildings', 'still', 'have', 'failover', 'keeps', 'running', 'wait', 'confirms', 'right', 'away', 'safer', 'faster', 'cant', 'take', 'them', 'all', 'backups', 'skipped'],
+  tiles: [['⧉', 'REPLICATION'], ['⇆', 'READ<br>REPLICAS'], ['▦', 'SHARDING']],
+  end: T.ifv - 0.15, follow: T.follow,
+  cover: { t: 'REPLICATION', at: T.l3 + 4.6, zoom: 1, dy: 60 },
+  flash: (t) => 0.05 * pulse(t, T.dies, 7) + 0.04 * pulse(t, T.gone, 6) + 0.05 * pulse(t, T.dies2, 7) + 0.04 * pulse(t, T.lost, 6) + 0.03 * pulse(t, T.deletes, 6),
+};
+</script>
+<script src="../_ember/overlay.js"></script>
+<script>
+/* ---------------- bloom: scene → half-float target, bright pass, three blur levels, composite to the canvas */
+const RT = (w, h, s = 0) => new TH.WebGLRenderTarget(w, h, { type: TH.HalfFloatType, samples: s, depthBuffer: s > 0 });
+const rtMain = RT(1080, 1920, 4), BL = [[RT(540, 960), RT(540, 960)], [RT(270, 480), RT(270, 480)], [RT(135, 240), RT(135, 240)]];
+const fsCam = new TH.OrthographicCamera(-1, 1, 1, -1, 0, 1), fsScene = new TH.Scene(), fsQuad = new TH.Mesh(new TH.PlaneGeometry(2, 2));
+fsQuad.frustumCulled = false; fsScene.add(fsQuad);
+const VS = 'varying vec2 vUv; void main() { vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }';
+const shm = (fs, u) => new TH.ShaderMaterial({ uniforms: u, vertexShader: VS, fragmentShader: fs, depthTest: false, depthWrite: false });
+const mBright = shm(`uniform sampler2D tex; uniform float th; varying vec2 vUv;
+void main() { vec3 c = texture2D(tex, vUv).rgb; float l = max(c.r, max(c.g, c.b)); gl_FragColor = vec4(c * smoothstep(th, th + 0.4, l), 1.0); }`,
+  { tex: { value: null }, th: { value: 0.8 } });
+const mBlur = shm(`uniform sampler2D tex; uniform vec2 dir; varying vec2 vUv;
+void main() {
+  vec3 c = texture2D(tex, vUv).rgb * 0.2270270270;
+  c += (texture2D(tex, vUv + dir * 1.3846153846).rgb + texture2D(tex, vUv - dir * 1.3846153846).rgb) * 0.3162162162;
+  c += (texture2D(tex, vUv + dir * 3.2307692308).rgb + texture2D(tex, vUv - dir * 3.2307692308).rgb) * 0.0702702703;
+  gl_FragColor = vec4(c, 1.0);
+}`, { tex: { value: null }, dir: { value: new TH.Vector2() } });
+const mComp = shm(`uniform sampler2D base, b1, b2, b3; uniform float k1, k2, k3; varying vec2 vUv;
+void main() {
+  vec3 c = texture2D(base, vUv).rgb + texture2D(b1, vUv).rgb * k1 + texture2D(b2, vUv).rgb * k2 + texture2D(b3, vUv).rgb * k3;
+  c = c / (1.0 + max(c - 1.0, 0.0) * 0.6);
+  gl_FragColor = vec4(c, 1.0);
+  #include <colorspace_fragment>
+}`, { base: { value: rtMain.texture }, b1: { value: BL[0][0].texture }, b2: { value: BL[1][1].texture }, b3: { value: BL[2][1].texture }, k1: { value: 0.5 }, k2: { value: 0.65 }, k3: { value: 0.8 } });
+function pass(mat, dst) { fsQuad.material = mat; renderer.setRenderTarget(dst); renderer.render(fsScene, fsCam); }
+function blur(src, dst, dx, dy) { mBlur.uniforms.tex.value = src.texture; mBlur.uniforms.dir.value.set(dx / src.width, dy / src.height); pass(mBlur, dst); }
+function bloom() {
+  mBright.uniforms.tex.value = rtMain.texture; pass(mBright, BL[0][0]);
+  blur(BL[0][0], BL[0][1], 1, 0); blur(BL[0][1], BL[0][0], 0, 1);
+  blur(BL[0][0], BL[1][0], 1, 0); blur(BL[1][0], BL[1][1], 0, 1);
+  blur(BL[1][1], BL[2][0], 1, 0); blur(BL[2][0], BL[2][1], 0, 1);
+  pass(mComp, null);
+}
+
+/* ---------------- data meter, safes card */
+const stg = $('stage'), before = $('prof');
+const mk = (html) => { const w = document.createElement('div'); w.innerHTML = html.trim(); const n = w.firstChild; stg.insertBefore(n, before); return n; };
+const MT = mk(`<div id="mt"><div class="h" id="mtH">WHERE YOUR DATA LIVES</div><div class="row">${[0, 1, 2, 3].map((i) => `<div class="c" id="mc${i}"><div class="n" id="mn${i}"></div><div class="k" id="mk${i}"></div></div>`).join('')}</div></div>`);
+const SAF = mk(`<div id="saf" class="cd2"><div class="h">A document, copied after every edit</div><svg id="safS" viewBox="0 0 460 230"></svg><div id="safL"></div></div>`);
+if (/cover/.test(location.hash)) { const s = document.createElement('style'); s.textContent = '#mt, .cd2 { display: none !important; }'; document.head.appendChild(s); }
+(() => {
+  const bld = (x, i) => `<g transform="translate(${x},0)"><path d="M0 64 L64 26 L128 64 Z" fill="none" stroke="#6FC3FF" stroke-width="3" stroke-linejoin="round"/>
+    <rect x="8" y="64" width="112" height="128" rx="3" fill="#15130f" stroke="#6FC3FF" stroke-width="3"/>
+    <rect id="wt${i}" x="10" y="190" width="108" height="0" fill="#2f7fd0" opacity="0.55"/>
+    <rect x="30" y="96" width="68" height="64" rx="5" fill="#1d1a16" stroke="#9c948c" stroke-width="3"/>
+    <circle cx="86" cy="128" r="5" fill="none" stroke="#9c948c" stroke-width="2.5"/>
+    <g transform="translate(46,108)"><path d="M0 0 L22 0 L30 8 L30 40 L0 40 Z" fill="#F2EEE8"/><text id="dv${i}" x="15" y="30" text-anchor="middle" font-family="Mono" font-size="10" font-weight="800" fill="#15130f">v1</text></g>
+    <text id="mk${i}x" x="64" y="182" text-anchor="middle" font-family="Inter" font-size="22" font-weight="900" fill="#7CF29A" opacity="0">✓</text></g>`;
+  $('safS').innerHTML = `<line x1="6" y1="200" x2="454" y2="200" stroke="#3a332d" stroke-width="2"/>${bld(8, 0)}${bld(166, 1)}${bld(324, 2)}`;
+})();
+function safDom(t) {
+  const p = popIn(t, T.l2 - 0.1, T.l3 - 0.1); vis(SAF, p.a, `translateY(${p.y}px) scale(${p.s})`);
+  if (p.a <= 0.001) return;
+  // every edit bumps the version in all three safes at once
+  const v = t > T.edit + 0.15 ? 'v3' : t > T.copied + 0.1 ? 'v2' : 'v1';
+  for (let i = 0; i < 3; i++) setH('dv' + i, v);
+  const fl = ep(t, T.floods - 0.1, T.floods + 0.5, ease.inOut);
+  $('wt0').setAttribute('y', 190 - 120 * fl); $('wt0').setAttribute('height', 120 * fl);
+  $('dv0').parentNode.setAttribute('opacity', 1 - 0.75 * ep(t, T.floods + 0.2, T.floods + 0.5));
+  $('mk0x').textContent = '✕'; $('mk0x').setAttribute('fill', '#FF4632'); $('mk0x').setAttribute('opacity', ep(t, T.floods + 0.3, T.floods + 0.5));
+  for (const i of [1, 2]) $('mk' + i + 'x').setAttribute('opacity', ep(t, T.still - 0.2, T.still + 0.1));
+  const ok = t > T.still - 0.2, fd = t > T.floods - 0.1;
+  setH('safL', ok ? '✓ THE OTHER TWO STILL HAVE IT' : fd ? 'ONE BUILDING FLOODS' : t > T.safes - 0.1 ? 'A COPY IN EVERY BUILDING' : 'EDIT → EVERY COPY UPDATES');
+  $('safL').style.color = ok ? OK : fd ? RED : RD;
+}
+function meterDom(t) {
+  const p = popIn(t, 0.15, T.ifv - 0.15); vis(MT, p.a, `translateY(${p.y}px) scale(${p.s})`);
+  if (p.a <= 0.001) return;
+  const pre = t < T.l1, rows = [];
+  rows.push({ k: pre ? 'THE SERVER' : t > T.dies2 ? 'OLD LEADER' : 'LEADER', s: 0, c: pre ? (t > T.dies ? RED : O) : t > T.dies2 ? RED : O, on: t < T.l5 + 0.2 });
+  rows.push({ k: aLead(t) ? 'LEADER (A)' : 'COPY A', s: 1, c: aLead(t) ? O : RD, on: t > T.copies });
+  rows.push({ k: 'COPY B', s: 2, c: RD, on: t > T.copies + 0.15 });
+  rows.push({ k: 'BACKUP', s: 3, c: OK, on: t > T.backups - 0.05 });
+  rows.forEach((r, i) => {
+    const c = $('mc' + i); c.style.display = r.on ? 'flex' : 'none'; if (!r.on) return;
+    const n = count(r.s, t), dead = (r.s === 0 && (t > T.dies + 0.1 && pre || t > T.dies2 + 0.1)) || (r.s === 1 && ifDown(t) > 0.5);
+    setH('mn' + i, dead ? '✕' : n + (n === 1 ? ' record' : ' records'));
+    $('mn' + i).style.color = dead || n === 0 ? RED : r.c; setH('mk' + i, r.k); $('mk' + i).style.color = r.c;
+    c.style.borderColor = dead ? 'rgba(255,70,50,0.5)' : '#2a2521';
+  });
+}
+function clampTags() {
+  for (const k in LB) {
+    const e = LB[k]; if (e.style.display === 'none') continue;
+    const w = e.offsetWidth, x = parseFloat(e.style.left), y = clamp(parseFloat(e.style.top), 200, 668);
+    const right = y > 450 ? 540 - 70 : 540 - 14;
+    e.style.left = clamp(x, 14 + w / 2, right - w / 2) + 'px'; e.style.top = y + 'px';
+  }
+}
+
+window.render = (t) => {
+  shoot(t);
+  orbsReset(); sparksReset(); ringsReset();
+  REEL.world(t);
+  sparksFlush(); updateEmbers(t);
+  renderer.setRenderTarget(rtMain); renderer.render(scene, pcam);
+  bloom();
+  REEL.tags(t); clampTags();
+  card(t); tools(t);
+  meterDom(t); safDom(t);
+  $('dim').style.opacity = Math.max(0.55 * ep(t, REEL.end, REEL.end + 0.6), 0.6 * window01(t, T.l2 - 0.1, T.l3 - 0.05, 0.3));
+  $('flash').style.opacity = REEL.flash(t);
+  caps(t);
+  profile(t);
+};
+</script>
+<script src="../_ember/play.js"></script>
+</body>
+</html>

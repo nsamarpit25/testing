@@ -1,0 +1,2 @@
+128 commits and one broken checkout: git bisect finds the bad commit in 7 tests by halving the suspects each time.
+#Git #GitBisect #Debugging #SoftwareEngineering #Programming

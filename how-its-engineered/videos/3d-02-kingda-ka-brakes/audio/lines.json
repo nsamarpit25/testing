@@ -1,0 +1,47 @@
+[
+ {
+  "say": "Zero to one hundred twenty-eight miles an hour, in three and a half seconds.",
+  "start": 0.25,
+  "end": 4.605
+ },
+ {
+  "say": "Kingda Ka was built for speed. The real challenge was stopping it.",
+  "start": 4.725,
+  "end": 9.214
+ },
+ {
+  "say": "Brake pads would wear out fast. So under every car sat rows of rare-earth magnets.",
+  "start": 9.334,
+  "end": 14.727
+ },
+ {
+  "say": "And on the track, thin copper fins.",
+  "start": 14.847,
+  "end": 17.35
+ },
+ {
+  "say": "When a magnet sweeps past a fin, it stirs up swirling electric currents inside the copper. Eddy currents.",
+  "start": 17.47,
+  "end": 24.755
+ },
+ {
+  "say": "Those currents create a magnetic field that pushes back, turning the train's speed into heat.",
+  "start": 24.875,
+  "end": 31.251
+ },
+ {
+  "say": "Nothing touches. Nothing wears out. No power needed.",
+  "start": 31.371,
+  "end": 34.888
+ },
+ {
+  "say": "If a launch fell short and the train rolled back, fins popped up to catch it.",
+  "start": 35.008,
+  "end": 39.477
+ },
+ {
+  "say": "Follow for how the world is really engineered.",
+  "start": 39.597,
+  "end": 42.38
+ }
+]

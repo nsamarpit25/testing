@@ -1,0 +1,90 @@
+[
+ {
+  "li": 0,
+  "pi": 0,
+  "say": "The airline told her the bag was safe. Her AirTag showed it at a random apartment complex.",
+  "show": "The *airline* told her the bag was *safe.* Her AirTag showed it at a [random apartment complex.]",
+  "start": 0.0,
+  "end": 4.6
+ },
+ {
+  "li": 1,
+  "pi": 0,
+  "say": "But the AirTag didn't find it. A stranger's phone did.",
+  "show": "But the AirTag *didn't* find it. A [stranger's phone] did.",
+  "start": 4.86,
+  "end": 7.8
+ },
+ {
+  "li": 2,
+  "pi": 0,
+  "say": "An AirTag has no GPS. No SIM. No Wi-Fi. It talks over Bluetooth, on a coin battery.",
+  "show": "An AirTag has *no GPS.* No SIM. No Wi-Fi. It talks over *Bluetooth,* on a [coin battery.]",
+  "start": 8.26,
+  "end": 13.14
+ },
+ {
+  "li": 3,
+  "pi": 0,
+  "say": "Over and over, it whispers one thing: I'm here.",
+  "show": "Over and over, it *whispers* one thing: [I'm here.]",
+  "start": 13.7,
+  "end": 15.98
+ },
+ {
+  "li": 4,
+  "pi": 0,
+  "say": "Any nearby iPhone hears it, even yours. It adds its own location, locks it, and sends it to Apple.",
+  "show": "Any nearby *iPhone* hears it, [even yours.] It adds its *own location,* locks it, and [sends it to Apple.]",
+  "start": 16.64,
+  "end": 21.06
+ },
+ {
+  "li": 4,
+  "pi": 1,
+  "say": "You never even know.",
+  "show": "You [never even know.]",
+  "start": 21.34,
+  "end": 22.18
+ },
+ {
+  "li": 5,
+  "pi": 0,
+  "say": "Then her phone downloads that report, unlocks it, and there's her bag.",
+  "show": "Then *her phone* downloads that report, unlocks it, and [there's her bag.]",
+  "start": 22.82,
+  "end": 25.5
+ },
+ {
+  "li": 6,
+  "pi": 0,
+  "say": "Only she holds the key. Apple can't read the location, and the stranger can't see whose tag it is.",
+  "show": "Only *she* holds the key. Apple [can't read] the location, and the stranger can't see *whose tag* it is.",
+  "start": 25.72,
+  "end": 30.12
+ },
+ {
+  "li": 7,
+  "pi": 0,
+  "say": "Now repeat that across hundreds of millions of Apple devices. That's how a twenty-nine dollar disc knew more than the airline.",
+  "show": "Now repeat that across *hundreds of millions* of Apple devices. That's how a *$29 disc* knew [more than the airline.]",
+  "start": 30.6,
+  "end": 35.54
+ },
+ {
+  "li": 8,
+  "pi": 0,
+  "say": "And to stop stalkers: if an unknown AirTag travels with you, your phone can warn you. iPhone or Android.",
+  "show": "And to stop *stalkers:* if an unknown AirTag *travels with you,* your phone can [warn you.] iPhone or Android.",
+  "start": 36.06,
+  "end": 40.58
+ },
+ {
+  "li": 9,
+  "pi": 0,
+  "say": "So that little disc doesn't know where it is. Everyone around it does.",
+  "show": "So that little disc *doesn't know where it is.* [Everyone around it does.]",
+  "start": 41.06,
+  "end": 43.88
+ }
+]

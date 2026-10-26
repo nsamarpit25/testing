@@ -1,0 +1,16 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 720
+PlayResY: 1280
+WrapStyle: 2
+ScaledBorderAndShadow: yes
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: T,Poppins Black,74,&H00FFFFFF,&H00FFFFFF,&H000A0B0B,&H90000000,0,0,0,0,100,100,0,0,1,6,4,5,10,10,10,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.00,0:00:05.00,T,,0,0,0,,{\pos(360,150)}HOW A BLOCK
+Dialogue: 0,0:00:00.00,0:00:05.00,T,,0,0,0,,{\pos(360,235)}OF {\c&H4DC3FF&}ICE{\c&HFFFFFF&} BECOMES
+Dialogue: 0,0:00:00.00,0:00:05.00,T,,0,0,0,,{\pos(360,320)}A {\c&H1F6AFF&}FRIDGE

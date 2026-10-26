@@ -1,0 +1,540 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- 26 Query optimization, v2. A perspective three.js world with bloom (own camera + post pass, like 25 v2).
+     World: the ORDERS table (one long block of glowing row slabs running into the fog, one slab = one order, split into
+     cells USER_ID · ITEM · TOTAL · DATE · ADDRESS) and, in front on the left, YOUR APP (an ember box). Hook: the orders
+     page spins to 9 s while a flood of rows streams from the table into the app. SELECT *: every row and every column
+     lights up; a million rows travel and pile up on the app; ten newest lift off green, the rest burn away. Better query:
+     typed line by line while the table filters to user 42, the ten newest, then just the three columns on screen.
+     Shopping list card. Ten small rows fly to the app and the page loads. EXPLAIN: a scanner reads the whole table,
+     then an index lane on user_id rises and points at user 42's rows. Beats come from voice/words.json via at(). -->
+<link rel="stylesheet" href="../_ember/fonts.css">
+<link rel="stylesheet" href="../_ember/reel.css">
+<style>
+#cap { top: 728px !important; }   /* subtitles below the world, still clear of Instagram's caption bar (ends 768 < 790) */
+#cap .box { background: linear-gradient(90deg, transparent, rgba(8,7,6,0.82) 16%, rgba(8,7,6,0.82) 84%, transparent); }
+#pg { position: absolute; left: 76px; right: 76px; top: 128px; opacity: 0; background: rgba(16,14,12,0.95); border: 1px solid rgba(255,176,112,0.35); border-radius: 16px; padding: 14px 16px 12px; box-shadow: 0 18px 50px rgba(0,0,0,0.7); font-family: Inter; }
+#pg .h { font: 600 10px/1 Mono; color: #77706A; letter-spacing: 1px; display: flex; align-items: center; gap: 6px; }
+#pg .h i { width: 6px; height: 6px; border-radius: 50%; background: #7CF29A; }
+#pg .t { font: 800 20px/1 Inter; margin: 12px 0 10px; letter-spacing: -0.4px; display: flex; align-items: center; }
+#pgS { margin-left: auto; font: 800 15px/1 Mono; letter-spacing: 0.5px; }
+#pg .r { height: 24px; border-radius: 7px; margin-top: 5px; display: flex; align-items: center; padding: 0 10px; font: 600 12.5px/1 Inter; background: #1c1916; border: 1px solid #2c2722; }
+#pg .r .a { flex: 1; } #pg .r .d { color: #9c948c; font: 600 11px/1 Mono; width: 58px; } #pg .r .p { font: 800 12px/1 Mono; color: #FFB070; width: 40px; text-align: right; }
+#pg .r.sk { background: linear-gradient(90deg, #1c1916 0%, #2a2521 50%, #1c1916 100%); background-size: 200% 100%; }
+#pgF { margin-top: 7px; font: 700 10px/1 Mono; color: #77706A; letter-spacing: 1px; text-align: center; }
+#sl { position: absolute; left: 74px; right: 74px; top: 146px; opacity: 0; background: rgba(20,17,15,0.96); color: #efe6d8; border: 1px solid rgba(255,176,112,0.35); border-radius: 12px; padding: 18px 22px 16px; box-shadow: 0 24px 60px rgba(0,0,0,0.75); }
+#sl .hd { font: italic 400 34px/1 Instrument; letter-spacing: -0.5px; border-bottom: 1px solid rgba(239,230,216,0.16); padding-bottom: 10px; margin-bottom: 8px; }
+#sl .e { display: flex; align-items: center; gap: 12px; font: 400 26px/1 Instrument; padding: 7px 4px; }
+#sl .e .b { width: 20px; height: 20px; border-radius: 5px; border: 2px solid #6b645e; display: flex; align-items: center; justify-content: center; font: 900 13px/1 Inter; color: #0b0a09; }
+#sl .e.on .b { background: #7CF29A; border-color: #7CF29A; }
+#slX { margin-top: 10px; display: flex; align-items: center; gap: 10px; font: 800 13px/1 Mono; letter-spacing: 1.2px; color: #FF4632; background: rgba(255,70,50,0.1); border: 1px solid rgba(255,70,50,0.45); border-radius: 8px; padding: 10px 12px; }
+.lbl { background: rgba(12,11,10,0.95); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="world">
+    <canvas id="cv" width="1080" height="1920"></canvas>
+    <div class="layer" id="lbls"></div>
+  </div>
+</div>
+<script src="../../tools/lib.js"></script>
+<script src="voice/words.js"></script>
+<script src="../_ember/three.js"></script>
+<script src="../_ember/world.js"></script>
+<script src="../_ember/base.js"></script>
+<script>
+for (let i = 0; i < 10; i++) ORBS.push({ core: orbSprite(9), glow: orbSprite(34), trail: [0, 1, 2, 3, 4].map(() => orbSprite(10)) });
+
+/* ---------------- beats */
+const T = {
+  nine: at('nine'), seconds: at('seconds'), load: at('load'), ten1: at('10'), asks: at('asks'), million1: at('million'),
+  l1: line(1).start, spreadsheet: at('spreadsheet'), row1: at('row'), every1: at('every'), column1: at('column'), request1: at('request'), send: at('send'), all: at('all'),
+  l2: line(2).start, million2: at('million', 2), travel: at('travel'), keeps: at('keeps', 2), newest1: at('newest'), throws: at('throws'), away: at('away'),
+  l3: line(3).start, query1: at('query'), better: at('better'), exactly: at('exactly'), shows: at('shows'), your10: at('10', 3), newest2: at('newest', 2), details: at('details'), screen: at('screen'),
+  like: at('like', 2), milk: at('milk'), eggs: at('eggs'), whole1: at('whole'), door: at('door'),
+  l5: line(5).start, opt: at('optimization'), ten5: at('ten'), instead: at('instead'), million3: at('million', 3), less: at('less'), process: at('process'),
+  l6: line(6).start, finds: at('finds'), explain: at('explain'), reads: at('reads'), whole2: at('whole', 2), few: at('few'), index: at('index'), help: at('help'),
+  ifv: line(7).start, follow: at('follow'),
+};
+
+/* ---------------- layout: Z up, rows run along +y */
+const PY = 34, RD = 27, RH = 5, NR = 260;                  // row pitch, slab depth, slab height, rows
+const COLS = [['USER_ID', 50], ['ITEM', 96], ['TOTAL', 52], ['DATE', 58], ['ADDRESS', 90]];
+const NC = COLS.length, GAP = 3, RW = COLS.reduce((n, c) => n + c[1], 0) + GAP * (NC - 1);
+const CXS = []; { let x = -RW / 2; for (const [, w] of COLS) { CXS.push(x + w / 2); x += w + GAP; } }
+const SHOWC = [1, 2, 3];                                    // what the page shows: item, total, date
+const rowY = (r) => r * PY;
+const APX = -280, APY = -470, APW = 200, APD = 130, APH = 60;   // your app
+const LX = -RW / 2 - 92, LW = 110;                          // the user_id index lane (EXPLAIN)
+const ME = 42;
+const MINE = [1, 4, 6, 9, 12, 15, 19, 24, 28, 33, 41, 57, 88, 130];   // user 42's orders; the first ten are the newest
+const NEWEST = MINE.slice(0, 10), MS = new Set(MINE), NS = new Set(NEWEST);
+const MDATE = ['Oct 21', 'Oct 20', 'Oct 18', 'Oct 17', 'Oct 15', 'Oct 12', 'Oct 10', 'Oct 9', 'Oct 7', 'Oct 5', 'Sep 28', 'Sep 14', 'Aug 30', 'Aug 2'];
+const USERS = [17, 8, 63, 5, 91, 30, 77, 12, 54, 26, 38, 70];
+const ITEMS = ['Headphones', 'Phone case', 'Desk lamp', 'Sneakers', 'Coffee', 'Backpack', 'USB cable', 'Notebook', 'Bottle', 'Keyboard', 'T-shirt', 'Mouse pad'];
+const STREETS = ['12 Elm St', '4 Oak Ave', '88 Pine Rd', '9 Lake Dr', '31 Hill St', '7 Bay Rd', '50 Park Ln'];
+const MON = ['Oct', 'Sep', 'Aug'];
+const DATA = (r) => [
+  String(MS.has(r) ? ME : USERS[Math.floor(rnd(r, 3) * USERS.length)]),
+  ITEMS[Math.floor(rnd(r, 4) * ITEMS.length)],
+  '$' + (6 + Math.floor(rnd(r, 6) * 140)),
+  MS.has(r) ? MDATE[MINE.indexOf(r)] : MON[Math.floor(rnd(r, 7) * 3)] + ' ' + (1 + Math.floor(rnd(r, 8) * 28)),
+  STREETS[Math.floor(rnd(r, 9) * STREETS.length)],
+];
+
+// the flood: rows streaming to the app (hook, then "a million rows travel")
+const W1 = [0.3, T.l1 - 0.35], W2 = [T.million2 - 0.1, T.keeps - 0.15];
+const FN = 110, FP = 0.75;                                 // flyers, seconds per flight
+const PN = 120;                                            // slabs in the pile on the app
+const KEEP = [4, 15, 27, 38, 50, 61, 73, 84, 96, 107];      // pile slots that are the ten newest
+const fill = (t) => t < T.l1 ? 0.55 * ep(t, W1[0] + 0.5, W1[1], ease.inOut) * (1 - ep(t, T.l1 - 0.3, T.l1)) : ep(t, W2[0] + 0.5, W2[1] + 0.3, ease.inOut);
+const count = (t, a, b) => Math.round(Math.exp(lerp(0, Math.log(1e6), ep(t, a, b, (x) => Math.pow(x, 0.6)))));
+const PILE = [...Array(PN)].map((_, k) => {
+  const r = 92 * Math.sqrt(rnd(k, 21)), a = rnd(k, 22) * Math.PI * 2;
+  return { x: APX + Math.cos(a) * r * 0.95, y: APY + Math.sin(a) * r * 0.6, z: APH + 1 + (k / PN) * 46 * (1 - r / 100) + rnd(k, 23) * 4, rz: (rnd(k, 24) - 0.5) * 1.6 };
+});
+const KEEPAT = (j) => [APX, APY, APH + 90 + j * 7];   // the kept ten, stacked neatly above the app
+
+/* ---------------- camera: perspective shots {t, d, p (position), l (look at), f (fov)} */
+const pcam = new TH.PerspectiveCamera(44, 540 / 960, 5, 20000); pcam.up.set(0, 0, 1);
+const SHOTS = [
+  { t: 0, p: [-100, -1720, 960], l: [-180, -60, 0], f: 46 },
+  { t: 0.01, d: 5.5, p: [-150, -1500, 820], l: [-200, -120, 0], f: 46, e: ease.out },
+  { t: T.l1 - 0.3, d: 1.1, p: [0, -640, 660], l: [0, 150, 0], f: 46 },
+  { t: T.send - 0.2, d: 1.2, p: [260, -950, 1250], l: [0, 1700, 0], f: 46 },
+  { t: T.million2 - 0.3, d: 1.2, p: [-150, -1500, 820], l: [-200, -120, 0], f: 46 },
+  { t: T.keeps - 0.25, d: 1.0, p: [-200, -1120, 620], l: [-250, -380, 80], f: 44 },
+  { t: T.l3 - 0.25, d: 1.2, p: [0, -640, 700], l: [0, 190, 0], f: 46 },
+  { t: T.l5 - 0.2, d: 1.2, p: [-150, -1500, 820], l: [-200, -120, 0], f: 46 },
+  { t: T.l6 - 0.25, d: 1.1, p: [0, -640, 660], l: [0, 150, 0], f: 46 },
+  { t: T.reads - 0.2, d: 1.0, p: [120, -1000, 1200], l: [-40, 1500, 0], f: 46 },
+  { t: T.index - 0.25, d: 1.0, p: [-230, -800, 760], l: [-160, 240, 0], f: 50 },
+  { t: T.ifv, d: 3, p: [-250, -860, 800], l: [-160, 280, 0], f: 50 },
+];
+const KICKS = [[T.nine, 0.04], [T.million1, 0.05], [T.spreadsheet, 0.03], [T.all, 0.05], [T.keeps, 0.04], [T.throws, 0.05], [T.better, 0.03], [T.newest2, 0.03], [T.details, 0.03],
+  [T.ten5, 0.04], [T.explain, 0.04], [T.whole2, 0.04], [T.index, 0.05]];
+const SHAKES = [[T.million1, 5, 0.3], [T.throws, 7, 0.4]];
+function shoot(t) {
+  let p = SHOTS[0].p.slice(), l = SHOTS[0].l.slice(), f = SHOTS[0].f;
+  for (let i = 1; i < SHOTS.length; i++) {
+    const k = SHOTS[i]; if (t < k.t) break;
+    const q = k.d ? (k.e || ease.inOut)(prog(t, k.t, k.t + k.d)) : 1;
+    p = p.map((v, j) => lerp(v, k.p[j], q)); l = l.map((v, j) => lerp(v, k.l[j], q)); f = lerp(f, k.f, q);
+  }
+  let kick = 0;
+  for (const [t0, amp] of KICKS) { const dt = t - t0; if (dt > 0 && dt < 1.2) kick += amp * (dt < 0.05 ? dt / 0.05 : Math.exp(-(dt - 0.05) * 6)); }
+  let sx = 0, sy = 0;
+  for (const [t0, amp, dur] of SHAKES) { const dt = t - t0; if (dt > 0 && dt < dur) { const k = amp * (1 - dt / dur); sx += k * Math.sin(t * 91); sy += k * Math.cos(t * 67); } }
+  pcam.position.set(p[0] + 6 * Math.sin(t * 0.37), p[1] + 6 * Math.cos(t * 0.29), p[2] + 4 * Math.sin(t * 0.23));
+  pcam.lookAt(l[0] + sx, l[1], l[2] + sy);
+  pcam.fov = f * (1 - kick); pcam.updateProjectionMatrix(); pcam.updateMatrixWorld();
+  cam.f = l;
+  const d = Math.hypot(p[0] - l[0], p[1] - l[1], p[2] - l[2]);
+  scene.fog.near = d * 0.9; scene.fog.far = d * 3.4;
+}
+const _pv = new TH.Vector3();
+P = function (x, y, z) { _pv.set(x, y, z).project(pcam); return [(_pv.x + 1) * 270, (1 - _pv.y) * 480, _pv.z]; };
+
+/* ---------------- the stage: a longer floor and grid */
+floor.scale.set(2.2, 2.2, 1); floor.position.set(0, 3000, -0.5);
+scene.children.filter((o) => o.type === 'LineSegments').forEach((o) => scene.remove(o));
+(() => {
+  const pts = [], S = 56;
+  for (let x = -2800; x <= 3200; x += S) pts.push(x, -2400, 0, x, 9400, 0);
+  for (let y = -2400; y <= 9400; y += S) pts.push(-2800, y, 0, 3200, y, 0);
+  const geo = new TH.BufferGeometry(); geo.setAttribute('position', new TH.Float32BufferAttribute(pts, 3));
+  const m = new TH.LineSegments(geo, new TH.LineBasicMaterial({ color: 0x2a221c, transparent: true, opacity: 0.5, fog: true }));
+  m.position.z = 0.05; scene.add(m);
+})();
+
+/* ---------------- slabs: instanced boxes with a glowing rim texture, tinted per instance */
+function rimTex(dividers) {
+  const c = document.createElement('canvas'); c.width = 256; c.height = 64; const g = c.getContext('2d');
+  g.fillStyle = 'rgb(58,58,58)'; g.fillRect(0, 0, 256, 64);
+  g.strokeStyle = '#fff'; g.lineWidth = 6; g.strokeRect(3, 3, 250, 58);
+  g.fillStyle = 'rgba(255,255,255,0.45)'; for (const d of dividers) g.fillRect(d * 256 - 1.5, 10, 3, 44);
+  const tx = new TH.CanvasTexture(c); tx.colorSpace = TH.SRGBColorSpace; tx.anisotropy = 8; return tx;
+}
+const TX_CELL = rimTex([]), TX_ROW = rimTex(CXS.slice(0, -1).map((x, c) => (x + COLS[c][1] / 2 + GAP / 2 + RW / 2) / RW));
+function slabs(n, tex) {
+  const geo = new TH.BoxGeometry(1, 1, 1); geo.translate(0, 0, 0.5);
+  const m = new TH.InstancedMesh(geo, new TH.MeshBasicMaterial({ map: tex, toneMapped: false, fog: true }), n);
+  m.instanceMatrix.setUsage(TH.DynamicDrawUsage); m.setColorAt(0, new TH.Color()); m.instanceColor.setUsage(TH.DynamicDrawUsage);
+  m.frustumCulled = false; scene.add(m); return m;
+}
+const TBL = slabs(NR * NC, TX_CELL), FLY = slabs(FN, TX_ROW), PL = slabs(PN, TX_ROW), SEL = slabs(10 * SHOWC.length, TX_CELL), LANE = slabs(NR, TX_CELL);
+const CO = { O: C(O), O2: C(O2), OK: C(OK), RED: C(RED), AMB: C(AMB), WH: C(WH), DIM: C(DIM) };
+const _o = new TH.Object3D(), _c = new TH.Color(), _c2 = new TH.Color();
+const tint = (a, k, b, m = 0) => (b ? _c.copy(a).lerp(b, clamp(m)) : _c.copy(a)).multiplyScalar(k);
+function put(M, i, x, y, z, w, d, h, col, rz = 0) {
+  _o.position.set(x, y, z); _o.rotation.set(0, 0, rz); _o.scale.set(Math.max(0.001, w), Math.max(0.001, d), Math.max(0.001, h)); _o.updateMatrix();
+  M.setMatrixAt(i, _o.matrix); M.setColorAt(i, col);
+}
+const hide = (M, i) => put(M, i, 0, 0, -50, 0, 0, 0, _c.setRGB(0, 0, 0));
+const done = (M) => { M.instanceMatrix.needsUpdate = true; M.instanceColor.needsUpdate = true; };
+
+// the app: an ember box in front of the table
+const APP = emberBox(APX, APY, APW, APD, APH, O);
+const ROAD = road([[0, -30, 0], [-60, -300, 0], [APX + 40, APY + APD / 2 + 10, 0]], O2);
+
+/* ---------------- text decals lying on top of slabs (redrawn only when the text or colour changes) */
+function lbl3(w, d) {
+  const W_ = 1024, H_ = Math.round(1024 * d / w), c = document.createElement('canvas'); c.width = W_; c.height = H_;
+  const g = c.getContext('2d'), tex = new TH.CanvasTexture(c); tex.colorSpace = TH.SRGBColorSpace; tex.anisotropy = 8;
+  const mat = new TH.MeshBasicMaterial({ map: tex, transparent: true, toneMapped: false, depthWrite: false, fog: true });
+  mat.color.setScalar(0.78);
+  const m = new TH.Mesh(new TH.PlaneGeometry(w, d), mat); m.renderOrder = 3; m.visible = false; scene.add(m);
+  const o = { m, key: '' };
+  o.set = (key, fn, x, y, z, a) => {
+    m.visible = a > 0.01; if (!m.visible) return;
+    if (key !== o.key) { o.key = key; g.clearRect(0, 0, W_, H_); fn(g, W_, H_); tex.needsUpdate = true; }
+    m.position.set(x, y, z); mat.opacity = a;
+  };
+  return o;
+}
+const CELLCOL = { n: '#F2EEE8', d: '#5a534d', g: '#7CF29A', a: '#FFC34D' };
+const cellX = (c, W_) => ((CXS[c] - COLS[c][1] / 2 + RW / 2) / RW) * W_;
+const rowText = (txt, lv) => (g, W_, H_) => {
+  g.textBaseline = 'middle'; g.textAlign = 'left';
+  txt.forEach((s, c) => {
+    g.fillStyle = CELLCOL[lv[c]]; g.font = `${c === 0 ? 800 : 700} ${Math.round(H_ * (c === 0 ? 0.5 : 0.44))}px ${c === 2 || c === 0 ? 'Mono' : 'Inter'}`;
+    g.fillText(s, cellX(c, W_) + W_ * 0.012, H_ * 0.54);
+  });
+};
+const NL = 22;                                              // labelled rows at the front
+const TLB = [...Array(NL)].map(() => lbl3(RW - 6, RD - 4));
+const HEAD = lbl3(RW, 18);
+const SLB = [...Array(10)].map(() => lbl3(COLS[1][1] + COLS[2][1] + COLS[3][1] + 2 * GAP - 6, RD - 4));
+const LLB = [...Array(NL)].map(() => lbl3(LW - 6, RD - 4));
+
+/* ---------------- scanner bars, beams */
+const TX_BAR = (() => {
+  const c = document.createElement('canvas'); c.width = 4; c.height = 64; const g = c.getContext('2d'), gr = g.createLinearGradient(0, 0, 0, 64);
+  gr.addColorStop(0, 'rgba(255,255,255,0)'); gr.addColorStop(0.4, 'rgba(255,255,255,0.3)'); gr.addColorStop(0.5, 'rgba(255,255,255,1)'); gr.addColorStop(0.6, 'rgba(255,255,255,0.3)'); gr.addColorStop(1, 'rgba(255,255,255,0)');
+  g.fillStyle = gr; g.fillRect(0, 0, 4, 64); const tx = new TH.CanvasTexture(c); tx.colorSpace = TH.SRGBColorSpace; return tx;
+})();
+const BARS = [...Array(8)].map(() => {
+  const m = new TH.Mesh(new TH.PlaneGeometry(1, 1), new TH.MeshBasicMaterial({ map: TX_BAR, transparent: true, blending: TH.AdditiveBlending, depthWrite: false, toneMapped: false }));
+  m.visible = false; m.renderOrder = 2; scene.add(m); return m;
+});
+let barI = 0;
+function bar(x, y, w, col, a) {
+  if (barI >= BARS.length || a < 0.01) return; const m = BARS[barI++];
+  m.visible = true; m.position.set(x, y, RH + 2); m.scale.set(w, 40, 1); m.material.color.set(col).multiplyScalar(1.4 * a);
+}
+function beam() {
+  const mk = (w, o) => { const l = new TH.Line2(new TH.LineGeometry(), lineMat(OK, w, o)); l.renderOrder = 4; l.visible = false; scene.add(l); return l; };
+  const b = { core: mk(2.6, {}), glow: mk(12, { add: true, op: 0.25 }) };
+  b.set = (pts, q, col, a) => {
+    const on = a > 0.01 && q > 0.002; b.core.visible = b.glow.visible = on; if (!on) return;
+    const flat = sub(pts, q).flat();
+    for (const l of [b.core, b.glow]) { l.geometry.dispose(); l.geometry = new TH.LineGeometry(); l.geometry.setPositions(flat); l.material.color.set(col); }
+    b.core.material.opacity = a; b.glow.material.opacity = 0.3 * a;
+  };
+  return b;
+}
+const BEAMS = [...Array(8)].map(beam);
+const arc = (a, b, h, n = 30) => [...Array(n + 1)].map((_, i) => { const q = i / n, p = lerp3(a, b, q); p[2] += h * 4 * q * (1 - q); return p; });
+
+/* ---------------- table state: how each row / cell looks at time t */
+const SCAN0 = T.reads - 0.05, SCAN1 = T.few;
+const scanY = (t) => rowY(NR) * ep(t, SCAN0, SCAN1, (x) => x * x * 0.4 + x * 0.6);
+const LANE_ID = (j) => (j < 4 ? [39, 40, 40, 41][j] : j < 18 ? ME : 43 + Math.floor((j - 18) / 3));
+const LANE_ROW = (j) => (j >= 4 && j < 18 ? MINE[j - 4] : -1);
+// filter phases of the better query (held until EXPLAIN)
+const hold = (t) => 1 - ep(t, T.l6 - 0.3, T.l6 + 0.2);
+const fW = (t) => ep(t, T.your10 - 0.15, T.your10 + 0.25) * hold(t);          // WHERE user_id = 42
+const fL = (t) => ep(t, T.newest2 - 0.05, T.newest2 + 0.35) * hold(t);         // ORDER BY date DESC LIMIT 10
+const fC = (t) => ep(t, T.details - 0.05, T.details + 0.35) * hold(t);         // only item, total, date
+const allOn = (t) => window01(t, T.send - 0.05, T.l3 - 0.2, 0.3);              // SELECT *: every row, every column
+// per cell: level for the label ('n', 'd' dim, 'g' green, 'a' amber) and a brightness/colour
+function cellLook(r, c, t, base) {
+  const mine = MS.has(r), nw = NS.has(r), w = fW(t), l = fL(t), s = fC(t);
+  let k = base, col = null, m = 0, lv = 'n';
+  const a = allOn(t); if (a > 0) { col = CO.AMB; m = 0.55 * a; k *= 1 + 0.5 * a; lv = a > 0.5 ? 'a' : 'n'; }
+  if (w > 0) {
+    if (!mine) { k *= lerp(1, 0.22, w); if (w > 0.5) lv = 'd'; }
+    else {
+      const keep = nw ? 1 : 1 - l, show = SHOWC.includes(c) ? 1 : 1 - s;
+      const g = w * keep * show; col = CO.OK; m = g; k *= lerp(1, 1.9, g) * lerp(1, 0.3, (1 - keep) * w) * lerp(1, 0.3, (1 - show) * w * keep);
+      lv = g > 0.5 ? 'g' : keep * show < 0.5 ? 'd' : 'n';
+    }
+  }
+  // EXPLAIN: scanned rows go amber; with the index, user 42's rows light green
+  if (t > SCAN0 && t < T.index) { const y = rowY(r), sy = scanY(t); if (y < sy) { const near = Math.exp(-(sy - y) / 140); col = CO.AMB; m = 0.25 + 0.6 * near; k *= 1 + 0.9 * near; } }
+  const ix = ep(t, T.index + 0.3, T.index + 0.7) * (1 - ep(t, T.follow - 0.4, T.follow + 0.2));
+  if (ix > 0 && mine) { col = CO.OK; m = ix; k *= 1 + ix; lv = ix > 0.5 ? 'g' : lv; }
+  return [col ? tint(CO.O, k, col, m) : tint(CO.O, k), lv];
+}
+
+/* ---------------- the world, frame by frame */
+function world(t) {
+  barI = 0; BARS.forEach((m) => (m.visible = false));
+  const thru = (pts, t0, dur, col, size = 1) => { const q = (t - t0) / dur; if (q > -0.02 && q < 1.1) return orb(pts, clamp(q), col, clamp(q / 0.08) * (1 - clamp((q - 1) / 0.1)), size); };
+  const fadeIn = ep(t, 0, 0.5);
+  const inW = (W) => t > W[0] && t < W[1] + FP;
+  const sweep = (W) => (inW(W) ? ((t - W[0]) * 2600) % rowY(NR) : -1e9);
+
+  // ---- the table
+  const sw = Math.max(sweep(W1), sweep(W2));
+  for (let r = 0; r < NR; r++) {
+    const y = rowY(r), hot = Math.abs(y - sw) < PY * 6 ? 1 - Math.abs(y - sw) / (PY * 6) : 0;
+    for (let c = 0; c < NC; c++) {
+      let [col] = cellLook(r, c, t, 0.5 * fadeIn);
+      if (hot > 0) col = col.lerp(_c2.copy(CO.AMB).multiplyScalar(1.6), 0.7 * hot);
+      put(TBL, r * NC + c, CXS[c], y, 0, COLS[c][1], RD, RH, col);
+    }
+  }
+  done(TBL);
+  if (sw > 0) bar(0, sw, RW + 40, AMB, 0.8);
+  if (t > SCAN0 && t < T.index + 0.2) bar(0, scanY(t), RW + 40, t > T.whole2 ? RED : AMB, 1 - ep(t, T.index - 0.1, T.index + 0.2));
+
+  // row labels
+  for (let r = 0; r < NL; r++) {
+    const lvs = COLS.map((_, c) => cellLook(r, c, t, 0.5)[1]);
+    const a = ep(t, T.l1 - 0.2 + r * 0.03, T.l1 + 0.2 + r * 0.03);
+    TLB[r].set(r + lvs.join(''), rowText(DATA(r), lvs), 0, rowY(r), RH + 0.4, a);
+  }
+  HEAD.set('head' + (fC(t) > 0.5 ? 'c' : ''), (g, W_, H_) => {
+    g.textBaseline = 'middle'; g.font = `800 ${Math.round(H_ * 0.52)}px Mono`;
+    COLS.forEach(([n], c) => { g.fillStyle = fC(t) > 0.5 ? (SHOWC.includes(c) ? '#7CF29A' : '#4a433d') : '#FFB070'; g.fillText(n, cellX(c, W_) + W_ * 0.012, H_ * 0.55); });
+  }, 0, -PY * 1.0, 0.6, ep(t, T.spreadsheet - 0.2, T.spreadsheet + 0.3));
+
+  // ---- the app and the road to it
+  const appGlow = 1 + 1.5 * pulse(t, T.keeps, 2) + 1.2 * pulse(t, T.instead, 2);
+  APP.setLook(t > T.throws && t < T.l3 ? mixHex(O, RED, window01(t, T.throws, T.l3 - 0.2, 0.2)) : t > T.ten5 + 0.6 && t < T.l6 ? mixHex(O, OK, window01(t, T.ten5 + 0.6, T.l6 - 0.1, 0.3)) : O, appGlow, 1);
+  const roadA = Math.max(window01(t, 0.1, T.l1 - 0.1, 0.3), window01(t, T.million2 - 0.2, T.l3 - 0.1, 0.3), window01(t, T.l5 - 0.2, T.l6 - 0.1, 0.3));
+  ROAD.set(1, inW(W1) || inW(W2) ? AMB : t > T.l5 ? OK : O2, roadA, t);
+
+  // flyers: the flood of rows
+  for (let i = 0; i < FN; i++) {
+    let shown = false;
+    for (const W of [W1, W2]) {
+      const el = t - W[0] - (i / FN) * FP; if (el < 0) continue;
+      const cyc = Math.floor(el / FP), launch = W[0] + (i / FN) * FP + cyc * FP; if (launch > W[1]) continue;
+      const q = (el - cyc * FP) / FP, src = Math.floor(rnd(i * 13 + cyc, 2) * 30), dst = PILE[(i * 7 + cyc * 11) % PN];
+      const p = along(arc([(rnd(i, 5) - 0.5) * 60, rowY(src), RH + 4], [dst.x, dst.y, dst.z + 30], 220 + 80 * rnd(i, 6), 16), ease.in(q));
+      put(FLY, i, p[0], p[1], p[2], RW * 0.42, RD * 0.7, RH, tint(CO.AMB, 1.3 + 0.6 * rnd(i, 8)), (rnd(i, 9) - 0.5) * q * 2);
+      shown = true; break;
+    }
+    if (!shown) hide(FLY, i);
+  }
+  done(FLY);
+
+  // the pile on the app: fills, the ten newest lift off, the rest burn away
+  const n = Math.floor(fill(t) * PN), lift = (j) => ep(t, T.keeps + j * 0.06, T.keeps + 0.5 + j * 0.06, ease.inOut);
+  const burn = ep(t, T.throws - 0.05, T.throws + 0.5), sink = ep(t, T.throws + 0.1, T.away + 0.5, ease.in);
+  for (let k = 0; k < PN; k++) {
+    const P0 = PILE[k], j = KEEP.indexOf(k);
+    const gone = t > T.l3 - 0.2;
+    if (j >= 0 && t > T.keeps - 0.1 && t < T.l3 - 0.2) {
+      const q = lift(j), to = KEEPAT(j), p = lerp3([P0.x, P0.y, P0.z], to, q); p[2] += 70 * Math.sin(Math.PI * q);
+      put(PL, k, p[0], p[1], p[2], RW * 0.42, RD * 0.7, RH, tint(CO.OK, 1.6 + 1.5 * pulse(t, T.keeps + 0.5 + j * 0.06)), lerp(P0.rz, 0, q));
+      continue;
+    }
+    if (k >= n || gone || sink >= 1) { hide(PL, k); continue; }
+    const col = tint(CO.AMB, 1.1 + 0.3 * rnd(k, 3), CO.RED, burn).multiplyScalar(1 + 1.2 * burn * (1 - sink));
+    put(PL, k, P0.x, P0.y, lerp(P0.z, APH - 6, sink), RW * 0.42 * (1 - 0.6 * sink), RD * 0.7 * (1 - 0.6 * sink), RH * (1 - sink), col, P0.rz);
+  }
+  done(PL);
+  if (t > T.throws) for (let k = 0; k < 4; k++) sparks(t, T.throws + k * 0.12, APX + (k - 1.5) * 50, APY, APH + 20, RED, 26, 31 + k, 150, 0.9);
+
+  // the better query's answer: ten small rows (three cells each) fly to the app
+  for (let j = 0; j < 10; j++) {
+    const r = NEWEST[j], t0 = T.ten5 - 0.15 + j * 0.06, q = ep(t, t0, t0 + 0.7, ease.inOut);
+    const on = t > T.ten5 - 0.2 && t < T.l6 - 0.1;
+    SHOWC.forEach((c, m) => {
+      const i = j * SHOWC.length + m;
+      if (!on) { hide(SEL, i); return; }
+      const dst = [APX - 60 + (CXS[c] - CXS[2]) * 0.8, APY - 10, APH + 2 + j * 6], src = [CXS[c], rowY(r), RH + 2];
+      const p = along(arc(src, dst, 260), q);
+      put(SEL, i, p[0], p[1], p[2], COLS[c][1] * lerp(1, 0.8, q), RD * lerp(1, 0.8, q), RH, tint(CO.OK, 1.8 + 1.5 * pulse(t, t0 + 0.7)));
+    });
+  }
+  done(SEL);
+  if (t > T.ten5 + 0.55) ripple(t, T.ten5 + 0.55, APX - 60, APY - 10, APH + 2, OK, 140, 0.8);
+
+  // ---- EXPLAIN: the index lane on user_id
+  const lane = ep(t, T.index - 0.15, T.index + 0.35, ease.back) * (1 - ep(t, DURATION - 1, DURATION));
+  for (let j = 0; j < NR; j++) {
+    const up = clamp(lane - j * 0.0015), h = RH * up;
+    if (h < 0.05) { hide(LANE, j); continue; }
+    const is42 = LANE_ID(j) === ME;
+    put(LANE, j, LX, rowY(j), 0, LW, RD, h, is42 ? tint(CO.OK, 1.2 + 1.5 * pulse(t, T.index + 0.4)) : tint(CO.O, 0.7));
+  }
+  done(LANE);
+  for (let j = 0; j < NL; j++) LLB[j].set('l' + j, (g, W_, H_) => {
+    g.textBaseline = 'middle'; g.textAlign = 'center'; g.fillStyle = LANE_ID(j) === ME ? '#7CF29A' : '#F2EEE8'; g.font = `800 ${Math.round(H_ * 0.5)}px Mono`;
+    g.fillText('user ' + LANE_ID(j), W_ / 2, H_ * 0.55);
+  }, LX, rowY(j), RH + 0.4, lane > 0.9 ? 1 : 0);
+  BEAMS.forEach((b) => b.set([[0, 0, 0], [0, 0, 1]], 0, OK, 0));
+  for (let k = 0; k < 6; k++) {
+    const j = 4 + k, r = LANE_ROW(j), a = 1 - ep(t, T.follow - 0.6, T.follow);
+    if (t < T.index + 0.3) continue;
+    BEAMS[k].set(arc([LX + LW / 2, rowY(j), RH + 1], [-RW / 2 + 8, rowY(r), RH + 1], 26, 20), ep(t, T.index + 0.3 + k * 0.08, T.index + 0.7 + k * 0.08), OK, a);
+  }
+  if (t > T.index + 0.1) ripple(t, T.index + 0.1, LX, rowY(10), RH + 1, OK, 80, 0.7);
+  if (t > T.whole2) sparks(t, T.whole2, 0, scanY(T.whole2 + 0.2), RH, RED, 20, 41, 120, 0.7);
+  // hook: a tap on the page sends the request down the road
+  thru([[APX + 40, APY + APD / 2, APH], [-60, -300, 40], [0, -30, RH]], 0.15, 0.45, O2, 1.2);
+  thru([[APX + 40, APY + APD / 2, APH], [-60, -300, 40], [0, -30, RH]], T.million2 - 0.45, 0.4, O2, 1.2);
+  thru([[APX + 40, APY + APD / 2, APH], [-60, -300, 40], [0, -30, RH]], T.ten5 - 0.6, 0.4, OK, 1.2);
+}
+
+/* ---------------- world tags */
+const tg = (key, html, style, wp, t, a, b, dy = 0) => { const e = tag(key, html, style, wp, t, a, b, dy); if (P(...wp)[2] > 1) e.style.display = 'none'; return e; };
+function tags(t) {
+  REEL.code[2][5][2][0] = t < T.index + 0.1 ? '→ Seq Scan on orders' : '→ Index Scan using orders_user_id_idx';   // the index scan replaces the full scan
+  const big = (c) => `font-size:15px;padding:9px 13px;letter-spacing:1px;border-color:${c}`;
+  const sp = (c, s) => `<span style="color:${c}">${s}</span>`;
+  const appW = [APX, APY, APH + 10];
+  // hook
+  tg('app', sp(O2, 'YOUR APP'), `border-color:${O2}88`, appW, t, 0.4, T.l1 - 0.2, 46);
+  tg('db', sp(GR, 'DATABASE · <b>orders</b>'), '', [0, 0, RH], t, 0.6, T.l1 - 0.2, 16);
+  const c1 = count(t, 0.45, T.million1 + 0.1);
+  tg('cnt', sp(t > T.million1 - 0.1 ? RED : AMB, 'ROWS SENT: <b style="color:inherit">' + c1.toLocaleString('en-US') + '</b>'), big(t > T.million1 - 0.1 ? RED : AMB), appW, t, 0.5, T.l1 - 0.2, -70);
+  tg('need', sp(OK, 'PAGE SHOWS: <b style="color:inherit">10</b>'), big(OK), appW, t, T.ten1, T.l1 - 0.2, -116);
+  // table
+  tg('row1', sp(O2, '1 ROW = 1 ORDER'), `border-color:${O2}88`, [RW / 2 + 10, rowY(2), RH], t, T.row1 - 0.05, T.send - 0.1);
+  tg('every', sp(AMB, "EVERY USER'S ORDERS"), big(AMB), [0, rowY(9), RH], t, T.every1, T.send - 0.1);
+  tg('cols', sp(O2, 'A COLUMN PER DETAIL'), `border-color:${O2}88`, [0, -PY * 1.0, 0], t, T.column1, T.send - 0.1, -34);
+  tg('all', sp(RED, 'ALL ROWS · ALL COLUMNS'), big(RED), [0, rowY(14), RH], t, T.all, T.l2 + 0.2);
+  // the flood
+  const c2 = count(t, T.million2, T.travel + 0.4);
+  tg('cnt2', sp(c2 > 999999 ? RED : AMB, 'ROWS SENT: <b style="color:inherit">' + c2.toLocaleString('en-US') + '</b>'), big(c2 > 999999 ? RED : AMB), appW, t, T.million2, T.keeps - 0.1, -80);
+  tg('keep', sp(OK, '✓ KEEPS 10'), big(OK), KEEPAT(9), t, T.newest1, T.l3 - 0.2, -40);
+  tg('toss', sp(RED, '✕ 999,990 THROWN AWAY'), big(RED), appW, t, T.throws, T.l3 - 0.2, -84);
+  // better query
+  tg('you', sp(OK, 'YOU = USER 42'), big(OK), [-RW / 2 - 10, rowY(4), RH], t, T.your10, T.like - 0.1);
+  tg('only', sp(OK, 'ONLY WHAT THE PAGE SHOWS'), big(OK), [CXS[2], rowY(10), RH], t, T.details, T.like - 0.1, -10);
+  // answer
+  tg('ten', sp(OK, '10 ROWS · 3 COLUMNS'), big(OK), appW, t, T.ten5 + 0.5, T.l6 - 0.2, -70);
+  tg('vs', sp('#c9c0b6', 'NOT <s>1,000,000</s>'), '', appW, t, T.million3, T.l6 - 0.2, -116);
+  // EXPLAIN
+  tg('scan', sp(RED, 'READS EVERY ROW'), big(RED), [0, rowY(40), RH], t, T.reads + 0.1, T.index - 0.1);
+  tg('ix', sp(OK, 'INDEX · <b style="color:inherit">user_id</b>'), big(OK), [LX, -PY * 1.2, 0], t, T.index + 0.2, T.follow - 0.15, -10);
+}
+
+/* ---------------- reel config */
+const SEL_Q = [['SELECT item, total, date'], ['FROM orders'], ['WHERE user_id = 42'], ['ORDER BY date DESC'], ['LIMIT 10;']];
+const REEL = {
+  shots: [], world, tags,
+  code: [
+    [T.request1 - 0.1, T.l3 - 0.2, 'query.sql', 'what your app asks', [[0, 'ALL OF IT', AMB], [T.million2, '1,000,000 ROWS', RED]],
+      [['SELECT * FROM orders;']], [[T.all, 1, '* = every column', 'amb'], [T.million2, 1, 'every row', 'bad']], 'type'],
+    [T.better - 0.15, T.like - 0.1, 'query.sql', 'a better query', [[0, 'WRITING', AMB], [T.screen, '10 ROWS', OK]],
+      SEL_Q, [[T.your10 - 0.1, 3, 'only yours', 'good'], [T.newest2, 4, 'newest first', 'good'], [T.newest2 + 0.3, 5, 'just ten', 'good'], [T.details, 1, 'on screen', 'good']], 'type'],
+    [T.explain - 0.15, T.follow - 0.15, 'query.sql', 'see the plan', [[0, 'PLAN', AMB], [T.reads, 'READS IT ALL', RED], [T.index + 0.1, 'WITH AN INDEX', OK]],
+      [['EXPLAIN SELECT item, total, date'], ['FROM orders WHERE user_id = 42 …'], ['→ Seq Scan on orders', T.reads - 0.1]],
+      [[T.reads - 0.1, 3, 'every row', 'bad'], [T.index + 0.1, 3, '✓ just yours', 'good']]],
+  ],
+  hl: /\b(SELECT|FROM|WHERE|ORDER|BY|DESC|LIMIT|EXPLAIN|orders)\b/g,
+  tools: [],
+  slams: [],
+  bad: ['seconds', 'nine', 'million', 'all', 'away', 'thrown', 'whole'],
+  good: ['ten', '10', 'newest', 'query', 'optimization', 'explain', 'index', 'process'],
+  tiles: [['⚡', 'QUERY<br>OPTIMIZATION'], ['⌕', 'DATABASE<br>INDEXING'], ['≋', 'SERVER-SENT<br>EVENTS']],
+  end: T.follow - 0.2, follow: T.follow,
+  cover: { t: 'QUERY<br>OPTIMIZATION', at: T.throws + 0.5, zoom: 1, dy: 0 },
+  flash: (t) => 0.06 * pulse(t, T.million1, 7) + 0.07 * pulse(t, T.throws, 6),
+};
+</script>
+<script src="../_ember/overlay.js"></script>
+<script>
+/* ---------------- bloom: scene → half-float target, bright pass, three blur levels, composite to the canvas */
+const RT = (w, h, s = 0) => new TH.WebGLRenderTarget(w, h, { type: TH.HalfFloatType, samples: s, depthBuffer: s > 0 });
+const rtMain = RT(1080, 1920, 4), BL = [[RT(540, 960), RT(540, 960)], [RT(270, 480), RT(270, 480)], [RT(135, 240), RT(135, 240)]];
+const fsCam = new TH.OrthographicCamera(-1, 1, 1, -1, 0, 1), fsScene = new TH.Scene(), fsQuad = new TH.Mesh(new TH.PlaneGeometry(2, 2));
+fsQuad.frustumCulled = false; fsScene.add(fsQuad);
+const VS = 'varying vec2 vUv; void main() { vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }';
+const shm = (fs, u) => new TH.ShaderMaterial({ uniforms: u, vertexShader: VS, fragmentShader: fs, depthTest: false, depthWrite: false });
+const mBright = shm(`uniform sampler2D tex; uniform float th; varying vec2 vUv;
+void main() { vec3 c = texture2D(tex, vUv).rgb; float l = max(c.r, max(c.g, c.b)); gl_FragColor = vec4(c * smoothstep(th, th + 0.4, l), 1.0); }`,
+  { tex: { value: null }, th: { value: 0.8 } });
+const mBlur = shm(`uniform sampler2D tex; uniform vec2 dir; varying vec2 vUv;
+void main() {
+  vec3 c = texture2D(tex, vUv).rgb * 0.2270270270;
+  c += (texture2D(tex, vUv + dir * 1.3846153846).rgb + texture2D(tex, vUv - dir * 1.3846153846).rgb) * 0.3162162162;
+  c += (texture2D(tex, vUv + dir * 3.2307692308).rgb + texture2D(tex, vUv - dir * 3.2307692308).rgb) * 0.0702702703;
+  gl_FragColor = vec4(c, 1.0);
+}`, { tex: { value: null }, dir: { value: new TH.Vector2() } });
+const mComp = shm(`uniform sampler2D base, b1, b2, b3; uniform float k1, k2, k3; varying vec2 vUv;
+void main() {
+  vec3 c = texture2D(base, vUv).rgb + texture2D(b1, vUv).rgb * k1 + texture2D(b2, vUv).rgb * k2 + texture2D(b3, vUv).rgb * k3;
+  c = c / (1.0 + max(c - 1.0, 0.0) * 0.6);
+  gl_FragColor = vec4(c, 1.0);
+  #include <colorspace_fragment>
+}`, { base: { value: rtMain.texture }, b1: { value: BL[0][0].texture }, b2: { value: BL[1][1].texture }, b3: { value: BL[2][1].texture }, k1: { value: 0.5 }, k2: { value: 0.65 }, k3: { value: 0.8 } });
+function pass(mat, dst) { fsQuad.material = mat; renderer.setRenderTarget(dst); renderer.render(fsScene, fsCam); }
+function blur(src, dst, dx, dy) { mBlur.uniforms.tex.value = src.texture; mBlur.uniforms.dir.value.set(dx / src.width, dy / src.height); pass(mBlur, dst); }
+function bloom() {
+  mBright.uniforms.tex.value = rtMain.texture; pass(mBright, BL[0][0]);
+  blur(BL[0][0], BL[0][1], 1, 0); blur(BL[0][1], BL[0][0], 0, 1);
+  blur(BL[0][0], BL[1][0], 1, 0); blur(BL[1][0], BL[1][1], 0, 1);
+  blur(BL[1][1], BL[2][0], 1, 0); blur(BL[2][0], BL[2][1], 0, 1);
+  pass(mComp, null);
+}
+
+/* ---------------- orders page and shopping list cards */
+const stg = $('stage'), before = $('prof');
+const mk = (html) => { const w = document.createElement('div'); w.innerHTML = html.trim(); const n = w.firstChild; stg.insertBefore(n, before); return n; };
+const PG = mk(`<div id="pg"><div class="h"><i></i>myshop.com/orders</div><div class="t">My orders<span id="pgS"></span></div>${
+  [0, 1, 2, 3, 4].map((i) => `<div class="r" id="pr${i}"><span class="a"></span><span class="d"></span><span class="p"></span></div>`).join('')}<div id="pgF"></div></div>`);
+const SL = mk(`<div id="sl"><div class="hd">Shopping list</div><div class="e" id="sl0"><span class="b"></span>Milk</div><div class="e" id="sl1"><span class="b"></span>Eggs</div><div id="slX">✕ THE WHOLE SHOP, DELIVERED</div></div>`);
+if (/cover/.test(location.hash)) { const s = document.createElement('style'); s.textContent = '#pg, #sl { display: none !important; }'; document.head.appendChild(s); }
+function pageDom(t) {
+  const p1 = popIn(t, 0.05, T.l1 - 0.15), p2 = popIn(t, T.instead - 0.1, T.l6 - 0.15), on2 = p2.a > 0.001, p = on2 ? p2 : p1;
+  vis(PG, p.a, `translateY(${p.y}px) scale(${p.s})`);
+  if (p.a <= 0.001) return;
+  let s, c;
+  if (on2) { s = '✓ 10 orders'; c = OK; }
+  else { const tm = 9 * ep(t, 0.2, T.seconds + 0.35, (x) => x); s = (t < T.seconds + 0.35 ? '◴◷◶◵'[Math.floor(t * 6) % 4] + ' ' : '') + tm.toFixed(1) + ' s'; c = t > T.nine - 0.05 ? RED : AMB; }
+  setH('pgS', s); $('pgS').style.color = c; $('pgS').style.transform = `scale(${1 + 0.25 * pulse(t, T.seconds + 0.35, 6) + 0.2 * pulse(t, T.instead + 0.1, 6)})`;
+  for (let i = 0; i < 5; i++) {
+    const e = $('pr' + i), [, item, total, date] = DATA(NEWEST[i]);
+    e.className = 'r' + (on2 ? '' : ' sk'); e.style.backgroundPosition = `${(t * 120 + i * 30) % 200}% 0`;
+    const sp = e.children; const h = on2 ? [item, date, total] : ['', '', ''];
+    sp[0].textContent = h[0]; sp[1].textContent = h[1]; sp[2].textContent = h[2];
+    e.style.opacity = on2 ? ep(t, T.instead + i * 0.05, T.instead + 0.2 + i * 0.05) : 1;
+  }
+  setH('pgF', on2 ? '+ 5 MORE · ONLY WHAT YOU SEE' : 'LOADING…');
+  $('pgF').style.color = on2 ? OK : '#77706A';
+}
+function shopDom(t) {
+  const p = popIn(t, T.like - 0.05, T.l5 - 0.15); vis(SL, p.a, `translateY(${p.y}px) scale(${p.s})`);
+  if (p.a <= 0.001) return;
+  $('sl0').className = 'e' + (t > T.milk - 0.05 ? ' on' : ''); $('sl0').firstChild.textContent = t > T.milk - 0.05 ? '✓' : '';
+  $('sl1').className = 'e' + (t > T.eggs - 0.05 ? ' on' : ''); $('sl1').firstChild.textContent = t > T.eggs - 0.05 ? '✓' : '';
+  const x = popIn(t, T.whole1 - 0.1, T.l5 + 1); vis($('slX'), x.a, `translateY(${x.y}px) scale(${x.s})`); $('slX').style.display = x.a > 0.001 ? 'flex' : 'none';
+}
+function clampTags() {
+  for (const k in LB) {
+    const e = LB[k]; if (e.style.display === 'none') continue;
+    const w = e.offsetWidth, x = parseFloat(e.style.left), y = clamp(parseFloat(e.style.top), 124, 668);
+    const right = y > 450 ? 540 - 70 : 540 - 14;
+    e.style.left = clamp(x, 14 + w / 2, right - w / 2) + 'px'; e.style.top = y + 'px';
+  }
+}
+
+window.render = (t) => {
+  shoot(t);
+  orbsReset(); sparksReset(); ringsReset();
+  REEL.world(t);
+  sparksFlush(); updateEmbers(t);
+  renderer.setRenderTarget(rtMain); renderer.render(scene, pcam);
+  bloom();
+  REEL.tags(t); clampTags();
+  card(t); tools(t);
+  pageDom(t); shopDom(t);
+  $('dim').style.opacity = Math.max(0.55 * ep(t, REEL.end, REEL.end + 0.6), 0.5 * window01(t, T.like - 0.1, T.l5 - 0.05, 0.3));
+  $('flash').style.opacity = REEL.flash(t);
+  caps(t);
+  profile(t);
+};
+</script>
+<script src="../_ember/play.js"></script>
+</body>
+</html>

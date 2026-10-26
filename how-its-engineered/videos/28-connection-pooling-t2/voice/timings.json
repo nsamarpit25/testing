@@ -1,0 +1,66 @@
+[
+ {
+  "li": 0,
+  "pi": 0,
+  "say": "A bigger connection pool can make your app less reliable. The database has one budget. Every app server spends from it.",
+  "show": "A bigger connection pool can make your app less reliable. The database has one budget. Every app server spends from it.",
+  "start": 0.0,
+  "end": 5.2
+ },
+ {
+  "li": 1,
+  "pi": 0,
+  "say": "A connection is the open line between app and database. Every question travels over one. Opening a new one is slow: say hello, log in first.",
+  "show": "A connection is the open line between app and database. Every question travels over one. Opening a new one is slow: say hello, log in first.",
+  "start": 5.78,
+  "end": 11.96
+ },
+ {
+  "li": 2,
+  "pi": 0,
+  "say": "If every request opens its own connection, hundreds of visitors can exhaust the budget. Imagine a database that allows a hundred connections.",
+  "show": "If every request opens its own connection, hundreds of visitors can exhaust the budget. Imagine a database that allows a hundred connections.",
+  "start": 12.58,
+  "end": 18.36
+ },
+ {
+  "li": 3,
+  "pi": 0,
+  "say": "At the limit, new connections are refused. Your users see errors.",
+  "show": "At the limit, new connections are refused. Your users see errors.",
+  "start": 19.04,
+  "end": 21.88
+ },
+ {
+  "li": 4,
+  "pi": 0,
+  "say": "A connection pool opens a few connections and keeps them open to reuse.",
+  "show": "A connection pool opens a few connections and keeps them open to reuse.",
+  "start": 22.58,
+  "end": 25.44
+ },
+ {
+  "li": 5,
+  "pi": 0,
+  "say": "Each request borrows one, asks its question, and hands it back. If all are busy, it waits in line, up to a timeout.",
+  "show": "Each request borrows one, asks its question, and hands it back. If all are busy, it waits in line, up to a timeout.",
+  "start": 26.0,
+  "end": 31.08
+ },
+ {
+  "li": 6,
+  "pi": 0,
+  "say": "Three servers with five connections each use fifteen. Count the total across every server, with room to spare.",
+  "show": "Three servers with five connections each use fifteen. Count the total across every server, with room to spare.",
+  "start": 31.88,
+  "end": 36.52
+ },
+ {
+  "li": 7,
+  "pi": 0,
+  "say": "Database libraries can manage the pool. Borrow, finish, return. A bigger pool is only useful if the database can afford it.",
+  "show": "Database libraries can manage the pool. Borrow, finish, return. A bigger pool is only useful if the database can afford it.",
+  "start": 37.12,
+  "end": 42.82
+ }
+]

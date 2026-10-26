@@ -1,0 +1,180 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- 21 Cron jobs, in the ember style. World: an ALARM CLOCK box wired to a SERVER box, and a grid of INBOX boxes.
+     At 3 a.m. the server emails everyone; nobody pressed anything: the clock (the cron job) rang. The crontab card shows
+     the schedule. Then a second server with its own clock rises, both ring, every inbox gets two receipts; the second
+     clock is switched off and one schedule is left. Beats come from voice/words.json via at(). Shared pieces live in ../_ember/. -->
+<link rel="stylesheet" href="../_ember/fonts.css">
+<link rel="stylesheet" href="../_ember/reel.css">
+</head>
+<body>
+<div id="stage">
+  <div id="world">
+    <canvas id="cv" width="1080" height="1920"></canvas>
+    <div class="layer" id="lbls"></div>
+  </div>
+</div>
+<script src="../../tools/lib.js"></script>
+<script src="voice/words.js"></script>
+<script src="../_ember/three.js"></script>
+<script src="../_ember/world.js"></script>
+<script src="../_ember/base.js"></script>
+<script>
+for (let i = 0; i < 16; i++) ORBS.push({ core: orbSprite(9), glow: orbSprite(34), trail: [0, 1, 2, 3, 4].map(() => orbSprite(10)) });
+
+/* ---------------- beats */
+const T = {
+  awake: at('awake'), emailed: at('emailed'), n10: at('10'), receipts: at('receipts'), who: at('who'), pressed: at('pressed'),
+  nobody: at('nobody'), cron: at('cron'), scheduled: at('scheduled'), repeating: at('repeating'), alarm: at('alarm'),
+  set: at('set'), timing: at('timing'), every: at('every'), day: at('day'),
+  when: at('when'), rings: at('rings'), runs: at('runs'), code: at('code'), emails: at('emails'), receipts2: at('receipts', 2),
+  catch_: at('catch'), set2: at('set', 2), two: at('two'), servers: at('servers'), both: at('both'), ring: at('ring'),
+  people2: at('people', 2), two2: at('two', 2), keep: at('keep'), schedule: at('schedule'), place: at('place'),
+  linux: at('linux'), kubernetes: at('kubernetes'), ifv: at('if'), follow: at('follow'),
+};
+const CUT = { CRON: T.nobody - 0.2, SET: T.set - 0.2, RING: T.when - 0.2, TWO: T.catch_ - 0.2, TOOLS: T.linux - 0.3, END: T.ifv - 0.15 };
+
+/* ---------------- layout */
+const CLK = [-200, 25], SRV = [-30, 40], CLK2 = [-200, -190], SRV2 = [-30, -175];
+const INB = [...Array(8)].map((_, i) => [95 + (i % 4) * 48, 115 + Math.floor(i / 4) * 62]);
+const SEND1 = [T.emailed - 0.1, T.emails], SEND2 = T.ring + 0.3;     // when the server(s) send receipts
+const RING1 = [T.alarm, T.rings], OFF = T.keep;                     // clock 1 rings; clock 2 is switched off
+
+/* ---------------- camera */
+const WIDE = { f: [5, -60, 30], s: 0.76, a: -0.42, e: 0.62, sy: 600 };
+const SHOTS = [
+  { t: 0, d: 0, f: [60, 70, 40], s: 1.1, a: -0.38, e: 0.56, sy: 600 },
+  { t: CUT.CRON, d: 1.0, f: [0, 40, 30], s: 0.92, a: -0.42, e: 0.58, sy: 600 },
+  { t: CUT.SET, d: 1.0, f: [-130, 30, 30], s: 1.15, a: -0.42, e: 0.58, sy: 640 },
+  { t: CUT.RING, d: 1.0, f: [0, 60, 30], s: 0.9, a: -0.42, e: 0.6, sy: 600 },
+  { t: CUT.TWO, d: 1.0, ...WIDE },
+  { t: CUT.TOOLS, d: 1.0, ...WIDE, s: 0.74, sy: 660 },
+  { t: CUT.END, d: 2.0, ...WIDE, s: 0.72, sy: 640 },
+];
+const KICKS = [[T.emailed, 0.03], [T.who, 0.04], [T.nobody, 0.04], [T.cron, 0.05], [T.alarm, 0.03], [T.every, 0.03], [T.rings, 0.05],
+  [T.emails, 0.03], [T.two, 0.04], [T.ring, 0.05], [T.two2, 0.05], [T.keep, 0.04], [T.linux, 0.03], [T.kubernetes, 0.03]];
+const SHAKES = [[T.ring, 3, 0.3]];
+
+/* ---------------- build the world */
+const label = (g, W_, H_, txt, col, size, y = H_ / 2) => { g.fillStyle = col; g.font = `800 ${size}px Mono`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.shadowColor = col; g.shadowBlur = 12; g.fillText(txt, W_ / 2, y); g.shadowBlur = 0; g.textAlign = 'left'; };
+const mk = (p, w, d, h, col, k = 5) => { const b = emberBox(p[0], p[1], w, d, h, col); const f = decal(w, h, 'front', k, b.g); f.m.position.set(0, -d / 2 - 0.3, h / 2); return { b, f, pl: pool(p[0], p[1], w * 1.3, col), p }; };
+const clk = mk(CLK, 80, 50, 90, AMB), clk2 = mk(CLK2, 80, 50, 90, AMB);
+const srv = mk(SRV, 90, 60, 110, O), srv2 = mk(SRV2, 90, 60, 110, O);
+const IB = INB.map((p) => mk(p, 34, 30, 30, O, 6));
+const rC1 = road([[CLK[0] + 40, CLK[1], 0], [SRV[0] - 45, SRV[1], 0]], AMB), rC2 = road([[CLK2[0] + 40, CLK2[1], 0], [SRV2[0] - 45, SRV2[1], 0]], AMB);
+
+const ringing = (t, list) => Math.max(0, ...list.map((r) => window01(t, r - 0.05, r + 0.9, 0.1)));
+function clockDraw(g, W_, H_, col, t, ring, off) {
+  const cx = W_ / 2, cy = H_ * 0.4, r = W_ * 0.3, sh = ring ? Math.sin(t * 60) * 4 : 0;
+  g.strokeStyle = col; g.lineWidth = 8; g.beginPath(); g.arc(cx + sh, cy, r, 0, Math.PI * 2); g.stroke();
+  g.lineWidth = 9; g.beginPath(); g.moveTo(cx + sh, cy); g.lineTo(cx + sh, cy - r * 0.7); g.moveTo(cx + sh, cy); g.lineTo(cx + sh + r * 0.5, cy); g.stroke();   // 3:00
+  if (ring) [-1, 1].forEach((s) => { g.beginPath(); g.arc(cx + s * r * 0.95 + sh, cy - r * 0.95, r * 0.28, 0, Math.PI * 2); g.stroke(); });
+  label(g, W_, H_, off ? 'OFF' : '3:00', col, 64, H_ * 0.84);
+}
+function srvDraw(g, W_, H_, col, t, busy, title) {
+  label(g, W_, H_, title, col, 54, H_ * 0.13);
+  for (let k = 0; k < 3; k++) { const y = H_ * 0.26 + k * H_ * 0.13; g.strokeStyle = col + '88'; g.lineWidth = 4; rrect(g, 26, y, W_ - 52, H_ * 0.09, 6); g.stroke(); }
+  label(g, W_, H_, busy ? 'RUNNING' : 'idle', busy ? OK : col + '88', 48, H_ * 0.74);
+  if (busy) label(g, W_, H_, 'receipts', OK, 40, H_ * 0.88);
+}
+
+/* ---------------- the world, frame by frame */
+function world(t) {
+  const thru = (pts, t0, dur, col, size = 1) => { const q = (t - t0) / dur; if (q > -0.02 && q < 1.1) orb(pts, clamp(q), col, clamp(q / 0.08) * (1 - clamp((q - 1) / 0.1)), size); };
+  // server 1 + inboxes: there from the start
+  const q0 = ease.back(prog(t, 0.05, 0.4));
+  const busy1 = SEND1.some((s) => t > s - 0.3 && t < s + 1.4) || (t > SEND2 - 0.3 && t < SEND2 + 1.4);
+  srv.b.g.visible = q0 > 0.01; srv.b.g.scale.set(1, 1, Math.max(0.01, q0));
+  const sCol = busy1 ? mixHex(O, OK, 0.5) : O;
+  srv.b.setLook(sCol, 1.2 + 2 * Math.max(...SEND1.map((s) => pulse(t, s)), pulse(t, SEND2)), 1);
+  srv.f.m.visible = srv.b.g.visible; srv.f.draw((g, W_, H_) => srvDraw(g, W_, H_, sCol, t, busy1, 'SERVER')); srv.pl.set(sCol, 0.5 * q0);
+  const dup = window01(t, T.two2 - 0.2, OFF + 0.2, 0.2);
+  IB.forEach((ib, i) => {
+    const qi = ease.back(prog(t, 0.1 + i * 0.04, 0.45 + i * 0.04));
+    const got = SEND1.map((s) => s + 0.45 + i * 0.07);
+    const col = dup > 0.5 ? RED : t > got[0] + 0.4 ? OK : O;
+    ib.b.g.visible = qi > 0.01; ib.b.g.scale.set(1, 1, Math.max(0.01, qi));
+    ib.b.setLook(col, 1 + 2 * Math.max(...got.map((g0) => pulse(t, g0 + 0.4)), pulse(t, SEND2 + 0.85 + i * 0.07)), 1);
+    ib.f.m.visible = ib.b.g.visible; ib.f.draw((g, W_, H_) => label(g, W_, H_, dup > 0.5 ? '✉✉' : '✉', col, dup > 0.5 ? 26 : 34)); ib.pl.set(col, 0.25 * qi);
+    got.forEach((g0, k) => thru([[SRV[0] + 45, SRV[1] + 10, 60], [ib.p[0], ib.p[1], 40]], g0 - 0.45, 0.45, O2, 0.6));
+    thru([[SRV[0] + 45, SRV[1] + 10, 60], [ib.p[0], ib.p[1], 40]], SEND2 + 0.4 + i * 0.07, 0.45, O2, 0.6);
+    thru([[SRV2[0] + 45, SRV2[1] + 10, 60], [ib.p[0], ib.p[1], 40]], SEND2 + 0.4 + i * 0.07, 0.5, RED, 0.6);
+  });
+  // clock 1: the cron job
+  const qc = ease.back(prog(t, T.cron - 0.15, T.cron + 0.25));
+  const r1 = ringing(t, [...RING1, T.ring]) > 0.5;
+  const cCol = r1 ? mixHex(AMB, O2, 0.5 + 0.5 * Math.sin(t * 20)) : AMB;
+  clk.b.g.visible = qc > 0.01; clk.b.g.scale.set(1, 1, Math.max(0.01, qc));
+  clk.b.setLook(cCol, 1.2 + 2.5 * Math.max(...[...RING1, T.ring].map((r) => pulse(t, r))), 1);
+  clk.f.m.visible = clk.b.g.visible; clk.f.draw((g, W_, H_) => clockDraw(g, W_, H_, cCol, t, r1, false)); clk.pl.set(cCol, 0.5 * qc);
+  rC1.set(ep(t, T.cron, T.cron + 0.4), AMB, 0.7, t);
+  [...RING1, T.ring].forEach((r, k) => { ripple(t, r, CLK[0], CLK[1], 2, AMB, 110, 0.8); sparks(t, r, CLK[0], CLK[1], 95, AMB, 12, 20 + k, 90, 0.5); });
+  thru([[CLK[0] + 40, CLK[1], 40], [SRV[0] - 45, SRV[1], 50]], T.rings + 0.1, 0.4, AMB);
+  thru([[CLK[0] + 40, CLK[1], 40], [SRV[0] - 45, SRV[1], 50]], T.ring + 0.05, 0.35, AMB);
+  // server 2 + its own clock: the catch
+  const q2 = ease.back(prog(t, T.two - 0.1, T.two + 0.3));
+  const off = t > OFF, busy2 = t > SEND2 - 0.3 && t < SEND2 + 1.4;
+  const s2Col = busy2 ? mixHex(O, OK, 0.5) : O;
+  srv2.b.g.visible = q2 > 0.01; srv2.b.g.scale.set(1, 1, Math.max(0.01, q2)); srv2.b.setLook(s2Col, 1.2 + 2 * pulse(t, SEND2), 1);
+  srv2.f.m.visible = srv2.b.g.visible; srv2.f.draw((g, W_, H_) => srvDraw(g, W_, H_, s2Col, t, busy2, 'SERVER 2')); srv2.pl.set(s2Col, 0.5 * q2);
+  const r2 = !off && ringing(t, [T.ring]) > 0.5;
+  const c2Col = off ? DIM : r2 ? mixHex(RED, AMB, 0.5 + 0.5 * Math.sin(t * 20)) : AMB;
+  clk2.b.g.visible = q2 > 0.01; clk2.b.g.scale.set(1, 1, Math.max(0.01, q2)); clk2.b.setLook(c2Col, off ? 0.6 : 1.2 + 2.5 * pulse(t, T.ring), off ? 0.6 : 1);
+  clk2.f.m.visible = clk2.b.g.visible; clk2.f.draw((g, W_, H_) => clockDraw(g, W_, H_, c2Col, t, r2, off)); clk2.pl.set(c2Col, (off ? 0.15 : 0.5) * q2);
+  rC2.set(ep(t, T.two, T.two + 0.4), off ? DIM : AMB, off ? 0.25 : 0.7, t);
+  ripple(t, T.ring, CLK2[0], CLK2[1], 2, RED, 110, 0.8); sparks(t, T.ring, CLK2[0], CLK2[1], 95, RED, 12, 40, 90, 0.5);
+  thru([[CLK2[0] + 40, CLK2[1], 40], [SRV2[0] - 45, SRV2[1], 50]], T.ring + 0.05, 0.35, RED);
+}
+
+/* ---------------- world tags */
+function tags(t) {
+  const S_T = [SRV[0], SRV[1], 150], C_T = [CLK[0], CLK[1], 135], I_T = [INB[1][0], INB[1][1] + 30, 70], S2_T = [SRV2[0], SRV2[1], 150], C2_T = [CLK2[0], CLK2[1], 135];
+  const sent = Math.round(10000 * ease.inOut(prog(t, T.emailed, T.receipts + 0.3)));
+  tag('time', '<b>3:00 AM</b> · NOBODY AWAKE', '', S_T, t, 0.2, T.emailed - 0.05);
+  tag('sent', `<span style="color:${OK}">${sent.toLocaleString('en-US')} RECEIPTS SENT</span>`, `border-color:${OK}88`, I_T, t, T.emailed, CUT.CRON + 0.2);
+  tag('who', `<span style="color:${AMB}">WHO PRESSED THE BUTTON?</span>`, `font-size:15px;padding:9px 13px;letter-spacing:1px;border-color:${AMB}`, S_T, t, T.who, CUT.CRON + 0.3);
+  tag('nobody', '<b>NOBODY</b> · THE CLOCK DID', '', C_T, t, T.cron + 0.1, T.set - 0.1);
+  tag('daily', `<span style="color:${AMB}">EVERY DAY · 3:00 AM</span>`, `font-size:15px;padding:9px 13px;letter-spacing:1px;border-color:${AMB}`, C_T, t, T.every, CUT.RING + 0.2);
+  tag('rings', `<span style="color:${AMB}">⏰ ALARM RINGS</span>`, `border-color:${AMB}88`, C_T, t, T.rings, T.catch_ - 0.1);
+  tag('runs', `<span style="color:${OK}">RUNS YOUR CODE</span>`, `border-color:${OK}88`, S_T, t, T.runs, T.catch_ - 0.1);
+  tag('both', `<span style="color:${RED}">BOTH ALARMS RING</span>`, `font-size:15px;padding:9px 13px;letter-spacing:1px;border-color:${RED}`, [CLK2[0] + 60, CLK2[1] - 40, 0], t, T.ring, OFF - 0.05, 30);
+  tag('dup', `<span style="color:${RED}">2 RECEIPTS EACH</span>`, `font-size:15px;padding:9px 13px;letter-spacing:1px;border-color:${RED}`, I_T, t, T.two2, OFF + 0.4);
+  tag('one', `<span style="color:${OK}">✓ ONE SCHEDULE</span>`, `font-size:15px;padding:9px 13px;letter-spacing:1px;border-color:${OK}`, C_T, t, OFF + 0.1, CUT.END + 0.2);
+  tag('offt', `<span style="color:${DIM}">SCHEDULE REMOVED</span>`, '', [CLK2[0] + 60, CLK2[1] - 40, 0], t, OFF + 0.1, CUT.END + 0.2, 30);
+}
+
+/* ---------------- reel config */
+const svgTux = `<svg width="46" height="46" viewBox="0 0 100 100" fill="none" stroke="#F5C542" stroke-width="7" stroke-linejoin="round"><ellipse cx="50" cy="58" rx="26" ry="32"/><circle cx="50" cy="26" r="16"/><path d="M28 88 H44 M56 88 H72"/></svg>`;
+const svgK8s = `<svg width="46" height="46" viewBox="0 0 100 100" fill="none" stroke="#5B8DEF" stroke-width="7" stroke-linejoin="round"><path d="M50 8 L86 26 L94 64 L68 92 H32 L6 64 L14 26 Z"/><circle cx="50" cy="52" r="14"/><path d="M50 22 V38 M50 66 V82 M24 40 L37 47 M76 40 L63 47 M30 76 L40 62 M70 76 L60 62"/></svg>`;
+const REEL = {
+  shots: SHOTS, kicks: KICKS, shakes: SHAKES, world, tags,
+  code: [
+    [T.set - 0.3, CUT.TWO - 0.1, 'crontab', 'server 1', [[0, 'SCHEDULED', AMB], [T.rings, 'RUNNING', OK]],
+      [['# min hour day month weekday'], ['0 3 * * *  send_receipts'], ['→ every day at 3:00 AM', T.every]],
+      [[T.every, 2, 'daily', 'amb'], [T.rings, 2, '▶ running', 'run'], [T.receipts2, 2, '✓ sent', 'good']], 'type'],
+    [T.two - 0.2, CUT.TOOLS - 0.1, 'two servers', 'same schedule on both', [[0, 'DUPLICATE', RED], [OFF, 'ONE SCHEDULE', OK]],
+      [['server 1:  0 3 * * *  send_receipts'], ['server 2:  0 3 * * *  send_receipts', T.two + 0.2], ['server 2:  (no schedule)', OFF]],
+      [[T.ring, 1, '✉ sent', 'amb'], [T.ring + 0.1, 2, '✉ sent again', 'bad'], [OFF + 0.1, 1, '✓ only one', 'good'], [OFF + 0.1, 2, '✕ removed', 'bad'], [OFF + 0.3, 3, '✓', 'good']]],
+  ],
+  hl: /\b(send_receipts|server|crontab)\b/g,
+  tools: [
+    { a: T.linux - 0.1, b: CUT.END, svg: svgTux, name: 'Linux cron', sub: 'CRONTAB · BUILT INTO MOST SERVERS', top: 150 },
+    { a: T.kubernetes - 0.1, b: CUT.END, svg: svgK8s, name: 'Kubernetes CronJob', sub: 'RUNS A JOB ON A SCHEDULE', top: 262 },
+  ],
+  slams: [
+    { a: T.cron - 0.2, b: T.repeating - 0.1, text: 'cron job', sub: 'A TASK WITH A SCHEDULE', size: 64 },
+  ],
+  bad: ['two', 'catch'],
+  good: ['cron', 'code', 'place'],
+  tiles: [['⏰', 'CRON<br>JOBS'], ['✉', 'DEAD LETTER<br>QUEUES'], ['↺', 'SAGA<br>PATTERN']],
+  end: CUT.END, follow: T.follow,
+  cover: { t: 'CRON JOBS', at: T.rings + 0.3, zoom: 1, dy: 40 },
+  flash: (t) => 0.06 * pulse(t, T.rings, 7) + 0.08 * pulse(t, T.ring, 7),
+};
+</script>
+<script src="../_ember/overlay.js"></script>
+<script src="../_ember/play.js"></script>
+</body>
+</html>

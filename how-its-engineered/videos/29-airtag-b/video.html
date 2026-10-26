@@ -1,0 +1,591 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- 29 AirTag, solid low-poly dioramas (kit.js + scenes.js). Story: your phone shows the bag in another city; the bag
+     sits at a bus stop; a stranger's phone walks past and reports it. Inside the tag: no GPS/SIM/Wi-Fi, just Bluetooth
+     and a coin cell. It whispers "I'm here"; a passing iPhone adds its location, locks it, sends it to Apple; your phone
+     downloads and unlocks it. Only your phone has the key. Zoom out to a city of helpers; the airline story; an unknown
+     tag on you gets flagged on iPhone or Android; everyone around the disc is the tracker. Beats come from voice/words.js. -->
+<link rel="stylesheet" href="../_ember/fonts.css">
+<link rel="stylesheet" href="lib/reel.css">
+<style>
+#stage { background: #0b0a09; }
+#vig { background: radial-gradient(120% 82% at 50% 44%, rgba(8,6,4,0) 52%, rgba(8,6,4,0.72) 100%); }
+#hud { pointer-events: none; }
+/* HUD: dark glass cards with a short accent bar; the label carries the beat's colour, the value stays white */
+.hc { position: absolute; left: 0; top: 0; display: none; padding: 9px 15px 10px 17px; border-radius: 10px; background: linear-gradient(180deg, rgba(36,33,31,0.93), rgba(19,17,16,0.93)); border: 1px solid rgba(255,255,255,0.075); box-shadow: 0 12px 30px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06); white-space: nowrap; transform-origin: 0 0; }
+.hc::before { content: ''; position: absolute; left: 7px; top: 10px; bottom: 10px; width: 3px; border-radius: 2px; background: var(--c); box-shadow: 0 0 8px var(--cg); }
+.hc .k { font: 650 9.5px/1 Inter; letter-spacing: 1.5px; color: var(--c); text-transform: uppercase; }
+.hc .v { font: 750 19px/1.05 Inter; letter-spacing: -0.3px; margin-top: 6px; color: #f5f4f3; }
+.hc.big .v { font-size: 24px; }
+.hc .v.dots { letter-spacing: 3px; }
+.hp { position: absolute; left: 0; top: 0; display: none; font: 600 11px/1 Inter; padding: 6px 10px 6px 9px; border-radius: 20px; background: rgba(24,22,20,0.9); border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 6px 16px rgba(0,0,0,0.4); color: #e6e3e0; white-space: nowrap; transform-origin: 0 0; }
+.hp::before { content: ''; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--c); margin-right: 6px; vertical-align: 1px; }
+.hp.hot { border-color: var(--cg); }
+#stat { position: absolute; left: 16px; top: 120px; padding: 8px 12px 8px 10px; border-radius: 6px; background: rgba(20,18,16,0.82); border: 1px solid rgba(198,189,182,0.12); font: 700 10.5px/1 Inter; color: #e0dddb; }
+#stat .r { display: flex; align-items: center; gap: 7px; height: 16px; }
+#stat i { width: 7px; height: 7px; border-radius: 50%; border: 1.2px solid #6e6965; box-sizing: border-box; }
+#stat i.on { border: none; }
+#cap .box { left: 50%; right: auto; transform: translateX(-50%); padding: 0 10px; background: none; }
+#cap .box::before, #cap .box::after { content: ''; position: absolute; width: 8px; height: 8px; border: 1.6px solid #ff6a1f; }
+#cap .box::before { left: -2px; top: -4px; border-width: 1.6px 0 0 1.6px; }
+#cap .box::after { right: -2px; bottom: -4px; border-width: 0 1.6px 1.6px 0; }
+/* the slam sits on a soft dark band so the city never fights the letters */
+.slam::before { content: ''; position: absolute; left: -20px; right: -20px; top: -40px; bottom: -36px; background: radial-gradient(60% 50% at 50% 50%, rgba(13,11,10,0.78) 0%, rgba(13,11,10,0.5) 55%, rgba(13,11,10,0) 100%); z-index: -1; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="world">
+    <canvas id="cv" width="1080" height="1920"></canvas>
+    <div class="layer" id="lbls"></div>
+  </div>
+  <div id="stat"><div class="r"><i id="st0"></i><span id="st0t">Bag lost</span></div><div class="r"><i id="st1"></i><span id="st1t">Bag found</span></div></div>
+</div>
+<script src="../../tools/lib.js"></script>
+<script src="voice/words.js"></script>
+<script src="lib/three.js"></script>
+<script src="../_ember/world.js"></script>
+<script src="lib/base.js"></script>
+<script src="kit.js"></script>
+<script src="scenes.js"></script>
+<script>
+for (let i = 0; i < 18; i++) { const m = new TH.Mesh(new TH.RingGeometry(0.9, 1, 96), new TH.MeshBasicMaterial({ color: 0xffffff, transparent: true, blending: TH.AdditiveBlending, depthWrite: false, toneMapped: false, side: TH.DoubleSide })); m.visible = false; scene.add(m); RINGS.push(m); }
+// Signals speak the reference's language: crisp thin rings that open out from a device, and thin lines that draw
+// themselves from one device to the next with a bright head on the tip. No wide halos, no light beams.
+const RING_TX = ctex(512, 512, (g, w, h) => {
+  const gr = g.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, w / 2);
+  gr.addColorStop(0, 'rgba(255,255,255,0)'); gr.addColorStop(0.8, 'rgba(255,255,255,0.025)'); gr.addColorStop(0.985, 'rgba(255,255,255,0.06)'); gr.addColorStop(1, 'rgba(255,255,255,0)');
+  g.fillStyle = gr; g.fillRect(0, 0, w, h);
+  g.strokeStyle = '#ffffff'; g.lineWidth = 3.2; g.beginPath(); g.arc(w / 2, h / 2, w / 2 - 6, 0, 7); g.stroke();
+});
+const RING_G = new TH.PlaneGeometry(2, 2);
+for (const m of RINGS) { m.geometry = RING_G; m.material.map = RING_TX; m.material.needsUpdate = true; }
+function ripple(t, t0, x, y, z, col, maxR, dur = 0.9) {
+  const p = prog(t, t0, t0 + dur); if (p <= 0 || p >= 1 || ringI >= RINGS.length) return;
+  const m = RINGS[ringI++], r = maxR * (0.1 + 0.9 * ease.out(p));
+  m.visible = true; m.position.set(x, y, z); m.scale.set(r, r, 1); m.material.color.set(col); m.material.opacity = 0.85 * Math.pow(1 - p, 1.3) * Math.min(1, p * 12);
+}
+// signal lines: a pool of pixel-width lines (core + faint halo) whose segments are rewritten in place each frame
+const LMAX = 8, LINKS = [];
+const dotSprite = () => { const sp = new TH.Sprite(new TH.SpriteMaterial({ map: TX_ORB, transparent: true, blending: TH.AdditiveBlending, depthWrite: false, depthTest: false, toneMapped: false })); sp.visible = false; sp.renderOrder = 6; scene.add(sp); return sp; };
+for (let i = 0; i < 8; i++) {
+  const geo = new TH.LineGeometry(); geo.setPositions(new Array(LMAX * 3).fill(0).map((_, k) => k));
+  const core = new TH.Line2(geo, lineMat(O, 3.4)), halo = new TH.Line2(geo, lineMat(O, 11, { add: true, op: 0.16 }));
+  core.renderOrder = 5; halo.renderOrder = 4;
+  for (const l of [core, halo]) { l.frustumCulled = false; l.visible = false; scene.add(l); }
+  LINKS.push({ geo, core, halo, head: dotSprite(), end: dotSprite() });
+}
+let linkI = 0;
+function linksReset() { linkI = 0; for (const L of LINKS) L.core.visible = L.halo.visible = L.head.visible = L.end.visible = false; }
+// the part of a polyline between fractions q0 and q1 of its length
+function subLine(pts, q0, q1) {
+  const d = [0]; for (let i = 1; i < pts.length; i++) d.push(d[i - 1] + Math.hypot(...[0, 1, 2].map((j) => pts[i][j] - pts[i - 1][j])));
+  const L = d[d.length - 1], at_ = (u) => { let i = 1; while (i < pts.length - 1 && d[i] < u) i++; const k = (u - d[i - 1]) / Math.max(1e-6, d[i] - d[i - 1]); return [0, 1, 2].map((j) => lerp(pts[i - 1][j], pts[i][j], clamp(k))); };
+  const u0 = q0 * L, u1 = q1 * L, out = [at_(u0)];
+  for (let i = 1; i < pts.length - 1; i++) if (d[i] > u0 && d[i] < u1) out.push(pts[i]);
+  out.push(at_(u1)); return out;
+}
+// link(t, pts, t0, dur, t1, col): draws on along pts over [t0, t0+dur] (eased), holds, fades out at t1. o.travel: the
+// tail follows the head, so it reads as one message moving; o.a: opacity
+function link(t, pts, t0, dur, t1, col, o = {}) {
+  if (t < t0 || t > t1 || linkI >= LINKS.length) return null;
+  const L = LINKS[linkI++], q = ease.inOut(prog(t, t0, t0 + dur)), q0 = o.travel ? ease.inOut(prog(t, t0 + dur * 0.35, t0 + dur * 1.25)) : 0;
+  const a = (o.a ?? 1) * (1 - ep(t, t1 - 0.25, t1)) * (o.travel ? 1 - ep(t, t0 + dur * 1.05, t0 + dur * 1.25) : 1);
+  if (q <= 0.001 || a <= 0.01) return null;
+  const part = subLine(pts, q0, q).slice(0, LMAX), arr = L.geo.attributes.instanceStart.data.array;
+  for (let i = 0; i < part.length - 1; i++) arr.set([...part[i], ...part[i + 1]], i * 6);
+  L.geo.attributes.instanceStart.data.needsUpdate = true; L.geo.instanceCount = part.length - 1;
+  for (const [l, k] of [[L.core, 1], [L.halo, 0.16]]) { l.visible = true; l.material.color.set(col); l.material.opacity = a * k; }
+  const tip = part[part.length - 1], px = 1 / cam.s;
+  if (q < 0.999 || o.travel) { L.head.visible = true; L.head.position.set(...tip); L.head.material.color.set(mixHex(col, '#ffffff', 0.5)); L.head.material.opacity = a; L.head.scale.set(16 * px, 16 * px, 1); }
+  if (q >= 0.999 && !o.travel) { const k = ease.out(prog(t, t0 + dur, t0 + dur + 0.25)); L.end.visible = true; L.end.position.set(...tip); L.end.material.color.set(col); L.end.material.opacity = a * (0.6 + 0.4 * (1 - k)); L.end.scale.set((10 + 14 * (1 - k)) * px, (10 + 14 * (1 - k)) * px, 1); }
+  return tip;
+}
+
+/* ---------------- beats */
+const T = {
+  airline: at('airline'), told: at('told'), safe: at('safe'), her: at('her', 2), apartment: at('apartment'),
+  but: at('but'), didnt: at("didn't"), strangers: at("stranger's"), phone1: at('phone'), did: at('did'),
+  an: at('an'), gps: at('gps'), sim: at('sim'), wifi: at('wi'), just: at('talks') - 0.12, bluetooth: at('bluetooth'), coin: at('coin'),
+  every: at('over', 2), whispers: at('whispers'), thing: at('thing'), here: at("i'm"),
+  any: at('any'), iphone: at('iphone'), hears: at('hears'), adds: at('adds'), location: at('location'), locks: at('locks'), sends: at('sends'), apple: at('apple'),
+  never: at('never'), knows: at('know'),
+  then: at('then'), downloads: at('downloads'), unlocks: at('unlocks'), theres: at("there's"),
+  only: at('only'), key: at('key'), cant: at("can't"), stranger2: at('stranger'), whose: at('whose'),
+  now: at('now'), hundreds: at('hundreds'), devices: at('devices'), thats: at("that's"), d29: at('29'), disc: at('disc'), knew: at('knew'), airline2: at('airline', 2),
+  stalk: at('stalkers'), hides: at('unknown'), travels: at('travels'), warns: at('warn'), your3: at('your'), iphone2: at('iphone', 2), android: at('android'),
+  so: at('so'), little: at('little'), tracking: at('know', 2), everyone: at('everyone'), last: WORDS[WORDS.length - 1][2],
+};
+// B: the airline story opens the reel (no line repeats later); the mechanism follows; a callback to her bag before the stalker beat
+const CUT = { APT: 0, NET: T.but - 0.1, IN: T.an, SIM: T.sim - 0.16, BT: T.just, COIN: T.coin - 0.2,
+  PING: T.every, PING2: T.thing - 0.34, PASS: T.any, SPH: T.adds - 0.1, DC1: T.sends + 0.4, OFF: T.never - 0.36, HOME2: T.then, YPH: T.downloads,
+  KEY: T.only, DC2: at('apple', 2), WHOSE: T.stranger2 - 0.16, ZOOM: T.now, PINS: T.thats, BACK: T.knew - 0.1,
+  HIDE: line(8).start - 0.2, ALERT: T.your3, BOTH: T.iphone2, LONE: T.so, ALL: T.everyone, END: T.last + 0.35 };
+
+/* ---------------- build */
+const CITYF = [350, 120, 0];   // where the city shots look
+const HM = buildHome(), ST = buildStudio(), DC = buildDC(), AP = buildAirport(), CI = buildCity();
+// rooftop pins for "shows up almost anywhere": spread around the frame, away from its centre
+const CPINS = (() => {
+  const out = [], used = [];
+  for (const b of [...CI.bld].sort((p, q) => rnd(p[0] + p[1], 7) - rnd(q[0] + q[1], 7))) {
+    const d = Math.hypot(b[0] - CITYF[0], b[1] - CITYF[1]);
+    if (d < 900 || d > 2900 || used.some((u) => Math.hypot(u[0] - b[0], u[1] - b[1]) < 1500)) continue;
+    used.push(b); out.push({ s: holo(ICO.pin, 520, O), p: [b[0], b[1], b[4]] }); if (out.length === 6) break;
+  }
+  return out;
+})();
+// the people around the bag in the last shot, each with a phone
+const CROWD = [[-160, -690, 70], [520, -625, -65], [-40, -575, 0], [330, -680, 0], [-330, -610, 55]].map(([x, y, v], k) => ({ x, y, v, p: person(scene, -6000, y, v < 0 ? Math.PI : 0, { seed: 20 + k * 3, phone: true, coat: k % 2 === 0 }) }));
+// passers-by in the lot whose phones hear her tag (the finale's crowd, borrowed for this shot)
+// two residents crossing the courtyard on its paving (clear of the glass wings), south of the dumped bags
+const NEAR = [[-200, -150], [-90, -182]].map(([dx, dy], k) => ({ p: CROWD[k].p, x: CI.aptC[0] + dx, y: CI.aptC[1] + dy }));
+const DUMPL = new TH.PointLight(C('#e3ddd8'), 0, 1100, 1.4); DUMPL.position.set(CI.dumpster[0] - 160, CI.dumpster[1] - 200, 260); scene.add(DUMPL);
+const HOLO = { pin: holo(ICO.pin, 46, O), lock: holo(ICO.lock, 44, AMB), key: holo(ICO.key, 58, OK), hpin: holo(ICO.pin, 190, O), dlock: [0, 1, 2, 3, 4, 5].map(() => holo(ICO.lock, 50, AMB)), wave: holo(ICO.wave, 60, O) };
+
+/* ---------------- phone screens */
+// Drawn in a 600-wide design space whatever the canvas size, in the dark iOS look: a quiet street map, a frosted
+// bottom sheet with big type and round icon tiles, iOS-style notifications. One orange accent, red only for alerts.
+const S6 = (g, S, x, y, fn, col) => { g.save(); g.translate(x - S / 2, y - S / 2); fn(g, S, col); g.restore(); };
+const UI = { card: '#1f1d1c', tile: '#2c2a28', tx: '#f5f4f3', tx2: '#a39e99', tx3: '#6f6a66' };
+const uiSpace = (g, W, H) => { const k = W / 600; g.scale(k, k); return H / k; };
+function rr(g, x, y, w, h, r, fill, stroke, lw = 2) { g.beginPath(); g.roundRect(x, y, w, h, r); if (fill) { g.fillStyle = fill; g.fill(); } if (stroke) { g.strokeStyle = stroke; g.lineWidth = lw; g.stroke(); } }
+function dot(g, x, y, r, fill) { g.beginPath(); g.arc(x, y, r, 0, 7); g.fillStyle = fill; g.fill(); }
+function tx(g, s, x, y, font, col, al = 'left', bl = 'alphabetic') { g.font = font; g.fillStyle = col; g.textAlign = al; g.textBaseline = bl; g.fillText(s, x, y); }
+// glyphs, centred on (x, y), s = size
+const GL = {
+  bag(g, x, y, s, col, cut) {
+    g.strokeStyle = col; g.lineWidth = s * 0.09; g.beginPath(); g.roundRect(x - s * 0.17, y - s * 0.5, s * 0.34, s * 0.24, s * 0.06); g.stroke();
+    rr(g, x - s * 0.46, y - s * 0.3, s * 0.92, s * 0.74, s * 0.14, col);
+    if (cut) { g.fillStyle = cut; g.fillRect(x - s * 0.24, y - s * 0.3, s * 0.07, s * 0.74); g.fillRect(x + s * 0.17, y - s * 0.3, s * 0.07, s * 0.74); }
+  },
+  sound(g, x, y, s, col) {
+    g.fillStyle = col; g.beginPath(); g.moveTo(x - s * 0.42, y - s * 0.14); g.lineTo(x - s * 0.2, y - s * 0.14); g.lineTo(x + s * 0.06, y - s * 0.38); g.lineTo(x + s * 0.06, y + s * 0.38); g.lineTo(x - s * 0.2, y + s * 0.14); g.lineTo(x - s * 0.42, y + s * 0.14); g.closePath(); g.fill();
+    g.strokeStyle = col; g.lineWidth = s * 0.08; g.lineCap = 'round'; for (const r of [0.2, 0.36]) { g.beginPath(); g.arc(x + s * 0.08, y, s * r, -0.8, 0.8); g.stroke(); }
+  },
+  arrow(g, x, y, s, col) { g.fillStyle = col; g.beginPath(); g.moveTo(x + s * 0.42, y - s * 0.42); g.lineTo(x - s * 0.08, y + s * 0.44); g.lineTo(x - s * 0.04, y + s * 0.04); g.lineTo(x - s * 0.44, y + s * 0.0); g.closePath(); g.fill(); },
+  bell(g, x, y, s, col) { g.fillStyle = col; g.beginPath(); g.moveTo(x - s * 0.36, y + s * 0.22); g.quadraticCurveTo(x - s * 0.26, y + s * 0.1, x - s * 0.26, y - s * 0.08); g.arc(x, y - s * 0.08, s * 0.26, Math.PI, 0); g.quadraticCurveTo(x + s * 0.26, y + s * 0.1, x + s * 0.36, y + s * 0.22); g.closePath(); g.fill(); dot(g, x, y + s * 0.33, s * 0.09, col); },
+  check(g, x, y, s, col) { g.strokeStyle = col; g.lineWidth = s * 0.14; g.lineCap = 'round'; g.lineJoin = 'round'; g.beginPath(); g.moveTo(x - s * 0.3, y); g.lineTo(x - s * 0.08, y + s * 0.22); g.lineTo(x + s * 0.32, y - s * 0.24); g.stroke(); },
+  findMy(g, x, y, s) { g.strokeStyle = '#fff'; g.lineWidth = s * 0.07; for (const r of [0.34, 0.2]) { g.beginPath(); g.arc(x, y, s * r, 0, 7); g.stroke(); } dot(g, x, y, s * 0.07, '#fff'); },
+};
+function statusBar(g, W, col = UI.tx) {
+  tx(g, '9:41', 104, 68, '650 31px Inter', col, 'center');
+  for (let k = 0; k < 4; k++) rr(g, W - 198 + k * 10, 70 - 10 - k * 5, 7, 10 + k * 5, 2, col);
+  g.strokeStyle = col; g.lineCap = 'round'; g.lineWidth = 4.5; for (const r of [9, 17]) { g.beginPath(); g.arc(W - 132, 70, r, -Math.PI * 0.74, -Math.PI * 0.26); g.stroke(); } dot(g, W - 132, 68, 3.5, col);
+  rr(g, W - 104, 47, 48, 24, 8, null, 'rgba(245,244,243,0.5)', 2.5); rr(g, W - 100, 51, 34, 16, 4, col); rr(g, W - 53, 55, 4, 8, 2, 'rgba(245,244,243,0.5)');
+}
+// a dark street map. z < 1 zooms out (the far view reads as a whole region)
+function mapBg(g, W, H, z = 1, dim = 0) {
+  g.fillStyle = '#1c1b1a'; g.fillRect(0, 0, W, H);
+  g.save(); g.translate(W / 2, H * 0.34); g.rotate(-0.3); g.scale(z, z);
+  const CX = 74, CY = 94, N = Math.ceil(1100 / z / CX);
+  for (let i = -N; i <= N; i++) for (let j = -N; j <= N; j++) {
+    const r = rnd(i * 31 + j * 7, 3);
+    g.fillStyle = r < 0.08 ? '#1f241d' : r < 0.5 ? '#222120' : '#1f1e1d';
+    g.fillRect(i * CX + 6, j * CY + 6, CX - 12, CY - 12);
+  }
+  g.lineCap = 'butt';
+  for (const [w, c, m] of [[7, '#2d2b29', 1], [15, '#3a3734', 4]]) {
+    g.strokeStyle = c; g.lineWidth = w; g.beginPath();
+    for (let i = -N; i <= N; i++) if (i % m === 0) { g.moveTo(i * CX, -N * CY); g.lineTo(i * CX, N * CY); }
+    for (let j = -N; j <= N; j++) if (j % m === 0) { g.moveTo(-N * CX, j * CY); g.lineTo(N * CX, j * CY); }
+    g.stroke();
+  }
+  g.lineCap = 'round';
+  g.strokeStyle = '#151617'; g.lineWidth = 92; g.beginPath(); g.moveTo(-1400, 620); g.bezierCurveTo(-500, 300, -100, 520, 500, 160); g.bezierCurveTo(800, -20, 1100, -60, 1500, -300); g.stroke();
+  g.strokeStyle = '#4c3b2e'; g.lineWidth = 20; g.beginPath(); g.moveTo(-1300, -900); g.bezierCurveTo(-400, -500, -200, -100, 260, 1400); g.stroke();
+  if (z >= 0.8) { g.fillStyle = '#74706b'; g.font = '600 21px Inter'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('STATION RD', 2 * CX, -CY * 2 + 1); g.save(); g.rotate(Math.PI / 2); g.fillText('MARKET ST', 0, -4 * CX + 1); g.restore(); }
+  g.restore();
+  if (dim) { g.fillStyle = `rgba(10,9,8,${dim})`; g.fillRect(0, 0, W, H); }
+}
+// the Find My item marker: accuracy halo, white-rimmed orange disc with the bag, a pulse ring
+function bagPin(g, x, y, k = 1, ring = 0) {
+  dot(g, x, y, 150 * k, hexA(O, 0.1)); g.strokeStyle = hexA(O, 0.3); g.lineWidth = 2; g.beginPath(); g.arc(x, y, 150 * k, 0, 7); g.stroke();
+  if (ring > 0) { g.strokeStyle = hexA(O, 0.7 * (1 - ring)); g.lineWidth = 4; g.beginPath(); g.arc(x, y, (56 + ring * 110) * k, 0, 7); g.stroke(); }
+  g.save(); g.shadowColor = 'rgba(0,0,0,0.55)'; g.shadowBlur = 22; g.shadowOffsetY = 8; dot(g, x, y, 52 * k, '#fff'); g.restore();
+  dot(g, x, y, 44 * k, O); GL.bag(g, x, y + 3 * k, 44 * k, '#fff', O);
+}
+function youDot(g, x, y) { dot(g, x, y, 42, 'rgba(255,255,255,0.1)'); g.save(); g.shadowColor = 'rgba(0,0,0,0.5)'; g.shadowBlur = 12; dot(g, x, y, 19, '#fff'); g.restore(); dot(g, x, y, 13, '#8d8781'); }
+function mapButtons(g, W) {
+  rr(g, W - 104, 112, 72, 144, 22, 'rgba(44,42,40,0.94)'); g.fillStyle = 'rgba(255,255,255,0.08)'; g.fillRect(W - 104, 183, 72, 2);
+  g.strokeStyle = UI.tx2; g.lineWidth = 3.5; g.beginPath(); g.arc(W - 68, 148, 15, 0, 7); g.stroke(); tx(g, 'i', W - 68, 149, 'italic 700 21px Inter', UI.tx2, 'center', 'middle');
+  GL.arrow(g, W - 68, 220, 30, UI.tx2);
+}
+function sheet(g, W, H, y0) {
+  g.save(); g.shadowColor = 'rgba(0,0,0,0.6)'; g.shadowBlur = 40; rr(g, 0, y0, W, H - y0 + 60, 46, 'rgba(31,29,28,0.98)'); g.restore();
+  rr(g, W / 2 - 36, y0 + 14, 72, 10, 5, '#4a4643');
+}
+function itemHead(g, W, y, title, sub, subCol) {
+  dot(g, 82, y + 44, 44, O); GL.bag(g, 82, y + 47, 42, '#fff', O);
+  tx(g, title, 146, y + 40, '750 44px Inter', UI.tx); tx(g, sub, 146, y + 80, '550 27px Inter', subCol);
+  dot(g, W - 62, y + 30, 26, '#353331'); g.strokeStyle = UI.tx2; g.lineWidth = 4; g.lineCap = 'round'; g.beginPath(); g.moveTo(W - 71, y + 21); g.lineTo(W - 53, y + 39); g.moveTo(W - 53, y + 21); g.lineTo(W - 71, y + 39); g.stroke();
+}
+function tile(g, x, y, w, h, icon, label, sub, primary) {
+  rr(g, x, y, w, h, 30, primary ? O : UI.tile);
+  dot(g, x + 52, y + 50, 30, primary ? 'rgba(255,255,255,0.24)' : O); GL[icon](g, x + 52, y + 50, 32, '#fff');
+  tx(g, label, x + 26, y + h - 50, '650 29px Inter', '#fff'); tx(g, sub, x + 26, y + h - 18, '550 23px Inter', primary ? 'rgba(255,255,255,0.78)' : UI.tx2);
+}
+function toggleRow(g, W, y, label, on) {
+  rr(g, 30, y, W - 60, 94, 28, UI.tile); dot(g, 82, y + 47, 26, '#3a3836'); GL.bell(g, 82, y + 47, 30, UI.tx);
+  tx(g, label, 126, y + 57, '600 28px Inter', UI.tx);
+  rr(g, W - 146, y + 25, 86, 44, 22, on ? O : '#47433f'); dot(g, on ? W - 82 : W - 124, y + 47, 18, '#fff');
+}
+function lockBg(g, W, H, top = '#2a2421') {
+  const gr = g.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, top); gr.addColorStop(0.6, '#151312'); gr.addColorStop(1, '#0c0b0a'); g.fillStyle = gr; g.fillRect(0, 0, W, H);
+  const r2 = g.createRadialGradient(W * 0.8, H * 0.82, 20, W * 0.8, H * 0.82, 520); r2.addColorStop(0, 'rgba(255,106,31,0.22)'); r2.addColorStop(1, 'rgba(255,106,31,0)'); g.fillStyle = r2; g.fillRect(0, 0, W, H);
+}
+function lockChrome(g, W, H) {
+  for (const x of [104, W - 104]) dot(g, x, H - 150, 46, 'rgba(48,45,43,0.85)');
+  rr(g, 94, H - 170, 20, 34, 6, UI.tx); g.strokeStyle = UI.tx; g.lineWidth = 3.5; rr(g, W - 126, H - 166, 44, 32, 8, null, UI.tx, 3.5); g.beginPath(); g.arc(W - 104, H - 150, 8, 0, 7); g.stroke();
+  rr(g, W / 2 - 110, H - 34, 220, 10, 5, UI.tx);
+}
+const cipher = (n) => { const h = '0123456789ABCDEF'; let s = ''; for (let i = 0; i < 12; i++) { s += h[Math.floor(rnd(n * 13 + i, 9) * 16)]; if (i % 4 === 3 && i < 11) s += ' '; } return s; };
+// your phone: 'far' | 'found' | 'locked' | 'unlock' | 'key' | 'alert' | 'android'
+function yourScreen(g, W0, H0, mode, t) {
+  const H = uiSpace(g, W0, H0), W = 600;
+  if (mode === 'far' || mode === 'found') {
+    const far = mode === 'far', y0 = H * 0.585;
+    mapBg(g, W, H, far ? 0.32 : 1.05);
+    const px = far ? W * 0.66 : W * 0.5, py = far ? H * 0.22 : H * 0.29;
+    if (far) {
+      const yx = W * 0.27, yy = H * 0.47;
+      g.setLineDash([3, 20]); g.lineCap = 'round'; g.strokeStyle = 'rgba(245,244,243,0.85)'; g.lineWidth = 8; g.beginPath(); g.moveTo(yx, yy); g.quadraticCurveTo(W * 0.2, H * 0.27, px, py); g.stroke(); g.setLineDash([]);
+      youDot(g, yx, yy); tx(g, 'You', yx, yy + 58, '650 25px Inter', UI.tx2, 'center');
+      rr(g, W * 0.16, H * 0.31, 150, 54, 27, 'rgba(31,29,28,0.94)'); tx(g, '312 km', W * 0.16 + 75, H * 0.31 + 28, '750 27px Inter', UI.tx, 'center', 'middle');
+    }
+    bagPin(g, px, py, far ? 0.8 : 1, (t * 0.8) % 1);
+    statusBar(g, W); mapButtons(g, W);
+    sheet(g, W, H, y0);
+    itemHead(g, W, y0 + 44, far ? 'Your Bag' : 'Her Bag', far ? 'Another city · 2 min ago' : 'Apartments · Just now', far ? UI.tx2 : O);
+    const tw = (W - 80) / 2;
+    tile(g, 30, y0 + 160, tw, 150, 'sound', 'Play Sound', 'Out of range', false);
+    tile(g, 50 + tw, y0 + 160, tw, 150, 'arrow', 'Directions', '312 km', !far);
+    toggleRow(g, W, y0 + 332, 'Notify When Found', true);
+    rr(g, W / 2 - 110, H - 34, 220, 10, 5, UI.tx);
+  }
+  if (mode === 'locked' || mode === 'unlock') {
+    const u = mode === 'unlock', col = u ? OK : AMB;
+    mapBg(g, W, H, 0.6, 0.72); statusBar(g, W);
+    const y = H * 0.25;
+    g.save(); g.shadowColor = 'rgba(0,0,0,0.6)'; g.shadowBlur = 40; rr(g, 36, y, W - 72, 560, 44, 'rgba(33,31,30,0.97)'); g.restore();
+    dot(g, W / 2, y + 116, 72, hexA(col, 0.14)); g.strokeStyle = hexA(col, 0.45); g.lineWidth = 2.5; g.beginPath(); g.arc(W / 2, y + 116, 72, 0, 7); g.stroke();
+    S6(g, 104, W / 2, y + 116, u ? ICO.unlock : ICO.lock, col);
+    tx(g, u ? 'Report unlocked' : 'Encrypted report', W / 2, y + 252, '750 40px Inter', UI.tx, 'center');
+    tx(g, u ? 'With the owner’s key' : 'From a nearby iPhone', W / 2, y + 294, '550 26px Inter', UI.tx2, 'center');
+    rr(g, 66, y + 334, W - 132, 156, 26, '#2a2826');
+    g.fillStyle = 'rgba(255,255,255,0.07)'; g.fillRect(92, y + 412, W - 184, 2);
+    tx(g, 'Location', 92, y + 384, '550 25px Inter', UI.tx2); tx(g, 'Time', 92, y + 462, '550 25px Inter', UI.tx2);
+    if (u) { tx(g, 'Apartments', W - 92, y + 384, '650 27px Inter', UI.tx, 'right'); tx(g, '2 min ago', W - 92, y + 462, '650 27px Inter', UI.tx, 'right'); }
+    else { const n = Math.floor(t * 14); tx(g, cipher(n), W - 92, y + 384, '600 25px Mono', AMB, 'right'); tx(g, cipher(n + 7).slice(0, 9), W - 92, y + 462, '600 25px Mono', AMB, 'right'); }
+    if (u) { GL.check(g, W / 2 - 150, y + 526, 26, OK); tx(g, 'Decrypted on this iPhone', W / 2 + 18, y + 535, '600 24px Inter', OK, 'center'); }
+    else { rr(g, 66, y + 518, W - 132, 12, 6, '#353230'); rr(g, 66, y + 518, (W - 132) * clamp((t - CUT.YPH) / 1.0), 12, 6, col); }
+    rr(g, W / 2 - 110, H - 34, 220, 10, 5, UI.tx);
+  }
+  if (mode === 'key') {
+    g.fillStyle = '#110f0e'; g.fillRect(0, 0, W, H);
+    const cy_ = H * 0.37, gr = g.createRadialGradient(W / 2, cy_, 10, W / 2, cy_, 460); gr.addColorStop(0, 'rgba(255,106,31,0.2)'); gr.addColorStop(1, 'rgba(255,106,31,0)'); g.fillStyle = gr; g.fillRect(0, 0, W, H);
+    statusBar(g, W);
+    dot(g, W / 2, cy_, 128, hexA(O, 0.12)); g.strokeStyle = hexA(O, 0.5); g.lineWidth = 3; g.beginPath(); g.arc(W / 2, cy_, 128, 0, 7); g.stroke();
+    S6(g, 190, W / 2, cy_, ICO.key, O);
+    tx(g, 'Private key', W / 2, cy_ + 222, '750 48px Inter', UI.tx, 'center');
+    tx(g, 'Stored only on this iPhone', W / 2, cy_ + 270, '600 28px Inter', O, 'center');
+    rr(g, W / 2 - 170, cy_ + 318, 340, 62, 31, UI.tile); GL.check(g, W / 2 - 124, cy_ + 349, 24, UI.tx2); tx(g, 'Never sent to Apple', W / 2 + 16, cy_ + 358, '600 25px Inter', UI.tx2, 'center');
+    rr(g, W / 2 - 110, H - 34, 220, 10, 5, UI.tx);
+  }
+  if (mode === 'alert') {
+    lockBg(g, W, H); statusBar(g, W);
+    tx(g, 'Tuesday 21 October', W / 2, 178, '600 30px Inter', 'rgba(245,244,243,0.85)', 'center');
+    tx(g, '9:41', W / 2, 352, '650 178px Inter', 'rgba(245,244,243,0.96)', 'center');
+    const y = 430, pk = 0.5 + 0.5 * Math.sin(t * 8);
+    g.save(); g.shadowColor = hexA(RED, 0.25 + 0.3 * pk); g.shadowBlur = 44; rr(g, 20, y, W - 40, 292, 44, 'rgba(56,52,50,0.95)'); g.restore();
+    rr(g, 44, y + 30, 96, 96, 24, RED); GL.findMy(g, 92, y + 78, 96);
+    tx(g, 'AirTag Found', 162, y + 68, '750 39px Inter', UI.tx); tx(g, 'Moving With You', 162, y + 114, '750 39px Inter', UI.tx);
+    tx(g, 'now', W - 46, y + 52, '550 25px Inter', UI.tx2, 'right');
+    tx(g, 'The owner of this AirTag', 44, y + 196, '550 32px Inter', '#d3cfcb'); tx(g, 'can see where it is.', 44, y + 240, '550 32px Inter', '#d3cfcb');
+    lockChrome(g, W, H);
+  }
+  if (mode === 'android') {
+    lockBg(g, W, H, '#232120');
+    tx(g, '9:41', 46, 66, '550 28px Inter', UI.tx); dot(g, W - 60, 56, 9, UI.tx); rr(g, W - 112, 46, 30, 20, 5, UI.tx);
+    tx(g, '09', W / 2, 250, '300 150px Inter', 'rgba(245,244,243,0.96)', 'center'); tx(g, '41', W / 2, 392, '300 150px Inter', 'rgba(196,214,202,0.96)', 'center');
+    tx(g, 'Tue, 21 Oct', W / 2, 450, '500 30px Inter', 'rgba(245,244,243,0.8)', 'center');
+    const y = 490, pk = 0.5 + 0.5 * Math.sin(t * 8);
+    g.save(); g.shadowColor = hexA(RED, 0.25 + 0.3 * pk); g.shadowBlur = 44; rr(g, 20, y, W - 40, 292, 34, 'rgba(48,45,43,0.96)'); g.restore();
+    dot(g, 72, y + 52, 28, RED); tx(g, '!', 72, y + 54, '800 34px Inter', '#fff', 'center', 'middle');
+    tx(g, 'Tracker alert · now', 116, y + 62, '600 26px Inter', UI.tx2);
+    tx(g, 'Unknown tracker', 44, y + 136, '750 40px Inter', UI.tx); tx(g, 'traveling with you', 44, y + 184, '750 40px Inter', UI.tx);
+    tx(g, 'Tap to see where it was found', 44, y + 244, '550 29px Inter', '#d3cfcb');
+    rr(g, W / 2 - 90, H - 30, 180, 8, 4, UI.tx);
+  }
+}
+// the stranger's phone: a normal lock screen, nothing about AirTags
+function strangerScreen(g, W0, H0) {
+  const H = uiSpace(g, W0, H0), W = 600;
+  lockBg(g, W, H); statusBar(g, W);
+  tx(g, 'Tuesday 21 October', W / 2, 178, '600 30px Inter', 'rgba(245,244,243,0.85)', 'center');
+  tx(g, '9:41', W / 2, 352, '650 178px Inter', 'rgba(245,244,243,0.96)', 'center');
+  lockChrome(g, W, H);
+}
+let yMode = '';
+function paintYour(t, mode) { const k = mode + (['far', 'found', 'locked', 'alert', 'android'].includes(mode) ? Math.floor(t * 20) : ''); ST.yours.s.draw(k, (g, W, H) => yourScreen(g, W, H, mode, t)); }
+
+/* ---------------- camera */
+// cut(t, focus, scale, opts): opts a, e, sy, and a drift to the next cut (push = scale factor, pan = focus delta)
+const CUTS = [];
+// the stranger walks the sidewalk past the bag: level with it just after "phone" (first pass) and on "hears" (second)
+const PASS2 = T.hears + 0.15;
+function strX(t) { return t >= CUT.PING2 && t < CUT.HOME2 ? BAG[0] + 130 * (t - PASS2) : -6000; }
+const cut = (t, f, s, o = {}) => CUTS.push({ t, f, s, ...o });
+const bagTop = [BAG[0], BAG[1], 70];
+const tagW = ST.tagTop, yp = ST.yours.top, sp = ST.str.top;
+cut(CUT.APT, [CI.dumpster[0] - 160, CI.dumpster[1] + 80, 100], 0.42, { e: 0.8, to: { s: 0.62, f: [CI.herTag[0], CI.herTag[1], 70] }, dur: CUT.NET - CUT.APT, ez: ease.inOut, sy: 470 });
+cut(CUT.NET, [CI.herTag[0] - 40, CI.herTag[1] - 60, 60], 0.95, { e: 0.84, to: { s: 0.5, f: [CI.dumpster[0] - 260, CI.dumpster[1] - 260, 60] }, dur: CUT.IN - CUT.NET, ez: ease.out, sy: 470 });
+cut(CUT.IN, [tagW[0], tagW[1], tagW[2] + 20], 3.4, { e: 0.5, sy: 440, keys: [{ t: T.gps - 0.2, d: 0.7, f: [tagW[0], tagW[1], tagW[2] + 70], s: 2.25 }] });
+cut(CUT.SIM, [tagW[0], tagW[1], tagW[2] + 70], 2.1, { a: -0.35, e: 0.42, push: 1.06, sy: 430 });
+cut(CUT.BT, [tagW[0] + 8, tagW[1] + 4, tagW[2] + 78], 4.2, { a: -0.85, e: 0.62, push: 1.05, sy: 470 });
+cut(CUT.COIN, [tagW[0], tagW[1], tagW[2] + 40], 3.6, { a: -0.55, e: 0.5, push: 1.05, sy: 450 });
+cut(CUT.PING, [tagW[0], tagW[1], tagW[2] + 12], 2.3, { e: 0.62, push: 1.1, sy: 470 });
+cut(CUT.PING2, [BAG[0], BAG[1], 70], 1.35, { push: 1.08, sy: 470 });
+cut(CUT.PASS, [BAG[0] - 160, BAG[1] - 40, 100], 1.0, { pan: [260, 0, 0], sy: 450 });
+cut(CUT.SPH, [sp[0], sp[1], sp[2] + 30], 2.5, { e: 0.3, push: 1.06, sy: 520 });
+cut(CUT.DC1, [DC.hotTop[0], DC.hotTop[1], 120], 0.95, { push: 1.06, sy: 440 });
+cut(CUT.OFF, [strX(CUT.OFF) + 110, SLANE, 100], 1.05, { pan: [200, 0, 0], sy: 450 });
+cut(CUT.HOME2, wz('HOME', -60, 200, 80), 1.15, { push: 1.1, sy: 470 });
+cut(CUT.YPH, [yp[0], yp[1], yp[2] + 4], 3.3, { e: 0.3, push: 1.06, sy: 440 });
+cut(CUT.KEY, [yp[0], yp[1], yp[2] + 40], 2.3, { e: 0.36, push: 1.08, sy: 465 });
+cut(CUT.DC2, wz('DC', -150, 30, 120), 0.56, { push: 1.08, sy: 470 });
+cut(CUT.WHOSE, [tagW[0], tagW[1], tagW[2] + 10], 2.6, { e: 0.85, a: -0.6, push: 1.08, sy: 470 });
+cut(CUT.ZOOM, [BAG[0], BAG[1], 70], 1.3, { to: { f: CITYF, s: 0.088, a: -0.66, e: 0.66, sy: 470 }, dur: CUT.PINS - CUT.ZOOM, ez: ease.inOut });
+cut(CUT.PINS, CITYF, 0.088, { a: -0.66, e: 0.66, push: 1.05, da: -0.04, sy: 470 });
+cut(CUT.BACK, [CI.herTag[0] + 20, CI.herTag[1] + 20, 30], 1.3, { e: 0.86, a: -0.55, push: 1.08, sy: 470, cut: true });
+const HD = T.hides - 0.38 - CUT.HIDE; // B: the shot opens earlier (on "to stop stalkers"); keep the walkers where they were at the drop, clear of the tree
+cut(CUT.HIDE, [1680 - 120 * HD, -640, 90], 1.6, { pan: [230 + 120 * HD, 0, 0], sy: 460 });
+cut(CUT.ALERT, [yp[0], yp[1], yp[2] + 4], 3.3, { e: 0.3, push: 1.06, sy: 440 });
+cut(CUT.BOTH, [ST.yours.top[0] + 90 * 0.765, ST.yours.top[1] + 90 * 0.644, yp[2] - 6], 1.95, { e: 0.3, push: 1.04, sy: 580 });
+cut(CUT.LONE, [tagW[0], tagW[1], tagW[2] + 14], 2.0, { e: 0.55, push: 1.18, sy: 470 });
+cut(CUT.ALL, [BAG[0] + 10, BAG[1] - 70, 70], 1.05, { to: { f: CITYF, s: 0.12, a: -0.62, e: 0.64 }, dur: 5.4, ez: (x) => ease.inOut(clamp((x - 0.16) / 0.84)), sy: 470 });
+const SHOTS = [];
+CUTS.forEach((c, i) => {
+  const nx = CUTS[i + 1] ? CUTS[i + 1].t : DURATION + 1, k = { t: c.t, d: 0, f: c.f, s: c.s, a: c.a ?? -0.7, e: c.e ?? 0.6, sy: c.sy ?? 450 };
+  // a new framing in the same diorama glides there (eased) instead of cutting; a different place still cuts
+  const pv = CUTS[i - 1], near = pv && Math.hypot(c.f[0] - pv.f[0], c.f[1] - pv.f[1]) < 1500 && !c.cut;
+  if (near) { k.d = Math.min(0.55, (nx - c.t) * 0.4); k.ez = ease.inOut; k.g = true; }
+  SHOTS.push(k);
+  if (c.keys) c.keys.forEach((q) => SHOTS.push(q));
+  else if (c.to) SHOTS.push({ t: c.t + 0.001, d: c.dur, ez: c.ez, ...c.to });
+  else SHOTS.push({ t: c.t + 0.001, d: nx - c.t, ez: (x) => x, f: c.pan ? c.f.map((v, j) => v + c.pan[j]) : c.f, s: c.s * (c.push || 1), a: k.a + (c.da || 0), e: k.e, sy: k.sy });
+});
+// no punches: glides and slow drifts carry every shot
+const KICKS = [];
+const SHAKES = [];
+const inShot = (t, a, b) => t >= a && t < b;
+
+/* ---------------- the world, frame by frame */
+// a calm sonar ping: one soft ring per period; returns a smooth 0..1 glow for the light that sends it
+const PING_P = 1.5;
+const glowAt = (t, s) => Math.exp(-Math.pow((t - s - 0.1) / 0.2, 2));
+function pings(t, t0, t1, p, col, R, dur = 1.8, period = PING_P) {
+  if (t < t0 || t > t1 + dur) return 0;
+  let hit = 0;
+  for (let s = t0 + Math.floor((t - t0) / period) * period; s >= t0 && s > t - dur; s -= period) { if (s <= t1) { ripple(t, s, p[0], p[1], p[2], col, R, dur); hit = Math.max(hit, glowAt(t, s)); } }
+  return hit;
+}
+// lit windows step back on the wide city shots so the phones (the story) read first
+const FACADES = []; scene.traverse((o) => { if (o.material && o.material.emissiveMap && !FACADES.includes(o.material)) FACADES.push(o.material); });
+const screenLit = (m, k) => m.color.setRGB(0.6 + 1.9 * k, 0.5 + 0.75 * k, 0.42 + 0.22 * k);
+function world(t) {
+  linksReset();
+  cam3(t, SHOTS, KICKS, SHAKES);
+  const fe = lerp(0.3, 0.9, clamp((cam.s - 0.1) / 0.5)); for (const m of FACADES) m.emissiveIntensity = fe;
+  CI.update(t, { on: t > CUT.ZOOM && t < CUT.BACK ? 1 : t > CUT.ALL ? 1 : 0, t0: t < CUT.BACK ? CUT.ZOOM + 0.5 : CUT.ALL + 0.7 });
+  // "shows up almost anywhere": a few pins land on rooftops one after another
+  CPINS.forEach((p, k) => {
+    const a0 = CUT.PINS + 0.2 + k * 0.22, q = prog(t, a0, a0 + 0.4), on = inShot(t, CUT.PINS, CUT.BACK);
+    p.s.show([p.p[0], p.p[1], p.p[2] + 0.42 * 520 + 900 * (1 - ease.out(q))], on ? ease.out(Math.min(1, q * 2)) : 0, 1);
+    if (on) ripple(t, a0 + 0.4, p.p[0], p.p[1], p.p[2] + 2, O, 420, 1.2);
+  });
+  // "everyone around it": people near the bag; a line runs from the tag to each phone and its screen lights
+  const tagP = CI.tagAt(), allOn = t > CUT.ALL - 0.05;
+  CROWD.forEach((c, k) => {
+    const x = allOn ? c.x + c.v * (t - CUT.ALL) : -6000;
+    c.p.root.position.set(x, c.y, 16); c.p.pose(c.v ? 'walkphone' : 'phone', x / 140 * Math.PI * 2 + k);
+    const h = CUT.ALL + 0.25 + k * 0.14, ph = wpos(c.p.phone);
+    if (allOn) link(t, [[tagP[0], tagP[1], tagP[2] + 3], [tagP[0], tagP[1], ph[2]], ph], h, 0.45, CUT.END + 0.4, O);
+    screenLit(c.p.screen, allOn ? ep(t, h + 0.4, h + 0.6) : 0);
+  });
+  if (allOn) pings(t, CUT.ALL + 0.1, CUT.ALL + 3, [BAG[0], BAG[1], 17.5], O, 300, 1.6, 1.4);
+  AP.belt(t); AP.agent.pose('talk', t * 7);
+  // studio: the tag comes apart for its insides, and rings out thin circles when it whispers
+  const ex = ep(t, T.gps - 0.15, T.gps + 0.5, ease.out) * (1 - ep(t, CUT.PING - 0.6, CUT.PING - 0.05, ease.inOut));
+  ST.tag.explode(ex);
+  ST.tag.chipM.emissiveIntensity = ex > 0.05 ? (t > T.bluetooth - 0.1 ? 2.4 + 2 * pulse(t, T.bluetooth, 3) + 0.4 * Math.sin(t * 8) : 0.6) : 0;
+  const tr = [tagW[0], tagW[1], tagW[2] + 21];
+  const sPing = pings(t, CUT.PING + 0.15, CUT.PING2, tr, O, 130, 1.5, 1.0) + pings(t, CUT.WHOSE + 0.2, CUT.ZOOM, tr, O, 115) + pings(t, CUT.LONE + 0.3, CUT.ALL, tr, O, 110);
+  ST.tag.ringM.emissiveIntensity = 0.5 + 2.2 * Math.min(1, sPing);
+  ST.rimM.emissiveIntensity = 0.8 + 1.0 * pulse(t, T.here, 3);
+  ST.under.material.opacity = 0.04 + 0.06 * Math.min(1, sPing);
+  if (inShot(t, CUT.COIN, CUT.PING)) ripple(t, T.coin, tagW[0], tagW[1], tagW[2] + 0.05 * 40 + 0.95 * 40 * ex + 5, O, 70, 0.8);
+  // street: the bag pings while it is on screen
+  const br = [BAG[0], BAG[1], 17.5];
+  const bPing = pings(t, CUT.PING2 + 0.1, CUT.SPH, br, O, 160) + pings(t, CUT.ZOOM + 0.1, CUT.ZOOM + 1.8, br, O, 420, 2.0, 1.6);
+  CI.tag.ringM.emissiveIntensity = 1.2 + 2 * Math.min(1, bPing);
+  // the stranger walks past (never touching the bag); as he passes, a line runs from the tag to his phone
+  const sx = strX(t), s = CI.stranger;
+  s.root.position.set(sx, SLANE, 16); s.pose('walkphone', sx / 140 * Math.PI * 2);
+  const sHit = pulse(t, T.hears + 0.25, 2.5), sph = wpos(s.phone), tg0 = CI.tagAt();
+  screenLit(s.screen, sHit);
+  if (inShot(t, CUT.PASS, CUT.SPH)) link(t, [tg0, [tg0[0], tg0[1], sph[2]], sph], T.hears - 0.15, 0.4, CUT.SPH, O);
+  // you, walking home, and the person who slips a tag into your bag
+  const yx = inShot(t, CUT.HIDE - 0.5, CUT.ALERT) ? 1700 + 120 * (t - CUT.HIDE - HD) : -6000, Y = CI.you, Hd = CI.hider;
+  Y.root.position.set(yx, -630, 16); Y.pose('walk', yx / 140 * Math.PI * 2);
+  const hx = yx - 120 + (t > T.hides + 0.3 ? -70 * (t - T.hides - 0.3) : 0);
+  Hd.root.position.set(hx, -655, 16); Hd.pose('walk', hx / 140 * Math.PI * 2 + 1);
+  const reach = window01(t, T.hides - 0.25, T.hides + 0.45, 0.2); Hd.shR.rotation.y = lerp(Hd.shR.rotation.y, -1.25, reach); Hd.elR.rotation.y = lerp(Hd.elR.rotation.y, -0.2, reach);
+  Y.root.updateMatrixWorld(true); const pocket = new TH.Vector3(...Y.pocket); Y.body.localToWorld(pocket);
+  const from = [hx + 40, -640, 120], fq = ep(t, T.hides, T.hides + 0.35, ease.inOut);
+  const rp = t < T.hides ? from : [lerp(from[0], pocket.x, fq), lerp(from[1], pocket.y, fq), lerp(from[2], pocket.z, fq) + 30 * Math.sin(fq * Math.PI)];
+  CI.redTag.g.position.set(...rp); CI.redTag.g.rotation.set(1.2, 0.3, 0); CI.redTag.g.visible = yx > -5000 && t > T.hides - 0.3;
+  CI.redTag.g.scale.setScalar(1.8); CI.redTag.ringM.emissiveIntensity = 3 + 2 * pulse(t, T.hides + 0.35, 3);
+  if (CI.redTag.g.visible && t > T.hides + 0.35) pings(t, T.hides + 0.35, CUT.ALERT, [rp[0], rp[1], rp[2]], RED, 60, 0.9, 0.7);
+  // her tag's reported location at the apartment complex: a pin drops onto the spot by the bins
+  const hb = [CI.herTag[0], CI.herTag[1], 90], inBack = inShot(t, CUT.BACK, CUT.HIDE), inApt = t < CUT.IN || inBack, inNet = inShot(t, CUT.NET, CUT.IN);
+  const PIN0 = 0.5, pq = ease.back(prog(t, PIN0 - 0.35, PIN0 + 0.05)); // B: the pin lands in the first second
+  const dk = inBack ? 1 : 0;
+  HOLO.hpin.show([hb[0], hb[1], hb[2] + 130 - 72 * dk + 500 * (1 - ep(t, PIN0 - 0.35, PIN0, ease.in))], inApt ? clamp(pq * 4) : 0, 1 - 0.55 * dk);
+  if (inApt) pings(t, PIN0, CUT.HIDE, [hb[0], hb[1], 19], O, 170, 1.5, 1.2);
+  DUMPL.intensity = inApt ? 900 : 0;
+  CI.aptGlass.visible = t < CUT.IN; CI.aptSolid.visible = !inApt;
+  CI.signG.visible = !(inNet || inBack); // the close shots inside the complex would crop the street sign
+  // "the network found it": residents crossing the courtyard; their phones hear her tag, one line each
+  NEAR.forEach((w, k) => {
+    if (inNet) { const x = w.x + 55 * (t - CUT.NET); w.p.root.position.set(x, w.y, 16); w.p.root.rotation.z = 0; w.p.pose('walkphone', x / 140 * Math.PI * 2 + k); }
+    const h = T.strangers - 0.2 + k * 0.25, ph = wpos(w.p.phone);
+    if (inNet) link(t, [[hb[0], hb[1], 30], [hb[0], hb[1], ph[2]], ph], h, 0.4, CUT.HIDE, O);
+    if (inNet) screenLit(w.p.screen, ep(t, h + 0.35, h + 0.5));
+  });
+  // home: the report comes in through the window and across the room to your phone
+  const hp = HM.phoneAt(), wn = wz('HOME', HM.window[0], HM.window[1], HM.window[2]);
+  HM.phoneL.position.set(hp[0], hp[1] - 20, hp[2] + 25); HM.phoneL.intensity = 30 + 160 * pulse(t, CUT.HOME2 + 0.8, 3);
+  HM.you.screen.color.setRGB(1.55, 0.8, 0.45);
+  if (inShot(t, CUT.HOME2, CUT.YPH)) {
+    link(t, [[wn[0], wn[1] + 700, wn[2]], wn, [hp[0], wn[1] - 40, wn[2]], [hp[0], hp[1], wn[2]], [hp[0], hp[1], hp[2] + 6]], CUT.HOME2 + 0.05, 0.75, CUT.YPH, O);
+    ripple(t, CUT.HOME2 + 0.8, hp[0], hp[1], hp[2], O, 60, 0.7);
+  }
+  // the stranger's phone in close-up: + location, locked, sent up to Apple on a line
+  const shp = ST.str.top, inS = inShot(t, CUT.SPH, CUT.DC1);
+  if (inS) ST.str.s.draw('ls', (g, W, H) => strangerScreen(g, W, H));
+  const pinA = window01(t, T.adds - 0.05, T.locks + 0.05, 0.2), lockA = window01(t, T.locks - 0.05, CUT.DC1 + 0.2, 0.15);
+  HOLO.pin.show([shp[0], shp[1], shp[2] + 95 + 6 * Math.sin(t * 3)], inS ? pinA : 0, 0.7 + 0.3 * ease.back(prog(t, T.adds - 0.05, T.adds + 0.3)));
+  const up = ep(t, T.sends, T.sends + 0.45, ease.in);
+  HOLO.lock.show([shp[0], shp[1], shp[2] + 95 + 600 * up], inS ? lockA : 0, 0.7 + 0.3 * ease.back(prog(t, T.locks - 0.05, T.locks + 0.3)));
+  if (inS) link(t, [[shp[0], shp[1], shp[2] + 70], [shp[0], shp[1], shp[2] + 1600]], T.sends - 0.05, 0.55, CUT.DC1, O);
+  // the Find My servers: the line comes down onto one rack and the report lands, locked
+  const inD1 = inShot(t, CUT.DC1, CUT.OFF), inD2 = inShot(t, CUT.DC2, CUT.WHOSE), land = CUT.DC1 + 0.32;
+  if (inD1 || inD2) DC.draw(t, pulse(t, land, 2.5));
+  if (inD1) { link(t, [[DC.hotTop[0], DC.hotTop[1], 1600], DC.hotTop], CUT.DC1 - 0.05, 0.37, CUT.OFF, O); ripple(t, land, DC.hotTop[0], DC.hotTop[1], 216, O, 110, 0.8); }
+  HOLO.dlock.forEach((h, k) => { const r = DC.racks[[1, 3, 5, 10, 12, 14][k]], a0 = (inD1 ? land : CUT.DC2 + 0.1 + k * 0.08); h.show([r[0], r[1], r[2] + 70 + 5 * Math.sin(t * 2 + k)], (inD1 && k === 2) || inD2 ? ep(t, a0, a0 + 0.2) : 0, 0.8 + 0.2 * ease.back(prog(t, a0, a0 + 0.3))); });
+  if (inD1) HOLO.dlock[2].position.set(DC.hotTop[0], DC.hotTop[1], 290);
+  // your phone in close-up
+  if (inShot(t, CUT.YPH, CUT.KEY)) paintYour(t, t < T.unlocks ? 'locked' : t < T.theres ? 'unlock' : 'found');
+  if (inShot(t, CUT.KEY, CUT.DC2)) paintYour(t, 'key');
+  if (inShot(t, CUT.ALERT, CUT.LONE)) paintYour(t, 'alert');
+  HOLO.key.show([yp[0], yp[1], yp[2] + 105 + 6 * Math.sin(t * 2.4)], inShot(t, CUT.KEY, CUT.DC2) ? ep(t, T.key - 0.2, T.key + 0.1) : 0, 0.75 + 0.25 * ease.back(prog(t, T.key - 0.2, T.key + 0.2)));
+  if (inShot(t, CUT.YPH, CUT.KEY)) ripple(t, T.unlocks, yp[0], yp[1], 38.5, OK, 110, 0.8);
+  if (inShot(t, CUT.ALERT, CUT.LONE)) pings(t, T.warns - 0.1, CUT.LONE, [yp[0], yp[1], 38.5], RED, 120, 1.1, 0.8);
+  const aq = ease.back(prog(t, CUT.BOTH - 0.1, CUT.BOTH + 0.25));
+  ST.and.g.visible = t > CUT.BOTH - 0.1 && t < CUT.LONE; ST.and.g.scale.setScalar(Math.max(0.01, aq));
+  if (ST.and.g.visible) { ST.and.s.draw('and' + Math.floor(t * 20), (g, W, H) => yourScreen(g, W, H, 'android', t)); pings(t, T.android - 0.2, CUT.LONE, [ST.and.top[0], ST.and.top[1], 38.5], RED, 110, 1.1, 0.8); }
+}
+
+/* ---------------- HUD */
+const K = (k, v, c, o) => ({ k, v, c, ...o });
+const stat = [$('st0'), $('st1')];
+function tags(t) {
+  hud.begin();
+  const H = (key, o) => hud.card(key, o, t), CH = (key, o) => hud.chip(key, o, t);
+  const hp = HM.phoneAt(), tg = CI.tagAt(), sTop = wpos(CI.stranger.phone), pk = ST.yours.top, sk = ST.str.top;
+  // hook
+  H('h2', K('The AirTag', "Didn't find it", WH, { w: [CI.herTag[0], CI.herTag[1], 70], x: 300, y: 250, a: T.didnt - 0.05, b: CUT.IN }));
+  H('h3', K("A stranger's phone", 'Found it', O, { w: wpos(NEAR[0].p.phone), x: 40, y: 230, a: T.strangers - 0.05, b: CUT.IN, big: true }));
+  // inside the tag
+  const R = 40, cap = [tagW[0], tagW[1], tagW[2] + 2.9 * R * ST_ex(t) + 0.4 * R], pcb = [tagW[0] + 21, tagW[1] + 8, tagW[2] + 0.1 * R + 1.85 * R * ST_ex(t)], bat = [tagW[0], tagW[1], tagW[2] + 0.1 * R + 0.95 * R * ST_ex(t)];
+  [['GPS', T.gps, 210], ['SIM', T.sim, 286], ['Wi-Fi', T.wifi, 362]].forEach(([k, a, y]) => H('no' + k, K(k, 'None ✕', RED, { x: 22, y, a: a - 0.05, b: CUT.BT })));
+  CH('shell', { s: 'Shell', w: cap, x: 70, y: -10, rel: true, a: T.gps + 0.4, b: CUT.BT });
+  CH('board', { s: 'Board', w: pcb, x: 70, y: -10, rel: true, a: T.gps + 0.5, b: CUT.BT });
+  CH('batt', { s: 'Battery', w: bat, x: 70, y: -10, rel: true, a: T.gps + 0.6, b: CUT.BT });
+  H('bt', K('Bluetooth chip', 'On ✓', OK, { w: pcb, x: 300, y: 570, a: T.bluetooth - 0.05, b: CUT.COIN, big: true }));
+  H('coin', K('Coin battery', 'Lasts ~1 year', WH, { w: [bat[0], bat[1], bat[2] + 4], x: 290, y: 580, a: T.coin - 0.05, b: CUT.PING }));
+  // the whisper
+  H('wh', K('Bluetooth ping', 'Every few seconds', O, { w: [tagW[0], tagW[1], tagW[2] + 21], x: 270, y: 560, a: T.every + 0.1, b: CUT.PING2 }));
+  CH('ex', { s: 'Any bag, anywhere', w: [BAG[0], BAG[1], 40], x: -140, y: 60, rel: true, a: CUT.PING2 + 0.2, b: CUT.PASS });
+  H('here', K('It says', '“I’m here”', OK, { w: tg, x: 290, y: 250, a: T.here - 0.05, b: CUT.PASS, big: true }));
+  CH('anyiph', { s: 'iPhone', w: sTop, x: -30, y: -50, rel: true, a: CUT.PASS + 0.2, b: T.hears - 0.05, hot: true, c: O });
+  H('hear', K('Any iPhone', 'Hears it', O, { w: sTop, x: 40, y: 240, a: T.hears - 0.05, b: CUT.SPH }));
+  H('adds', K('Adds', 'Its location', O, { w: [sk[0], sk[1], sk[2] + 95], x: 300, y: 200, a: T.adds - 0.05, b: CUT.DC1 }));
+  H('locks', K('Locks it', 'Encrypted', AMB, { w: [sk[0], sk[1], sk[2] + 95], x: 300, y: 282, a: T.locks - 0.05, b: CUT.DC1 }));
+  H('sends', K('Sends it', 'To Apple', O, { x: 300, y: 364, a: T.sends - 0.05, b: CUT.DC1 }));
+  CH('lsn', { s: 'Lock screen: normal', w: [sk[0], sk[1], sk[2] - 40], x: 20, y: 620, a: CUT.SPH + 0.3, b: CUT.DC1 });
+  H('srv', K('Find My server', 'Report stored', AMB, { w: DC.hotTop, x: 40, y: 220, a: CUT.DC1 + 0.3, b: CUT.OFF }));
+  H('never', K('Every passer-by', 'Never knows', WH, { w: sTop, x: 40, y: 230, a: T.never - 0.05, b: CUT.HOME2, big: true }));
+  // your side
+  H('down', K('Her phone', 'Downloads it', O, { w: hp, x: 290, y: 560, a: T.downloads - 0.4, b: CUT.YPH }));
+  H('rep', K('Report', t < T.unlocks ? 'Locked' : t < T.theres ? 'Unlocked' : 'There’s her bag', t < T.unlocks ? AMB : OK, { w: [pk[0], pk[1], pk[2] + 64], x: 300, y: 180, a: CUT.YPH + 0.15, b: CUT.KEY }));
+  H('key', K('The only key', 'Hers', OK, { w: [pk[0], pk[1], pk[2] + 105], x: 290, y: 190, a: T.key - 0.1, b: CUT.DC2, big: true }));
+  H('apple', K('Apple sees', '••••••••', RED, { x: 30, y: 200, a: T.cant - 0.1, b: CUT.WHOSE }));
+  CH('cant', { s: "Can't read ✕", w: DC.racks[3] && [DC.racks[3][0], DC.racks[3][1], DC.racks[3][2] + 70], x: 30, y: 270, a: T.cant + 0.1, b: CUT.WHOSE, hot: true, c: RED });
+  const ids = ['7F3A·91C2', 'B04E·5D17', '2C9F·E86A', 'D51B·3A40', '8E27·C9F3'];
+  H('id', K('Tag ID · changes', ids[Math.floor(Math.max(0, t - CUT.WHOSE) * 2.2) % ids.length], AMB, { w: [tagW[0], tagW[1], tagW[2] + 21], x: 290, y: 200, a: CUT.WHOSE + 0.1, b: CUT.ZOOM }));
+  H('whose', K('Whose tag?', 'Unknown', GR, { x: 290, y: 282, a: T.whose - 0.05, b: CUT.ZOOM }));
+  H('29', K('A $29 disc', 'Millions of helpers', OK, { x: 30, y: 590, a: T.d29 - 0.1, b: CUT.BACK, big: true }));
+  // the airline story
+  H('safe', K('The airline said', '“It’s safe”', RED, { x: 290, y: 600, a: T.safe - 0.1, b: T.her - 0.05 }));
+  H('hertag', K('Her AirTag', 'Apartment complex', O, { w: CI.aptWing, x: 40, y: 560, a: T.apartment - 0.05, b: CUT.NET, big: true }));
+  H('netA', K('The airline', '“It’s safe”', RED, { x: 30, y: 200, a: CUT.BACK + 0.15, b: CUT.HIDE }));
+  H('netB', K('Her AirTag', 'Knew where it was ✓', OK, { w: [CI.herTag[0], CI.herTag[1], 80], x: 30, y: 560, a: T.airline2 - 0.1, b: CUT.HIDE, big: true }));
+  // the tag on you
+  CH('hid', { s: 'Not your AirTag', w: CI.redTag.g.position.toArray(), x: -50, y: -70, rel: true, a: T.hides + 0.3, b: T.travels, hot: true, c: RED });
+  CH('mov', { s: 'Moving with you…', w: CI.redTag.g.position.toArray(), x: -50, y: -70, rel: true, a: T.travels, b: CUT.ALERT, hot: true, c: RED });
+  H('warn', K('Your phone', 'Can warn you', RED, { w: [pk[0], pk[1], pk[2] + 64], x: 300, y: 180, a: T.warns - 0.1, b: CUT.BOTH, big: true }));
+  H('iph', K('iPhone', 'AirTag moving with you', RED, { w: [pk[0], pk[1], pk[2] + 64], x: 24, y: 290, a: CUT.BOTH + 0.45, b: CUT.LONE }));
+  H('and', K('Android', 'Tracker traveling with you', RED, { w: [ST.and.top[0], ST.and.top[1], ST.and.top[2] + 64], x: 245, y: 360, a: T.android - 0.1, b: CUT.LONE }));
+  // the twist
+  H('lone', K('The AirTag', "Doesn't know where it is", WH, { w: [tagW[0], tagW[1], tagW[2] + 21], x: 300, y: 560, a: T.tracking - 0.1, b: CUT.ALL, big: true }));
+  H('all', K('Everyone around it', 'Reports where it is', O, { x: 30, y: 590, a: T.everyone - 0.05, b: CUT.END, big: true }));
+  hud.end();
+  // status chip
+  const found = t > T.theres - 0.05 && t < CUT.BACK || t > CUT.LONE, show = t >= CUT.IN && t < CUT.BACK - 0.1 || t > CUT.LONE;
+  $('stat').style.display = show ? '' : 'none';
+  stat[0].className = !found ? 'on' : ''; stat[0].style.background = !found ? RED : ''; stat[0].style.boxShadow = !found ? `0 0 8px ${RED}` : '';
+  stat[1].className = found ? 'on' : ''; stat[1].style.background = found ? OK : ''; stat[1].style.boxShadow = found ? `0 0 8px ${OK}` : '';
+}
+const ST_ex = (t) => ep(t, T.gps - 0.15, T.gps + 0.5, ease.out) * (1 - ep(t, CUT.PING - 0.6, CUT.PING - 0.05, ease.inOut));
+
+/* ---------------- reel config */
+const BAGSVG = '<svg width="44" height="44" viewBox="0 0 44 44" fill="none" stroke="#ff6a1f" stroke-width="2.4" stroke-linejoin="round"><rect x="7" y="13" width="30" height="25" rx="4"/><path d="M16 13 V8 H28 V13 M15 13 V38 M29 13 V38"/></svg>';
+const REEL = {
+  shots: [{ t: 0, f: [0, 0, 0], s: 1, a: -0.7, e: 0.6, sy: 480 }], world, tags,
+  tools: [
+    { a: T.airline + 0.2, b: T.her - 0.05, svg: BAGSVG, name: 'United: “Don’t worry.”', sub: 'HER AIRTAG SAID: AN APARTMENT COMPLEX', src: 'VALERIE SZYBALA’S LOST BAG · NBC NEWS · JAN 2023' },
+  ],
+  slams: [
+    { a: T.hundreds - 0.1, b: T.thats - 0.15, text: 'find my network', sub: 'EVERY APPLE DEVICE IS A HELPER', size: 60 },
+  ],
+  bad: ['gps', 'sim', 'wi-fi', 'safe', 'stalkers'],
+  good: ['here', 'bag', 'warn', 'key', 'everyone'],
+  tiles: [['◎', 'AIRTAGS'], ['⚡', 'CIRCUIT<br>BREAKERS'], ['≋', 'MESSAGE<br>QUEUES']],
+  end: CUT.END, follow: CUT.END + 0.5,
+  cover: { k: 'HOW IT WORKS', t: 'AIRTAGS', at: T.everyone + 0.5, zoom: 0.95, dy: 40 },
+  flash: (t) => 0.07 * pulse(t, T.hides, 7) + 0.05 * pulse(t, T.warns, 7),
+};
+</script>
+<script src="lib/overlay.js"></script>
+<script>
+// paint the canvas textures again once the web fonts are in
+{ const r0 = window.ready; window.ready = async () => { await r0(); ctexRedraw(); for (const d of [ST.yours.s, ST.str.s, ST.and.s]) d._k = null; }; }
+if (/cover/.test(location.hash)) { const c = document.createElement('style'); c.textContent = '#hud, #stat { display: none !important; } #stage { background: #070707 !important; }'; document.head.appendChild(c); }
+</script>
+<script src="../_ember/play.js"></script>
+</body>
+</html>

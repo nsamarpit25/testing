@@ -1,0 +1,717 @@
+{
+ "_note": "Registry for the HIE reel tracker (tools/remake/bin/tracker.py). kind: original | v2 | B | new | new-B | copy. status comes from the API (live = on the grid, trial = trial reel); 'deleted' and 'scheduled' are set here.",
+ "reels": [
+  {
+   "code": "DehBtpoI_YI",
+   "topic": "Caching",
+   "kind": "original",
+   "note": "Weakest original still up. Remake candidate."
+  },
+  {
+   "code": "DegnEarSVee",
+   "topic": "Rate limiting",
+   "kind": "original",
+   "deleted": "2026-10-21",
+   "views": 1338,
+   "note": "Deleted: v2 beat it."
+  },
+  {
+   "code": "Dehel-4ySze",
+   "topic": "Idempotency",
+   "kind": "original",
+   "deleted": "2026-10-21",
+   "views": 739,
+   "note": "Deleted: v2 beat it."
+  },
+  {
+   "code": "Deht-Qwy_gy",
+   "topic": "Load balancing",
+   "kind": "original",
+   "deleted": "2026-10-21",
+   "views": 233,
+   "note": "Deleted: v2 got 5x."
+  },
+  {
+   "code": "DejHEo2yeTG",
+   "topic": "Reverse proxies",
+   "kind": "original",
+   "deleted": "2026-10-21",
+   "views": 1872,
+   "note": "Deleted: B passed it."
+  },
+  {
+   "code": "Dej6JbZS6Qo",
+   "topic": "CI/CD",
+   "kind": "original"
+  },
+  {
+   "code": "DekR_dKSMsc",
+   "topic": "Docker",
+   "kind": "original"
+  },
+  {
+   "code": "DelTG36SiBr",
+   "topic": "API gateways",
+   "kind": "original"
+  },
+  {
+   "code": "DemAdV7yHef",
+   "topic": "Kubernetes",
+   "kind": "original",
+   "note": "Best reel on the account."
+  },
+  {
+   "code": "Deml8FfStFb",
+   "topic": "Service discovery",
+   "kind": "original"
+  },
+  {
+   "code": "DeoNZd-ypXG",
+   "topic": "Health checks",
+   "kind": "original"
+  },
+  {
+   "code": "DepTLH1yW8M",
+   "topic": "Circuit breakers",
+   "kind": "original"
+  },
+  {
+   "code": "DepoIsTybkw",
+   "topic": "Timeouts",
+   "kind": "original"
+  },
+  {
+   "code": "DeqWBdySvAD",
+   "topic": "Retries",
+   "kind": "original"
+  },
+  {
+   "code": "Der9kXjyueH",
+   "topic": "Message queues",
+   "kind": "original",
+   "note": "Weak original. Remake candidate."
+  },
+  {
+   "code": "DetdqQXSM9L",
+   "topic": "Pub/Sub",
+   "kind": "original"
+  },
+  {
+   "code": "Det1RFaS76L",
+   "topic": "Event-driven",
+   "kind": "original"
+  },
+  {
+   "code": "DeuVJG8SMxM",
+   "topic": "Canary releases",
+   "kind": "copy",
+   "deleted": "2026-10-20",
+   "views": 258,
+   "note": "Early upload, removed."
+  },
+  {
+   "code": "Deugt-XE6nY",
+   "topic": "Canary releases",
+   "kind": "copy",
+   "deleted": "2026-10-21",
+   "views": 117,
+   "note": "Spare copy, deleted."
+  },
+  {
+   "code": "DeuiOdulfWH",
+   "topic": "Canary releases",
+   "kind": "copy",
+   "deleted": "2026-10-21",
+   "views": 461,
+   "note": "Spare copy, deleted."
+  },
+  {
+   "code": "Deuh_3nD3Z_",
+   "topic": "Canary releases",
+   "kind": "original",
+   "note": "The copy kept. Made live 10:55."
+  },
+  {
+   "code": "DeuoSE4iFmj",
+   "topic": "Docker",
+   "kind": "v2"
+  },
+  {
+   "code": "DevT_PBgJZY",
+   "topic": "Docker",
+   "kind": "B",
+   "note": "Hook back to the original's line."
+  },
+  {
+   "code": "DeusEvgCfo1",
+   "topic": "Kubernetes",
+   "kind": "v2",
+   "deleted": "2026-10-21",
+   "views": 1443,
+   "note": "Deleted: B had more shares."
+  },
+  {
+   "code": "DevP_yLjBjp",
+   "topic": "Kubernetes",
+   "kind": "B",
+   "note": "Hook back to the original's line."
+  },
+  {
+   "code": "Deuv8O2DG8g",
+   "topic": "Reverse proxies",
+   "kind": "v2",
+   "deleted": "2026-10-21",
+   "views": 1736,
+   "note": "Deleted: invalid nginx proxy_pass on screen."
+  },
+  {
+   "code": "DevYDm4jtwu",
+   "topic": "Reverse proxies",
+   "kind": "B",
+   "note": "Fixed nginx line, curiosity hook. Made live ~12:20."
+  },
+  {
+   "code": "Deuz-jtD7GN",
+   "topic": "Rate limiting",
+   "kind": "v2",
+   "note": "Made live 10:55."
+  },
+  {
+   "code": "Deu389jCI7v",
+   "topic": "Load balancing",
+   "kind": "v2"
+  },
+  {
+   "code": "DevcEv4gqn3",
+   "topic": "Load balancing",
+   "kind": "B",
+   "note": "Hook: 100,000 people opened your app at once."
+  },
+  {
+   "code": "Deu77PfkquT",
+   "topic": "Health checks",
+   "kind": "v2"
+  },
+  {
+   "code": "Devf-dXjxew",
+   "topic": "Health checks",
+   "kind": "B",
+   "note": "Hook back to the original's line."
+  },
+  {
+   "code": "DevACd5n0hc",
+   "topic": "Idempotency",
+   "kind": "v2"
+  },
+  {
+   "code": "DevkAnzDIbu",
+   "topic": "Idempotency",
+   "kind": "B",
+   "note": "Hook back to the original's line, elevator panel."
+  },
+  {
+   "code": "DevEBHCEzQv",
+   "topic": "Saga pattern",
+   "kind": "new",
+   "deleted": "2026-10-21",
+   "views": 1169,
+   "note": "Deleted: B ahead."
+  },
+  {
+   "code": "DevL9S8CCb7",
+   "topic": "Saga pattern",
+   "kind": "new-B",
+   "note": "Made live 10:55."
+  },
+  {
+   "code": "DevH-HaDygZ",
+   "topic": "Dead letter queues",
+   "kind": "new"
+  },
+  {
+   "code": "DevwH0gCQ0_",
+   "topic": "Dead letter queues",
+   "kind": "new-B",
+   "note": "Story hook, tighter opening shot."
+  },
+  {
+   "code": "Devn_rdFG6z",
+   "topic": "Cron jobs",
+   "kind": "new"
+  },
+  {
+   "code": "Devr_8Ej1Y-",
+   "topic": "WebSockets",
+   "kind": "new"
+  },
+  {
+   "code": "Dev0IAUgYr0",
+   "topic": "Long polling",
+   "kind": "new",
+   "dir": "23-long-polling",
+   "published_at": "2026-10-21T06:56:51+0000"
+  },
+  {
+   "code": "Dev6eHQk3he",
+   "topic": "Server-sent events",
+   "kind": "new",
+   "dir": "24-server-sent-events",
+   "note": "Posted live (new topic). 13:00 try failed: internet down.",
+   "published_at": "2026-10-21T07:52:14+0000"
+  },
+  {
+   "code": "",
+   "topic": "Database indexing",
+   "kind": "new",
+   "scheduled": "awaiting OK",
+   "dir": "25-database-indexing",
+   "note": "Codex PASS. Waiting for Sam's OK, then live."
+  },
+  {
+   "code": "DewAKkNCNjm",
+   "topic": "Caching",
+   "kind": "v2",
+   "dir": "02-caching-v2",
+   "note": "Hook: 2 s first load vs instant second load.",
+   "published_at": "2026-10-21T08:41:59+0000"
+  },
+  {
+   "code": "DewEIruCZVw",
+   "topic": "Message queues",
+   "kind": "v2",
+   "dir": "17-message-queues-v2",
+   "note": "Hook: text to a dead phone, one grey tick. Trial.",
+   "published_at": "2026-10-21T09:16:43+0000"
+  },
+  {
+   "code": "",
+   "topic": "Circuit breakers",
+   "kind": "v2",
+   "scheduled": "2026-10-21 15:20",
+   "dir": "13-circuit-breakers-v2",
+   "note": "Hook: shop down because reviews got slow. Trial."
+  },
+  {
+   "code": "",
+   "topic": "Service discovery",
+   "kind": "v2",
+   "scheduled": "2026-10-21 15:55",
+   "dir": "10-service-discovery-v2",
+   "note": "Hook: every payment failed at 2:05 PM, no code changed. Trial (repost pick #1)."
+  },
+  {
+   "code": "",
+   "topic": "API gateways",
+   "kind": "v2",
+   "scheduled": "2026-10-21 16:30",
+   "dir": "06-api-gateways-v2",
+   "note": "Hook: stranger saw everyone's food orders without logging in. Trial (repost pick #2)."
+  },
+  {
+   "code": "DewW9a6CNof",
+   "topic": "CI/CD",
+   "kind": "v2",
+   "dir": "07-ci-cd-v2",
+   "note": "Hook: changed one letter, app down 2 min later. Trial (repost pick #3).",
+   "published_at": "2026-10-21T12:01:17+0000"
+  },
+  {
+   "code": "Dewd6RjFaG6",
+   "topic": "Retries",
+   "kind": "v2",
+   "dir": "16-retries-v2",
+   "note": "Hook: weather server stopped answering 1 s, every app retried at once. Trial (repost pick #5).",
+   "published_at": "2026-10-21T13:02:10+0000"
+  },
+  {
+   "code": "",
+   "topic": "Query optimization",
+   "kind": "new",
+   "scheduled": "awaiting OK",
+   "dir": "26-query-optimization",
+   "note": "Codex PASS. Waiting for Sam's OK, then live."
+  },
+  {
+   "code": "",
+   "topic": "N+1 queries",
+   "kind": "new",
+   "scheduled": "awaiting OK",
+   "dir": "27-n-plus-one",
+   "note": "Codex PASS. Waiting for Sam's OK, then live."
+  },
+  {
+   "code": "DexOEQLAA-J",
+   "topic": "AirTag",
+   "kind": "new",
+   "dir": "29-airtag",
+   "note": "New topic #29, live. New voice (Gemini 3.8 Flash on Vertex), rebuilt AirTag + phones, her bag at the dumpsters. Codex PASS, Argon PASS, cutcheck clean."
+  },
+  {
+   "code": "Deypq6Sj5Pw",
+   "topic": "Shazam",
+   "kind": "new",
+   "dir": "34-shazam",
+   "note": "New topic #34 (3D), live 22 Oct 14:52 IST on Sam's OK (5.9 h after the indexing reel). Codex PASS, Argon PASS, cutcheck clean."
+  },
+  {
+   "code": "DezGPkuiY-N",
+   "topic": "AirTag",
+   "kind": "B",
+   "dir": "29-airtag-b",
+   "note": "Trial 22 Oct 19:02 IST: AirTag B, story first, 45.7 s, AWS render. Codex PASS, Argon PASS, cutcheck clean."
+  },
+  {
+   "code": "DezKT3NCMK0",
+   "topic": "Query optimization",
+   "kind": "v2",
+   "dir": "26-query-optimization-v2",
+   "note": "Live 22 Oct 19:37 IST on Sam's OK (4.7 h after Shazam). Codex PASS, Argon PASS, cutcheck clean."
+  },
+  {
+   "code": "DezYCTmEn14",
+   "topic": "Google Maps traffic",
+   "kind": "new",
+   "dir": "30-maps-traffic",
+   "note": "Live 22 Oct 21:37 IST on Sam's OK (2 h after query optimization). Codex PASS, Argon PASS, cutcheck clean."
+  },
+  {
+   "code": "Dezf1n6AgQ6",
+   "topic": "GPS",
+   "kind": "new",
+   "dir": "33-gps",
+   "note": "Live 22 Oct 22:44 IST on Sam's OK (1 h after Maps traffic). Codex PASS, Argon PASS, cutcheck clean."
+  },
+  {
+   "code": "De0x51-joqu",
+   "topic": "Touchscreen",
+   "kind": "new",
+   "dir": "36-touchscreen",
+   "note": "New topic #36 (premium look), live 23 Oct 10:43 IST on Sam's OK (12 h after GPS). Codex PASS, Argon PASS, cutcheck clean. md5 8ae143e6199a57c33cac9a4097934f74. Deleted by Sam 23 Oct; re-cut as 36-touchscreen-b.",
+   "deleted": "2026-10-23",
+   "views": 2
+  },
+  {
+   "code": "De0_29BCkYq",
+   "topic": "Touchscreen",
+   "kind": "new-B",
+   "dir": "36-touchscreen-b",
+   "note": "Re-cut of 36-touchscreen (deleted De0x51-joqu): 1.87 s shorter (two silent pauses shortened before scene cuts at 21.0 / 33.4 s, end hold cut to 0.9 s), new caption. Live 23 Oct 12:44 IST on Sam's OK. Cutcheck clean; Codex/Gemini skipped on Sam's say-so (\"no review needed just upload\"); source render had Codex + Argon PASS. md5 9cba81eec34a842881a8d31590a74cff."
+  },
+  {
+   "code": "De1AWEMgXcH",
+   "topic": "Tap to pay",
+   "kind": "new",
+   "dir": "31-tap-to-pay",
+   "note": "New topic #31 (3D), auto trial 23 Oct 12:49 IST on Sam's OK (2 h after Touchscreen). Codex PASS, Argon PASS, cutcheck clean. md5 374d35208eaf46972ec7c33004c489f1."
+  },
+  {
+   "code": "De1HNjDAIK8",
+   "topic": "Noise cancelling",
+   "kind": "new",
+   "dir": "32-noise-cancelling",
+   "note": "New topic #32 (3D), auto trial 23 Oct 13:49 IST on Sam's OK (1 h after Tap to pay). Codex PASS, Argon PASS, cutcheck clean. md5 31a07a0a1b18340df2975c570553f79c."
+  },
+  {
+   "code": "De1OEsgm7QM",
+   "topic": "Connection pooling",
+   "kind": "v2",
+   "dir": "28-connection-pooling-v2",
+   "note": "v2 (3D), auto trial 23 Oct 14:49 IST on Sam's OK (1 h after Noise cancelling). Codex PASS, Argon PASS, cutcheck clean. md5 1e28faeb810a6a61cb937e3d3fac917d."
+  },
+  {
+   "code": "De1lsDgjOe0",
+   "topic": "N+1 queries",
+   "kind": "v2",
+   "dir": "27-n-plus-one-v2",
+   "note": "v2 (3D), live 23 Oct 18:14 IST on Sam's OK (\"upload first from up next as normal\"; 3.4 h after Connection pooling trial, 5.5 h after Touchscreen re-cut). Codex PASS, Argon PASS. md5 3fb6e6b1bcddc3963dd36ee9ed87f86c."
+  },
+  {
+   "code": "De15-UZgm_K",
+   "topic": "Read replicas",
+   "kind": "new",
+   "dir": "29-read-replicas",
+   "note": "New topic (3D), live 23 Oct 21:12 IST on Sam's OK (\"upload read replicas as normal\"; 3 h after N+1 v2). Codex PASS, Argon PASS, cutcheck clean. md5 34950a80771abe04c5cd305088ecf6b1."
+  },
+  {
+   "code": "De3RzemDsBB",
+   "topic": "Sharding",
+   "kind": "new",
+   "dir": "30-sharding",
+   "note": "New topic (3D), live 24 Oct 10:01 IST on Sam's OK (\"upload 1 from up next\"; first in Up next, posted as a normal reel). Codex + Gemini PASS. md5 624a5f6045e99e06d7fcf45c6366d210."
+  },
+  {
+   "code": "De4JyHfm8nb",
+   "topic": "Face ID",
+   "kind": "new",
+   "dir": "35-face-id",
+   "note": "New topic, live 24 Oct 18:10 IST on Sam's OK (\"upload face id\"; posted as a normal reel, 8 h after Sharding). md5 6c27fc10c0199d82072396c2c879af3e."
+  },
+  {
+   "code": "De2nN1Jj5nr",
+   "topic": "Kingda Ka magnetic brakes",
+   "kind": "new",
+   "dir": "3d-02-kingda-ka-brakes",
+   "note": "3D series ep 2, live 23 Oct (posted outside this tool; found on the account 24 Oct and logged then)."
+  },
+  {
+   "code": "De36HiISuWU",
+   "topic": "Jet engine turbine blades",
+   "kind": "new",
+   "dir": "3d-03-jet-blades",
+   "note": "3D series ep 3, live 24 Oct, posted by Sam from the iPhone with the airliner cover. Codex PASS."
+  },
+  {
+   "code": "De4NZ7QDjlU",
+   "topic": "Replication",
+   "kind": "new",
+   "dir": "40-replication",
+   "note": "Replication, auto trial 24 Oct 18:41 IST on Sam's OK (partitioning as normal 1 h after Face ID, replication, distributed transactions and QR code as trials 30 min apart). md5 c5caf1486b7aa045ceba5b3234be84e8."
+  },
+  {
+   "code": "De4Q21hk9tP",
+   "topic": "Partitioning",
+   "kind": "new",
+   "dir": "31-partitioning",
+   "note": "Partitioning, live 24 Oct 19:12 IST on Sam's OK (partitioning as normal 1 h after Face ID, replication, distributed transactions and QR code as trials 30 min apart). md5 c8daff26f4e235fbc13364d0037fdf05."
+  },
+  {
+   "code": "De4UMiYjwEZ",
+   "topic": "Distributed transactions",
+   "kind": "new",
+   "dir": "21-distributed-transactions",
+   "note": "Distributed transactions, auto trial 24 Oct 19:41 IST on Sam's OK (partitioning as normal 1 h after Face ID, replication, distributed transactions and QR code as trials 30 min apart). md5 79486b0a7fa69f28d0c0c0317c51f3c1."
+  },
+  {
+   "code": "De4XtmDAmp1",
+   "topic": "QR code",
+   "kind": "new",
+   "dir": "37-qr-code",
+   "note": "QR code, auto trial 24 Oct 20:12 IST on Sam's OK (partitioning as normal 1 h after Face ID, replication, distributed transactions and QR code as trials 30 min apart). md5 84c19aca3a8a7f78a49a4637b5655367."
+  },
+  {
+   "code": "De4Z7ChEQRH",
+   "topic": "Sharding",
+   "kind": "variant",
+   "dir": "30-sharding-t1",
+   "note": "Trial variant, auto trial 2026-10-24 20:30 IST (Sam: tweak-only trials overnight, 24 Oct). Of 30-sharding (De3RzemDsBB): cut 2 setup lines (54.1 → 49.0 s), new caption. md5 d8061ca38470ea90d3f8aa6e50f6c90f."
+  },
+  {
+   "code": "De4dSHkCURr",
+   "topic": "Google Maps traffic",
+   "kind": "variant",
+   "dir": "30-maps-traffic-t2",
+   "note": "Trial variant, auto trial 2026-10-24 20:59 IST (Sam: tweak-only trials overnight, 24 Oct). New cut of 30-maps-traffic: story-first script (Berlin wagon opens), new voice (Charon), re-angled + re-rendered scenes, synth bed + whooshes, wagon cover, 39.0 s (orig 40.4). Argon PASS, cutcheck clean. md5 a8983d39fe6acf9cc734abdfde0f1e8b."
+  },
+  {
+   "code": "De4gvgMDvLH",
+   "topic": "Tap to pay",
+   "kind": "variant",
+   "dir": "31-tap-to-pay-t2",
+   "note": "Trial variant, auto trial 2026-10-24 21:29 IST (Sam: tweak-only trials overnight, 24 Oct). New cut of 31-tap-to-pay: power-first hook (\"Before a card machine can take your money, it has to give your card power\"), live field + bolt from frame 1, rewritten script, Puck voice re-take, camera rotated 0.28 rad on studio shots, synth bed + whooshes, new cover, 47.7 s (orig 45.8). Argon: facts + audio PASS; gate crowd overlap fixed. md5 ce67155b6738d7da3841eb0d6557a9b5."
+  },
+  {
+   "code": "De4jDiHjxmq",
+   "topic": "GPS",
+   "kind": "variant",
+   "dir": "33-gps-t2",
+   "note": "Trial variant, auto trial scheduled 2026-10-24 21:49 IST. New cut of 33-gps: Selective Availability story moved to the opening, rewritten lines, Puck voice re-take, synth bed + whooshes, SA cover, 46.1 s (orig 49.0). Argon PASS, cutcheck clean. md5 9a6161a1a2511cdf8e3988cf0bc75cc2."
+  },
+  {
+   "code": "De4loYBEt0X",
+   "topic": "Touchscreen",
+   "kind": "variant",
+   "dir": "36-touchscreen-t2",
+   "note": "Trial variant, auto trial scheduled 2026-10-24 22:12 IST. New cut of 36-touchscreen (posted as 36-touchscreen-b): Feb 2010 snack-sausage story moved to the opening, rewritten lines, Puck re-take, synth bed + whooshes, sausage cover, 51.2 s (b was 58.2). Argon PASS (2nd take; 1st take had a glitch on \"between wires\"). md5 93f0ba72d6d64b1495dc3a664860c0a4."
+  },
+  {
+   "code": "De4oWjIimwd",
+   "topic": "Shazam",
+   "kind": "variant",
+   "dir": "34-shazam-t2",
+   "note": "Trial variant, auto trial scheduled 2026-10-24 22:35 IST. New cut of 34-shazam: 2002 dial-2580 story moved to the opening (old-phone close-up first), rewritten lines, Puck re-take, new camera angles, synth bed + whooshes, DIAL 2580 cover, 49.4 s (orig 46.9). md5 06a66c7dc32b52bf7b6305232170f144."
+  },
+  {
+   "code": "De4qPorEiFi",
+   "topic": "Rate limiting",
+   "kind": "variant",
+   "dir": "01-rate-limiting-t2",
+   "note": "Trial variant, auto trial scheduled 2026-10-24 22:52 IST. Full remake of 01-rate-limiting-v2 (Deuz-jtD7GN): paradox-first script, new Puck take, count-before-analogy scene order, new camera positions and angles rendered on PC 192.168.0.113, synth bed seed 101, new cover and caption. 46.7 s versus 41.0 s source (+5.7 s). No spoken follow CTA. md5 ee5bb7a58b296aa54fa04e1d65b5880a."
+  },
+  {
+   "code": "De4s4ToEckz",
+   "topic": "Cron jobs",
+   "kind": "variant",
+   "dir": "21-cron-jobs-t2",
+   "note": "Trial variant, auto trial scheduled 2026-10-24 23:15 IST. Full remake of 21-cron-jobs (Devn_rdFG6z): duplicate-receipt story first, new script and Puck take, new camera order and angles rendered on PC 192.168.0.113, synth bed seed 121, duplicate-server cover and new caption. 42.8 s vs source 31.4 s (+11.4 s). Adds retry-safety caveat and receipt-ID concept; no follow CTA. md5 dace681272ea77d21590bd20dba5e65b."
+  },
+  {
+   "code": "De5Barwjt-K",
+   "topic": "N+1 queries",
+   "kind": "variant",
+   "dir": "27-n-plus-one-t2",
+   "note": "Trial variant, auto trial scheduled 2026-10-24 23:38 IST. Full remake of 27-n-plus-one-v2 (De1lsDgjOe0): fast-queries/slow-page paradox hook, rewritten script and new Puck take, new perspective camera order and angles rendered on PC 192.168.0.113, removed waiter detour, synth bed seed 127, wait-tower cover and new caption. 40.5 s vs source 47.7 s (-7.2 s). No follow CTA. md5 374f96efea66e373dce788cb28b9dd04."
+  },
+  {
+   "code": "De4yIzTAZgb",
+   "topic": "Connection pooling",
+   "kind": "variant",
+   "dir": "28-connection-pooling-t2",
+   "note": "Trial variant, auto trial scheduled 2026-10-25 00:01 IST. Full remake of 28-connection-pooling-v2 (De1OEsgm7QM): bigger-pool paradox hook, shared-budget explanation, rewritten script and new Puck take, new perspective camera sequence/angles on PC 192.168.0.113, removed taxi detour, synth bed seed 128, green multi-server pool cover and new caption. 44.7 s vs 49.0 s source (-4.3 s). Explicit example budget of 100, max 5 per server, 2-second acquire timeout. No follow CTA. md5 a76867428541f799c8f5844426bc6e67."
+  },
+  {
+   "code": "De5GmJnk6fx",
+   "topic": "Database indexing",
+   "kind": "variant",
+   "dir": "25-database-indexing-t2",
+   "note": "Trial variant, auto trial scheduled 2026-10-25 03:00 IST. Full remake of 25-database-indexing-v2 (DeyBc55EpfN): rewritten paradox-first script, new Puck take (storyteller style), every camera shot re-angled (orbited 10-17 degrees, lower/higher, wider) and re-rendered on PC 192.168.0.113, word-by-word captions, synth bed seed 311, new \"100M ROWS. 3 HOPS.\" cover, new caption. 59.6 s vs 53.5 s. Argon PASS, cutcheck clean. md5 ac1119ad8bb5945ec8a542ae1e2aeee6."
+  },
+  {
+   "code": "De5LsUhkxw0",
+   "topic": "Taipei 101 tuned mass damper",
+   "kind": "variant",
+   "dir": "3d-01-tuned-mass-damper-t2",
+   "note": "Trial variant, auto trial scheduled 2026-10-25 03:45 IST. Full remake of 3d-01-tuned-mass-damper (De2MyvCEc_W): new object-first hook (\"This 660-tonne steel ball...\") instead of the typhoon cold open, story re-ordered (typhoon moved to the payoff), new Puck take (documentary style, atempo 1.3), re-edited from the clean EEVEE frames on PC 192.168.0.113 with every shot re-ordered/retimed and punched in 0-12% at new framings, word-by-word captions, synth bed seed 3 instead of the storm sound design, new x-ray \"660-TONNE\" cover, new caption. 38.3 s vs 40.4 s. Argon PASS, cutcheck: only the original's intentional flashes/whips. md5 cd3a7e80367b9396ee8bd6e3a2097d88."
+  },
+  {
+   "code": "De5Q6KhjAxu",
+   "topic": "Kubernetes",
+   "kind": "variant",
+   "dir": "09-kubernetes-t2",
+   "note": "Trial variant, auto trial scheduled 2026-10-25 04:30 IST. Full remake of the Kubernetes reel (original DemAdV7yHef, built from 09-kubernetes-v2): rewritten script and CTA (\"A server died at 3 AM... nobody woke up\", \"If you build with AI...\"), new Puck take (default explainer style, atempo 1.12), every camera shot re-angled (azimuth/elevation/zoom), word-by-word captions, two badge-overlap fixes, re-rendered on PC 192.168.0.113, synth bed seed 214, new \"SERVER DIED. APP DIDN'T.\" cover, new caption. 40.6 s vs v2 36.9 s. Argon PASS (minor polish only), cutcheck clean. md5 f2bbc5fe43d924a83b6bc54866503ffd."
+  },
+  {
+   "code": "De5WAy2jpOb",
+   "topic": "Reverse proxies",
+   "kind": "variant",
+   "dir": "05-reverse-proxies-t2",
+   "note": "Trial variant, auto trial scheduled 2026-10-25 05:15 IST. Full remake of 05-reverse-proxies-b (DevYDm4jtwu): new attacker-first hook (\"Hackers would love to hit your servers directly...\"), rewritten lines and CTA, new Puck take (default explainer style, atempo 1.2), every camera shot re-angled, two badge-position fixes, word-by-word captions, re-rendered on PC 192.168.0.113, synth bed seed 57, new \"10 SERVERS. 1 DOOR.\" cover, new caption. 48.3 s vs 46.1 s. Argon PASS, cutcheck clean. md5 d205263d0c5be67997037c7a6abc90f8."
+  },
+  {
+   "code": "De5bInPDHta",
+   "topic": "Docker",
+   "kind": "variant",
+   "dir": "08-docker-t2",
+   "note": "Trial variant, auto trial scheduled 2026-10-25 06:00 IST. Full remake built from 08-docker-v2 (original DekR_dKSMsc, 59.7 s): new \"passed every test, Friday 5 PM\" hook, rewritten lines and CTA, new Puck take (default explainer style, atempo 1.15, first take discarded for a repeated sentence), every camera shot re-angled, layer order and badge fixes, word-by-word captions, re-rendered on PC 192.168.0.113, synth bed seed 88, new \"SAME CODE. NEW CRASH.\" cover, new caption. 46.4 s. Argon PASS on the final file, cutcheck clean. md5 9e8cbc5021d35b454a6752afe5a6d21d."
+  },
+  {
+   "code": "De5gYWbjAQZ",
+   "topic": "Health checks",
+   "kind": "variant",
+   "dir": "11-health-checks-t2",
+   "note": "Trial variant, auto trial scheduled 2026-10-25 06:45 IST. Full remake built from 11-health-checks-v2 (original DeoNZd-ypXG): new \"Saturday night, peak traffic\" hook, rewritten lines (\"Here's the catch\", \"After three missed answers\") and CTA, new Puck take (default explainer style, atempo 1.15, regenerated once after a stumbled \"Miss three\"), every camera shot re-angled, badge overlaps fixed, YAML typing finishes before the CTA, TTS artifact after the last word muted, tail trimmed, karaoke line captions, re-rendered on PC 192.168.0.113, synth bed seed 131, new \"STILL RUNNING. NOT WORKING.\" cover, new caption. md5 5e17d293a6b08d2ec63614347fa7ab91."
+  },
+  {
+   "code": "De5o9Y0Enpm",
+   "topic": "Leader election",
+   "kind": "new",
+   "dir": "41-leader-election",
+   "note": "Leader election, live 25 Oct 08:01 IST from Up next on Sam's OK (25 Oct overnight: 2 normal reels 2.5 h apart). md5 132bcc2afd818ab3de957cb972119452."
+  },
+  {
+   "code": "De56Ic-DwNU",
+   "topic": "Hoover Dam cooling (3D series ep 4)",
+   "kind": "new",
+   "dir": "3d-04-hoover-dam-cooling",
+   "note": "Hoover Dam cooling (3D series ep 4), live 25 Oct 10:31 IST from Up next on Sam's OK (25 Oct overnight: 2 normal reels 2.5 h apart). md5 71d2012f25bbd623bd7b50d908b178da."
+  },
+  {
+   "code": "De6vd5bgKB8",
+   "topic": "Shinkansen kingfisher nose (3D series ep 5)",
+   "kind": "new",
+   "dir": "3d-05-shinkansen-kingfisher",
+   "note": "Shinkansen kingfisher nose (3D series ep 5), live 25 Oct 18:17 IST from Up next on Sam's OK (25 Oct evening, last item in Up next). md5 723c606a97b8bb8fd75ddd6e2ca6db6f."
+  },
+  {
+   "code": "De61lawjcuH",
+   "topic": "Service discovery",
+   "kind": "variant",
+   "dir": "10-service-discovery-t2",
+   "note": "Trial variant, auto trial scheduled 2026-10-25 19:10 IST. Full remake built from 10-service-discovery-v2 (original Deml8FfStFb): new \"2 PM, checkout broke, nobody touched the code\" hook, rewritten lines and new AI CTA, new Puck take (atempo 1.15), every camera shot re-angled, badge rewrites, failure counter no longer resets, karaoke captions, re-rendered on PC 192.168.0.113, synth bed seed 301, new \"PAYMENTS FAILED. CODE UNTOUCHED.\" cover, new caption. 32.7 s. Argon PASS, cutcheck clean. md5 db93070665ea623291c8e95bf22a051b."
+  },
+  {
+   "code": "De7RJ-JCn6X",
+   "topic": "API gateways",
+   "kind": "variant",
+   "dir": "06-api-gateways-t2",
+   "note": "Trial variant, auto trial scheduled 2026-10-25 20:00 IST. Full remake built from 06-api-gateways-v2 (original DelTG36SiBr): new \"a stranger opened everyone's orders\" hook, rewritten lines and new AI CTA, new Puck take (atempo 1.15), every camera shot re-angled, anchor fixes (end card, split shot), karaoke captions, re-rendered on PC 192.168.0.113, synth bed seed 303, new \"ONE CHECK FORGOTTEN.\" cover, new caption. 40.1 s. Argon PASS, cutcheck clean. md5 4ec06762cd67a358d10c21c4de9736d5."
+  },
+  {
+   "code": "De7speKiF3P",
+   "topic": "Circuit breakers",
+   "kind": "variant",
+   "dir": "13-circuit-breakers-t2",
+   "note": "Trial variant, auto trial scheduled 2026-10-25 21:50 IST. Full remake built from 13-circuit-breakers-v2 (original DepTLH1yW8M): new \"Black Friday, store down, nothing broken\" hook, shop→store rewrite, new AI CTA, new Puck take (atempo 1.15), every camera shot re-angled, karaoke captions, re-rendered on PC 192.168.0.113, synth bed seed 302, new \"NOT BROKEN. JUST SLOW.\" cover, new caption. 36.8 s. Argon PASS, cutcheck clean. md5 e1bfbfe232b1b7601ecb37d71264f7e1."
+  },
+  {
+   "code": "De8ICHgAb7G",
+   "topic": "Dead letter queues",
+   "kind": "variant",
+   "dir": "20-dead-letter-queues-t2",
+   "note": "Trial variant, auto trial scheduled 2026-10-25 23:10 IST. Full remake built from 20-dead-letter-queues (original DevH-HaDygZ): new \"checkout queue stuck on one broken order\" hook, rewritten lines and new AI CTA, new Puck take (atempo 1.15), every camera shot re-angled, badge overlap fixes, karaoke captions, re-rendered on PC 192.168.0.113, synth bed seed 304, new \"ONE BAD ORDER. QUEUE STUCK.\" cover, new caption. 37.0 s. Argon PASS, cutcheck clean. md5 3ff0527597e6096b60cb741f47c0e3da."
+  },
+  {
+   "code": "De8--PQALW6",
+   "topic": "Idempotency",
+   "kind": "variant",
+   "dir": "03-idempotency-t2",
+   "note": "Trial variant, auto trial scheduled 2026-10-26 00:30 IST. Full remake built from 03-idempotency-v2 (original DevkAnzDIbu): new \"tapped Pay once, charged twice\" hook, line ends on \"the first answer\", new AI CTA, new Puck take (atempo 1.15), every camera shot re-angled, badge overlap fixes, $50 in digits, karaoke captions, re-rendered on PC 192.168.0.113, synth bed seed 305, new \"TAPPED ONCE. CHARGED TWICE.\" cover, new caption. 35.4 s. Argon PASS, cutcheck clean. md5 6c9b5ac558d7f9eedd2286487465b3df."
+  },
+  {
+   "code": "De8jmVXFYa7",
+   "topic": "Load balancing",
+   "kind": "variant",
+   "dir": "04-load-balancing-t3",
+   "note": "Trial variant, auto trial scheduled 2026-10-26 05:40 IST. Full remake built from 04-load-balancing-v2 (original Deu389jCI7v), script revised from Argon's virality review of the original: \"viral: 100,000 at once, why didn't it go down\" hook, NGINX respelled for TTS, new AI CTA, new Puck take (atempo 1.15), every camera shot re-angled and zoomed in, karaoke captions, shorter end card, re-rendered on PC 192.168.0.113, synth bed seed 309, new \"100,000 AT ONCE. WHY NO CRASH?\" cover, new caption. 38.8 s. Argon PASS, cutcheck clean. md5 2c364524ca565592c0aa11b3525a4739."
+  },
+  {
+   "code": "De9aeAiDptJ",
+   "topic": "Saga pattern",
+   "kind": "variant",
+   "dir": "19-saga-pattern-t2",
+   "note": "Trial variant, auto trial scheduled 2026-10-26 09:30 IST. Full remake built from 19-saga-pattern-b (original DevL9S8CCb7), script revised from Argon's virality review of the original: \"you charged for flight and hotel, then the car fails\" hook, repeated mid-section replaced by \"it logs each success\", new AI CTA, new Puck take (atempo 1.15), every camera shot re-angled and zoomed in, karaoke captions, shorter end card, re-rendered on PC 192.168.0.113, synth bed seed 307, new \"CAR FAILED. WHO REFUNDS?\" cover, new caption. 33.0 s. Argon PASS, cutcheck clean. md5 1d793007ae17d448879be7ca9efa3ed1."
+  },
+  {
+   "code": "De915NjDKyl",
+   "topic": "Retries",
+   "kind": "variant",
+   "dir": "16-retries-t2",
+   "note": "Trial variant, auto trial scheduled 2026-10-26 11:00 IST. Full remake built from 16-retries-v2 (original Dewd6RjFaG6), script revised from Argon's virality review of the original: \"server stopped answering for one second\" hook, retry definition cut, exponential backoff and jitter named, new AI CTA, new Puck take (atempo 1.15), every camera shot re-angled and zoomed in, karaoke captions, shorter end card, re-rendered on PC 192.168.0.113, synth bed seed 306, new \"1 SECOND GLITCH. THEN A CRASH.\" cover, new caption. 33.4 s. Argon PASS, cutcheck clean. md5 192fee5d2c794e856c34340f99ac7d59."
+  },
+  {
+   "code": "De-ReHrj2Nk",
+   "topic": "Read replicas",
+   "kind": "variant",
+   "dir": "29-read-replicas-t2",
+   "note": "Trial variant, auto trial scheduled 2026-10-26 12:30 IST. Full remake built from 29-read-replicas (original De15-UZgm_K), script revised from Argon's virality review of the original: \"went viral, database is crashing, traffic is just reading\" hook, reads/writes filler and analogy tightened, new AI CTA, new Puck take (atempo 1.15), every camera shot re-angled and zoomed in, karaoke captions, shorter end card, re-rendered on PC 192.168.0.113, synth bed seed 310, new \"MOST TRAFFIC IS JUST READING.\" cover, new caption. 48.4 s. Argon PASS, cutcheck clean. md5 f7a25f7d049fb4305dc84560198c8cbf."
+  },
+  {
+   "code": "",
+   "topic": "CI/CD",
+   "kind": "variant",
+   "dir": "07-ci-cd-t2",
+   "scheduled": "2026-10-27 07:10",
+   "note": "Full remake built from 07-ci-cd-v2 (original DewW9a6CNof), script revised from Argon's virality review of the original: \"Friday 6 PM, one letter, whole app down\" hook, definition reframed as a safety net, build/test lines tightened, new AI CTA, new Puck take (atempo 1.15), every camera shot re-angled and zoomed in, karaoke captions, shorter end card, re-rendered on PC 192.168.0.113, synth bed seed 308, new \"ONE LETTER. APP DOWN.\" cover, new caption. 31.5 s. Argon PASS, cutcheck clean. md5 35dd1543ac2371397de65b4ffb1ff6ee."
+  },
+  {
+   "code": "De7P6_olUtU",
+   "topic": "Optimistic locking",
+   "kind": "new",
+   "dir": "44-optimistic-locking",
+   "note": "Optimistic locking, live 25 Oct 23:01 IST on Sam's OK. md5 d34ba97f66b9ba1a8ddcb4fd23baaffe."
+  },
+  {
+   "code": "De8bfdzicAy",
+   "topic": "CAP theorem",
+   "kind": "new",
+   "dir": "42-cap-theorem",
+   "note": "CAP theorem, live 26 Oct 10:02 IST on Sam's OK. md5 ff347bee553bf342cbfa57c738276bf8."
+  },
+  {
+   "code": "De9Scj0ADAb",
+   "topic": "Eventual consistency",
+   "kind": "new",
+   "dir": "43-eventual-consistency",
+   "note": "Eventual consistency, live 26 Oct 18:02 IST on Sam's OK. md5 62fb9539aca001a8c097e6cb4fdf7076."
+  }
+ ]
+}

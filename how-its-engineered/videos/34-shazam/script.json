@@ -1,0 +1,57 @@
+{
+ "topic": "How Shazam Knows the Song",
+ "lines": [
+  [
+   {
+    "say": "You catch a tiny clip of a song in a noisy café. Shazam names it in seconds. How?",
+    "show": "You catch a *tiny clip* of a song in a noisy café. Shazam [names it in seconds.] How?"
+   }
+  ],
+  [
+   {
+    "say": "First, it turns the sound into a map: low notes at the bottom, high notes at the top, time going across.",
+    "show": "First, it turns the sound into a *map:* low notes at the bottom, high notes at the top, [time going across.]"
+   }
+  ],
+  [
+   {
+    "say": "Louder sounds glow brighter, and Shazam keeps only the brightest point in each patch. They look like stars in a night sky.",
+    "show": "Louder sounds glow *brighter,* and Shazam keeps only the brightest point in each patch. They look like [stars in a night sky.]"
+   }
+  ],
+  [
+   {
+    "say": "The café noise adds a few extra stars and hides others, but enough of the pattern survives.",
+    "show": "The café noise adds a few extra stars and hides others, but [enough of the pattern survives.]"
+   }
+  ],
+  [
+   {
+    "say": "It draws lines between pairs of stars, turning their pitches and timing into tiny codes. Together, those codes are the recording's fingerprint.",
+    "show": "It draws *lines between pairs of stars,* turning their pitches and timing into tiny codes. Together, those codes are the [recording's fingerprint.]"
+   }
+  ],
+  [
+   {
+    "say": "Shazam has fingerprints for millions of songs, and looks for the one whose stars line up with yours.",
+    "show": "Shazam has fingerprints for *millions of songs,* and looks for the one whose stars [line up with yours.]"
+   }
+  ],
+  [
+   {
+    "say": "When it launched in Britain in twenty-oh-two, there was no app. You dialled two five eight oh, held your phone to the speaker, and got the song name back by text.",
+    "show": "When it launched in Britain in 2002, there was *no app.* You dialled *2580,* held your phone to the speaker, and got the song name [back by text.]"
+   }
+  ],
+  [
+   {
+    "say": "So Shazam isn't recognising the tune. It's recognising one exact recording. That's why humming it won't work.",
+    "show": "So Shazam isn't recognising the *tune.* It's recognising one exact *recording.* That's why [humming it won't work.]"
+   },
+   {
+    "say": "Follow for how everyday tech really works.",
+    "show": "Follow for how [everyday tech] really works."
+   }
+  ]
+ ]
+}

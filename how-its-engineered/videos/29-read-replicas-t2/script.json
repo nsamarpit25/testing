@@ -1,0 +1,65 @@
+{
+  "topic": "Read replicas",
+  "lines": [
+    [
+      {
+        "say": "Your app just went viral, and your database is crashing. But almost all that traffic is just reading.",
+        "show": "Your app just went *viral,* and your database is [crashing.] But almost all that traffic is just *reading.*"
+      }
+    ],
+    [
+      {
+        "say": "Loading a feed, opening a profile, searching: all reads. Only posting is a write.",
+        "show": "Loading a feed, opening a profile, searching: all *reads.* Only posting is a *write.*"
+      }
+    ],
+    [
+      {
+        "say": "So you add read replicas: copies of your database that get every change from the main one, the primary.",
+        "show": "So you add *read replicas:* copies of your database that get every change from the main one, the *primary.*"
+      }
+    ],
+    [
+      {
+        "say": "Every write goes to the primary, which sends the change on to the copies.",
+        "show": "Every *write* goes to the primary, which sends the change on to the copies."
+      }
+    ],
+    [
+      {
+        "say": "Reads get spread across the copies. Need more? Add another copy.",
+        "show": "Reads get *spread* across the copies. Need more? *Add another copy.*"
+      }
+    ],
+    [
+      {
+        "say": "The catch: copying takes a moment, so a replica can fall behind. That's replication lag.",
+        "show": "The catch: copying takes a moment, so a replica can fall behind. That's [replication lag.]"
+      }
+    ],
+    [
+      {
+        "say": "Post a comment, refresh, and it's gone, because your copy doesn't have it yet. The fix: right after someone writes, read their own data from the primary for a few seconds.",
+        "show": "Post a comment, refresh, and it's [gone,] because your copy doesn't have it yet. The fix: right after someone writes, read their *own data* from the *primary* for a few seconds."
+      }
+    ],
+    [
+      {
+        "say": "Like students copying a teacher's board. The teacher keeps writing while you ask a student for their notes. But a student can be a line behind.",
+        "show": "Like *students* copying a *teacher's board.* The teacher keeps writing while you ask a student for their notes. But a student can be a line behind."
+      }
+    ],
+    [
+      {
+        "say": "Remember: replicas scale reads, not writes. Every write still hits that one primary.",
+        "show": "Remember: replicas scale *reads,* not writes. Every write still hits that [one primary.]"
+      }
+    ],
+    [
+      {
+        "say": "If AI writes your code, follow for the system design it leaves out.",
+        "show": "If AI writes your code, *follow* for the system design it leaves out."
+      }
+    ]
+  ]
+}

@@ -1,0 +1,28 @@
+How to Move a 100-Ton Rock Without a Crane
+Narration (Gemini TTS on Vertex, voice: Puck). Timestamps from faster-whisper word alignment.
+
+[00.00-03.74]  This rock weighs a hundred tons. His job? Move it. No crane.
+[04.34-06.96]  He pushes. The rock doesn't even notice.
+[07.34-13.42]  So he ties a rope and pulls. That rope is rated for two tons. The rock weighs fifty times more.
+[13.98-14.42]  Snap.
+[14.96-18.58]  So he grabs a lever. Long side, short side: fifty to one.
+[18.98-22.92]  He's too light, so he adds a ton of sandbags. And the edge lifts!
+[23.26-29.44]  Now slide rollers underneath. He's not dragging a hundred tons anymore. He's rolling it. That only takes about two tons of pull.
+[30.00-34.36]  A pry bar nudges it a few centimeters per heave. At this rate, it'll take a week.
+[34.76-38.50]  So he builds a capstan. Long arms, skinny drum: twenty to one.
+[38.90-43.70]  Loop the rope around a pulley on the rock, and that doubles it. One engineer, forty times stronger.
+[44.06-47.20]  The rollers move at half the rock's speed, so it just keeps coming.
+[47.80-51.30]  Destination reached. One guy, one rock, zero cranes.
+[51.88-52.92]  Then the client texts.
+
+Engineering notes (numbers used on screen):
+- Rock: ~35 m3 of granite (2.7 t/m3) = about 100 t.
+- Rope rated 2 t vs 100 t load: 50x overload, so it snaps.
+- Lever 8.16 m, pivot 16 cm from the tip: 8 m / 0.16 m = 50:1. Lifting one edge needs ~half the weight (~50 t), so ~1 t at the long end:
+  the 80 kg engineer is not enough; 5 x 200 kg sandbags is. The long end drops ~1.3 m, so the tip rises 1.3/50 = 2.6 cm (force traded for distance).
+  Repeated lift-and-wedge (cribbing) raises it enough to slide in 30 cm rollers.
+- Sliding stone on dirt: friction ~0.6 x 100 t = 60 t. On rollers, rolling resistance ~0.02 x 100 t = 2 t.
+- Pry bar ~50:1: a ~50 kg heave gives ~2.5 t, enough to nudge ~5 cm per heave.
+- Capstan: 3 m arms / 15 cm drum = 20:1; rope through one pulley on the rock = 2:1; total 40x. ~50 kg push gives ~2 t pull.
+  The rope winds in at 2x the rock's speed; real speed ~3.5 cm/s at walking pace (the reel shows a time-lapse).
+- Rollers travel at half the load's speed, so they come out the back and new ones are picked up at the front.

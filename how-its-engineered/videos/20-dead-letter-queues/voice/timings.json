@@ -1,0 +1,74 @@
+[
+ {
+  "li": 0,
+  "pi": 0,
+  "say": "3 a.m. Your app keeps retrying one broken order, and the orders behind it are piling up.",
+  "show": "3 a.m. Your app keeps retrying *one broken order,* and the orders behind it are [piling up.]",
+  "start": 0.24,
+  "end": 4.46
+ },
+ {
+  "li": 0,
+  "pi": 1,
+  "say": "Why won't it just move on?",
+  "show": "Why won't it just *move on?*",
+  "start": 4.82,
+  "end": 5.92
+ },
+ {
+  "li": 1,
+  "pi": 0,
+  "say": "Orders wait in line as messages with the order details, and a program processes them.",
+  "show": "Orders wait in line as *messages* with the order details, and a program processes them.",
+  "start": 6.7,
+  "end": 10.78
+ },
+ {
+  "li": 1,
+  "pi": 1,
+  "say": "Bad data makes this one fail every time. That's a poison message.",
+  "show": "Bad data makes this one fail *every time.* That's a [poison message.]",
+  "start": 11.22,
+  "end": 14.52
+ },
+ {
+  "li": 2,
+  "pi": 0,
+  "say": "The fix is a dead letter queue. You set a limit, and after that many failures, the message is moved aside, so the others keep flowing.",
+  "show": "The fix is a [dead letter queue.] You set a limit, and after that many failures, the message is *moved aside,* so the others [keep flowing.]",
+  "start": 15.1,
+  "end": 21.5
+ },
+ {
+  "li": 3,
+  "pi": 0,
+  "say": "Like a post office's bin for undeliverable mail. The bad letter waits there, and everything else gets delivered.",
+  "show": "Like a post office's bin for *undeliverable mail.* The bad letter waits there, and everything else [gets delivered.]",
+  "start": 21.84,
+  "end": 27.36
+ },
+ {
+  "li": 4,
+  "pi": 0,
+  "say": "Later, you look at it, fix the cause, and send the message back to be processed.",
+  "show": "Later, you look at it, *fix the cause,* and [send the message back] to be processed.",
+  "start": 27.9,
+  "end": 31.46
+ },
+ {
+  "li": 5,
+  "pi": 0,
+  "say": "Amazon SQS and RabbitMQ both support dead letter queues.",
+  "show": "*Amazon SQS* and *RabbitMQ* both support dead letter queues.",
+  "start": 32.04,
+  "end": 35.02
+ },
+ {
+  "li": 6,
+  "pi": 0,
+  "say": "If you're a vibe coder, follow for the system design your AI skipped.",
+  "show": "If you're a vibe coder, follow for the system design your AI [skipped.]",
+  "start": 35.5,
+  "end": 38.6
+ }
+]

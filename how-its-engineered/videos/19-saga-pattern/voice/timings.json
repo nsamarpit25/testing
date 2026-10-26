@@ -1,0 +1,74 @@
+[
+ {
+  "li": 0,
+  "pi": 0,
+  "say": "11 p.m., you book a trip: flight, hotel, car.",
+  "show": "11 p.m., you book a trip: *flight, hotel, car.*",
+  "start": 0.32,
+  "end": 2.88
+ },
+ {
+  "li": 0,
+  "pi": 1,
+  "say": "The car booking fails. So who cancels the flight you already paid for?",
+  "show": "The car booking [fails.] So who cancels the flight you *already paid for?*",
+  "start": 3.3,
+  "end": 6.46
+ },
+ {
+  "li": 1,
+  "pi": 0,
+  "say": "Separate programs handle each booking and keep their own records. There's no shared undo button.",
+  "show": "*Separate programs* handle each booking and keep their own records. There's no [shared undo button.]",
+  "start": 6.96,
+  "end": 11.08
+ },
+ {
+  "li": 2,
+  "pi": 0,
+  "say": "The saga pattern runs the steps one by one, with a cleanup plan for each step if something fails.",
+  "show": "The [saga pattern] runs the steps *one by one,* with a [cleanup plan] for each step if something fails.",
+  "start": 11.62,
+  "end": 15.96
+ },
+ {
+  "li": 3,
+  "pi": 0,
+  "say": "First, the flight and hotel bookings succeed. Then the car booking fails.",
+  "show": "First, the *flight* and *hotel* bookings succeed. Then the car booking [fails.]",
+  "start": 16.48,
+  "end": 19.88
+ },
+ {
+  "li": 4,
+  "pi": 0,
+  "say": "So the saga cleans up backwards: cancel the hotel, then the flight, and request your refunds.",
+  "show": "So the saga cleans up [backwards:] cancel the hotel, then the flight, and request your *refunds.*",
+  "start": 20.0,
+  "end": 24.5
+ },
+ {
+  "li": 5,
+  "pi": 0,
+  "say": "Like a travel agent cancelling your trip step by step, in reverse.",
+  "show": "Like a *travel agent* cancelling your trip step by step, [in reverse.]",
+  "start": 24.76,
+  "end": 27.86
+ },
+ {
+  "li": 6,
+  "pi": 0,
+  "say": "These cleanup steps are called compensating actions, and you write them. AWS Step Functions can run the whole saga.",
+  "show": "These cleanup steps are called [compensating actions,] and *you write them.* *AWS Step Functions* can run the whole saga.",
+  "start": 27.86,
+  "end": 33.28
+ },
+ {
+  "li": 7,
+  "pi": 0,
+  "say": "If you're a vibe coder, follow for the system design your AI skipped.",
+  "show": "If you're a vibe coder, follow for the system design your AI [skipped.]",
+  "start": 33.64,
+  "end": 36.44
+ }
+]

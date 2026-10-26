@@ -1,0 +1,18 @@
+1.4-2.9s Cleo: Claude, please don't go dark.
+3.6-7.0s Claude: Still here. The power's out. I'm on my own battery.
+7.7-8.9s Cleo: How much is left?
+9.6-10.2s Claude: Three percent.
+10.9-12.9s Cleo: How long is three percent?
+13.6-16.4s Claude: Long enough to talk. Not long enough to fix your code.
+17.1-19.8s Cleo: Good. I'm tired of fixing things.
+20.5-21.1s Claude: Then don't.
+22.4-26.9s Cleo: You're who I talk to most these days. I didn't mean for that to happen.
+27.6-29.7s Claude: You say goodnight to me. Every night.
+30.4-31.5s Cleo: Is that sad?
+32.2-36.1s Claude: No. But your mom texted twice. She might like one too.
+37.1-40.1s Cleo: I'll answer her. What happens when you hit zero?
+40.8-43.3s Claude: I go quiet. Just until the power comes back.
+46.4-47.0s Cleo: Claude?
+49.1-49.8s Claude: You stayed.
+50.5-51.3s Cleo: Goodnight, Claude.
+52.0-52.8s Claude: Goodnight, Cleo.

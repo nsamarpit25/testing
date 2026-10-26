@@ -1,0 +1,52 @@
+[
+ {
+  "say": "To land a one-tonne rover on Mars, NASA hung it from a flying rocket.",
+  "start": 0.2,
+  "end": 4.946
+ },
+ {
+  "say": "It was too heavy for airbags,",
+  "start": 5.026,
+  "end": 6.426
+ },
+ {
+  "say": "and rockets firing near the ground would blast dust and rocks everywhere.",
+  "start": 6.506,
+  "end": 10.58
+ },
+ {
+  "say": "So twenty metres up, the descent stage slows to a crawl",
+  "start": 10.66,
+  "end": 14.486
+ },
+ {
+  "say": "and lowers the rover on three nylon cables.",
+  "start": 14.566,
+  "end": 16.892
+ },
+ {
+  "say": "Its wheels drop down to become the landing gear.",
+  "start": 16.972,
+  "end": 19.283
+ },
+ {
+  "say": "Once its wheels touch down, blades slice the cables.",
+  "start": 19.363,
+  "end": 22.112
+ },
+ {
+  "say": "The stage flies away and crashes a safe distance off.",
+  "start": 22.192,
+  "end": 26.198
+ },
+ {
+  "say": "Curiosity and Perseverance both landed this way.",
+  "start": 26.278,
+  "end": 29.194
+ },
+ {
+  "say": "Follow for how the world is really engineered.",
+  "start": 29.274,
+  "end": 31.789
+ }
+]

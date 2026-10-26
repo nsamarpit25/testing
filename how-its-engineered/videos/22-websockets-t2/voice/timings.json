@@ -1,0 +1,74 @@
+[
+ {
+  "li": 0,
+  "pi": 0,
+  "say": "Your friend hit send, and the message popped up on your screen instantly.",
+  "show": "Your friend hit *send,* and the message popped up on your screen *instantly.*",
+  "start": 0.0,
+  "end": 3.16
+ },
+ {
+  "li": 0,
+  "pi": 1,
+  "say": "You never pulled to refresh. So how did your phone know?",
+  "show": "You never pulled to refresh. So how did your phone [know?]",
+  "start": 3.56,
+  "end": 6.16
+ },
+ {
+  "li": 1,
+  "pi": 0,
+  "say": "Normally, your app asks the server something, and the server answers once. Want news? Ask again.",
+  "show": "Normally, your app *asks* the server something, and the server *answers* once. Want news? [Ask again.]",
+  "start": 6.88,
+  "end": 11.38
+ },
+ {
+  "li": 2,
+  "pi": 0,
+  "say": "In that setup, the server can't start a conversation. It only speaks when asked.",
+  "show": "In that setup, the server can't start a conversation. It [only speaks when asked.]",
+  "start": 11.98,
+  "end": 15.32
+ },
+ {
+  "li": 3,
+  "pi": 0,
+  "say": "A WebSocket keeps a line open between your phone and the server, like a call nobody hangs up.",
+  "show": "A *WebSocket* keeps a line *open* between your phone and the server, like a *call nobody hangs up.*",
+  "start": 15.96,
+  "end": 19.7
+ },
+ {
+  "li": 4,
+  "pi": 0,
+  "say": "Now either side can talk, any time. When your friend's message reaches the server, it sends it straight down the line to you.",
+  "show": "Now *either side* can talk, any time. When your friend's message reaches the server, it sends it *straight down the line* to you.",
+  "start": 20.08,
+  "end": 25.1
+ },
+ {
+  "li": 5,
+  "pi": 0,
+  "say": "One catch: every open line costs server memory. And if the connection breaks, your app has to reconnect.",
+  "show": "One catch: every open line costs [server memory.] And if the connection [breaks,] your app has to *reconnect.*",
+  "start": 25.76,
+  "end": 30.22
+ },
+ {
+  "li": 6,
+  "pi": 0,
+  "say": "Discord runs its live updates over WebSockets, and modern browsers support them too.",
+  "show": "*Discord* runs its live updates over WebSockets, and *modern browsers* support them too.",
+  "start": 30.98,
+  "end": 34.26
+ },
+ {
+  "li": 7,
+  "pi": 0,
+  "say": "If AI writes your code, follow for the system design it leaves out.",
+  "show": "If AI writes your code, *follow* for the system design it leaves out.",
+  "start": 34.8,
+  "end": 37.36
+ }
+]

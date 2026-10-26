@@ -1,0 +1,53 @@
+{
+ "prompt": "AUDIO PROFILE\nCleo: a young woman software developer in her mid twenties. Soft, natural, conversational voice. Real and understated, never cartoonish.\nClaude: a young man's voice. Calm, warm and gently dry-witted, never theatrical. Few words.\n\nTHE SCENE, END TO END\nNight at her desk. Cleo is checking 128 commits one by one to find what broke checkout. Claude, a small companion on her desk, turns to an imaginary camera and narrates her like a hushed nature documentary, then teaches her git bisect. She finds the bad commit in seven checks; she wrote it.\n\nLINE BY LINE\n1. Cleo, tired, determined.\n2. Claude, hushed documentary narrator.\n3. Claude, hushed narrator, dry.\n4. Cleo, suspicious.\n5. Claude, hushed, a whisper.\n6. Claude, normal voice, clear.\n7. Cleo, curious.\n8. Claude, clear, simple.\n9. Cleo, quick, focused, a beat between each.\n10. Claude, hushed narrator, impressed.\n11. Cleo, triumphant, then slowly deflating.\n12. Claude, hushed narrator, solemn.\n\nDIRECTOR'S NOTES\nWhen Claude narrates (lines 2, 3, 5, 10 and 12), he speaks softly and slowly, hushed and reverent, like a nature documentary narrator watching an animal in the wild; deadpan, never a cartoon accent. When he teaches (lines 6 and 8) he is his normal calm self. A natural, conversational pace, like two friends at a desk; not rushed, not slow. Let the jokes land with a short beat before the dry lines. Leave a short beat at every \"...\"; never read bracketed tags aloud. Finish every line fully, including its last word; never clip a word. Speak every word of the dialogue exactly as written, nothing added.",
+ "turns": [
+  [
+   "Cleo",
+   "Claude, checkout's extinct. A hundred and twenty-eight commits. I'm checking them one by one."
+  ],
+  [
+   "Claude",
+   "Here we observe the junior developer, in her natural habitat."
+  ],
+  [
+   "Claude",
+   "She is on commit four. At this pace, she will finish on Thursday."
+  ],
+  [
+   "Cleo",
+   "Are you... narrating me?"
+  ],
+  [
+   "Claude",
+   "The developer has noticed us."
+  ],
+  [
+   "Claude",
+   "Run git bisect start. Mark an earlier commit good, the broken one bad. Git picks between them."
+  ],
+  [
+   "Cleo",
+   "And then?"
+  ],
+  [
+   "Claude",
+   "Test checkout. Tell Git good or bad. Repeat. Each test roughly halves the suspects."
+  ],
+  [
+   "Cleo",
+   "Bad. Good. Good. Bad. Good. Bad. Bad."
+  ],
+  [
+   "Claude",
+   "A hundred and twenty-eight suspects. Seven checks. Remarkable."
+  ],
+  [
+   "Cleo",
+   "Found it! \"Small harmless cleanup.\" Who wrote... oh. It's me."
+  ],
+  [
+   "Claude",
+   "Cause of extinction: the developer."
+  ]
+ ]
+}

@@ -1,0 +1,305 @@
+<!doctype html>
+<!-- Low-poly three.js episode player. The episode (dialogue, cameras, emotions, screen states) is <ep>/lines.json,
+     laid out by build.py into <ep>/timeline.js. Exposes window.DURATION / ready() / render(t) for how-its-engineered/tools/render.mjs:
+     node ../../how-its-engineered/tools/render.mjs "film.html?ep=ep_test" out.mp4 --audio ep_test/voice.wav -->
+<html><head><meta charset="utf-8">
+<style>
+@font-face{font-family:Inter;src:url(../../how-its-engineered/node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2) format('woff2');font-weight:100 900}
+@font-face{font-family:JBM;src:url(../../how-its-engineered/node_modules/@fontsource/jetbrains-mono/files/jetbrains-mono-latin-500-normal.woff2) format('woff2')}
+html,body{margin:0;background:#0b0c12;overflow:hidden}
+#stage{position:relative;width:540px;height:960px;overflow:hidden}
+canvas{display:block}
+#vig{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 85% 70% at 50% 45%,transparent 55%,rgba(0,0,0,.5) 100%)}
+#cap{position:absolute;left:34px;right:34px;top:63%;text-align:center;font:700 21px/1.25 Inter;color:#fff;
+  text-shadow:0 2px 8px rgba(0,0,0,.9),0 0 2px rgba(0,0,0,.9)}
+#cap.Claude{color:#f7a985}
+</style></head>
+<body><div id="stage"><div id="vig"></div><div id="cap"></div></div>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js"}}</script>
+<script type="module">
+import * as THREE from 'three';
+const { Vector3: V3, Group } = THREE;
+const V = (x, y, z) => new V3(x, y, z);
+const FPS = 30, W = 540, H = 960;
+const EP = new URLSearchParams(location.search).get('ep') || 'ep_test';
+
+const init = (async () => {
+  await new Promise((ok, err) => { const s = document.createElement('script'); s.src = `${EP}/timeline.js`; s.onload = ok; s.onerror = err; document.head.appendChild(s); });
+  await Promise.all([document.fonts.load('700 21px Inter'), document.fonts.load('30px JBM')]);
+})();
+let built; const allBuilt = new Promise((r) => (built = r));
+window.ready = () => allBuilt;
+await init;
+const T = window.TIMELINE;
+window.DURATION = T.duration;
+
+// ---------- renderer / scene ----------
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(2); renderer.setSize(W, H);
+renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.2;
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+document.getElementById('stage').prepend(renderer.domElement);
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0d0f17);
+scene.fog = new THREE.Fog(0x0d0f17, 3.2, 7);
+const camera = new THREE.PerspectiveCamera(36, W / H, 0.02, 30);
+
+const M = (c, o = {}) => new THREE.MeshStandardMaterial({ color: c, flatShading: true, roughness: 0.85, ...o });
+const add = (m, parent, x = 0, y = 0, z = 0) => { m.position.set(x, y, z); m.castShadow = m.receiveShadow = true; (parent || scene).add(m); return m; };
+const box = (w, h, d, mat, parent, x, y, z) => add(new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat), parent, x, y, z);
+const ball = (r, mat, parent, x, y, z, detail = 1) => add(new THREE.Mesh(new THREE.IcosahedronGeometry(r, detail), mat), parent, x, y, z);
+const cyl = (rt, rb, h, seg, mat, parent, x, y, z) => add(new THREE.Mesh(new THREE.CylinderGeometry(rt, rb, h, seg), mat), parent, x, y, z);
+function limb(a, b, r, mat, parent) {
+  const v = b.clone().sub(a), m = cyl(r, r * 0.9, v.length(), 6, mat, parent);
+  m.position.copy(a).addScaledVector(v, 0.5);
+  m.quaternion.setFromUnitVectors(V(0, 1, 0), v.normalize());
+  return m;
+}
+
+// ---------- room ----------
+add(new THREE.Mesh(new THREE.PlaneGeometry(9, 9).rotateX(-Math.PI / 2), M(0x2a2532)));
+cyl(0.95, 0.95, 0.012, 11, M(0x35586a), null, 0, 0.006, 0.55);
+box(6, 3.2, 0.1, M(0x272c3f), null, 0, 1.6, -1.15);
+box(0.1, 3.2, 4, M(0x22263a), null, -1.7, 1.6, 0.3);
+// night window
+box(1.06, 0.84, 0.05, M(0x1a1d29), null, 0.62, 1.68, -1.09);
+const night = new THREE.MeshBasicMaterial({ color: 0x1d2f5e });
+for (const [x, y] of [[-0.24, 0.19], [0.24, 0.19], [-0.24, -0.19], [0.24, -0.19]]) box(0.44, 0.34, 0.01, night, null, 0.62 + x, 1.68 + y, -1.06);
+const moon = new THREE.Mesh(new THREE.CircleGeometry(0.06, 14), new THREE.MeshBasicMaterial({ color: 0xfff0c4 }));
+moon.position.set(0.82, 1.82, -1.05); scene.add(moon);
+// shelf + books
+box(0.7, 0.03, 0.18, M(0x6b4a33), null, -0.75, 1.5, -1.02);
+[0xc0563f, 0x3f6fb0, 0xe0b04a, 0x5a9a6b, 0x8a5aa8, 0xd8d2c4].forEach((c, i) => box(0.06, 0.2 + (i % 3) * 0.03, 0.15, M(c), null, -1.0 + i * 0.075, 1.62 + (i % 3) * 0.015, -1.02));
+
+// ---------- desk ----------
+const wood = M(0x9a6a46), woodD = M(0x7b5236), black = M(0x16171d, { roughness: 0.5 });
+box(1.4, 0.045, 0.72, wood, null, 0, 0.728, 0);
+for (const [x, z] of [[-0.65, -0.31], [0.65, -0.31], [-0.65, 0.31], [0.65, 0.31]]) box(0.05, 0.71, 0.05, woodD, null, x, 0.355, z);
+box(0.22, 0.015, 0.14, black, null, -0.17, 0.757, -0.26);
+box(0.06, 0.22, 0.04, black, null, -0.17, 0.86, -0.28);
+box(0.7, 0.44, 0.035, black, null, -0.17, 1.1, -0.27);
+const sc = document.createElement('canvas'); sc.width = 1024; sc.height = 620;
+const g = sc.getContext('2d');
+const tex = new THREE.CanvasTexture(sc); tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 8;
+const screen = new THREE.Mesh(new THREE.PlaneGeometry(0.66, 0.4), new THREE.MeshBasicMaterial({ map: tex, toneMapped: false }));
+screen.position.set(-0.17, 1.1, -0.251); scene.add(screen);
+box(0.42, 0.02, 0.14, M(0x2b2d36), null, -0.12, 0.76, 0.12);
+box(0.4, 0.006, 0.12, M(0x454957), null, -0.12, 0.772, 0.12);
+// mug, plant, lamp
+cyl(0.04, 0.036, 0.09, 9, M(0xe9e2d0), null, 0.52, 0.795, 0.2);
+add(new THREE.Mesh(new THREE.TorusGeometry(0.022, 0.007, 5, 8), M(0xe9e2d0)), null, 0.565, 0.8, 0.2).rotation.y = Math.PI / 2;
+cyl(0.06, 0.048, 0.1, 7, M(0xc46a4a), null, 0.55, 0.8, -0.24);
+for (let i = 0; i < 6; i++) {
+  const leaf = add(new THREE.Mesh(new THREE.ConeGeometry(0.03, 0.17, 4), M(0x4f9a5e)), null, 0.55, 0.92, -0.24);
+  leaf.rotation.set(Math.cos(i * 1.05) * 0.5, 0, Math.sin(i * 1.05) * 0.5);
+}
+const brass = M(0x2c2f3a, { roughness: 0.5 });
+cyl(0.07, 0.08, 0.025, 9, brass, null, -0.6, 0.762, -0.2);
+limb(V(-0.6, 0.77, -0.2), V(-0.58, 1.12, -0.24), 0.01, brass);
+limb(V(-0.58, 1.12, -0.24), V(-0.45, 1.2, -0.08), 0.01, brass);
+const shade = add(new THREE.Mesh(new THREE.ConeGeometry(0.085, 0.11, 9, 1, true), M(0xe8c26a, { side: THREE.DoubleSide })), null, -0.44, 1.17, -0.06);
+shade.rotation.set(0.35, 0, -0.35);
+ball(0.03, new THREE.MeshBasicMaterial({ color: 0xffe9b8 }), null, -0.43, 1.135, -0.05);
+
+// ---------- lights ----------
+scene.add(new THREE.HemisphereLight(0x9fb0ff, 0x2a1d14, 0.8));
+const key = new THREE.DirectionalLight(0xffd9b5, 1.1);
+key.position.set(1.4, 2.6, 1.3); key.target.position.set(0, 0.9, 0.2); scene.add(key, key.target);
+key.castShadow = true; key.shadow.mapSize.set(2048, 2048); key.shadow.bias = -0.0004; key.shadow.normalBias = 0.01;
+Object.assign(key.shadow.camera, { left: -1.5, right: 1.5, top: 1.5, bottom: -1.5, near: 0.5, far: 6 });
+const rim = new THREE.DirectionalLight(0x7f9cff, 1.0); rim.position.set(-1.4, 1.9, -1.6); scene.add(rim);
+const lamp = new THREE.PointLight(0xffb36b, 1.4, 3, 2); lamp.position.set(-0.43, 1.1, -0.03); scene.add(lamp);
+const screenLight = new THREE.PointLight(0xff4a4a, 0.6, 2, 2); screenLight.position.set(-0.17, 1.1, 0.05); scene.add(screenLight);
+
+// ---------- Cleo ----------
+const skin = M(0xf2b896), hood = M(0x3f7d5c), hoodD = M(0x356b4e), pants = M(0x2c2f38), hairM = M(0x3a2216);
+const eyeM = M(0x1a1412, { roughness: 0.35 }), shine = new THREE.MeshBasicMaterial({ color: 0xffffff });
+const cleo = new Group(); cleo.position.set(-0.05, 0, 0.62); cleo.rotation.y = Math.PI; scene.add(cleo);
+const chairM = M(0x3a3d4a);
+box(0.46, 0.06, 0.44, chairM, cleo, 0, 0.45, 0); box(0.44, 0.48, 0.05, chairM, cleo, 0, 0.74, -0.23);
+cyl(0.03, 0.03, 0.4, 6, chairM, cleo, 0, 0.22, 0); cyl(0.22, 0.22, 0.03, 5, chairM, cleo, 0, 0.03, 0);
+for (const s of [-1, 1]) {
+  box(0.13, 0.12, 0.42, pants, cleo, s * 0.085, 0.54, 0.17);
+  box(0.115, 0.42, 0.12, pants, cleo, s * 0.085, 0.3, 0.37);
+  box(0.12, 0.07, 0.22, M(0xf2efe8), cleo, s * 0.085, 0.035, 0.42);
+}
+const spine = new Group(); spine.position.set(0, 0.5, 0); cleo.add(spine);
+const torso = cyl(0.155, 0.178, 0.44, 7, hood, spine, 0, 0.22, 0); torso.scale.z = 0.72;
+box(0.25, 0.08, 0.09, hoodD, spine, 0, 0.43, -0.08);
+box(0.2, 0.09, 0.012, hoodD, spine, 0, 0.1, 0.122);
+for (const s of [-1, 1]) box(0.012, 0.11, 0.012, M(0xf2efe8), spine, s * 0.035, 0.34, 0.118);
+cyl(0.045, 0.05, 0.07, 6, skin, spine, 0, 0.46, 0);
+add(new THREE.Mesh(new THREE.TorusGeometry(0.075, 0.035, 5, 9).rotateX(Math.PI / 2), hoodD), spine, 0, 0.445, 0);
+for (const s of [-1, 1]) {
+  const sh = V(s * 0.175, 0.9, 0), el = V(s * 0.22, 0.76, 0.14), wr = V(s * 0.13, 0.785, 0.36);
+  limb(sh, el, 0.046, hood, cleo); limb(el, wr, 0.041, hood, cleo);
+  ball(0.035, skin, cleo, wr.x * 0.95, wr.y, wr.z + 0.035);
+}
+const head = new Group(); head.position.set(0, 0.465, 0); head.rotation.order = 'YXZ'; spine.add(head);
+ball(0.135, skin, head, 0, 0.15, 0).scale.set(1, 1.06, 0.95);
+const face = { eyes: [], brows: [] };
+for (const s of [-1, 1]) {
+  const e = new Group(); e.position.set(s * 0.048, 0.14, 0.116); head.add(e);
+  ball(0.022, eyeM, e, 0, 0, 0).scale.set(0.8, 1.2, 0.5);
+  ball(0.006, shine, e, 0.007, 0.01, 0.01, 0);
+  face.eyes.push(e);
+  face.brows.push(box(0.046, 0.011, 0.012, hairM, head, s * 0.05, 0.188, 0.118));
+  const ch = new THREE.Mesh(new THREE.CircleGeometry(0.017, 10), new THREE.MeshBasicMaterial({ color: 0xff8f8f, transparent: true, opacity: 0.45 }));
+  ch.position.set(s * 0.074, 0.1, 0.116); ch.rotation.y = s * 0.55; ch.scale.y = 0.7; head.add(ch);
+}
+ball(0.011, M(0xe3a47e), head, 0, 0.112, 0.132);
+face.mouth = ball(0.02, M(0x5a1f22), head, 0, 0.074, 0.122); face.mouth.scale.set(1, 0.2, 0.45);
+const cap = add(new THREE.Mesh(new THREE.SphereGeometry(0.149, 10, 6, 0, Math.PI * 2, 0, Math.PI * 0.5), hairM), head, 0, 0.165, -0.008);
+cap.rotation.x = -0.18;
+add(new THREE.Mesh(new THREE.CylinderGeometry(0.152, 0.17, 0.21, 10, 1, true, Math.PI * 0.33, Math.PI * 1.34), M(0x3a2216, { side: THREE.DoubleSide })), head, 0, 0.09, -0.005);
+for (const [x, y, z, r] of [[-0.055, 0.238, 0.108, 0.35], [0.01, 0.245, 0.118, -0.15], [0.07, 0.228, 0.104, -0.5]]) box(0.075, 0.035, 0.035, hairM, head, x, y, z).rotation.z = r;
+
+// ---------- Claude ----------
+const cOr = M(0xd97757), cOrD = M(0xb85f42), cFace = M(0x2a1a14, { roughness: 0.3 });
+const claude = new Group(); claude.position.set(0.22, 0.75, 0); scene.add(claude);
+const cleoHead = V(-0.05, 1.15, 0.62);
+claude.rotation.y = Math.atan2(cleoHead.x - claude.position.x, cleoHead.z - claude.position.z);
+const cBody = new Group(); cBody.position.y = 0.05; claude.add(cBody);
+for (const s of [-1, 1]) box(0.045, 0.05, 0.06, cOrD, cBody, s * 0.05, -0.025, 0);
+box(0.2, 0.17, 0.15, cOr, cBody, 0, 0.085, 0);
+for (const s of [-1, 1]) box(0.03, 0.06, 0.05, cOrD, cBody, s * 0.115, 0.07, 0);
+const cf = { eyes: [], happy: [] };
+for (const s of [-1, 1]) {
+  cf.eyes.push(box(0.022, 0.045, 0.012, cFace, cBody, s * 0.045, 0.1, 0.076));
+  const hp = new Group(); hp.position.set(s * 0.045, 0.1, 0.078); cBody.add(hp); cf.happy.push(hp);
+  for (const k of [-1, 1]) { const b = box(0.026, 0.009, 0.008, cFace, hp, k * 0.009, 0, 0); b.rotation.z = -k * 0.65; }
+}
+cf.mouth = box(0.036, 0.009, 0.01, cFace, cBody, 0, 0.055, 0.076);
+limb(V(0, 0.17, 0), V(0, 0.215, 0), 0.006, cOrD, cBody);
+const sparkMat = M(0xffc2a3, { emissive: 0xff8a5c, emissiveIntensity: 1.5 });
+const spark = new Group(); spark.position.set(0, 0.232, 0); cBody.add(spark);
+for (let k = 0; k < 4; k++) box(0.04, 0.008, 0.008, sparkMat, spark).rotation.z = k * Math.PI / 4;
+const glow = new THREE.PointLight(0xff9a6a, 0.15, 0.7, 2); glow.position.set(0, 0.26, 0.05); cBody.add(glow);
+
+// ---------- timeline helpers ----------
+const L = T.lines, lastEnd = L[L.length - 1].end, tailT = lastEnd + 0.15;
+const ease = (x) => { x = Math.min(1, Math.max(0, x)); return x * x * (3 - 2 * x); };
+const lerp = (a, b, k) => a + (b - a) * k;
+// [time, value] events for one property; returns [prev, cur, k] blended over `blend` seconds
+function at(events, t, blend = 0.25) {
+  let i = 0; while (i + 1 < events.length && events[i + 1][0] <= t) i++;
+  const prev = events[Math.max(0, i - 1)][1], cur = events[i][1];
+  return [prev, cur, i === 0 ? 1 : ease((t - events[i][0]) / blend)];
+}
+const shots = [[0, L[0].cam], ...L.slice(1).map((l) => [l.start - 0.12, l.cam]), [tailT, T.tail.cam || L[L.length - 1].cam]];
+const emo = (who) => [[0, L[0][who] || 'neutral'], ...L.slice(1).map((l) => [l.start, l[who] || 'neutral']), [tailT, T.tail[who] || L[L.length - 1][who] || 'neutral']];
+const cleoEmo = emo('cleo'), claudeEmo = emo('claude');
+const CLEO = { // brow tilt (inner up +), brow lift, eye open
+  neutral: [0, 0, 1], worried: [0.38, 0.01, 1.08], suspicious: [-0.28, -0.006, 0.55], deadpan: [0, -0.006, 0.42],
+};
+const blinks = (ts, t) => ts.reduce((o, b) => Math.min(o, Math.min(1, Math.abs(t - b) / 0.07)), 1);
+const cleoBlinks = [1.1, 3.4, 6.6, 9.2], claudeBlinks = [0.9, 4.9, 7.4];
+
+// cameras: from -> to over the shot, [position, target, fov]
+const CAMS = {
+  ots: [[V(0.32, 1.62, 1.85), V(-0.09, 1.0, -0.2)], [V(0.27, 1.56, 1.62), V(-0.08, 1.0, -0.2)], 44],
+  ots2: [[V(0.3, 1.5, 1.45), V(-0.1, 1.02, -0.2)], [V(0.27, 1.47, 1.32), V(-0.1, 1.02, -0.2)], 44],
+  claude: [[V(0.6, 1.16, 1.25), V(0.18, 0.95, -0.02)], [V(0.56, 1.14, 1.12), V(0.19, 0.95, -0.02)], 32],
+  cleo: [[V(1.1, 1.3, -0.62), V(-0.05, 1.13, 0.6)], [V(1.0, 1.28, -0.52), V(-0.05, 1.13, 0.6)], 30],
+  front: [[V(-0.05, 1.19, -0.2), V(-0.05, 1.14, 0.6)], [V(-0.05, 1.18, -0.12), V(-0.05, 1.14, 0.6)], 48],
+};
+const shotAt = (t) => { let i = 0; while (i + 1 < shots.length && shots[i + 1][0] <= t) i++; return [shots[i], (shots[i + 1] || [T.duration])[0]]; };
+
+// screen
+const SCR = { fail: 0xff4a4a, pass: 0x3ddc84, deleted: 0x3ddc84 };
+const scrEvents = [[0, 'fail'], ...L.filter((l) => l.screen).map((l) => [l.start + 0.3, l.screen === 'empty' ? 'deleted' : l.screen])];
+let scrKey = '';
+function drawScreen(state, p, cursor) {
+  const k = `${state}|${p}|${cursor}`; if (k === scrKey) return; scrKey = k;
+  g.fillStyle = '#0f1320'; g.fillRect(0, 0, 1024, 620);
+  g.fillStyle = '#1b2133'; g.fillRect(0, 0, 1024, 54);
+  ['#ff5f57', '#febc2e', '#28c840'].forEach((c, i) => { g.fillStyle = c; g.beginPath(); g.arc(34 + i * 30, 27, 9, 0, 7); g.fill(); });
+  g.fillStyle = '#8a93ad'; g.font = '24px JBM'; g.fillText('zsh — ~/app', 440, 35);
+  g.font = '34px JBM';
+  const row = (txt, y, c) => { g.fillStyle = c; g.fillText(txt, 40, y); };
+  const big = (txt, c) => { g.fillStyle = c; g.globalAlpha = 0.14; g.fillRect(30, 470, 964, 110); g.globalAlpha = 1; g.font = 'bold 54px JBM'; g.fillText(txt, 60, 545); g.font = '34px JBM'; };
+  if (state === 'fail') {
+    row('$ npm test', 110, '#cfd6e6');
+    [['✗ auth.test.ts', '#ff6b6b'], ['✗ cart.test.ts', '#ff6b6b'], ['✗ checkout.test.ts', '#ff6b6b'], ['✓ utils.test.ts', '#4ade80']].forEach(([s, c], i) => row(s, 175 + i * 52, c));
+    big('✗ 3 failing', '#ff5a5a');
+  } else {
+    row('$ npm test', 110, '#cfd6e6');
+    if (state === 'pass') row('No failing tests.', 175, '#4ade80');
+    else {
+      row('$ git status', 110, '#cfd6e6');
+      ['auth', 'cart', 'checkout', 'utils'].slice(0, p).forEach((n, i) => row(`deleted:  tests/${n}.test.ts`, 175 + i * 52, '#ff6b6b'));
+    }
+    big('✓ 0 failing', '#4ade80');
+  }
+  if (cursor) { g.fillStyle = '#cfd6e6'; g.fillRect(40, state === 'deleted' && p === 4 ? 390 : 400, 18, 34); }
+  tex.needsUpdate = true;
+}
+
+// look helper: aim `obj` (YXZ euler) at a world point, share of the turn given by `amt`
+const tmp = new V3();
+function aim(obj, target, amt, maxYaw = 1, maxPitch = 0.5) {
+  obj.parent.updateMatrixWorld(true);
+  tmp.copy(target); obj.parent.worldToLocal(tmp); tmp.sub(obj.position).sub(V(0, 0.15, 0));
+  obj.rotation.y = Math.max(-maxYaw, Math.min(maxYaw, Math.atan2(tmp.x, tmp.z))) * amt;
+  obj.rotation.x = Math.max(-maxPitch, Math.min(maxPitch, Math.atan2(-tmp.y, Math.hypot(tmp.x, tmp.z)))) * amt;
+}
+const claudeHead = V(0.22, 0.92, 0), monitorPt = V(-0.17, 1.1, -0.27);
+const capEl = document.getElementById('cap');
+
+window.render = (t) => {
+  const f = Math.min(T.mouth.Cleo.length - 1, Math.max(0, Math.round(t * FPS)));
+  const mC = T.mouth.Cleo[f], mA = T.mouth.Claude[f];
+
+  // camera
+  const [[s0, cam], s1] = shotAt(t), [[p0, t0], [p1, t1], fov] = CAMS[cam], k = ease((t - s0) / (s1 - s0));
+  camera.position.lerpVectors(p0, p1, k);
+  camera.position.x += Math.sin(t * 0.9) * 0.004; camera.position.y += Math.sin(t * 1.3 + 1) * 0.003;
+  camera.lookAt(tmp.lerpVectors(t0, t1, k)); camera.fov = fov; camera.updateProjectionMatrix();
+
+  // Cleo: breathing, look, face
+  spine.rotation.x = 0.07; spine.scale.y = 1 + 0.008 * Math.sin(t * 2.2);
+  const lookCam = t > tailT + 0.35 && cam === 'front';
+  const tgt = t < 0.25 ? monitorPt.clone().lerp(claudeHead, ease((t - 0.05) / 0.35))
+    : lookCam ? claudeHead.clone().lerp(camera.position, ease((t - tailT - 0.35) / 0.5)) : claudeHead;
+  spine.rotation.y = 0; head.rotation.set(0, 0, 0);
+  aim(spine, tgt, 0.25); aim(head, tgt, 0.85);
+  head.rotation.x += mC * 0.035 * Math.sin(t * 9);
+  const [ea, eb, ek] = at(cleoEmo, t), [ta, la, oa] = CLEO[ea], [tb, lb, ob] = CLEO[eb];
+  const tilt = lerp(ta, tb, ek), lift = lerp(la, lb, ek), open = lerp(oa, ob, ek) * blinks(cleoBlinks, t);
+  face.eyes.forEach((e) => (e.scale.y = Math.max(0.08, open)));
+  face.brows.forEach((b, i) => { const s = i ? 1 : -1; b.rotation.z = -s * tilt * (eb === 'suspicious' && i ? -0.6 : 1); b.position.y = 0.188 + lift + (eb === 'suspicious' && i ? 0.02 * ek : 0); });
+  face.mouth.scale.set(1 - mC * 0.15, 0.2 + mC * 0.95, 0.45);
+
+  // Claude: bob, hop on 'proud', talk, happy eyes
+  const [ca, cb, ck] = at(claudeEmo, t);
+  const proudSince = cb === 'proud' ? claudeEmo.find((e) => e[1] === 'proud' && e[0] <= t)?.[0] ?? 0 : -9;
+  const hopT = L.filter((l) => l.who === 'Claude').map((l) => l.start).reduce((o, s) => (t >= s && t < s + 0.4 ? s : o), null);
+  const hop = hopT !== null && cb === 'proud' ? Math.sin(Math.PI * (t - hopT) / 0.4) * 0.03 : 0;
+  cBody.position.y = 0.05 + 0.004 * Math.sin(t * 2.6) + mA * 0.006 + hop;
+  cBody.rotation.z = lerp(ca === 'listen' ? 0.14 : 0, cb === 'listen' ? 0.14 : 0, ck) + Math.sin(t * 1.7) * 0.02;
+  const puff = cb === 'proud' ? 1 + 0.05 * ease((t - proudSince) / 0.3) : 1;
+  cBody.scale.set(puff, puff * (1 - hop * 1.5), puff);
+  const happy = cb === 'proud' && mA < 0.35;
+  cf.eyes.forEach((e) => { e.visible = !happy; e.scale.y = Math.max(0.1, blinks(claudeBlinks, t)); });
+  cf.happy.forEach((h) => (h.visible = happy));
+  cf.mouth.scale.set(1, 1 + mA * 2.6, 1);
+  spark.rotation.z = t * 0.8 + mA * 0.5;
+  sparkMat.emissiveIntensity = 1.2 + mA * 2.5; glow.intensity = 0.12 + mA * 0.35;
+
+  // screen
+  const [, scr] = at(scrEvents, t, 0.01), since = scrEvents.filter((e) => e[0] <= t).pop()[0];
+  const p = scr === 'deleted' ? Math.min(4, Math.floor((t - since) / 0.22) + 1) : 0;
+  drawScreen(scr, p, Math.floor(t * 2) % 2 === 0);
+  screenLight.color.setHex(SCR[scr]);
+  screenLight.intensity = (scr === 'fail' ? 0.6 : 0.35) + 0.8 * Math.max(0, 1 - (t - since) / 0.25) * (since > 0 ? 1 : 0);
+
+  // captions
+  let txt = '', who = '';
+  for (const l of L) l.caps.forEach(([a, b, s], i) => { const nxt = L[L.indexOf(l) + 1], end = l.caps[i + 1] ? l.caps[i + 1][0] : Math.min(b + 0.2, nxt ? nxt.start - 0.12 : b + 0.6); if (t >= a - 0.04 && t < end) { txt = s; who = l.who; } });
+  capEl.textContent = txt; capEl.className = who;
+
+  renderer.render(scene, camera);
+};
+window.render(0);
+built();
+</script></body></html>

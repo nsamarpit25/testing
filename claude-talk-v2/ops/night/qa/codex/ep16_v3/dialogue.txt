@@ -1,0 +1,12 @@
+1.0-7.5s Cleo: Claude, checkout's extinct. A hundred and twenty-eight commits. I'm checking them one by one.
+8.2-12.7s Claude: Here we observe the junior developer, in her natural habitat.
+13.1-20.0s Claude: She is on commit four. At this pace, she will finish on Thursday.
+20.4-22.4s Cleo: Are you... narrating me?
+23.2-25.3s Claude: The developer has noticed us.
+25.7-35.8s Claude: Run git bisect start. Mark an earlier commit good, the broken one bad. Git picks between them.
+36.3-36.9s Cleo: And then?
+37.4-45.5s Claude: Test checkout. Tell Git good or bad. Repeat. Each test roughly halves the suspects.
+46.0-51.5s Cleo: Bad. Good. Good. Bad. Good. Bad. Bad.
+52.2-57.9s Claude: A hundred and twenty-eight suspects. Seven checks. Remarkable.
+58.4-66.0s Cleo: Found it! "Small harmless cleanup." Who wrote... oh. It's me.
+67.0-69.8s Claude: Cause of extinction: the developer.

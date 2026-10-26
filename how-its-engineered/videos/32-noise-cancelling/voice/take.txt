@@ -1,0 +1,2 @@
+t1 from /mnt/ssd/render/vo/32-noise-cancelling/t1; gap cuts [(15.21, 0.29), (26.73, 0.22), (36.12, 0.19)]; tail cut at 44.05s (orig 44.36) + 60ms fade
+extra cut (4.3,0.15) in ears.|Sound pause

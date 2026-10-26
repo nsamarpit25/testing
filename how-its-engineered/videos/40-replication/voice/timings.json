@@ -1,0 +1,74 @@
+[
+ {
+  "li": 0,
+  "pi": 0,
+  "say": "At 3 AM, the server holding your database dies, and its disk with it. If that was your only copy, every user and every order is gone.",
+  "show": "At 3 AM, the server holding your database *dies,* and its disk with it. If that was your *only copy,* every user and every order is [gone.]",
+  "start": 0.0,
+  "end": 6.88
+ },
+ {
+  "li": 1,
+  "pi": 0,
+  "say": "Replication means keeping live copies of your data on other servers. In the usual setup, the main one is called the leader, and every change it makes is sent to the copies.",
+  "show": "[Replication] means keeping live *copies* of your data on other servers. In the usual setup, the main one is called the [leader,] and every change it makes is sent to the *copies.*",
+  "start": 7.52,
+  "end": 13.92
+ },
+ {
+  "li": 2,
+  "pi": 0,
+  "say": "Like a document that gets copied again after every edit, with the copies kept in safes in different buildings. One building floods, the others still have it.",
+  "show": "Like a document that gets *copied again* after every edit, with the copies kept in safes in [different buildings.] One building *floods,* the others [still have it.]",
+  "start": 14.42,
+  "end": 20.26
+ },
+ {
+  "li": 3,
+  "pi": 0,
+  "say": "So the copies live somewhere else: another rack, another data center, even another city. One power cut or flood can't take them all.",
+  "show": "So the copies live somewhere else: another *rack,* another *data center,* even another *city.* One power cut or flood [can't take them all.]",
+  "start": 20.6,
+  "end": 25.86
+ },
+ {
+  "li": 4,
+  "pi": 0,
+  "say": "Now the leader dies. If failover is set up, a copy is promoted to be the new leader, and after a short blip your app keeps running.",
+  "show": "Now the leader *dies.* If [failover] is set up, a copy is *promoted* to be the new leader, and after a short blip your app [keeps running.]",
+  "start": 26.24,
+  "end": 31.48
+ },
+ {
+  "li": 5,
+  "pi": 0,
+  "say": "But when is a write really saved? The leader can wait until a copy confirms it, or say done right away and let the copies catch up.",
+  "show": "But when is a write *really saved?* The leader can [wait] until a copy *confirms* it, or say done [right away] and let the copies catch up.",
+  "start": 31.9,
+  "end": 37.66
+ },
+ {
+  "li": 6,
+  "pi": 0,
+  "say": "Waiting is safer, but slower. Not waiting is faster, but if the leader dies before the copies catch up, the newest writes are lost.",
+  "show": "Waiting is *safer,* but slower. Not waiting is *faster,* but if the leader dies before the copies catch up, the [newest writes are lost.]",
+  "start": 38.24,
+  "end": 43.76
+ },
+ {
+  "li": 7,
+  "pi": 0,
+  "say": "One more thing: replication isn't a backup. Delete your data by mistake, and every copy deletes it too. You still need backups.",
+  "show": "One more thing: replication [isn't a backup.] Delete your data by *mistake,* and every copy [deletes it too.] You still need *backups.*",
+  "start": 44.26,
+  "end": 49.76
+ },
+ {
+  "li": 8,
+  "pi": 0,
+  "say": "If you're a vibe coder, follow for the system design your AI skipped.",
+  "show": "If you're a vibe coder, follow for the system design your AI [skipped.]",
+  "start": 50.3,
+  "end": 52.66
+ }
+]

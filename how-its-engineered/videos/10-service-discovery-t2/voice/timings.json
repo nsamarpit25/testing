@@ -1,0 +1,58 @@
+[
+ {
+  "li": 0,
+  "pi": 0,
+  "say": "At 2 PM, checkout broke. Every payment failed, and nobody had touched a single line of code.",
+  "show": "At 2 PM, checkout [broke.] Every payment [failed,] and nobody had touched a single line of code.",
+  "start": 0.0,
+  "end": 4.66
+ },
+ {
+  "li": 1,
+  "pi": 0,
+  "say": "The payment program had restarted on another server, with a new address. Your app was still calling the old one.",
+  "show": "The payment program had *restarted on another server,* with a new address. Your app was still calling [the old one.]",
+  "start": 5.3,
+  "end": 9.98
+ },
+ {
+  "li": 2,
+  "pi": 0,
+  "say": "Server addresses change all the time. Your app needs a way to find the current one.",
+  "show": "Server *addresses change* all the time. Your app needs a way to *find the current one.*",
+  "start": 10.54,
+  "end": 13.7
+ },
+ {
+  "li": 3,
+  "pi": 0,
+  "say": "Imagine contacts on your phone that update themselves whenever a friend's number changes. That's service discovery, for programs.",
+  "show": "Imagine *contacts* on your phone that update themselves whenever a friend's *number changes.* That's *service discovery,* for programs.",
+  "start": 14.22,
+  "end": 19.6
+ },
+ {
+  "li": 4,
+  "pi": 0,
+  "say": "One way is a directory that matches program names to their current addresses.",
+  "show": "One way is a *directory* that matches program *names* to their current addresses.",
+  "start": 20.1,
+  "end": 22.92
+ },
+ {
+  "li": 5,
+  "pi": 0,
+  "say": "When payments restart somewhere else, its entry updates. Your app looks payments up by name and gets the new address.",
+  "show": "When payments *restart* somewhere else, its *entry updates.* Your app looks payments up *by name* and gets the *new address.*",
+  "start": 23.46,
+  "end": 28.1
+ },
+ {
+  "li": 6,
+  "pi": 0,
+  "say": "If AI writes your code, follow for the system design it leaves out.",
+  "show": "If AI writes your code, *follow* for the system design it [leaves out.]",
+  "start": 28.5,
+  "end": 30.9
+ }
+]

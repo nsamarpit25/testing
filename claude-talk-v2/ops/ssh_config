@@ -1,0 +1,7 @@
+Host aws10
+  HostName 100.59.207.238
+  User ubuntu
+  IdentityFile ~/.ssh/ctv2-bench.pem
+  UserKnownHostsFile /dev/null
+  StrictHostKeyChecking no
+  LogLevel ERROR

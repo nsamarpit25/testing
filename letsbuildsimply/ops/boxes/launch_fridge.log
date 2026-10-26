@@ -1,0 +1,34 @@
+12:00:23 spot ap-south-1 g6e.2xlarge (InsufficientInstanceCapacity)
+12:00:26 spot ap-south-1 g6e.2xlarge (InsufficientInstanceCapacity)
+12:00:27 spot ap-south-1 g6e.2xlarge (Unsupported)
+12:00:32 spot ap-south-1 g6.2xlarge (InsufficientInstanceCapacity)
+12:00:37 spot ap-south-1 g6.2xlarge (InsufficientInstanceCapacity)
+12:00:38 spot ap-south-1 g6.2xlarge (Unsupported)
+12:00:42 spot ap-south-1 g5.2xlarge (InsufficientInstanceCapacity)
+12:00:43 spot ap-south-1 g5.2xlarge (MaxSpotInstanceCountExceeded)
+12:00:44 spot ap-south-1 g5.2xlarge (Unsupported)
+12:00:48 spot ap-south-1 g6e.xlarge (InsufficientInstanceCapacity)
+12:00:54 spot ap-south-1 g6e.xlarge (InsufficientInstanceCapacity)
+12:00:55 spot ap-south-1 g6e.xlarge (Unsupported)
+12:00:56 spot ap-south-1 g6.xlarge (MaxSpotInstanceCountExceeded)
+12:01:01 spot ap-south-1 g6.xlarge (InsufficientInstanceCapacity)
+12:01:02 spot ap-south-1 g6.xlarge (Unsupported)
+12:01:06 spot ap-south-1 g5.xlarge (InsufficientInstanceCapacity)
+12:01:10 spot ap-south-1 g5.xlarge (InsufficientInstanceCapacity)
+12:01:11 spot ap-south-1 g5.xlarge (Unsupported)
+12:01:18 spot us-east-1 g6e.2xlarge (InsufficientInstanceCapacity)
+12:01:26 spot us-east-1 g6e.2xlarge (InsufficientInstanceCapacity)
+12:01:35 spot us-east-1 g6e.2xlarge (InsufficientInstanceCapacity)
+12:01:43 spot us-east-1 g6e.2xlarge (InsufficientInstanceCapacity)
+12:01:46 spot us-east-1 g6e.2xlarge (Unsupported)
+12:01:48 spot us-east-1 g6e.2xlarge (Unsupported)
+12:01:54 spot us-east-1 g6.2xlarge (InsufficientInstanceCapacity)
+GOT spot g6.2xlarge us-east-1 i-038907092e88ea046 12:01:57
+W: Target Packages (Packages) is configured multiple times in /etc/apt/sources.list.d/archive_uri-https_developer_download_nvidia_com_compute_cuda_repos_ubuntu2204_x86_64_-jammy.list:1 and /etc/apt/sources.list.d/cuda-ubuntu2204-x86_64.list:1
+W: Target Translations (en) is configured multiple times in /etc/apt/sources.list.d/archive_uri-https_developer_download_nvidia_com_compute_cuda_repos_ubuntu2204_x86_64_-jammy.list:1 and /etc/apt/sources.list.d/cuda-ubuntu2204-x86_64.list:1
+W: Target Packages (Packages) is configured multiple times in /etc/apt/sources.list.d/archive_uri-https_developer_download_nvidia_com_compute_cuda_repos_ubuntu2204_x86_64_-jammy.list:1 and /etc/apt/sources.list.d/cuda-ubuntu2204-x86_64.list:1
+W: Target Translations (en) is configured multiple times in /etc/apt/sources.list.d/archive_uri-https_developer_download_nvidia_com_compute_cuda_repos_ubuntu2204_x86_64_-jammy.list:1 and /etc/apt/sources.list.d/cuda-ubuntu2204-x86_64.list:1
+Blender 5.2.2 LTS
+NVIDIA L4
+whisper ok
+READY 12:04:10

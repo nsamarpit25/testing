@@ -1,0 +1,53 @@
+{
+ "topic": "How your touchscreen knows it's your finger (sausage story first)",
+ "lines": [
+  [
+   {
+    "say": "In February twenty-ten, South Koreans were reported tapping iPhones with snack sausages, to keep their gloves on.",
+    "show": "In February 2010, South Koreans were reported tapping iPhones with *snack sausages,* to keep [their gloves on.]"
+   }
+  ],
+  [
+   {
+    "say": "Because your phone ignores a wool glove, however hard you press. So what is your screen feeling for?",
+    "show": "Because your phone ignores a *wool glove,* however hard you press. So what is your screen [feeling for?]"
+   }
+  ],
+  [
+   {
+    "say": "Under the glass sits an invisible grid of see-through wires: rows one way, columns the other.",
+    "show": "Under the glass sits an *invisible grid* of see-through wires: rows one way, [columns the other.]"
+   }
+  ],
+  [
+   {
+    "say": "The phone sends tiny electric pulses along the rows, and measures what reaches each column, many times a second.",
+    "show": "The phone sends tiny *electric pulses* along the rows, and measures what reaches each column, [many times a second.]"
+   }
+  ],
+  [
+   {
+    "say": "Your finger is mostly salty water, so charge moves through it. Bring it close, and it draws away part of the signal at the crossings under it.",
+    "show": "Your finger is mostly *salty water,* so charge moves through it. Bring it close, and it draws away part of the signal [at the crossings under it.]"
+   }
+  ],
+  [
+   {
+    "say": "By comparing neighbouring crossings, the phone finds the centre of your touch, even between wires.",
+    "show": "By comparing neighbouring crossings, the phone finds the *centre of your touch,* [even between wires.]"
+   }
+  ],
+  [
+   {
+    "say": "A wool glove or a fingernail barely changes the signal. Water can, so a wet screen sometimes taps by itself.",
+    "show": "A wool glove or a fingernail *barely changes* the signal. Water can, so a wet screen sometimes [taps by itself.]"
+   }
+  ],
+  [
+   {
+    "say": "And the sausage? Salty, moist meat changes that signal too. Your screen never knew it was your finger. It only feels a change in the signal, and a sausage can fake that.",
+    "show": "And the sausage? *Salty, moist meat* changes that signal too. Your screen never knew it was your finger. It only feels a change in the signal, and [a sausage can fake that.]"
+   }
+  ]
+ ]
+}

@@ -1,0 +1,153 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1080
+PlayResY: 1920
+WrapStyle: 0
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Cap,Arial,72,&H00FFFFFF,&H00FFFFFF,&H00303030,&H80000000,1,0,0,0,100,100,0,0,1,2.2,0,2,110,110,330,1
+Style: Handle,Arial,34,&H28FFFFFF,&H28FFFFFF,&H00000000,&H90000000,1,0,0,0,100,100,1,0,1,0,1.5,2,60,60,114,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:01.00,0:00:02.48,Cap,,0,0,0,,{\alpha&H00&\c&H0066D9FF&}Claude, {\alpha&HFF&}checkout's {\alpha&HFF&}celebrating.
+Dialogue: 0,0:00:02.48,0:00:03.06,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Claude, {\alpha&H00&\c&H0066D9FF&}checkout's {\alpha&HFF&}celebrating.
+Dialogue: 0,0:00:03.06,0:00:03.58,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Claude, {\alpha&H00&\c&HFFFFFF&}checkout's {\alpha&H00&\c&H0066D9FF&}celebrating.
+Dialogue: 0,0:00:03.58,0:00:03.84,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Claude, {\alpha&H00&\c&HFFFFFF&}checkout's {\alpha&H00&\c&HFFFFFF&}celebrating.
+Dialogue: 0,0:00:03.84,0:00:04.06,Cap,,0,0,0,,{\alpha&H00&\c&H0066D9FF&}Every {\alpha&HFF&}order {\alpha&HFF&}failed.
+Dialogue: 0,0:00:04.06,0:00:04.40,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Every {\alpha&H00&\c&H0066D9FF&}order {\alpha&HFF&}failed.
+Dialogue: 0,0:00:04.40,0:00:04.78,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Every {\alpha&H00&\c&HFFFFFF&}order {\alpha&H00&\c&H0066D9FF&}failed.
+Dialogue: 0,0:00:04.78,0:00:05.56,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Every {\alpha&H00&\c&HFFFFFF&}order {\alpha&H00&\c&HFFFFFF&}failed.
+Dialogue: 0,0:00:05.56,0:00:05.86,Cap,,0,0,0,,{\alpha&H00&\c&H005A9AFF&}Why {\alpha&HFF&}confetti?
+Dialogue: 0,0:00:05.86,0:00:06.32,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Why {\alpha&H00&\c&H005A9AFF&}confetti?
+Dialogue: 0,0:00:06.32,0:00:06.88,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Why {\alpha&H00&\c&HFFFFFF&}confetti?
+Dialogue: 0,0:00:06.88,0:00:07.22,Cap,,0,0,0,,{\alpha&H00&\c&H0066D9FF&}That's {\alpha&HFF&}the {\alpha&HFF&}success {\alpha&HFF&}screen.
+Dialogue: 0,0:00:07.22,0:00:07.40,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}That's {\alpha&H00&\c&H0066D9FF&}the {\alpha&HFF&}success {\alpha&HFF&}screen.
+Dialogue: 0,0:00:07.40,0:00:07.78,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}That's {\alpha&H00&\c&HFFFFFF&}the {\alpha&H00&\c&H0066D9FF&}success {\alpha&HFF&}screen.
+Dialogue: 0,0:00:07.78,0:00:08.36,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}That's {\alpha&H00&\c&HFFFFFF&}the {\alpha&H00&\c&HFFFFFF&}success {\alpha&H00&\c&H0066D9FF&}screen.
+Dialogue: 0,0:00:08.36,0:00:08.82,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}That's {\alpha&H00&\c&HFFFFFF&}the {\alpha&H00&\c&HFFFFFF&}success {\alpha&H00&\c&HFFFFFF&}screen.
+Dialogue: 0,0:00:08.82,0:00:09.10,Cap,,0,0,0,,{\alpha&H00&\c&H0066D9FF&}Every {\alpha&HFF&}failed {\alpha&HFF&}order {\alpha&HFF&}gets {\alpha&HFF&}a {\alpha&HFF&}party.
+Dialogue: 0,0:00:09.10,0:00:09.50,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Every {\alpha&H00&\c&H0066D9FF&}failed {\alpha&HFF&}order {\alpha&HFF&}gets {\alpha&HFF&}a {\alpha&HFF&}party.
+Dialogue: 0,0:00:09.50,0:00:09.86,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Every {\alpha&H00&\c&HFFFFFF&}failed {\alpha&H00&\c&H0066D9FF&}order {\alpha&HFF&}gets {\alpha&HFF&}a {\alpha&HFF&}party.
+Dialogue: 0,0:00:09.86,0:00:10.12,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Every {\alpha&H00&\c&HFFFFFF&}failed {\alpha&H00&\c&HFFFFFF&}order {\alpha&H00&\c&H0066D9FF&}gets {\alpha&HFF&}a {\alpha&HFF&}party.
+Dialogue: 0,0:00:10.12,0:00:10.30,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Every {\alpha&H00&\c&HFFFFFF&}failed {\alpha&H00&\c&HFFFFFF&}order {\alpha&H00&\c&HFFFFFF&}gets {\alpha&H00&\c&H0066D9FF&}a {\alpha&HFF&}party.
+Dialogue: 0,0:00:10.30,0:00:10.54,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Every {\alpha&H00&\c&HFFFFFF&}failed {\alpha&H00&\c&HFFFFFF&}order {\alpha&H00&\c&HFFFFFF&}gets {\alpha&H00&\c&HFFFFFF&}a {\alpha&H00&\c&H0066D9FF&}party.
+Dialogue: 0,0:00:10.54,0:00:11.16,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Every {\alpha&H00&\c&HFFFFFF&}failed {\alpha&H00&\c&HFFFFFF&}order {\alpha&H00&\c&HFFFFFF&}gets {\alpha&H00&\c&HFFFFFF&}a {\alpha&H00&\c&HFFFFFF&}party.
+Dialogue: 0,0:00:11.16,0:00:11.70,Cap,,0,0,0,,{\alpha&H00&\c&H005A9AFF&}Didn't {\alpha&HFF&}you {\alpha&HFF&}add {\alpha&HFF&}error {\alpha&HFF&}handling?
+Dialogue: 0,0:00:11.70,0:00:11.80,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Didn't {\alpha&H00&\c&H005A9AFF&}you {\alpha&HFF&}add {\alpha&HFF&}error {\alpha&HFF&}handling?
+Dialogue: 0,0:00:11.80,0:00:11.96,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Didn't {\alpha&H00&\c&HFFFFFF&}you {\alpha&H00&\c&H005A9AFF&}add {\alpha&HFF&}error {\alpha&HFF&}handling?
+Dialogue: 0,0:00:11.96,0:00:12.20,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Didn't {\alpha&H00&\c&HFFFFFF&}you {\alpha&H00&\c&HFFFFFF&}add {\alpha&H00&\c&H005A9AFF&}error {\alpha&HFF&}handling?
+Dialogue: 0,0:00:12.20,0:00:12.50,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Didn't {\alpha&H00&\c&HFFFFFF&}you {\alpha&H00&\c&HFFFFFF&}add {\alpha&H00&\c&HFFFFFF&}error {\alpha&H00&\c&H005A9AFF&}handling?
+Dialogue: 0,0:00:12.50,0:00:13.12,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Didn't {\alpha&H00&\c&HFFFFFF&}you {\alpha&H00&\c&HFFFFFF&}add {\alpha&H00&\c&HFFFFFF&}error {\alpha&H00&\c&HFFFFFF&}handling?
+Dialogue: 0,0:00:13.12,0:00:14.04,Cap,,0,0,0,,{\alpha&H00&\c&H0066D9FF&}Try, {\alpha&HFF&}catch,
+Dialogue: 0,0:00:14.04,0:00:14.46,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Try, {\alpha&H00&\c&H0066D9FF&}catch,
+Dialogue: 0,0:00:14.46,0:00:14.68,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Try, {\alpha&H00&\c&HFFFFFF&}catch,
+Dialogue: 0,0:00:14.68,0:00:14.78,Cap,,0,0,0,,{\alpha&H00&\c&H0066D9FF&}a {\alpha&HFF&}big {\alpha&HFF&}red {\alpha&HFF&}error {\alpha&HFF&}message.
+Dialogue: 0,0:00:14.78,0:00:15.04,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}a {\alpha&H00&\c&H0066D9FF&}big {\alpha&HFF&}red {\alpha&HFF&}error {\alpha&HFF&}message.
+Dialogue: 0,0:00:15.04,0:00:15.28,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}a {\alpha&H00&\c&HFFFFFF&}big {\alpha&H00&\c&H0066D9FF&}red {\alpha&HFF&}error {\alpha&HFF&}message.
+Dialogue: 0,0:00:15.28,0:00:15.56,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}a {\alpha&H00&\c&HFFFFFF&}big {\alpha&H00&\c&HFFFFFF&}red {\alpha&H00&\c&H0066D9FF&}error {\alpha&HFF&}message.
+Dialogue: 0,0:00:15.56,0:00:15.96,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}a {\alpha&H00&\c&HFFFFFF&}big {\alpha&H00&\c&HFFFFFF&}red {\alpha&H00&\c&HFFFFFF&}error {\alpha&H00&\c&H0066D9FF&}message.
+Dialogue: 0,0:00:15.96,0:00:16.32,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}a {\alpha&H00&\c&HFFFFFF&}big {\alpha&H00&\c&HFFFFFF&}red {\alpha&H00&\c&HFFFFFF&}error {\alpha&H00&\c&HFFFFFF&}message.
+Dialogue: 0,0:00:16.32,0:00:16.37,Cap,,0,0,0,,{\alpha&H00&\c&H0066D9FF&}I {\alpha&HFF&}tested {\alpha&HFF&}it.
+Dialogue: 0,0:00:16.36,0:00:16.86,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}I {\alpha&H00&\c&H0066D9FF&}tested {\alpha&HFF&}it.
+Dialogue: 0,0:00:16.86,0:00:17.16,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}I {\alpha&H00&\c&HFFFFFF&}tested {\alpha&H00&\c&H0066D9FF&}it.
+Dialogue: 0,0:00:17.16,0:00:17.46,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}I {\alpha&H00&\c&HFFFFFF&}tested {\alpha&H00&\c&HFFFFFF&}it.
+Dialogue: 0,0:00:17.46,0:00:17.64,Cap,,0,0,0,,{\alpha&H00&\c&H0066D9FF&}Nothing {\alpha&HFF&}went {\alpha&HFF&}red.
+Dialogue: 0,0:00:17.64,0:00:17.84,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Nothing {\alpha&H00&\c&H0066D9FF&}went {\alpha&HFF&}red.
+Dialogue: 0,0:00:17.84,0:00:18.12,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Nothing {\alpha&H00&\c&HFFFFFF&}went {\alpha&H00&\c&H0066D9FF&}red.
+Dialogue: 0,0:00:18.12,0:00:18.75,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Nothing {\alpha&H00&\c&HFFFFFF&}went {\alpha&H00&\c&HFFFFFF&}red.
+Dialogue: 0,0:00:18.75,0:00:19.15,Cap,,0,0,0,,{\alpha&H00&\c&H005A9AFF&}Because {\alpha&HFF&}that {\alpha&HFF&}five {\alpha&HFF&}hundred {\alpha&HFF&}is {\alpha&HFF&}a
+Dialogue: 0,0:00:19.15,0:00:19.55,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Because {\alpha&H00&\c&H005A9AFF&}that {\alpha&HFF&}five {\alpha&HFF&}hundred {\alpha&HFF&}is {\alpha&HFF&}a
+Dialogue: 0,0:00:19.55,0:00:19.77,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Because {\alpha&H00&\c&HFFFFFF&}that {\alpha&H00&\c&H005A9AFF&}five {\alpha&HFF&}hundred {\alpha&HFF&}is {\alpha&HFF&}a
+Dialogue: 0,0:00:19.77,0:00:20.15,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Because {\alpha&H00&\c&HFFFFFF&}that {\alpha&H00&\c&HFFFFFF&}five {\alpha&H00&\c&H005A9AFF&}hundred {\alpha&HFF&}is {\alpha&HFF&}a
+Dialogue: 0,0:00:20.15,0:00:20.51,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Because {\alpha&H00&\c&HFFFFFF&}that {\alpha&H00&\c&HFFFFFF&}five {\alpha&H00&\c&HFFFFFF&}hundred {\alpha&H00&\c&H005A9AFF&}is {\alpha&HFF&}a
+Dialogue: 0,0:00:20.51,0:00:20.69,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Because {\alpha&H00&\c&HFFFFFF&}that {\alpha&H00&\c&HFFFFFF&}five {\alpha&H00&\c&HFFFFFF&}hundred {\alpha&H00&\c&HFFFFFF&}is {\alpha&H00&\c&H005A9AFF&}a
+Dialogue: 0,0:00:20.69,0:00:21.55,Cap,,0,0,0,,{\alpha&H00&\c&H005A9AFF&}response, {\alpha&HFF&}not {\alpha&HFF&}a {\alpha&HFF&}rejected {\alpha&HFF&}promise.
+Dialogue: 0,0:00:21.55,0:00:21.87,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}response, {\alpha&H00&\c&H005A9AFF&}not {\alpha&HFF&}a {\alpha&HFF&}rejected {\alpha&HFF&}promise.
+Dialogue: 0,0:00:21.87,0:00:22.01,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}response, {\alpha&H00&\c&HFFFFFF&}not {\alpha&H00&\c&H005A9AFF&}a {\alpha&HFF&}rejected {\alpha&HFF&}promise.
+Dialogue: 0,0:00:22.01,0:00:22.41,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}response, {\alpha&H00&\c&HFFFFFF&}not {\alpha&H00&\c&HFFFFFF&}a {\alpha&H00&\c&H005A9AFF&}rejected {\alpha&HFF&}promise.
+Dialogue: 0,0:00:22.41,0:00:22.77,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}response, {\alpha&H00&\c&HFFFFFF&}not {\alpha&H00&\c&HFFFFFF&}a {\alpha&H00&\c&HFFFFFF&}rejected {\alpha&H00&\c&H005A9AFF&}promise.
+Dialogue: 0,0:00:22.77,0:00:23.46,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}response, {\alpha&H00&\c&HFFFFFF&}not {\alpha&H00&\c&HFFFFFF&}a {\alpha&H00&\c&HFFFFFF&}rejected {\alpha&H00&\c&HFFFFFF&}promise.
+Dialogue: 0,0:00:23.46,0:00:23.70,Cap,,0,0,0,,{\alpha&H00&\c&H0066D9FF&}So {\alpha&HFF&}the {\alpha&HFF&}catch {\alpha&HFF&}should {\alpha&HFF&}catch {\alpha&HFF&}it!
+Dialogue: 0,0:00:23.70,0:00:23.86,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}So {\alpha&H00&\c&H0066D9FF&}the {\alpha&HFF&}catch {\alpha&HFF&}should {\alpha&HFF&}catch {\alpha&HFF&}it!
+Dialogue: 0,0:00:23.86,0:00:24.18,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}So {\alpha&H00&\c&HFFFFFF&}the {\alpha&H00&\c&H0066D9FF&}catch {\alpha&HFF&}should {\alpha&HFF&}catch {\alpha&HFF&}it!
+Dialogue: 0,0:00:24.18,0:00:24.68,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}So {\alpha&H00&\c&HFFFFFF&}the {\alpha&H00&\c&HFFFFFF&}catch {\alpha&H00&\c&H0066D9FF&}should {\alpha&HFF&}catch {\alpha&HFF&}it!
+Dialogue: 0,0:00:24.68,0:00:25.08,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}So {\alpha&H00&\c&HFFFFFF&}the {\alpha&H00&\c&HFFFFFF&}catch {\alpha&H00&\c&HFFFFFF&}should {\alpha&H00&\c&H0066D9FF&}catch {\alpha&HFF&}it!
+Dialogue: 0,0:00:25.08,0:00:25.26,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}So {\alpha&H00&\c&HFFFFFF&}the {\alpha&H00&\c&HFFFFFF&}catch {\alpha&H00&\c&HFFFFFF&}should {\alpha&H00&\c&HFFFFFF&}catch {\alpha&H00&\c&H0066D9FF&}it!
+Dialogue: 0,0:00:25.26,0:00:25.73,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}So {\alpha&H00&\c&HFFFFFF&}the {\alpha&H00&\c&HFFFFFF&}catch {\alpha&H00&\c&HFFFFFF&}should {\alpha&H00&\c&HFFFFFF&}catch {\alpha&H00&\c&HFFFFFF&}it!
+Dialogue: 0,0:00:25.73,0:00:26.04,Cap,,0,0,0,,{\alpha&H00&\c&H005A9AFF&}Fetch {\alpha&HFF&}doesn't {\alpha&HFF&}reject {\alpha&HFF&}just {\alpha&HFF&}because
+Dialogue: 0,0:00:26.04,0:00:26.43,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Fetch {\alpha&H00&\c&H005A9AFF&}doesn't {\alpha&HFF&}reject {\alpha&HFF&}just {\alpha&HFF&}because
+Dialogue: 0,0:00:26.43,0:00:26.81,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Fetch {\alpha&H00&\c&HFFFFFF&}doesn't {\alpha&H00&\c&H005A9AFF&}reject {\alpha&HFF&}just {\alpha&HFF&}because
+Dialogue: 0,0:00:26.81,0:00:27.07,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Fetch {\alpha&H00&\c&HFFFFFF&}doesn't {\alpha&H00&\c&HFFFFFF&}reject {\alpha&H00&\c&H005A9AFF&}just {\alpha&HFF&}because
+Dialogue: 0,0:00:27.07,0:00:27.43,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Fetch {\alpha&H00&\c&HFFFFFF&}doesn't {\alpha&H00&\c&HFFFFFF&}reject {\alpha&H00&\c&HFFFFFF&}just {\alpha&H00&\c&H005A9AFF&}because
+Dialogue: 0,0:00:27.43,0:00:27.63,Cap,,0,0,0,,{\alpha&H00&\c&H005A9AFF&}the {\alpha&HFF&}HTTP {\alpha&HFF&}status {\alpha&HFF&}says {\alpha&HFF&}failure.
+Dialogue: 0,0:00:27.63,0:00:28.18,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}the {\alpha&H00&\c&H005A9AFF&}HTTP {\alpha&HFF&}status {\alpha&HFF&}says {\alpha&HFF&}failure.
+Dialogue: 0,0:00:28.18,0:00:28.59,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}the {\alpha&H00&\c&HFFFFFF&}HTTP {\alpha&H00&\c&H005A9AFF&}status {\alpha&HFF&}says {\alpha&HFF&}failure.
+Dialogue: 0,0:00:28.59,0:00:28.88,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}the {\alpha&H00&\c&HFFFFFF&}HTTP {\alpha&H00&\c&HFFFFFF&}status {\alpha&H00&\c&H005A9AFF&}says {\alpha&HFF&}failure.
+Dialogue: 0,0:00:28.88,0:00:29.13,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}the {\alpha&H00&\c&HFFFFFF&}HTTP {\alpha&H00&\c&HFFFFFF&}status {\alpha&H00&\c&HFFFFFF&}says {\alpha&H00&\c&H005A9AFF&}failure.
+Dialogue: 0,0:00:29.13,0:00:29.81,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}the {\alpha&H00&\c&HFFFFFF&}HTTP {\alpha&H00&\c&HFFFFFF&}status {\alpha&H00&\c&HFFFFFF&}says {\alpha&H00&\c&HFFFFFF&}failure.
+Dialogue: 0,0:00:29.81,0:00:30.75,Cap,,0,0,0,,{\alpha&H00&\c&H0066D9FF&}So {\alpha&HFF&}my {\alpha&HFF&}app {\alpha&HFF&}heard {\alpha&HFF&}"no"...
+Dialogue: 0,0:00:30.75,0:00:31.55,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}So {\alpha&H00&\c&H0066D9FF&}my {\alpha&HFF&}app {\alpha&HFF&}heard {\alpha&HFF&}"no"...
+Dialogue: 0,0:00:31.55,0:00:31.97,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}So {\alpha&H00&\c&HFFFFFF&}my {\alpha&H00&\c&H0066D9FF&}app {\alpha&HFF&}heard {\alpha&HFF&}"no"...
+Dialogue: 0,0:00:31.97,0:00:32.37,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}So {\alpha&H00&\c&HFFFFFF&}my {\alpha&H00&\c&HFFFFFF&}app {\alpha&H00&\c&H0066D9FF&}heard {\alpha&HFF&}"no"...
+Dialogue: 0,0:00:32.37,0:00:33.77,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}So {\alpha&H00&\c&HFFFFFF&}my {\alpha&H00&\c&HFFFFFF&}app {\alpha&H00&\c&HFFFFFF&}heard {\alpha&H00&\c&H0066D9FF&}"no"...
+Dialogue: 0,0:00:33.77,0:00:33.87,Cap,,0,0,0,,{\alpha&H00&\c&H0066D9FF&}and {\alpha&HFF&}threw {\alpha&HFF&}a {\alpha&HFF&}party?
+Dialogue: 0,0:00:33.87,0:00:34.09,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}and {\alpha&H00&\c&H0066D9FF&}threw {\alpha&HFF&}a {\alpha&HFF&}party?
+Dialogue: 0,0:00:34.09,0:00:34.29,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}and {\alpha&H00&\c&HFFFFFF&}threw {\alpha&H00&\c&H0066D9FF&}a {\alpha&HFF&}party?
+Dialogue: 0,0:00:34.29,0:00:34.59,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}and {\alpha&H00&\c&HFFFFFF&}threw {\alpha&H00&\c&HFFFFFF&}a {\alpha&H00&\c&H0066D9FF&}party?
+Dialogue: 0,0:00:34.59,0:00:35.18,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}and {\alpha&H00&\c&HFFFFFF&}threw {\alpha&H00&\c&HFFFFFF&}a {\alpha&H00&\c&HFFFFFF&}party?
+Dialogue: 0,0:00:35.18,0:00:35.66,Cap,,0,0,0,,{\alpha&H00&\c&H005A9AFF&}Await {\alpha&HFF&}fetch,
+Dialogue: 0,0:00:35.66,0:00:36.12,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Await {\alpha&H00&\c&H005A9AFF&}fetch,
+Dialogue: 0,0:00:36.12,0:00:36.66,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Await {\alpha&H00&\c&HFFFFFF&}fetch,
+Dialogue: 0,0:00:36.66,0:00:36.80,Cap,,0,0,0,,{\alpha&H00&\c&H005A9AFF&}check {\alpha&HFF&}response {\alpha&HFF&}dot {\alpha&HFF&}ok.
+Dialogue: 0,0:00:36.80,0:00:37.38,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}check {\alpha&H00&\c&H005A9AFF&}response {\alpha&HFF&}dot {\alpha&HFF&}ok.
+Dialogue: 0,0:00:37.38,0:00:37.60,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}check {\alpha&H00&\c&HFFFFFF&}response {\alpha&H00&\c&H005A9AFF&}dot {\alpha&HFF&}ok.
+Dialogue: 0,0:00:37.60,0:00:38.02,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}check {\alpha&H00&\c&HFFFFFF&}response {\alpha&H00&\c&HFFFFFF&}dot {\alpha&H00&\c&H005A9AFF&}ok.
+Dialogue: 0,0:00:38.02,0:00:38.62,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}check {\alpha&H00&\c&HFFFFFF&}response {\alpha&H00&\c&HFFFFFF&}dot {\alpha&H00&\c&HFFFFFF&}ok.
+Dialogue: 0,0:00:38.62,0:00:38.76,Cap,,0,0,0,,{\alpha&H00&\c&H005A9AFF&}If {\alpha&HFF&}false,
+Dialogue: 0,0:00:38.76,0:00:39.22,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}If {\alpha&H00&\c&H005A9AFF&}false,
+Dialogue: 0,0:00:39.22,0:00:39.64,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}If {\alpha&H00&\c&HFFFFFF&}false,
+Dialogue: 0,0:00:39.64,0:00:39.76,Cap,,0,0,0,,{\alpha&H00&\c&H005A9AFF&}throw {\alpha&HFF&}an {\alpha&HFF&}error.
+Dialogue: 0,0:00:39.76,0:00:39.90,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}throw {\alpha&H00&\c&H005A9AFF&}an {\alpha&HFF&}error.
+Dialogue: 0,0:00:39.90,0:00:40.16,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}throw {\alpha&H00&\c&HFFFFFF&}an {\alpha&H00&\c&H005A9AFF&}error.
+Dialogue: 0,0:00:40.16,0:00:40.64,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}throw {\alpha&H00&\c&HFFFFFF&}an {\alpha&H00&\c&HFFFFFF&}error.
+Dialogue: 0,0:00:40.64,0:00:40.88,Cap,,0,0,0,,{\alpha&H00&\c&H0066D9FF&}If {\alpha&HFF&}not {\alpha&HFF&}response {\alpha&HFF&}dot {\alpha&HFF&}ok...
+Dialogue: 0,0:00:40.88,0:00:41.26,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}If {\alpha&H00&\c&H0066D9FF&}not {\alpha&HFF&}response {\alpha&HFF&}dot {\alpha&HFF&}ok...
+Dialogue: 0,0:00:41.26,0:00:42.10,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}If {\alpha&H00&\c&HFFFFFF&}not {\alpha&H00&\c&H0066D9FF&}response {\alpha&HFF&}dot {\alpha&HFF&}ok...
+Dialogue: 0,0:00:42.10,0:00:42.44,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}If {\alpha&H00&\c&HFFFFFF&}not {\alpha&H00&\c&HFFFFFF&}response {\alpha&H00&\c&H0066D9FF&}dot {\alpha&HFF&}ok...
+Dialogue: 0,0:00:42.44,0:00:44.14,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}If {\alpha&H00&\c&HFFFFFF&}not {\alpha&H00&\c&HFFFFFF&}response {\alpha&H00&\c&HFFFFFF&}dot {\alpha&H00&\c&H0066D9FF&}ok...
+Dialogue: 0,0:00:44.14,0:00:45.14,Cap,,0,0,0,,{\alpha&H00&\c&H0066D9FF&}throw... {\alpha&HFF&}It's {\alpha&HFF&}red!
+Dialogue: 0,0:00:45.14,0:00:45.40,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}throw... {\alpha&H00&\c&H0066D9FF&}It's {\alpha&HFF&}red!
+Dialogue: 0,0:00:45.40,0:00:45.64,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}throw... {\alpha&H00&\c&HFFFFFF&}It's {\alpha&H00&\c&H0066D9FF&}red!
+Dialogue: 0,0:00:45.64,0:00:46.14,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}throw... {\alpha&H00&\c&HFFFFFF&}It's {\alpha&H00&\c&HFFFFFF&}red!
+Dialogue: 0,0:00:46.14,0:00:46.26,Cap,,0,0,0,,{\alpha&H00&\c&H0066D9FF&}It {\alpha&HFF&}actually {\alpha&HFF&}failed!
+Dialogue: 0,0:00:46.26,0:00:46.64,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}It {\alpha&H00&\c&H0066D9FF&}actually {\alpha&HFF&}failed!
+Dialogue: 0,0:00:46.64,0:00:46.98,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}It {\alpha&H00&\c&HFFFFFF&}actually {\alpha&H00&\c&H0066D9FF&}failed!
+Dialogue: 0,0:00:46.98,0:00:47.33,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}It {\alpha&H00&\c&HFFFFFF&}actually {\alpha&H00&\c&HFFFFFF&}failed!
+Dialogue: 0,0:00:47.95,0:00:49.23,Cap,,0,0,0,,{\alpha&H00&\c&H005A9AFF&}Congratulations. {\alpha&HFF&}Your {\alpha&HFF&}failure {\alpha&HFF&}works.
+Dialogue: 0,0:00:49.23,0:00:49.39,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Congratulations. {\alpha&H00&\c&H005A9AFF&}Your {\alpha&HFF&}failure {\alpha&HFF&}works.
+Dialogue: 0,0:00:49.39,0:00:49.73,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Congratulations. {\alpha&H00&\c&HFFFFFF&}Your {\alpha&H00&\c&H005A9AFF&}failure {\alpha&HFF&}works.
+Dialogue: 0,0:00:49.73,0:00:50.07,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Congratulations. {\alpha&H00&\c&HFFFFFF&}Your {\alpha&H00&\c&HFFFFFF&}failure {\alpha&H00&\c&H005A9AFF&}works.
+Dialogue: 0,0:00:50.07,0:00:50.71,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Congratulations. {\alpha&H00&\c&HFFFFFF&}Your {\alpha&H00&\c&HFFFFFF&}failure {\alpha&H00&\c&HFFFFFF&}works.
+Dialogue: 0,0:00:50.71,0:00:50.91,Cap,,0,0,0,,{\alpha&H00&\c&H0066D9FF&}Oh {\alpha&HFF&}no.
+Dialogue: 0,0:00:50.91,0:00:51.17,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Oh {\alpha&H00&\c&H0066D9FF&}no.
+Dialogue: 0,0:00:51.17,0:00:51.69,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Oh {\alpha&H00&\c&HFFFFFF&}no.
+Dialogue: 0,0:00:51.69,0:00:51.97,Cap,,0,0,0,,{\alpha&H00&\c&H0066D9FF&}Support {\alpha&HFF&}says {\alpha&HFF&}thirty {\alpha&HFF&}people {\alpha&HFF&}got
+Dialogue: 0,0:00:51.97,0:00:52.31,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Support {\alpha&H00&\c&H0066D9FF&}says {\alpha&HFF&}thirty {\alpha&HFF&}people {\alpha&HFF&}got
+Dialogue: 0,0:00:52.31,0:00:52.77,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Support {\alpha&H00&\c&HFFFFFF&}says {\alpha&H00&\c&H0066D9FF&}thirty {\alpha&HFF&}people {\alpha&HFF&}got
+Dialogue: 0,0:00:52.77,0:00:53.21,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Support {\alpha&H00&\c&HFFFFFF&}says {\alpha&H00&\c&HFFFFFF&}thirty {\alpha&H00&\c&H0066D9FF&}people {\alpha&HFF&}got
+Dialogue: 0,0:00:53.21,0:00:53.45,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Support {\alpha&H00&\c&HFFFFFF&}says {\alpha&H00&\c&HFFFFFF&}thirty {\alpha&H00&\c&HFFFFFF&}people {\alpha&H00&\c&H0066D9FF&}got
+Dialogue: 0,0:00:53.45,0:00:54.37,Cap,,0,0,0,,{\alpha&H00&\c&H0066D9FF&}confetti... {\alpha&HFF&}and {\alpha&HFF&}no {\alpha&HFF&}order.
+Dialogue: 0,0:00:54.37,0:00:54.55,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}confetti... {\alpha&H00&\c&H0066D9FF&}and {\alpha&HFF&}no {\alpha&HFF&}order.
+Dialogue: 0,0:00:54.55,0:00:54.79,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}confetti... {\alpha&H00&\c&HFFFFFF&}and {\alpha&H00&\c&H0066D9FF&}no {\alpha&HFF&}order.
+Dialogue: 0,0:00:54.79,0:00:55.15,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}confetti... {\alpha&H00&\c&HFFFFFF&}and {\alpha&H00&\c&HFFFFFF&}no {\alpha&H00&\c&H0066D9FF&}order.
+Dialogue: 0,0:00:55.15,0:00:55.50,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}confetti... {\alpha&H00&\c&HFFFFFF&}and {\alpha&H00&\c&HFFFFFF&}no {\alpha&H00&\c&HFFFFFF&}order.
+Dialogue: 0,0:00:56.23,0:00:56.41,Cap,,0,0,0,,{\alpha&H00&\c&H005A9AFF&}Free {\alpha&HFF&}confetti.
+Dialogue: 0,0:00:56.41,0:00:57.01,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Free {\alpha&H00&\c&H005A9AFF&}confetti.
+Dialogue: 0,0:00:57.01,0:00:57.29,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Free {\alpha&H00&\c&HFFFFFF&}confetti.
+Dialogue: 0,0:00:57.29,0:00:57.67,Cap,,0,0,0,,{\alpha&H00&\c&H005A9AFF&}Delivery {\alpha&HFF&}not {\alpha&HFF&}included.
+Dialogue: 0,0:00:57.67,0:00:57.95,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Delivery {\alpha&H00&\c&H005A9AFF&}not {\alpha&HFF&}included.
+Dialogue: 0,0:00:57.95,0:00:58.23,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Delivery {\alpha&H00&\c&HFFFFFF&}not {\alpha&H00&\c&H005A9AFF&}included.
+Dialogue: 0,0:00:58.23,0:00:58.58,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Delivery {\alpha&H00&\c&HFFFFFF&}not {\alpha&H00&\c&HFFFFFF&}included.
+Dialogue: 1,0:00:00.00,0:01:00.52,Handle,,0,0,0,,{\fad(0,900)}@talkingagents

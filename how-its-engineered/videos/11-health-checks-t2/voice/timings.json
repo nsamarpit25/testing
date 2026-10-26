@@ -1,0 +1,90 @@
+[
+ {
+  "li": 0,
+  "pi": 0,
+  "say": "Your app froze. Saturday night, peak traffic.",
+  "show": "Your app [froze.] Saturday night, peak traffic.",
+  "start": 0.0,
+  "end": 2.82
+ },
+ {
+  "li": 0,
+  "pi": 1,
+  "say": "The process is still running, but it's not answering anyone.",
+  "show": "The process is *still running,* but it's [not answering anyone.]",
+  "start": 3.28,
+  "end": 5.84
+ },
+ {
+  "li": 0,
+  "pi": 2,
+  "say": "Then, thirty seconds later, something restarted it. How did it know?",
+  "show": "Then, 30 seconds later, something *restarted it.* How did it know?",
+  "start": 6.24,
+  "end": 9.26
+ },
+ {
+  "li": 1,
+  "pi": 0,
+  "say": "Here's the catch: running isn't the same as working. A frozen app looks fine, so crash recovery never kicks in.",
+  "show": "Here's the catch: *running* isn't the same as [working.] A frozen app looks fine, so crash recovery [never kicks in.]",
+  "start": 9.86,
+  "end": 15.42
+ },
+ {
+  "li": 2,
+  "pi": 0,
+  "say": "The fix is called a health check. The system hosting your app keeps asking it: are you okay?",
+  "show": "The fix is called a *health check.* The system hosting your app keeps asking it: *are you okay?*",
+  "start": 15.72,
+  "end": 19.52
+ },
+ {
+  "li": 3,
+  "pi": 0,
+  "say": "It's like a nurse taking your pulse every few minutes.",
+  "show": "It's like a *nurse* taking your *pulse* every few minutes.",
+  "start": 19.9,
+  "end": 21.78
+ },
+ {
+  "li": 4,
+  "pi": 0,
+  "say": "Check one: are you alive? Every few seconds, it hits a health page on your app.",
+  "show": "Check one: *are you alive?* Every few seconds, it hits a health page on your app.",
+  "start": 22.4,
+  "end": 25.6
+ },
+ {
+  "li": 4,
+  "pi": 1,
+  "say": "After three missed answers in a row, the common default, it restarts the app.",
+  "show": "After *3 missed answers in a row,* the common default, it [restarts the app.]",
+  "start": 25.8,
+  "end": 28.8
+ },
+ {
+  "li": 5,
+  "pi": 0,
+  "say": "Check two: are you ready? A new copy that's still starting up says not yet, so user requests skip it until it's ready.",
+  "show": "Check two: *are you ready?* A new copy that's still starting up says [not yet,] so user requests skip it until it's ready.",
+  "start": 28.8,
+  "end": 34.64
+ },
+ {
+  "li": 6,
+  "pi": 0,
+  "say": "Kubernetes calls these liveness and readiness probes.",
+  "show": "*Kubernetes* calls these *liveness* and *readiness* probes.",
+  "start": 35.16,
+  "end": 37.4
+ },
+ {
+  "li": 7,
+  "pi": 0,
+  "say": "If you ship code with AI, follow for the system design it quietly skips.",
+  "show": "If you ship code with AI, follow for the system design it quietly [skips.]",
+  "start": 37.82,
+  "end": 40.5
+ }
+]

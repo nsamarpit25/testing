@@ -1,0 +1,69 @@
+{
+ "prompt": "AUDIO PROFILE\nCleo: a young woman software developer in her mid twenties. Natural, expressive, conversational voice. Real, never cartoonish.\nClaude: a young man's voice. Calm, warm, perfectly deadpan and dry. Few words. He never raises his voice.\n\nTHE SCENE, END TO END\n1 AM in her room. Cleo is trying to buy yet another planner online, but Claude has blocked her card, because she asked him to stop her midnight shopping. She argues, makes excuses and finally claims it is a gift. Claude calmly reads the rules she wrote for exactly this moment, and her daytime self predicted every excuse. A fast, funny comedy.\n\nLINE BY LINE\n1. Cleo, demanding, a little whiny, quick.\n2. Claude, calm, gentle, factual.\n3. Cleo, frustrated, defensive.\n4. Claude, calm, simple.\n5. Cleo, sincere and hopeful, dreamy.\n6. Claude, deadpan, factual.\n7. Cleo, defensive, insisting, stressing 'system'.\n8. Claude, calm, factual.\n9. Cleo, giving up on the argument, too casual, obviously lying.\n10. Claude, short, calm, innocent question.\n11. Cleo, fake sincere, a bit dramatic.\n12. Claude, calm, gentle.\n13. Cleo, suspicious, small.\n14. Claude, calmly reading her own note back to her.\n15. Cleo, dismissive, waving it off, quick.\n16. Claude, calm, reading the next rule, perfectly deadpan, the punchline.\n\nDIRECTOR'S NOTES\nSnappy comedy timing: short natural pauses between lines, never long. Cleo's energy builds line by line; Claude stays calm the whole time, and that contrast is the joke. The last line is dry and simple, no dramatic pause inside it. Never read bracketed tags aloud. Finish every line fully, including its last word; never clip a word. Speak every word of the dialogue exactly as written, nothing added.",
+ "turns": [
+  [
+   "Cleo",
+   "Claude, unblock my card right now."
+  ],
+  [
+   "Claude",
+   "You asked me to stop your midnight shopping."
+  ],
+  [
+   "Cleo",
+   "For junk! Not things I actually need!"
+  ],
+  [
+   "Claude",
+   "This would be your seventh planner."
+  ],
+  [
+   "Cleo",
+   "This one will actually fix my life."
+  ],
+  [
+   "Claude",
+   "The other six are still in plastic."
+  ],
+  [
+   "Cleo",
+   "Those were notebooks. This is a system."
+  ],
+  [
+   "Claude",
+   "You bought a system on Tuesday."
+  ],
+  [
+   "Cleo",
+   "Fine. It's a gift."
+  ],
+  [
+   "Claude",
+   "For whom?"
+  ],
+  [
+   "Cleo",
+   "Someone who's had a really hard week."
+  ],
+  [
+   "Claude",
+   "You left me a note for this exact moment."
+  ],
+  [
+   "Cleo",
+   "What note?"
+  ],
+  [
+   "Claude",
+   "Rule two. \"If I say it's a gift, I'm lying.\""
+  ],
+  [
+   "Cleo",
+   "Ignore her. She was having a good day."
+  ],
+  [
+   "Claude",
+   "Rule three. \"She'll say I was having a good day.\""
+  ]
+ ]
+}

@@ -1,0 +1,57 @@
+{
+  "topic": "WebSockets",
+  "lines": [
+    [
+      {
+        "say": "Your friend hit send, and the message popped up on your screen instantly.",
+        "show": "Your friend hit *send,* and the message popped up on your screen *instantly.*"
+      },
+      {
+        "say": "You never pulled to refresh. So how did your phone know?",
+        "show": "You never pulled to refresh. So how did your phone [know?]"
+      }
+    ],
+    [
+      {
+        "say": "Normally, your app asks the server something, and the server answers once. Want news? Ask again.",
+        "show": "Normally, your app *asks* the server something, and the server *answers* once. Want news? [Ask again.]"
+      }
+    ],
+    [
+      {
+        "say": "In that setup, the server can't start a conversation. It only speaks when asked.",
+        "show": "In that setup, the server can't start a conversation. It [only speaks when asked.]"
+      }
+    ],
+    [
+      {
+        "say": "A WebSocket keeps a line open between your phone and the server, like a call nobody hangs up.",
+        "show": "A *WebSocket* keeps a line *open* between your phone and the server, like a *call nobody hangs up.*"
+      }
+    ],
+    [
+      {
+        "say": "Now either side can talk, any time. When your friend's message reaches the server, it sends it straight down the line to you.",
+        "show": "Now *either side* can talk, any time. When your friend's message reaches the server, it sends it *straight down the line* to you."
+      }
+    ],
+    [
+      {
+        "say": "One catch: every open line costs server memory. And if the connection breaks, your app has to reconnect.",
+        "show": "One catch: every open line costs [server memory.] And if the connection [breaks,] your app has to *reconnect.*"
+      }
+    ],
+    [
+      {
+        "say": "Discord runs its live updates over WebSockets, and modern browsers support them too.",
+        "show": "*Discord* runs its live updates over WebSockets, and *modern browsers* support them too."
+      }
+    ],
+    [
+      {
+        "say": "If AI writes your code, follow for the system design it leaves out.",
+        "show": "If AI writes your code, *follow* for the system design it leaves out."
+      }
+    ]
+  ]
+}

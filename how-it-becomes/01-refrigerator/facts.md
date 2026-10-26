@@ -1,0 +1,11 @@
+# Fact check: ice block to refrigerator
+- Iceboxes (1800s to 1930s): wooden cabinets lined with tin or zinc, insulated with sawdust or cork, with a drip pan underneath emptied daily. The iceman delivered fresh blocks every few days.
+- R-134a boils at -26.3 °C at 1 atm. Isobutane (R-600a, common in modern fridges) boils at -11.7 °C. "Minus twenty-six" refers to R-134a.
+- Evaporator: the refrigerant boils inside the cabinet's pipes and absorbs heat (latent heat of vaporisation).
+- Compressor: raises the gas's pressure and temperature above room temperature, so heat flows out at the condenser.
+- Condenser coils on the back reject heat to the room, so the back of the fridge is warm. The gas condenses back to a liquid.
+- Capillary tube (expansion device): about 0.6–0.8 mm bore, thinner than spaghetti (about 1.7 mm). The pressure drop makes some liquid flash, cooling it to about -20 °C.
+- Thermostat: cycles the compressor on and off to hold the set temperature. Without it, the cabinet keeps cooling and things freeze.
+- Door gasket: flexible PVC with a magnetic strip inside (used since the 1950s).
+- Frost-free fridges: a defrost heater periodically melts frost off the evaporator. Meltwater drains to a pan on top of the compressor, where the compressor's heat evaporates it.
+- The interior light switches on via a door switch.

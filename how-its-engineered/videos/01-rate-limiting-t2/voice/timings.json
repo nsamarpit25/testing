@@ -1,0 +1,82 @@
+[
+ {
+  "li": 0,
+  "pi": 0,
+  "say": "Your app can get healthier by refusing requests. Sounds backwards.",
+  "show": "Your app can get healthier by refusing requests. Sounds backwards.",
+  "start": 0.0,
+  "end": 3.68
+ },
+ {
+  "li": 1,
+  "pi": 0,
+  "say": "Imagine one bot guessing passwords on your login page. Fifty thousand attempts in a minute.",
+  "show": "Imagine one bot guessing passwords on your login page. Fifty thousand attempts in a minute.",
+  "start": 4.42,
+  "end": 8.88
+ },
+ {
+  "li": 2,
+  "pi": 0,
+  "say": "After five tries, the gate closes. The next guess gets an error, not another chance.",
+  "show": "After five tries, the gate closes. The next guess gets an error, not another chance.",
+  "start": 9.28,
+  "end": 13.18
+ },
+ {
+  "li": 3,
+  "pi": 0,
+  "say": "That is rate limiting: a cap per user in a set time window.",
+  "show": "That is rate limiting: a cap per user in a set time window.",
+  "start": 13.44,
+  "end": 16.32
+ },
+ {
+  "li": 4,
+  "pi": 0,
+  "say": "Your server counts each user's requests separately. One noisy sender hits the limit while everyone else keeps using the app.",
+  "show": "Your server counts each user's requests separately. One noisy sender hits the limit while everyone else keeps using the app.",
+  "start": 16.78,
+  "end": 21.78
+ },
+ {
+  "li": 5,
+  "pi": 0,
+  "say": "Think of a bouncer with a clicker. Each guest gets five entries an hour. The sixth time, the door stays shut.",
+  "show": "Think of a bouncer with a clicker. Each guest gets five entries an hour. The sixth time, the door stays shut.",
+  "start": 22.36,
+  "end": 27.16
+ },
+ {
+  "li": 6,
+  "pi": 0,
+  "say": "Over the limit, the server answers with four twenty-nine: too many requests.",
+  "show": "Over the limit, the server answers with four twenty-nine: too many requests.",
+  "start": 27.76,
+  "end": 30.76
+ },
+ {
+  "li": 7,
+  "pi": 0,
+  "say": "Once that window passes, the count resets and they can try again.",
+  "show": "Once that window passes, the count resets and they can try again.",
+  "start": 31.22,
+  "end": 33.74
+ },
+ {
+  "li": 8,
+  "pi": 0,
+  "say": "So a runaway script cannot hog the app. Thousands of requests can be rejected to protect everyone else's work.",
+  "show": "So a runaway script cannot hog the app. Thousands of requests can be rejected to protect everyone else's work.",
+  "start": 34.52,
+  "end": 39.4
+ },
+ {
+  "li": 9,
+  "pi": 0,
+  "say": "The point is not to make every request succeed. It is to keep one sender from breaking the service for everyone.",
+  "show": "The point is not to make every request succeed. It is to keep one sender from breaking the service for everyone.",
+  "start": 40.02,
+  "end": 44.88
+ }
+]

@@ -1,0 +1,98 @@
+[
+ {
+  "li": 0,
+  "pi": 0,
+  "say": "Your app has ten servers, and bots can't find a single one.",
+  "show": "Your app has *10 servers,* and bots [can't find a single one.]",
+  "start": 0.0,
+  "end": 3.22
+ },
+ {
+  "li": 0,
+  "pi": 1,
+  "say": "They scan the internet all night.",
+  "show": "They scan the internet all night.",
+  "start": 3.42,
+  "end": 4.7
+ },
+ {
+  "li": 0,
+  "pi": 2,
+  "say": "All they ever reach is one machine. Not your servers.",
+  "show": "All they ever reach is *one machine.* Not your servers.",
+  "start": 5.04,
+  "end": 7.54
+ },
+ {
+  "li": 1,
+  "pi": 0,
+  "say": "That machine is a reverse proxy: a middleman that every request hits first.",
+  "show": "That machine is a [reverse proxy:] a middleman that every request hits first.",
+  "start": 7.94,
+  "end": 11.8
+ },
+ {
+  "li": 2,
+  "pi": 0,
+  "say": "Like a restaurant. You never walk into the kitchen. The waiter takes your order and brings the food back.",
+  "show": "Like a *restaurant.* You never walk into the kitchen. The *waiter* takes your order and brings the food back.",
+  "start": 11.9,
+  "end": 16.3
+ },
+ {
+  "li": 3,
+  "pi": 0,
+  "say": "Your servers stay private, with no public address. Only the proxy faces the internet.",
+  "show": "Your servers stay *private,* with no public address. Only the proxy [faces the internet.]",
+  "start": 16.66,
+  "end": 20.68
+ },
+ {
+  "li": 4,
+  "pi": 0,
+  "say": "And this waiter does more than carry plates.",
+  "show": "And this waiter does more than carry plates.",
+  "start": 21.18,
+  "end": 22.94
+ },
+ {
+  "li": 4,
+  "pi": 1,
+  "say": "It keeps popular pages ready, so many requests never reach your servers.",
+  "show": "It keeps popular pages ready, so many requests [never reach your servers.]",
+  "start": 22.98,
+  "end": 26.82
+ },
+ {
+  "li": 4,
+  "pi": 2,
+  "say": "And it reads the address: slash API goes to these servers, images go to those.",
+  "show": "And it reads the address: */api* goes to these servers, *images* go to those.",
+  "start": 26.82,
+  "end": 31.08
+ },
+ {
+  "li": 5,
+  "pi": 0,
+  "say": "Engine X and Cloudflare do this for millions of websites.",
+  "show": "*NGINX* and *Cloudflare* do this for millions of websites.",
+  "start": 31.66,
+  "end": 34.28
+ },
+ {
+  "li": 6,
+  "pi": 0,
+  "say": "A forward proxy hides your IP address from the website. A reverse proxy hides the servers' addresses from you.",
+  "show": "A forward proxy hides *your IP address* from the website. A reverse proxy hides [the servers' addresses] from you.",
+  "start": 34.9,
+  "end": 40.28
+ },
+ {
+  "li": 7,
+  "pi": 0,
+  "say": "If you're a vibe coder, follow for the system design your AI skipped.",
+  "show": "If you're a vibe coder, follow for the system design your AI [skipped.]",
+  "start": 40.78,
+  "end": 43.94
+ }
+]

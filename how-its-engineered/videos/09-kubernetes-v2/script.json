@@ -1,0 +1,67 @@
+{
+ "topic": "Kubernetes",
+ "lines": [
+  [
+   {
+    "say": "Your app's server died at three A-M.",
+    "show": "Your app's server [died] at 3 AM."
+   },
+   {
+    "say": "By morning, your app was running on another server. Nobody touched it.",
+    "show": "By morning, your app was running *on another server.* Nobody touched it."
+   }
+  ],
+  [
+   {
+    "say": "That's Kubernetes. It runs copies of your app across a group of servers.",
+    "show": "That's *Kubernetes.* It runs copies of your app across [a group of servers.]"
+   }
+  ],
+  [
+   {
+    "say": "You tell it what you want, and it keeps making it true.",
+    "show": "You tell it what you want, and it *keeps making it true.*"
+   }
+  ],
+  [
+   {
+    "say": "Like a thermostat. You set twenty-one degrees, and it keeps the room there.",
+    "show": "Like a *thermostat.* You set *21\u00b0,* and it keeps the room there."
+   }
+  ],
+  [
+   {
+    "say": "You say: three copies, always.",
+    "show": "You say: *3 copies,* always."
+   },
+   {
+    "say": "A server dies? It starts replacement copies on the servers that are left.",
+    "show": "A server [dies?] It starts replacements *on the servers that are left.*"
+   }
+  ],
+  [
+   {
+    "say": "Turn on autoscaling, and it adds copies when more users show up, then removes them when they leave.",
+    "show": "Turn on *autoscaling,* and it [adds copies] when more users show up, then removes them when they leave."
+   }
+  ],
+  [
+   {
+    "say": "New version? It swaps old copies for new ones a few at a time, so your app stays up during the update.",
+    "show": "New version? It swaps copies *a few at a time,* so your app [stays up] during the update."
+   }
+  ],
+  [
+   {
+    "say": "That's how your app recovered while you slept.",
+    "show": "That's how your app *recovered while you slept.*"
+   }
+  ],
+  [
+   {
+    "say": "If you're a vibe coder, follow for the system design your AI skipped.",
+    "show": "If you're a vibe coder, follow for the system design your AI [skipped.]"
+   }
+  ]
+ ]
+}

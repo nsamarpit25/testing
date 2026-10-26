@@ -1,0 +1,65 @@
+{
+ "topic": "Eventual consistency",
+ "lines": [
+  [
+   {
+    "say": "You refresh a post, and the like count drops from one hundred to ninety-eight. Nobody unliked it. So where do those likes go?",
+    "show": "You refresh a post, and the like count drops from *100* to [98.] Nobody *unliked* it. [So where do those likes go?]"
+   }
+  ],
+  [
+   {
+    "say": "Big apps keep copies of your data on many servers, in different places. Each refresh can land on a different copy.",
+    "show": "Big apps keep *copies* of your data on many servers, in *different places.* Each refresh can land on a [different copy.]"
+   }
+  ],
+  [
+   {
+    "say": "When you tap like, one copy saves it first. Then it passes the change on to the others, a moment later.",
+    "show": "When you tap like, *one copy* saves it first. Then it [passes the change on] to the others, a moment later."
+   }
+  ],
+  [
+   {
+    "say": "For that moment, the copies disagree. That's eventual consistency: they'll all match, just not instantly.",
+    "show": "For that moment, the copies *disagree.* That's [eventual consistency:] they'll all match, just not *instantly.*"
+   }
+  ],
+  [
+   {
+    "say": "Like gossip in a small town. One person hears the news, tells a few others, and soon everyone knows the same story.",
+    "show": "Like *gossip* in a small town. One person hears the news, tells a few others, and soon [everyone knows] the same story."
+   }
+  ],
+  [
+   {
+    "say": "Why not update every copy at once? Then every like waits for the slowest, farthest server. And if one is down, the like fails.",
+    "show": "Why not update every copy *at once?* Then every like waits for the [slowest,] farthest server. And if one is down, the like [fails.]"
+   }
+  ],
+  [
+   {
+    "say": "So the trade is simple: likes keep working even when a copy is down, but some reads are a few seconds behind.",
+    "show": "So the trade is simple: likes keep [working] even when a copy is *down,* but some reads are a few seconds *behind.*"
+   }
+  ],
+  [
+   {
+    "say": "That's fine for a like count. It's not fine for your bank balance, where every read has to be right.",
+    "show": "That's fine for a *like count.* It's not fine for your [bank balance,] where every read has to be *right.*"
+   }
+  ],
+  [
+   {
+    "say": "Amazon DynamoDB reads are eventually consistent by default, and its copies usually match within a second. Within one region, you can ask for a strongly consistent read.",
+    "show": "Amazon *DynamoDB* reads are [eventually consistent] by default, and its copies usually match within a *second.* Within one region, you can ask for a [strongly consistent read.]"
+   }
+  ],
+  [
+   {
+    "say": "If you're a vibe coder, follow for the system design your AI skipped.",
+    "show": "If you're a vibe coder, follow for the system design your AI [skipped.]"
+   }
+  ]
+ ]
+}

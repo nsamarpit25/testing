@@ -1,0 +1,183 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- 25 Database indexing, in the ember style. World: a TABLE of row tiles on the floor (one tile = a slice of 100M users)
+     and an INDEX tower listing emails in sorted order. Hook: one tile lights up and the rest stay dark. No index: a scanner
+     checks tiles one by one (rows-checked counter). Index: three comparisons on the sorted list (lee@ → raj@ → sam@), then a
+     pointer jumps to the row. The catch: two more index towers rise, a new row has to update all three, then the extra
+     ones are removed. Beats come from voice/words.json via at(). Shared pieces live in ../_ember/. -->
+<link rel="stylesheet" href="../_ember/fonts.css">
+<link rel="stylesheet" href="../_ember/reel.css">
+</head>
+<body>
+<div id="stage">
+  <div id="world">
+    <canvas id="cv" width="1080" height="1920"></canvas>
+    <div class="layer" id="lbls"></div>
+  </div>
+</div>
+<script src="../../tools/lib.js"></script>
+<script src="voice/words.js"></script>
+<script src="../_ember/three.js"></script>
+<script src="../_ember/world.js"></script>
+<script src="../_ember/base.js"></script>
+<script>
+for (let i = 0; i < 12; i++) ORBS.push({ core: orbSprite(9), glow: orbSprite(34), trail: [0, 1, 2, 3, 4].map(() => orbSprite(10)) });
+
+/* ---------------- beats */
+const T = {
+  found: at('found'), million: at('million'), blink: at('blink'), skipped: at('skipped'), others: at('others'), how: at('how'),
+  table: at('table'), row1: at('row'), without: at('without'), check: at('check'), every1: at('every'), finds: at('finds'), millions: at('millions'), slow: at('slow'),
+  index: at('index'), fixes: at('fixes'), column: at('column'), emails: at('emails'), sorted: at('sorted'), points: at('points'), row3: at('row', 3),
+  because: at('because'), narrows: at('narrows'), few: at('few'), steps: at('steps'), books: at('books'), find: at('find'), page: at('page'), skip: at('skip'), rest: at('rest'),
+  catch_: at('catch'), every2: at('every', 2), space: at('space'), new_: at('new'), update: at('update'), so: at('so'), search: at('search'), everything: at('everything'),
+  postgres: at('postgres'), mysql: at('mysql'), primary: at('primary'), ifv: at('if'), follow: at('follow'),
+};
+const CUT = { SCAN: T.table - 0.5, IDX: T.index - 0.3, CATCH: T.catch_ - 0.3, TOOLS: T.postgres - 0.3, END: T.ifv - 0.15 };
+
+/* ---------------- layout */
+const NC = 6, NR = 8, TX = 30, TY = -125, CW = 40, CD = 30;
+const TILES = [...Array(NC * NR)].map((_, i) => [TX + (i % NC) * CW, TY + Math.floor(i / NC) * CD]);
+const HIT = 33;                                                                   // sam@'s row
+const NEWROW = [TX + 0 * CW, TY + NR * CD];
+const IDX = [-120, 10], IDX2 = [-250, 130], IDX3 = [-95, 235];
+const EMAILS = ['ana@', 'ben@', 'kim@', 'lee@', 'max@', 'raj@', 'sam@', 'zoe@'];
+const STEPS = [[T.narrows, 3, '↓'], [T.few, 5, '↓'], [T.steps, 6, '✓']];            // binary search on the sorted list
+const SCAN = [T.without + 0.1, T.slow + 0.2];                                         // full scan sweeps every tile
+const scanAt = (t) => Math.floor(NC * NR * clamp((t - SCAN[0]) / (SCAN[1] - SCAN[0])));
+const HIT_SCAN = SCAN[0] + (SCAN[1] - SCAN[0]) * (HIT / (NC * NR));
+const JUMP = T.steps + 0.15;                                                          // index → row pointer
+
+/* ---------------- camera */
+const SHOTS = [
+  { t: 0, d: 0, f: [130, 0, 20], s: 1.45, a: -0.38, e: 0.6, sy: 500 },
+  { t: CUT.SCAN, d: 1.0, f: [130, 0, 20], s: 1.35, a: -0.42, e: 0.62, sy: 500 },
+  { t: CUT.IDX, d: 1.0, f: [40, 0, 80], s: 1.12, a: -0.42, e: 0.6, sy: 500 },
+  { t: CUT.CATCH, d: 1.0, f: [-10, 10, 60], s: 0.9, a: -0.42, e: 0.62, sy: 520 },
+  { t: CUT.TOOLS, d: 1.0, f: [-10, 10, 60], s: 0.84, a: -0.42, e: 0.62, sy: 600 },
+  { t: CUT.END, d: 2.0, f: [-10, 10, 60], s: 0.8, a: -0.42, e: 0.62, sy: 590 },
+];
+const KICKS = [[T.found, 0.04], [T.skipped, 0.03], [T.how, 0.03], [T.every1, 0.03], [T.slow, 0.04], [T.index, 0.05], [T.sorted, 0.03],
+  [T.narrows, 0.03], [T.few, 0.03], [T.steps, 0.04], [T.skip, 0.03], [T.space, 0.03], [T.update, 0.04], [T.search, 0.04], [T.postgres, 0.03], [T.mysql, 0.03]];
+const SHAKES = [[T.slow, 2, 0.25]];
+
+/* ---------------- build the world */
+const label = (g, W_, H_, txt, col, size, y = H_ / 2, x = W_ / 2, al = 'center') => { g.fillStyle = col; g.font = `800 ${size}px Mono`; g.textAlign = al; g.textBaseline = 'middle'; g.shadowColor = col; g.shadowBlur = 10; g.fillText(txt, x, y); g.shadowBlur = 0; g.textAlign = 'left'; };
+const mkI = (p, title, lines) => { const b = emberBox(p[0], p[1], 120, 36, 230, O); const f = decal(120, 230, 'front', 4, b.g); f.m.position.set(0, -18.3, 115); return { b, f, pl: pool(p[0], p[1], 120, O), p, title, lines }; };
+const idx = mkI(IDX, 'email', EMAILS), idx2 = mkI(IDX2, 'name', ['Ana', 'Ben', 'Kim', 'Lee', 'Max', 'Raj', 'Sam', 'Zoe']), idx3 = mkI(IDX3, 'city', ['Delhi', 'Lima', 'Oslo', 'Pune', 'Rome', 'Seoul', 'Tokyo', 'Paris'].sort());
+const TB = TILES.map((p) => emberBox(p[0], p[1], CW - 8, CD - 8, 10, O));
+const NB = emberBox(NEWROW[0], NEWROW[1], CW - 8, CD - 8, 10, AMB);
+const tablePool = pool(TX + (NC - 1) * CW / 2, TY + (NR - 1) * CD / 2, 260, O);
+const tileTop = (i) => [TILES[i][0], TILES[i][1], 12];
+const idxSide = (I, k) => [I.p[0] + 60, I.p[1], 230 - 30 - k * 24.5];             // world point at line k of an index's face
+
+function idxDraw(g, W_, H_, col, I, hi, mark, markCol) {
+  label(g, W_, H_, 'INDEX', col, 50, 46); label(g, W_, H_, 'by ' + I.title, col + 'cc', 38, 96);
+  I.lines.forEach((e, k) => {
+    const y = 160 + k * 96, on = k === hi;
+    if (on) { g.strokeStyle = markCol; g.lineWidth = 7; rrect(g, 14, y - 42, W_ - 28, 84, 14); g.stroke(); }
+    label(g, W_, H_, e, on ? markCol : col + 'cc', 58, y, 40, 'left');
+    if (on && mark) label(g, W_, H_, mark, markCol, 60, y, W_ - 56);
+  });
+}
+
+/* ---------------- the world, frame by frame */
+function world(t) {
+  const thru = (pts, t0, dur, col, size = 1) => { const q = (t - t0) / dur; if (q > -0.02 && q < 1.1) orb(pts, clamp(q), col, clamp(q / 0.08) * (1 - clamp((q - 1) / 0.1)), size); };
+  // the table
+  const scanning = t > SCAN[0] && t < SCAN[1] + 0.3, n = scanAt(t);
+  const hookHit = t > T.found && t < CUT.SCAN, hookDim = t > T.skipped - 0.1 && t < CUT.SCAN;
+  const idxHit = t > JUMP + 0.45 && t < CUT.CATCH + 0.2;
+  TB.forEach((b, i) => {
+    const qi = ease.back(prog(t, 0.05 + i * 0.006, 0.35 + i * 0.006));
+    let col = O, glow = 1, op = 1;
+    if (t < CUT.SCAN) { if (i === HIT && hookHit) { col = OK; glow = 2 + 2 * pulse(t, T.found); } else if (hookDim) { col = DIM; op = 0.7; } }
+    else if (t < CUT.IDX) { if (scanning && i < n) { col = i === HIT && t > HIT_SCAN ? OK : mixHex(O, AMB, 0.6); glow = 1.3; } if (i === n && scanning) { col = WH; glow = 3; } }
+    else if (t < CUT.CATCH + 0.2) { if (i === HIT && idxHit) { col = OK; glow = 2 + 2 * pulse(t, JUMP + 0.45); } else if (t > T.skip - 0.1) { col = DIM; op = 0.7; } }
+    b.g.visible = qi > 0.01; b.g.scale.set(1, 1, Math.max(0.01, qi)); b.setLook(col, glow, op);
+  });
+  tablePool.set(O, 0.35);
+  if (hookHit) { ripple(t, T.found, TILES[HIT][0], TILES[HIT][1], 14, OK, 60, 0.7); sparks(t, T.found, TILES[HIT][0], TILES[HIT][1], 20, OK, 14, 3, 90, 0.6); }
+  if (scanning) { const p = TILES[Math.min(n, NC * NR - 1)]; orb([[p[0], p[1], 26], [p[0], p[1], 26]], 0, WH, 0.9, 0.8); }
+  if (t > HIT_SCAN && t < HIT_SCAN + 0.6) ripple(t, HIT_SCAN, TILES[HIT][0], TILES[HIT][1], 14, OK, 50, 0.6);
+
+  // the index towers
+  const q1 = ease.back(prog(t, T.index - 0.15, T.index + 0.3));
+  const st = STEPS.filter((s) => t >= s[0]).pop(), hi = t > CUT.CATCH ? -1 : st ? st[1] : -1;
+  const kept = t > T.search;
+  const iCol = idxHit || kept ? mixHex(O, OK, 0.5) : O;
+  idx.b.g.visible = q1 > 0.01; idx.b.g.scale.set(1, 1, Math.max(0.01, q1) * (1 + 0.1 * ep(t, T.space, T.space + 0.4)));
+  idx.b.setLook(iCol, 1.2 + 1.5 * Math.max(...STEPS.map((s) => pulse(t, s[0])), pulse(t, T.update + 0.4)), 1);
+  idx.f.m.visible = idx.b.g.visible; idx.f.draw((g, W_, H_) => idxDraw(g, W_, H_, iCol, idx, hi, st ? st[2] : '', st && st[2] === '✓' ? OK : AMB)); idx.pl.set(iCol, 0.45 * q1);
+  [idx2, idx3].forEach((I, k) => {
+    const qx = ease.back(prog(t, T.every2 + k * 0.15, T.every2 + 0.4 + k * 0.15)), gone = t > T.search;
+    const a = gone ? 1 - ep(t, T.search, T.search + 0.6) : 1, c = gone ? RED : O;
+    I.b.g.visible = qx > 0.01 && a > 0.02; I.b.g.scale.set(1, 1, Math.max(0.01, qx)); I.b.setLook(c, 1.2 + 1.5 * pulse(t, T.update + 0.4 + k * 0.08), a);
+    I.f.m.visible = I.b.g.visible; I.f.draw((g, W_, H_) => { g.globalAlpha = a; idxDraw(g, W_, H_, c, I, -1); g.globalAlpha = 1; }); I.pl.set(c, 0.4 * qx * a);
+  });
+  // pointers: each entry points to a row; then the found entry jumps to sam@'s row
+  [5, 17, 40].forEach((ti, k) => thru([idxSide(idx, [1, 3, 7][k]), tileTop(ti)], T.points + k * 0.12, 0.5, O2, 0.6));
+  thru([idxSide(idx, 6), [TILES[HIT][0], TILES[HIT][1], 60], tileTop(HIT)], JUMP, 0.45, OK);
+  // the catch: a new row has to update every index
+  const qn = ease.back(prog(t, T.new_ - 0.1, T.new_ + 0.25));
+  NB.g.visible = qn > 0.01 && t < CUT.TOOLS + 3; NB.g.scale.set(1, 1, Math.max(0.01, qn)); NB.setLook(AMB, 1.5 + 2 * pulse(t, T.new_), 1);
+  [idx, idx2, idx3].forEach((I, k) => thru([[NEWROW[0], NEWROW[1], 14], [NEWROW[0] - 60, NEWROW[1], 120], idxSide(I, 4)], T.update - 0.05 + k * 0.08, 0.5, k ? RED : AMB, 0.75));
+}
+
+/* ---------------- world tags */
+function tags(t) {
+  const H_T = [TILES[HIT][0], TILES[HIT][1], 40], T_T = [TX + (NC - 1) * CW / 2, TY - 10, 30], I_T = [IDX[0], IDX[1], 250];
+  const big = (c) => `font-size:15px;padding:9px 13px;letter-spacing:1px;border-color:${c}`;
+  const rows = Math.round(1e8 * clamp((t - SCAN[0]) / (SCAN[1] - SCAN[0])));
+  tag('one', `<span style="color:${OK}">1 OF 100,000,000</span>`, big(OK), H_T, t, T.found + 0.1, T.how - 0.05, -30);
+  tag('skip0', `<span style="color:${GR}">THE REST: SKIPPED</span>`, '', T_T, t, T.skipped, CUT.SCAN + 0.1, -20);
+  tag('how', `<span style="color:${AMB}">HOW?</span>`, big(AMB), H_T, t, T.how, CUT.SCAN + 0.2, -30);
+  tag('table', `<span style="color:${WH}">TABLE · ONE ROW PER USER</span>`, '', T_T, t, T.table, T.without - 0.05, -20);
+  tag('scan', `<span style="color:${AMB}">ROWS CHECKED: ${rows.toLocaleString('en-US')}</span>`, big(AMB), T_T, t, SCAN[0], CUT.IDX + 0.2, -20);
+  tag('slow', `<span style="color:${RED}">SLOW</span>`, big(RED), H_T, t, T.slow, CUT.IDX + 0.2, 40);
+  tag('sorted', `<span style="color:${O2}">SORTED A → Z</span>`, `border-color:${O2}88`, I_T, t, T.sorted, T.because - 0.05);
+  tag('stepn', `<span style="color:${AMB}">STEP ${STEPS.filter((s) => t >= s[0]).length} OF 3</span>`, big(AMB), I_T, t, T.narrows, T.steps - 0.05);
+  tag('found', `<span style="color:${OK}">✓ sam@ · 3 STEPS</span>`, big(OK), I_T, t, T.steps, CUT.CATCH + 0.1);
+  tag('book', `<span style="color:${OK}">FIND · GET THE PAGE · SKIP THE REST</span>`, big(OK), T_T, t, T.find - 0.1, CUT.CATCH + 0.1, -20);
+  tag('space', `<span style="color:${AMB}">+ SPACE</span>`, big(AMB), I_T, t, T.space, T.new_ - 0.1);
+  tag('upd', `<span style="color:${RED}">NEW ROW → UPDATE EVERY INDEX</span>`, big(RED), [NEWROW[0], NEWROW[1], 30], t, T.update - 0.1, T.so, 40);
+  tag('keep', `<span style="color:${OK}">✓ INDEX WHAT YOU SEARCH BY</span>`, big(OK), I_T, t, T.search, CUT.TOOLS + 0.5);
+}
+
+/* ---------------- reel config */
+const svgPg = `<svg width="46" height="46" viewBox="0 0 100 100" fill="none" stroke="#6FA8DC" stroke-width="7" stroke-linejoin="round"><ellipse cx="50" cy="24" rx="32" ry="12"/><path d="M18 24 V76 C18 83 32 88 50 88 C68 88 82 83 82 76 V24 M18 50 C18 57 32 62 50 62 C68 62 82 57 82 50"/></svg>`;
+const svgMy = `<svg width="46" height="46" viewBox="0 0 100 100" fill="none" stroke="#F5A623" stroke-width="7" stroke-linejoin="round"><ellipse cx="50" cy="24" rx="32" ry="12"/><path d="M18 24 V76 C18 83 32 88 50 88 C68 88 82 83 82 76 V24"/><path d="M36 54 L50 68 L64 54"/></svg>`;
+const REEL = {
+  shots: SHOTS, kicks: KICKS, shakes: SHAKES, world, tags,
+  code: [
+    [T.without - 0.2, T.index - 0.35, 'query.sql', 'no index', [[0, 'SCANNING', AMB], [T.slow, 'SLOW', RED]],
+      [['SELECT * FROM users'], ["WHERE email = 'sam@mail.com'"], ['→ check every row', T.every1]],
+      [[T.every1, 3, 'one by one', 'amb'], [T.slow, 3, '~100M rows', 'bad']]],
+    [T.index - 0.3, T.catch_ - 0.4, 'query.sql', 'with an index', [[0, 'BUILDING', AMB], [T.fixes, 'INDEXED', OK]],
+      [['CREATE INDEX ON users(email);'], ['SELECT * FROM users', T.because - 0.2], ["WHERE email = 'sam@mail.com';", T.because - 0.2], ['→ a few steps', T.few]],
+      [[T.fixes, 1, '✓ built', 'good'], [T.because, 3, 'searching', 'amb'], [T.few, 4, 'fast', 'good']], 'type'],
+    [T.catch_ - 0.3, CUT.TOOLS - 0.1, 'query.sql', 'the catch', [[0, 'WRITING', AMB], [T.update, 'EXTRA WORK', RED], [T.search, 'ONE INDEX', OK]],
+      [["INSERT INTO users …"], ['→ update every index', T.update - 0.1], ['index what you search by', T.search]],
+      [[T.update, 2, '×3 work', 'bad'], [T.search, 3, '✓', 'good']]],
+  ],
+  hl: /\b(SELECT|FROM|WHERE|CREATE|INDEX|ON|INSERT|INTO|users|email)\b/g,
+  tools: [
+    { a: T.postgres - 0.1, b: CUT.END, svg: svgPg, name: 'PostgreSQL', sub: 'PRIMARY KEY INDEXED AUTOMATICALLY', top: 150 },
+    { a: T.mysql - 0.1, b: CUT.END, svg: svgMy, name: 'MySQL', sub: 'PRIMARY KEY INDEXED AUTOMATICALLY', top: 262 },
+  ],
+  slams: [
+    { a: T.index - 0.2, b: T.column - 0.3, text: 'index', sub: 'A SORTED LIST THAT POINTS TO ROWS', size: 70 },
+  ],
+  bad: ['slow', 'catch'],
+  good: ['index', 'sorted', 'skip'],
+  tiles: [['⌕', 'DATABASE<br>INDEXING'], ['≋', 'SERVER-SENT<br>EVENTS'], ['⇆', 'LONG<br>POLLING']],
+  end: CUT.END, follow: T.follow,
+  cover: { t: 'DATABASE INDEXING', at: JUMP + 0.6, zoom: 0.95, dy: 30 },
+  flash: (t) => 0.06 * pulse(t, T.found, 7) + 0.06 * pulse(t, T.steps, 7),
+};
+</script>
+<script src="../_ember/overlay.js"></script>
+<script src="../_ember/play.js"></script>
+</body>
+</html>

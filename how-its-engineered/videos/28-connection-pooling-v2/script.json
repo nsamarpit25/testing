@@ -1,0 +1,59 @@
+{
+ "topic": "Connection pooling",
+ "lines": [
+  [
+   {
+    "say": "At 8 PM, your app starts showing errors. The database is running fine. It just can't take any more connections.",
+    "show": "At [8 PM,] your app starts showing *errors.* The database is running *fine.* It just can't take any more [connections.]"
+   }
+  ],
+  [
+   {
+    "say": "A connection is the open line between your app and its database, where your data lives. Every question travels over one. And opening a new one is slow, because the app has to say hello and log in first.",
+    "show": "A *connection* is the open line between your app and its database, where your data lives. Every question travels over one. And opening a new one is [slow,] because the app has to say hello and log in first."
+   }
+  ],
+  [
+   {
+    "say": "If every visitor's request opens its own connection, a busy evening means hundreds at once. But a database only allows so many. Postgres allows a hundred by default.",
+    "show": "If every visitor's request opens its *own connection,* a busy evening means [hundreds at once.] But a database only allows so many. *Postgres* allows [a hundred] by default."
+   }
+  ],
+  [
+   {
+    "say": "Go over the limit, and new connections get refused. Your users see errors.",
+    "show": "Go over the limit, and new connections get [refused.] Your users see *errors.*"
+   }
+  ],
+  [
+   {
+    "say": "The fix is a connection pool. Your app opens a few connections, and keeps them open to reuse.",
+    "show": "The fix is a [connection pool.] Your app opens a *few* connections, and keeps them open to *reuse.*"
+   }
+  ],
+  [
+   {
+    "say": "Each request borrows one, asks its question, and hands it back. If they're all busy, it waits its turn in line.",
+    "show": "Each request [borrows one,] asks its question, and *hands it back.* If they're all busy, it waits its turn in line."
+   }
+  ],
+  [
+   {
+    "say": "Like a taxi rank. The cabs are already waiting, so you just hop in, instead of waiting for a new one to drive over every time.",
+    "show": "Like a [taxi rank.] The cabs are *already waiting,* so you just hop in, instead of waiting for a new one to drive over every time."
+   }
+  ],
+  [
+   {
+    "say": "Most database libraries come with a pool. Use it, and keep the total across all your servers under the database's limit, with room to spare.",
+    "show": "Most database libraries come with a [pool.] Use it, and keep the total across *all your servers* under the database's limit, with *room to spare.*"
+   }
+  ],
+  [
+   {
+    "say": "If you're a vibe coder, follow for the system design your AI skipped.",
+    "show": "If you're a vibe coder, follow for the system design your AI [skipped.]"
+   }
+  ]
+ ]
+}

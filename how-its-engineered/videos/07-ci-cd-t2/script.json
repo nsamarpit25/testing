@@ -1,0 +1,53 @@
+{
+  "topic": "CI/CD",
+  "lines": [
+    [
+      {
+        "say": "Friday, 6 PM. You change one letter, and two minutes later your whole app is down.",
+        "show": "Friday, 6 PM. You change *one letter,* and 2 minutes later your whole app is [down.]"
+      }
+    ],
+    [
+      {
+        "say": "The change went straight to users. Nothing stood in between to catch the mistake.",
+        "show": "The change went *straight to users.* Nothing stood in between to catch the [mistake.]"
+      }
+    ],
+    [
+      {
+        "say": "C-I-C-D is the automatic safety net between your code and your users.",
+        "show": "*CI/CD* is the automatic *safety net* between your code and your users."
+      }
+    ],
+    [
+      {
+        "say": "First, it builds the app. Build fails? It stops.",
+        "show": "First, it *builds* the app. Build fails? It [stops.]"
+      }
+    ],
+    [
+      {
+        "say": "Then automated tests check that features like login still work. A test fails? It stops again.",
+        "show": "Then *automated tests* check that features like login still work. A test fails? It [stops again.]"
+      }
+    ],
+    [
+      {
+        "say": "Everything passes? The update is ready to release, automatically or with one-click approval.",
+        "show": "Everything passes? The update is *ready to release,* automatically or with one-click *approval.*"
+      }
+    ],
+    [
+      {
+        "say": "So that one-letter typo? If the build or a test catches it, your users never see it.",
+        "show": "So that one-letter typo? If the build or a test *catches it,* your users [never see it.]"
+      }
+    ],
+    [
+      {
+        "say": "If AI writes your code, follow for the system design it leaves out.",
+        "show": "If AI writes your code, *follow* for the system design it leaves out."
+      }
+    ]
+  ]
+}

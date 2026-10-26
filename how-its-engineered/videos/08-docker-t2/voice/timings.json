@@ -1,0 +1,90 @@
+[
+ {
+  "li": 0,
+  "pi": 0,
+  "say": "It passed every test on your laptop. Perfectly green.",
+  "show": "It passed every test on your laptop. *Perfectly* green.",
+  "start": 0.0,
+  "end": 2.94
+ },
+ {
+  "li": 0,
+  "pi": 1,
+  "say": "Friday, five PM, you push it to the server. A minute later, it crashed.",
+  "show": "Friday, 5 PM, you push it to the server. A minute later, it [crashed.]",
+  "start": 3.52,
+  "end": 7.42
+ },
+ {
+  "li": 1,
+  "pi": 0,
+  "say": "Same exact code. Nobody had touched a thing.",
+  "show": "Same exact code. Nobody had touched *a thing.*",
+  "start": 8.08,
+  "end": 9.94
+ },
+ {
+  "li": 2,
+  "pi": 0,
+  "say": "But the server ran an older Python, and it was missing a library your code depends on.",
+  "show": "But the server ran an *older Python,* and it was [missing a library] your code depends on.",
+  "start": 10.48,
+  "end": 14.1
+ },
+ {
+  "li": 3,
+  "pi": 0,
+  "say": "That's the problem Docker solves. Don't ship your code alone. Ship it plus everything it needs, sealed in one box.",
+  "show": "That's the problem *Docker* solves. Don't ship your code alone. Ship it plus [everything it needs,] sealed in one box.",
+  "start": 14.92,
+  "end": 20.74
+ },
+ {
+  "li": 4,
+  "pi": 0,
+  "say": "It's a shipping container for software. Truck, ship or train, what's inside arrives exactly as packed.",
+  "show": "It's a *shipping container* for software. Truck, ship or train, what's inside arrives [exactly as packed.]",
+  "start": 21.22,
+  "end": 26.14
+ },
+ {
+  "li": 5,
+  "pi": 0,
+  "say": "You list everything that goes in, in a file called a Dockerfile.",
+  "show": "You list everything that goes in, in a file called a [Dockerfile.]",
+  "start": 26.76,
+  "end": 29.26
+ },
+ {
+  "li": 5,
+  "pi": 1,
+  "say": "Docker builds that into an image: your code, Python, every library, frozen together.",
+  "show": "Docker builds that into an *image:* your code, Python, every library, [frozen together.]",
+  "start": 29.26,
+  "end": 33.6
+ },
+ {
+  "li": 6,
+  "pi": 0,
+  "say": "Run the image, and you get a container: your app, running in its own box.",
+  "show": "Run the image, and you get a [container:] your app, running in its own box.",
+  "start": 34.22,
+  "end": 37.46
+ },
+ {
+  "li": 6,
+  "pi": 1,
+  "say": "Laptop, server, or cloud, the inside is identical.",
+  "show": "Laptop, server, or cloud, the inside is *identical.*",
+  "start": 38.06,
+  "end": 40.72
+ },
+ {
+  "li": 7,
+  "pi": 0,
+  "say": "If you ship code with AI, follow for the system design it quietly skips.",
+  "show": "If you ship code with AI, follow for the system design it quietly [skips.]",
+  "start": 41.58,
+  "end": 44.54
+ }
+]

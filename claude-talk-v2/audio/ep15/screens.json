@@ -1,0 +1,43 @@
+{
+ "c1": {
+  "kind": "term",
+  "title": "Console",
+  "lines": [
+   "$ fetch(\"http://localhost:8000/items\")",
+   "! Blocked by CORS policy",
+   "",
+   "from origin http://localhost:3000"
+  ],
+  "hi": [
+   1
+  ]
+ },
+ "c2": {
+  "kind": "code",
+  "title": "server.js",
+  "lines": [
+   "app.use((req, res, next) => {",
+   "  res.set(\"Access-Control-Allow-Origin\",",
+   "          \"http://localhost:3000\");",
+   "  next();",
+   "});"
+  ],
+  "ok": [
+   1,
+   2
+  ]
+ },
+ "c3": {
+  "kind": "page",
+  "url": "localhost:3000",
+  "accent": "#1971c2",
+  "title": "Cleo's Shop",
+  "body": [
+   ""
+  ],
+  "big": {
+   "text": "12 items loaded",
+   "color": "#2f9e44"
+  }
+ }
+}

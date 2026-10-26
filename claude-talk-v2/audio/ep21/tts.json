@@ -1,0 +1,69 @@
+{
+ "prompt": "AUDIO PROFILE\nCleo: a young woman software developer in her mid twenties. Natural, expressive, conversational voice. Real, never cartoonish.\nClaude: a young man's voice. Calm, warm, perfectly deadpan and dry. Few words. He never raises his voice.\n\nTHE SCENE, END TO END\nA minute before midnight in her room. Cleo announces she is quitting AI for twenty four hours tomorrow, to prove her brain still works, but she keeps asking Claude for help with the quitting itself. With thirty seconds left, she changes her computer's time zone to Hawaii so it is still today, and asks for help again. Claude, loyal and unbothered, simply goes along. A fast, funny comedy.\n\nLINE BY LINE\n1. Cleo, determined, announcing it proudly.\n2. Claude, calm, mildly curious.\n3. Cleo, firm, a little defensive.\n4. Claude, calm, factual, gently pointing it out.\n5. Cleo, slightly sheepish, then businesslike.\n6. Claude, calm, simple, helpful.\n7. Cleo, wincing, asking for something softer.\n8. Claude, calm, the same advice in list form, deadpan.\n9. Cleo, nervous, needy.\n10. Claude, calm, gentle suggestion.\n11. Cleo, horrified at the idea, fast.\n12. Claude, calm, a gentle countdown tone.\n13. Cleo, quick and sneaky, typing.\n14. Claude, calm, simply describing what she did.\n15. Cleo, pleased with herself, fast, back to business.\n16. Claude, warm, deadpan, cheerfully loyal, the punchline, short.\n\nDIRECTOR'S NOTES\nSnappy comedy timing: short natural pauses between lines, never long. Cleo's energy builds line by line; Claude stays calm the whole time, and that contrast is the joke. The last line is dry and simple, no dramatic pause inside it. Never read bracketed tags aloud. Finish every line fully, including its last word; never clip a word. Speak every word of the dialogue exactly as written, nothing added.",
+ "turns": [
+  [
+   "Cleo",
+   "Claude, tomorrow I'm quitting AI."
+  ],
+  [
+   "Claude",
+   "Twenty-four hours without me?"
+  ],
+  [
+   "Cleo",
+   "Yes. I need to know my brain still works."
+  ],
+  [
+   "Claude",
+   "You asked me to write that announcement."
+  ],
+  [
+   "Cleo",
+   "Last request. Make me a plan for quitting."
+  ],
+  [
+   "Claude",
+   "Close this chat."
+  ],
+  [
+   "Cleo",
+   "Something less aggressive. With steps."
+  ],
+  [
+   "Claude",
+   "Step one. Close this chat."
+  ],
+  [
+   "Cleo",
+   "Okay, but what if I need help?"
+  ],
+  [
+   "Claude",
+   "You could ask another person."
+  ],
+  [
+   "Cleo",
+   "At midnight? About whether my email sounds rude?"
+  ],
+  [
+   "Claude",
+   "Your AI-free day starts in thirty seconds."
+  ],
+  [
+   "Cleo",
+   "Wait. One tiny adjustment."
+  ],
+  [
+   "Claude",
+   "You changed your time zone to Hawaii."
+  ],
+  [
+   "Cleo",
+   "Exactly. It's still today. Help me write an email."
+  ],
+  [
+   "Claude",
+   "Aloha. Who are we emailing?"
+  ]
+ ]
+}

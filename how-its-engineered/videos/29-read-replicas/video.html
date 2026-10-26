@@ -1,0 +1,393 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- 29 Read replicas. A perspective three.js world with bloom (own camera + post pass).
+     World: YOUR APP (a box, front) and the DATABASE (a banded cylinder, back) with its data as a stack of glowing
+     change tiles on top. Requests fly as orbs: reads blue, writes amber. Hook: the lone database is flooded red, and the
+     tally says almost all of it is reads. Replicas rise from the floor as copies (their stacks copy the primary's), sync
+     pipes on the floor carry every change from the primary. Writes still land on the primary; reads spread over the
+     copies; a fourth copy rises. Lag: one pipe is slow and its stack is a tile short. The comment: written to the
+     primary, a refresh hits the lagging copy (not there), the fix reads from the primary. Teacher/board card. Last: code
+     (writes → primary, reads → replica) while writes still pour into one primary. Beats come from voice/words.json. -->
+<link rel="stylesheet" href="../_ember/fonts.css">
+<link rel="stylesheet" href="../_ember/reel.css">
+<style>
+#cap { top: 728px !important; }
+#cap .box { background: linear-gradient(90deg, transparent, rgba(8,7,6,0.82) 16%, rgba(8,7,6,0.82) 84%, transparent); }
+#ed { top: 192px !important; }
+.lbl { background: rgba(12,11,10,0.95); }
+#hud { position: absolute; left: 40px; right: 40px; top: 120px; opacity: 0; padding: 10px 14px; box-sizing: border-box;
+  background: rgba(14,12,11,0.95); border: 1px solid rgba(111,195,255,0.35); border-radius: 12px; box-shadow: 0 14px 34px rgba(0,0,0,0.6); }
+#hud .r { display: flex; align-items: center; gap: 10px; height: 22px; }
+#hud .k { font: 800 10px/1 Mono; letter-spacing: 1.3px; color: #9c948c; width: 52px; }
+#hud .b { flex: 1; height: 12px; border-radius: 3px; position: relative; overflow: hidden; background: repeating-linear-gradient(90deg, #2a2521 0 2px, #1a1714 2px 4px); }
+#hud .f { position: absolute; left: 0; top: 0; bottom: 0; width: 0; background: repeating-linear-gradient(90deg, currentColor 0 2px, transparent 2px 4px); }
+#hud .n { font: 900 18px/1 Mono; letter-spacing: -0.5px; font-variant-numeric: tabular-nums; min-width: 64px; text-align: right; }
+.cd2 { position: absolute; left: 40px; right: 40px; top: 192px; opacity: 0; background: rgba(16,14,12,0.96); border: 1px solid rgba(111,195,255,0.35); border-radius: 14px; box-shadow: 0 20px 50px rgba(0,0,0,0.7); overflow: hidden; }
+#cl { padding: 14px 16px 12px; }
+#cl .h { font: italic 400 30px/1 Instrument; color: #efe6d8; margin-bottom: 4px; }
+#clS { display: block; width: 100%; height: 230px; }
+#clL { margin-top: 2px; font: 800 12px/1 Mono; letter-spacing: 1.2px; text-align: center; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="world">
+    <canvas id="cv" width="1080" height="1920"></canvas>
+    <div class="layer" id="lbls"></div>
+  </div>
+</div>
+<script src="../../tools/lib.js"></script>
+<script src="voice/words.js"></script>
+<script src="../_ember/three.js"></script>
+<script src="../_ember/world.js"></script>
+<script src="../_ember/base.js"></script>
+<script>
+for (let i = 0; i < 44; i++) ORBS.push({ core: orbSprite(9), glow: orbSprite(34), trail: [0, 1, 2, 3, 4].map(() => orbSprite(10)) });
+const RD = '#6FC3FF', WR = AMB;   // reads blue, writes amber
+
+/* ---------------- beats */
+const T = {
+  popular: at('popular'), keep: at('keep'), reading: at('reading'),
+  l1: line(1).start, feed: at('feed'), profile: at('profile'), searching: at('searching'), posting: at('posting'), most2: at('most', 2),
+  l2: line(2).start, replicas: at('replicas'), copies: at('copies'), change: at('change'), primary: at('primary'),
+  l3: line(3).start, write2: at('write', 2), primary2: at('primary', 2), sends: at('sends'), copies2: at('copies', 2),
+  l4: line(4).start, spread: at('spread'), add2: at('add', 2), copy: at('copy'),
+  l5: line(5).start, copying: at('copying'), behind: at('behind'), replication: at('replication'),
+  l6: line(6).start, post: at('post'), comment: at('comment'), refresh: at('refresh'), doesnt: at('doesnt'), fix: at('fix'), writes2: at('writes', 2), own: at('own'), primary3: at('primary', 3), few: at('few'),
+  l7: line(7).start, students: at('students'), board: at('board'), ask: at('ask'), notes: at('notes'), writing: at('writing'), student2: at('student', 2), behind2: at('behind', 2),
+  l8: line(8).start, replicas2: at('replicas', 2), not: at('not'), write3: at('write', 3), one: at('one'), primary4: at('primary', 4),
+  ifv: line(9).start, follow: at('follow'),
+};
+
+/* ---------------- layout: Z up */
+const APX = 0, APY = -260, APW = 180, APD = 110, APH = 64;          // your app
+const DR = 92, DH = 118;                                              // a database cylinder
+const PRI = [0, 520];
+const REP = [[-230, 240], [230, 240], [-230, -10], [230, -10]];        // replicas; 3 rise in line 2, the 4th at "add another copy"
+const LAG = 2;                                                         // the copy that falls behind
+const REP_UP = [T.replicas - 0.1, T.replicas + 0.15, T.replicas + 0.4, T.add2 + 0.05];
+const DBS = [PRI, ...REP];                                             // db index 0 = primary, 1..4 = replicas
+const TILE = 11, TBASE = 3, NT = 16;
+const appTop = [APX, APY + 10, APH + 6];
+const dbTop = (d) => [DBS[d][0], DBS[d][1], DH + 4];
+function arc(a, b, h, n = 24) { return [...Array(n + 1)].map((_, i) => { const q = i / n; return [lerp(a[0], b[0], q), lerp(a[1], b[1], q), lerp(a[2], b[2], q) + h * 4 * q * (1 - q)]; }); }
+const PATH = DBS.map((p, d) => arc(appTop, dbTop(d), d === 0 ? 170 : 110));
+const PATHR = PATH.map((p) => p.slice().reverse());
+const SYNC = REP.map(([x, y]) => [[PRI[0], PRI[1], 3], [x, y, 3]]);
+
+/* ---------------- traffic: reads and writes */
+const FLY = 0.55, SYNC_T = 0.6, SYNC_LAG = 2.7;
+const READS = [], WRITES = [];
+(() => {
+  let i = 0;
+  for (let t = 0.15; t < T.l2 + 1.2; t += t < T.l1 ? 0.06 : 0.1) READS.push({ s: t, d: 0 });
+  for (let t = T.l2 + 1.2; t < T.l3 - 0.2; t += 0.22) READS.push({ s: t, d: 0 });
+  for (let t = T.spread - 0.35; t < T.post - 0.5; t += 0.1) { const n = t > REP_UP[3] + 0.5 ? 4 : 3; READS.push({ s: t, d: 1 + (i++ % n) }); }
+  for (let t = T.l7 - 0.2; t < DURATION; t += 0.13) READS.push({ s: t, d: 1 + (i++ % 4) });
+  // the comment: a refresh reads the lagging copy, the fix reads the primary
+  READS.push({ s: T.refresh - 0.05, d: 1 + LAG, key: 'miss' }, { s: T.read5 = at('read', 5) - 0.1, d: 0, key: 'hit' });
+  const W = (s, o = {}) => WRITES.push({ s, ...o });
+  [0.9, 2.6, T.posting - 0.1].forEach((s) => W(s));
+  W(T.write2 - 0.15, { key: 'w1' });
+  W(T.copying - 0.2, { lagged: true }); W(T.copying + 0.7, { lagged: true });
+  W(T.post - 0.2, { key: 'cm', lagged: true, col: WR });
+  for (let k = 0; k < 4; k++) W(T.l8 + 0.2 + k * 0.45);
+  WRITES.forEach((w) => {
+    w.tp = w.s + FLY;
+    w.arr = REP.map((_, r) => (REP_UP[r] > w.tp ? -1 : w.tp + 0.1 + (w.lagged && r === LAG ? SYNC_LAG : SYNC_T)));
+  });
+})();
+const version = (d, t) => {   // tiles in db d's stack at time t
+  let n = TBASE;
+  for (const w of WRITES) { const a = d === 0 ? w.tp : w.arr[d - 1]; if (a < 0 ? w.tp <= t : a <= t) n++; }
+  return n;
+};
+const tileCol = (d, k) => { let n = TBASE; for (const w of WRITES) { n++; if (n - 1 === k) return w.key === 'cm' ? 'cm' : 'w'; } return 'b'; };
+
+/* ---------------- camera */
+const pcam = new TH.PerspectiveCamera(44, 540 / 960, 5, 20000); pcam.up.set(0, 0, 1);
+const WIDE = { p: [0, -1300, 1400], l: [0, 60, 0], f: 44 };
+const SHOTS = [
+  { t: 0, p: [180, -1650, 1750], l: [0, 60, 0], f: 44 },
+  { t: 0.01, d: 6, ...WIDE, e: ease.out },
+  { t: T.l5 - 0.3, d: 1.2, p: [-110, -1260, 1380], l: [-40, 60, 0], f: 44 },
+  { t: T.l7 - 0.3, d: 1.3, ...WIDE },
+];
+const KICKS = [[T.keep, 0.04], [T.reading, 0.03], [T.replicas, 0.04], [T.copy, 0.03], [T.replication, 0.04], [T.doesnt, 0.04], [T.primary3, 0.03], [T.one, 0.03]];
+const SHAKES = [[T.keep, 4, 0.3], [T.doesnt, 4, 0.3]];
+const _rv = new TH.Vector3();
+function shoot(t) {
+  let p = SHOTS[0].p.slice(), l = SHOTS[0].l.slice(), f = SHOTS[0].f;
+  for (let i = 1; i < SHOTS.length; i++) {
+    const k = SHOTS[i]; if (t < k.t) break;
+    const q = k.d ? (k.e || ease.inOut)(prog(t, k.t, k.t + k.d)) : 1;
+    p = p.map((v, j) => lerp(v, k.p[j], q)); l = l.map((v, j) => lerp(v, k.l[j], q)); f = lerp(f, k.f, q);
+  }
+  let kick = 0;
+  for (const [t0, amp] of KICKS) { const dt = t - t0; if (dt > 0 && dt < 1.2) kick += amp * (dt < 0.05 ? dt / 0.05 : Math.exp(-(dt - 0.05) * 6)); }
+  let sx = 0, sy = 0;
+  for (const [t0, amp, dur] of SHAKES) { const dt = t - t0; if (dt > 0 && dt < dur) { const k = amp * (1 - dt / dur); sx += k * Math.sin(t * 91); sy += k * Math.cos(t * 67); } }
+  pcam.position.set(p[0] + 6 * Math.sin(t * 0.37), p[1] + 6 * Math.cos(t * 0.29), p[2] + 4 * Math.sin(t * 0.23));
+  pcam.lookAt(l[0] + sx, l[1], l[2] + sy);
+  pcam.fov = f * (1 - kick); pcam.updateProjectionMatrix(); pcam.updateMatrixWorld();
+  cam.f = l;
+  _rv.setFromMatrixColumn(pcam.matrixWorld, 0); const n = Math.hypot(_rv.x, _rv.y) || 1; camRight = [_rv.x / n, _rv.y / n, 0];
+  const d = Math.hypot(p[0] - l[0], p[1] - l[1], p[2] - l[2]);
+  scene.fog.near = d * 0.9; scene.fog.far = d * 3.4;
+}
+const _pv = new TH.Vector3();
+P = function (x, y, z) { _pv.set(x, y, z).project(pcam); return [(_pv.x + 1) * 270, (1 - _pv.y) * 480, _pv.z]; };
+
+/* ---------------- the stage */
+floor.scale.set(2.2, 2.2, 1); floor.position.set(0, 1500, -0.5);
+const APP = emberBox(APX, APY, APW, APD, APH, O);
+const DB = DBS.map(([x, y]) => emberCyl(x, y, DR, DH, O, { bands: [0, DH / 3, (2 * DH) / 3, DH] }));
+const PL = DBS.map(([x, y]) => pool(x, y, 220, O));
+const PLA = pool(APX, APY, 200, O);
+const PIPES = SYNC.map((pts) => road(pts, RD));
+
+/* ---------------- change tiles: instanced slabs stacked on each database */
+const TILES = (() => {
+  const geo = new TH.BoxGeometry(118, 84, 3.2);
+  const m = new TH.InstancedMesh(geo, new TH.MeshBasicMaterial({ toneMapped: false, fog: true }), DBS.length * NT);
+  m.instanceMatrix.setUsage(TH.DynamicDrawUsage); m.setColorAt(0, new TH.Color()); m.instanceColor.setUsage(TH.DynamicDrawUsage); m.frustumCulled = false; scene.add(m);
+  return m;
+})();
+const GHOST = emberBox(0, 0, 122, 88, 4, RED, { lw: 2 });
+const _o = new TH.Object3D(), _c = new TH.Color(), _c2 = new TH.Color();
+
+/* ---------------- the world, frame by frame */
+const repA = (r, t) => ep(t, REP_UP[r], REP_UP[r] + 0.6, ease.out);
+function loadOf(t) {   // the primary's load, 0..1
+  if (t < T.spread) return t < T.l3 - 0.2 ? 1 : 0.8;
+  return lerp(0.8, 0.2, ep(t, T.spread, T.spread + 0.8));
+}
+function world(t) {
+  const fadeIn = ep(t, 0, 0.5);
+  const load = loadOf(t), hot = load > 0.9;
+  DB[0].setLook(hot ? mixHex(O, RED, 0.6 + 0.4 * Math.sin(t * 9) ** 2) : t > T.spread + 0.5 ? mixHex(O, OK, 0.5) : O, 1 + (hot ? 1 : 0), fadeIn); DB[0].update();
+  PL[0].set(hot ? RED : t > T.spread + 0.5 ? OK : O, 0.5 * fadeIn);
+  APP.setLook(t < T.l2 && t > T.keep - 0.2 ? mixHex(O, RED, 0.6) : O, 1, fadeIn); PLA.set(O, 0.4 * fadeIn);
+  REP.forEach((_, r) => {
+    const a = repA(r, t), d = r + 1, lagging = r === LAG && t > T.l5 - 0.2 && t < T.l7 - 0.3 && version(d, t) < version(0, t);
+    DB[d].g.position.z = -DH * 1.05 * (1 - a);
+    DB[d].setLook(lagging ? mixHex(RD, RED, 0.5 + 0.5 * Math.sin(t * 8) ** 2) : RD, lagging ? 1.8 : 1.2, a > 0.01 ? 1 : 0); DB[d].update();
+    PL[d].set(lagging ? RED : RD, 0.45 * a);
+    const pa = ep(t, Math.max(T.change - 0.2, REP_UP[r] + 0.3), Math.max(T.change + 0.5, REP_UP[r] + 0.9), ease.inOut);
+    PIPES[r].set(pa, r === LAG && t > T.l5 - 0.2 && t < T.l7 - 0.3 ? mixHex(RD, RED, 0.45) : RD, a, t);
+  });
+
+  // tiles: each db shows its version; replicas copy the primary's stack when they rise
+  for (let d = 0; d < DBS.length; d++) {
+    const a = d === 0 ? fadeIn : repA(d - 1, t);
+    let n = version(d, t);
+    if (d > 0) n = Math.min(n, Math.floor(ep(t, REP_UP[d - 1] + 0.35, REP_UP[d - 1] + 1.1, (x) => x) * (n + 0.999)));
+    for (let k = 0; k < NT; k++) {
+      const i = d * NT + k, on = k < n && a > 0.01;
+      _o.position.set(DBS[d][0], DBS[d][1], (on ? DH + 6 + k * TILE : -999) + (d > 0 ? DB[d].g.position.z : 0)); _o.scale.set(1, 1, 1); _o.updateMatrix(); TILES.setMatrixAt(i, _o.matrix);
+      const kind = tileCol(d, k), top = k === n - 1;
+      _c.set(kind === 'cm' ? WR : d === 0 ? O2 : RD).multiplyScalar(kind === 'cm' ? 1.8 : top ? 1.3 : 0.55);
+      TILES.setColorAt(i, _c);
+    }
+  }
+  TILES.instanceMatrix.needsUpdate = true; TILES.instanceColor.needsUpdate = true;
+
+  // the missing tile on the lagging copy
+  const vP = version(0, t), vL = version(1 + LAG, t), gOn = t > T.behind - 0.3 && t < T.l7 - 0.3 && vL < vP;
+  GHOST.g.position.set(REP[LAG][0], REP[LAG][1], DH + 6 + vL * TILE - 3);
+  GHOST.setLook(RED, 2, gOn ? 0.6 + 0.4 * Math.sin(t * 10) ** 2 : 0);
+
+  // reads: app → a database
+  for (const r of READS) {
+    const q = prog(t, r.s, r.s + FLY); if (q <= 0 || q >= 1) continue;
+    const big = r.key ? 1.15 : 0.8;
+    orb(PATH[r.d], ease.inOut(q), r.key === 'miss' && q > 0.9 ? RED : r.key === 'hit' && q > 0.9 ? OK : RD, 1, big);
+  }
+  // ...and the answer comes back: a smaller pulse db → app
+  for (const r of READS) {
+    if (r.key) continue;
+    const q = prog(t, r.s + FLY, r.s + FLY * 1.8); if (q <= 0 || q >= 1) continue;
+    orb(PATHR[r.d], ease.inOut(q), mixHex(RD, WH, 0.35), 0.8, 0.5);
+  }
+  for (const r of READS) if (r.key) { const e = r.s + FLY; ripple(t, e, ...dbTop(r.d).slice(0, 2), DH + 8 + version(r.d, e) * TILE, r.key === 'miss' ? RED : OK, 120, 0.6); }
+  // writes: app → primary, then the change rides each pipe to the copies
+  for (const w of WRITES) {
+    const q = prog(t, w.s, w.tp); if (q > 0 && q < 1) orb(PATH[0], ease.inOut(q), WR, 1, w.key ? 1.1 : 0.75);
+    if (t > w.tp && t < w.tp + 0.6) ripple(t, w.tp, PRI[0], PRI[1], DH + 8 + version(0, w.tp) * TILE, WR, 110, 0.6);
+    w.arr.forEach((a, r) => {
+      if (a < 0) return; const s = w.tp + 0.1, qq = prog(t, s, a); if (qq <= 0 || qq >= 1) return;
+      orb(SYNC[r], qq, w.key === 'cm' ? WR : RD, 1, 0.6);
+    });
+  }
+  if (t > T.copy - 0.3) ripple(t, REP_UP[3] + 0.2, REP[3][0], REP[3][1], 1, RD, 160, 0.8);
+  REP_UP.slice(0, 3).forEach((u, r) => ripple(t, u + 0.2, REP[r][0], REP[r][1], 1, RD, 160, 0.8));
+}
+
+/* ---------------- world tags */
+const tg = (key, html, style, wp, t, a, b, dy = 0) => { const e = tag(key, html, style, wp, t, a, b, dy); if (P(...wp)[2] > 1) e.style.display = 'none'; return e; };
+function tags(t) {
+  const big = (c) => `font-size:15px;padding:9px 13px;letter-spacing:1px;border-color:${c}`;
+  const sp = (c, s) => `<span style="color:${c}">${s}</span>`;
+  const appW = [APX, APY - APD / 2, 0], stackTop = (d, e = 0) => [DBS[d][0], DBS[d][1], DH + 14 + version(d, t) * TILE + e];
+  const ld = Math.round(loadOf(t) * 100);
+  // hook
+  tg('db', sp(O2, 'YOUR DATABASE'), big(O2), [PRI[0] + DR + 110, PRI[1], DH * 0.5], t, 0.3, T.keep - 0.2, 0);
+  tg('load', sp(ld > 90 ? RED : ld > 50 ? AMB : OK, `LOAD ${ld}%`), big(ld > 90 ? RED : ld > 50 ? AMB : OK), [PRI[0] + DR + 90, PRI[1], DH * 0.5], t, T.keep - 0.15, T.l2 - 0.2, 0);
+  tg('app', sp(O2, 'YOUR APP'), big(O2), appW, t, 0.3, T.l1 - 0.2, 30);
+  const what = t < T.profile - 0.1 ? 'LOAD FEED → <b style="color:' + RD + '">READ</b>' : t < T.searching - 0.1 ? 'OPEN PROFILE → <b style="color:' + RD + '">READ</b>' : t < T.posting - 0.1 ? 'SEARCH → <b style="color:' + RD + '">READ</b>' : 'POST → <b style="color:' + WR + '">WRITE</b>';
+  tg('what', sp(WH, what), big(t < T.posting - 0.1 ? RD : WR), appW, t, T.feed - 0.1, T.most2 - 0.1, 30);
+  tg('most', sp(RD, 'READS ≫ WRITES'), big(RD), appW, t, T.most2, T.l2 - 0.1, 30);
+  // replicas
+  tg('rep', sp(RD, 'READ REPLICAS · COPIES'), big(RD), [0, 120, 0], t, T.replicas + 0.3, T.primary - 0.1, 26);
+  tg('pri', sp(O2, 'PRIMARY'), big(O2), stackTop(0, 20), t, T.primary - 0.05, T.l4 - 0.2, -30);
+  tg('w1', sp(WR, 'WRITE → PRIMARY'), big(WR), appW, t, T.write2 - 0.1, T.sends - 0.1, 30);
+  tg('snd', sp(RD, 'EACH CHANGE → THE COPIES'), big(RD), [0, 120, 0], t, T.sends, T.l4 - 0.2, 26);
+  tg('spr', sp(RD, 'READS → THE COPIES'), big(RD), appW, t, T.spread - 0.1, T.l5 - 0.2, 30);
+  tg('pl', sp(OK, `PRIMARY · LOAD ${ld}%`), big(OK), stackTop(0, 20), t, T.spread + 0.6, T.l5 - 0.2, -30);
+  tg('add', sp(RD, '+ ONE MORE COPY'), big(RD), stackTop(4, 10), t, T.copy - 0.1, T.copying, -30);
+  // lag
+  tg('bh', sp(RED, '1 CHANGE BEHIND'), big(RED), stackTop(1 + LAG, 14), t, T.behind - 0.1, T.l6 - 0.3, -30);
+  tg('lag', sp(RED, 'REPLICATION LAG'), big(RED), appW, t, T.replication - 0.05, T.l6 - 0.3, 30);
+  // the comment
+  tg('cm', sp(WR, 'POST A COMMENT'), big(WR), appW, t, T.post - 0.1, T.refresh - 0.05, 30);
+  tg('rf', sp(RD, 'REFRESH → A COPY'), big(RD), appW, t, T.refresh - 0.05, T.doesnt - 0.1, 30);
+  tg('ms', sp(RED, '✕ NOT THERE YET'), big(RED), stackTop(1 + LAG, 14), t, T.doesnt - 0.1, T.fix - 0.05, -30);
+  tg('fx', sp(OK, 'YOUR OWN DATA → PRIMARY'), big(OK), appW, t, T.writes2 - 0.1, T.l7 - 0.3, 30);
+  tg('ok', sp(OK, '✓ COMMENT IS THERE'), big(OK), stackTop(0, 20), t, T.read5 + FLY, T.l7 - 0.3, -30);
+  tg('few', sp(AMB, 'FOR A FEW SECONDS'), big(AMB), [0, 120, 0], t, T.few - 0.1, T.l7 - 0.3, 26);
+  // last
+  tg('rr', sp(RD, '✓ REPLICAS: MORE READS'), big(RD), [0, 120, 0], t, T.replicas2 - 0.1, T.ifv - 0.2, 26);
+  tg('ww', sp(WR, 'WRITES: STILL ONE PRIMARY'), big(WR), [PRI[0], 290, 0], t, T.write3 - 0.1, T.ifv - 0.2, 0);   // below the code card
+}
+
+/* ---------------- reel config */
+const REEL = {
+  shots: [], world, tags,
+  code: [
+    [T.l8 - 0.1, T.ifv - 0.15, 'db.js', 'two connections', [[0, 'SPLIT', RD]],
+      [['// writes → the one primary'], ["await primary.query('INSERT …')"], ['// reads → any replica'], ["await replica.query('SELECT …')"]],
+      [[T.write3 - 0.05, 2, 'one primary', 'amb'], [T.replicas2, 4, 'spread', 'good']]],
+  ],
+  hl: /\b(await|INSERT|SELECT)\b/g,
+  tools: [], slams: [],
+  bad: ['keep', 'lack', 'lag', 'behind', 'doesnt', 'yet'],
+  good: ['replicas', 'copies', 'spread', 'copy', 'reads', 'primary'],
+  tiles: [['⧉', 'READ<br>REPLICAS'], ['⇄', 'CONNECTION<br>POOLING'], ['N+1', 'N+1<br>QUERIES']],
+  end: T.ifv - 0.15, follow: T.follow,
+  cover: { t: 'READ<br>REPLICAS', at: T.copy + 0.7, zoom: 1, dy: 60 },
+  flash: (t) => 0.05 * pulse(t, T.keep, 7) + 0.05 * pulse(t, T.doesnt, 6),
+};
+</script>
+<script src="../_ember/overlay.js"></script>
+<script>
+/* ---------------- bloom: scene → half-float target, bright pass, three blur levels, composite to the canvas */
+const RT = (w, h, s = 0) => new TH.WebGLRenderTarget(w, h, { type: TH.HalfFloatType, samples: s, depthBuffer: s > 0 });
+const rtMain = RT(1080, 1920, 4), BL = [[RT(540, 960), RT(540, 960)], [RT(270, 480), RT(270, 480)], [RT(135, 240), RT(135, 240)]];
+const fsCam = new TH.OrthographicCamera(-1, 1, 1, -1, 0, 1), fsScene = new TH.Scene(), fsQuad = new TH.Mesh(new TH.PlaneGeometry(2, 2));
+fsQuad.frustumCulled = false; fsScene.add(fsQuad);
+const VS = 'varying vec2 vUv; void main() { vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }';
+const shm = (fs, u) => new TH.ShaderMaterial({ uniforms: u, vertexShader: VS, fragmentShader: fs, depthTest: false, depthWrite: false });
+const mBright = shm(`uniform sampler2D tex; uniform float th; varying vec2 vUv;
+void main() { vec3 c = texture2D(tex, vUv).rgb; float l = max(c.r, max(c.g, c.b)); gl_FragColor = vec4(c * smoothstep(th, th + 0.4, l), 1.0); }`,
+  { tex: { value: null }, th: { value: 0.8 } });
+const mBlur = shm(`uniform sampler2D tex; uniform vec2 dir; varying vec2 vUv;
+void main() {
+  vec3 c = texture2D(tex, vUv).rgb * 0.2270270270;
+  c += (texture2D(tex, vUv + dir * 1.3846153846).rgb + texture2D(tex, vUv - dir * 1.3846153846).rgb) * 0.3162162162;
+  c += (texture2D(tex, vUv + dir * 3.2307692308).rgb + texture2D(tex, vUv - dir * 3.2307692308).rgb) * 0.0702702703;
+  gl_FragColor = vec4(c, 1.0);
+}`, { tex: { value: null }, dir: { value: new TH.Vector2() } });
+const mComp = shm(`uniform sampler2D base, b1, b2, b3; uniform float k1, k2, k3; varying vec2 vUv;
+void main() {
+  vec3 c = texture2D(base, vUv).rgb + texture2D(b1, vUv).rgb * k1 + texture2D(b2, vUv).rgb * k2 + texture2D(b3, vUv).rgb * k3;
+  c = c / (1.0 + max(c - 1.0, 0.0) * 0.6);
+  gl_FragColor = vec4(c, 1.0);
+  #include <colorspace_fragment>
+}`, { base: { value: rtMain.texture }, b1: { value: BL[0][0].texture }, b2: { value: BL[1][1].texture }, b3: { value: BL[2][1].texture }, k1: { value: 0.5 }, k2: { value: 0.65 }, k3: { value: 0.8 } });
+function pass(mat, dst) { fsQuad.material = mat; renderer.setRenderTarget(dst); renderer.render(fsScene, fsCam); }
+function blur(src, dst, dx, dy) { mBlur.uniforms.tex.value = src.texture; mBlur.uniforms.dir.value.set(dx / src.width, dy / src.height); pass(mBlur, dst); }
+function bloom() {
+  mBright.uniforms.tex.value = rtMain.texture; pass(mBright, BL[0][0]);
+  blur(BL[0][0], BL[0][1], 1, 0); blur(BL[0][1], BL[0][0], 0, 1);
+  blur(BL[0][0], BL[1][0], 1, 0); blur(BL[1][0], BL[1][1], 0, 1);
+  blur(BL[1][1], BL[2][0], 1, 0); blur(BL[2][0], BL[2][1], 0, 1);
+  pass(mComp, null);
+}
+
+/* ---------------- read/write tally, classroom card */
+const stg = $('stage'), before = $('prof');
+const mk = (html) => { const w = document.createElement('div'); w.innerHTML = html.trim(); const n = w.firstChild; stg.insertBefore(n, before); return n; };
+const HUD = mk(`<div id="hud"><div class="r"><div class="k">READS</div><div class="b"><div class="f" id="hfR"></div></div><div class="n" id="hnR"></div></div>
+<div class="r"><div class="k">WRITES</div><div class="b"><div class="f" id="hfW"></div></div><div class="n" id="hnW"></div></div></div>`);
+const CL = mk(`<div id="cl" class="cd2"><div class="h">Copying the board</div><svg id="clS" viewBox="0 0 460 230"></svg><div id="clL"></div></div>`);
+if (/cover/.test(location.hash)) { const s = document.createElement('style'); s.textContent = '#hud, .cd2 { display: none !important; }'; document.head.appendChild(s); }
+(() => {
+  const st = (x, id) => `<g transform="translate(${x},150)"><circle cx="0" cy="-14" r="11" fill="none" stroke="#6FC3FF" stroke-width="3"/><path d="M-16 14 Q0 -2 16 14" fill="none" stroke="#6FC3FF" stroke-width="3"/>
+    <rect x="-30" y="20" width="60" height="44" rx="4" fill="#15130f" stroke="#6FC3FF" stroke-width="2"/><g id="${id}"></g></g>`;
+  $('clS').innerHTML = `<rect x="70" y="10" width="300" height="92" rx="6" fill="#141a14" stroke="#9c948c" stroke-width="2"/><g id="bdL"></g>
+<g transform="translate(400,62)"><circle cx="0" cy="-22" r="12" fill="none" stroke="#FFC34D" stroke-width="3"/><path d="M-16 18 L-12 -6 L12 -6 L16 18" fill="none" stroke="#FFC34D" stroke-width="3"/><line id="chalk" x1="-12" y1="-2" x2="-34" y2="-14" stroke="#FFC34D" stroke-width="3" stroke-linecap="round"/></g>
+<text x="400" y="104" text-anchor="middle" font-family="Mono" font-size="10" font-weight="800" fill="#FFC34D" letter-spacing="1">PRIMARY</text>
+${st(130, 'n0')}${st(230, 'n1')}${st(330, 'n2')}
+<text id="q" x="40" y="150" font-family="Inter" font-size="30" font-weight="900" fill="#F2EEE8" opacity="0">?</text><path id="qa" d="M58 150 L104 148" stroke="#F2EEE8" stroke-width="2.5" opacity="0" marker-end="url(#ah)"/>
+<defs><marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#F2EEE8"/></marker></defs>
+<text id="bhT" x="330" y="228" text-anchor="middle" font-family="Mono" font-size="11" font-weight="800" fill="#FF4632" letter-spacing="1" opacity="0">1 LINE BEHIND</text>`;
+})();
+const BW = [230, 180, 250, 150, 210];   // board line widths
+function classDom(t) {
+  const p = popIn(t, T.l7 - 0.1, T.l8 - 0.15); vis(CL, p.a, `translateY(${p.y}px) scale(${p.s})`);
+  if (p.a <= 0.001) return;
+  // the teacher writes a line every 0.9 s; students copy each line 0.45 s later, the third one 1.3 s later
+  const t0 = T.l7 + 0.2, nb = Math.min(5, Math.floor((t - t0) / 0.9) + 2);
+  const part = clamp(((t - t0) % 0.9) / 0.7);
+  let h = ''; for (let i = 0; i < nb; i++) { const w = i === nb - 1 && nb < 5 ? BW[i] * part : BW[i]; h += `<line x1="86" y1="${26 + i * 15}" x2="${86 + w}" y2="${26 + i * 15}" stroke="#F2EEE8" stroke-width="3" stroke-linecap="round" opacity="0.85"/>`; }
+  setH('bdL', h);
+  $('chalk').setAttribute('transform', `rotate(${Math.sin(t * 14) * 8} -12 -2)`);
+  [0.45, 0.45, 1.6].forEach((lagS, s) => {
+    const n = Math.max(0, Math.min(5, Math.floor((t - t0 - lagS) / 0.9) + 2));
+    let g = ''; for (let i = 0; i < n; i++) g += `<line x1="-22" y1="${28 + i * 7}" x2="${-22 + BW[i] / 6}" y2="${28 + i * 7}" stroke="#6FC3FF" stroke-width="2" stroke-linecap="round"/>`;
+    setH('n' + s, g);
+  });
+  const qa = window01(t, T.ask - 0.1, T.writing + 0.2, 0.2);
+  $('q').setAttribute('opacity', qa); $('qa').setAttribute('opacity', qa);
+  $('bhT').setAttribute('opacity', ep(t, T.behind2 - 0.6, T.behind2 - 0.2));
+  setH('clL', t > T.behind2 - 0.6 ? '✕ ONE STUDENT IS A LINE BEHIND' : t > T.ask - 0.1 ? '✓ ASK A STUDENT, THE TEACHER KEEPS WRITING' : 'STUDENTS = COPIES');
+  $('clL').style.color = t > T.behind2 - 0.6 ? RED : RD;
+}
+function hudDom(t) {
+  const p = popIn(t, 0.1, T.l2 - 0.1); vis(HUD, p.a, `translateY(${p.y}px) scale(${p.s})`);
+  if (p.a <= 0.001) return;
+  const nr = READS.filter((r) => r.s + FLY <= t).length * 37, nw = WRITES.filter((w) => w.tp <= t).length * 37, tot = Math.max(1, nr + nw);
+  setH('hnR', nr.toLocaleString()); setH('hnW', nw.toLocaleString());
+  $('hnR').style.color = RD; $('hnW').style.color = WR; $('hfR').style.color = RD; $('hfW').style.color = WR;
+  $('hfR').style.width = (100 * nr / tot) + '%'; $('hfW').style.width = (100 * nw / tot) + '%';
+}
+function clampTags() {
+  for (const k in LB) {
+    const e = LB[k]; if (e.style.display === 'none') continue;
+    const w = e.offsetWidth, x = parseFloat(e.style.left), y = clamp(parseFloat(e.style.top), 196, 668);
+    const right = y > 450 ? 540 - 70 : 540 - 14;
+    e.style.left = clamp(x, 14 + w / 2, right - w / 2) + 'px'; e.style.top = y + 'px';
+  }
+}
+
+window.render = (t) => {
+  shoot(t);
+  orbsReset(); sparksReset(); ringsReset();
+  REEL.world(t);
+  sparksFlush(); updateEmbers(t);
+  renderer.setRenderTarget(rtMain); renderer.render(scene, pcam);
+  bloom();
+  REEL.tags(t); clampTags();
+  card(t); tools(t);
+  hudDom(t); classDom(t);
+  $('dim').style.opacity = Math.max(0.55 * ep(t, REEL.end, REEL.end + 0.6), 0.6 * window01(t, T.l7 - 0.1, T.l8 - 0.05, 0.3));
+  $('flash').style.opacity = REEL.flash(t);
+  caps(t);
+  profile(t);
+};
+</script>
+<script src="../_ember/play.js"></script>
+</body>
+</html>

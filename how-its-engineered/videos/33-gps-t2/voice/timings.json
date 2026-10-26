@@ -1,0 +1,66 @@
+[
+ {
+  "li": 0,
+  "pi": 0,
+  "say": "Until two thousand, America made public GPS wrong on purpose, enough to put you a street away from where you really were.",
+  "show": "Until 2000, America made public GPS *wrong on purpose,* enough to put you a street away from [where you really were.]",
+  "start": 0.0,
+  "end": 5.88
+ },
+ {
+  "li": 1,
+  "pi": 0,
+  "say": "Then President Clinton ordered that error switched off, and overnight, ordinary receivers could find the right road.",
+  "show": "Then President Clinton ordered that error *switched off,* and overnight, ordinary receivers could find [the right road.]",
+  "start": 6.46,
+  "end": 10.96
+ },
+ {
+  "li": 2,
+  "pi": 0,
+  "say": "Today your phone can find the street you're on. And the GPS satellites have no idea you exist.",
+  "show": "Today your phone can find the street you're on. And the GPS satellites have [no idea you exist.]",
+  "start": 11.54,
+  "end": 15.6
+ },
+ {
+  "li": 3,
+  "pi": 0,
+  "say": "Your phone never sends anything to them. It only listens.",
+  "show": "Your phone never sends anything to them. It [only listens.]",
+  "start": 15.96,
+  "end": 18.18
+ },
+ {
+  "li": 4,
+  "pi": 0,
+  "say": "About thirty GPS satellites orbit the Earth, carrying super precise clocks. They keep broadcasting where they are, and exactly when each signal left.",
+  "show": "About *30 GPS satellites* orbit the Earth, carrying super precise clocks. They keep broadcasting where they are, and exactly [when each signal left.]",
+  "start": 18.66,
+  "end": 25.42
+ },
+ {
+  "li": 5,
+  "pi": 0,
+  "say": "The signals travel at the speed of light, so how long each one takes tells your phone how far away that satellite is.",
+  "show": "The signals travel at the *speed of light,* so how long each one takes tells your phone [how far away that satellite is.]",
+  "start": 25.8,
+  "end": 30.46
+ },
+ {
+  "li": 6,
+  "pi": 0,
+  "say": "One distance puts you somewhere on a giant sphere. Add more satellites, and the spheres overlap at one spot. A fourth one fixes your phone's clock, which is nowhere near as precise.",
+  "show": "One distance puts you somewhere on a giant sphere. Add more satellites, and the spheres *overlap at one spot.* A fourth one fixes your phone's clock, which is [nowhere near as precise.]",
+  "start": 30.94,
+  "end": 38.64
+ },
+ {
+  "li": 7,
+  "pi": 0,
+  "say": "So GPS isn't tracking you from space. The satellites only say where they are. Your phone works out where you are.",
+  "show": "So GPS isn't tracking you from space. The satellites only say where they are. [Your phone works out where you are.]",
+  "start": 39.1,
+  "end": 44.28
+ }
+]

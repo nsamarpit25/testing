@@ -11,7 +11,10 @@ const [html, out] = args;
 const FPS = 30;
 
 // CHROMIUM_PATH: use a preinstalled browser (cloud sessions) instead of Playwright's own download
-const browser = await chromium.launch(process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {});
+// RENDER_GPU=vulkan: real GPU WebGL through ANGLE/Vulkan (the home PC's RX 6600) instead of headless SwiftShader
+const gpu = process.env.RENDER_GPU === 'vulkan'
+  ? { args: ['--use-angle=vulkan', '--enable-features=Vulkan', '--ignore-gpu-blocklist', '--enable-gpu'], ignoreDefaultArgs: ['--use-angle=swiftshader-webgl', '--enable-unsafe-swiftshader'] } : {};
+const browser = await chromium.launch({ ...(process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {}), ...gpu });
 const page = await browser.newPage({ viewport: { width: 540, height: 960 }, deviceScaleFactor: 2 });
 page.on('pageerror', (e) => console.error('page error:', e.message));
 await page.goto('file://' + path.resolve(html));
@@ -37,7 +40,7 @@ const to = Math.min(Number(opt('--to') ?? duration), duration);
 const ff = spawn('ffmpeg', [
   '-y', '-v', 'error', '-f', 'image2pipe', '-framerate', String(FPS), '-i', '-',
   ...(audio ? ['-ss', String(from), '-i', audio, '-c:a', 'aac', '-b:a', '192k', '-shortest'] : []),
-  '-c:v', 'libx264', '-crf', '19', '-preset', 'medium', '-pix_fmt', 'yuv420p', '-movflags', '+faststart', out,
+  '-c:v', 'libx264', '-crf', '15', '-preset', 'slow', '-x264-params', 'aq-mode=3', '-pix_fmt', 'yuv420p', '-movflags', '+faststart', out,
 ], { stdio: ['pipe', 'inherit', 'inherit'] });
 
 const first = Math.round(from * FPS), total = Math.round(to * FPS);

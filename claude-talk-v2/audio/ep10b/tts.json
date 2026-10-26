@@ -1,0 +1,69 @@
+{
+ "prompt": "AUDIO PROFILE\nCleo: a young woman software developer in her mid twenties. Soft, natural, conversational voice. Real and understated, never cartoonish.\nClaude: a young man's voice. Calm, warm and gently dry-witted, never theatrical. Few words.\n\nTHE SCENE, END TO END\nAfternoon at her desk. Cleo meant to send a test email to herself, but her script used the real customer list, so 'test test please ignore' went to forty thousand people. Claude, a small companion on her desk, stays calm and finds the silver lining: it's the most-opened email the company has ever sent.\n\nLINE BY LINE\n1. Cleo, frozen, quietly panicking, half hoping there is an undo; a short beat at the \"...\".\n2. Claude, calm.\n3. Cleo, defensive and embarrassed, then small and mortified; NOT amused, no smile or laugh in her voice.\n4. Claude, neutral.\n5. Cleo, explaining fast, embarrassed.\n6. Claude, gentle.\n7. Cleo, numb, a tiny laugh.\n8. Claude, dry.\n9. Cleo, pained.\n10. Claude, dry.\n11. Cleo, horror building.\n12. Claude, calm, slightly upbeat.\n13. Cleo, desperate hope.\n14. Claude, matter of fact.\n15. Cleo, slowly processing.\n16. Claude, completely deadpan, dry, totally straight-faced advice.\n\nDIRECTOR'S NOTES\nA natural, conversational pace, like two friends at a desk; not rushed, not slow. Let the jokes land with a short beat before the dry lines. Leave a short beat at every \"...\"; never read bracketed tags aloud. Finish every line fully, including its last word; never clip a word. Speak every word of the dialogue exactly as written, nothing added.",
+ "turns": [
+  [
+   "Cleo",
+   "Claude, how do I unsend one email... from forty thousand inboxes?"
+  ],
+  [
+   "Claude",
+   "On purpose?"
+  ],
+  [
+   "Cleo",
+   "It was a test. The subject is \"test test please ignore.\""
+  ],
+  [
+   "Claude",
+   "Who was it for?"
+  ],
+  [
+   "Cleo",
+   "Me. Just me. My script used the real customer list."
+  ],
+  [
+   "Claude",
+   "Any replies?"
+  ],
+  [
+   "Cleo",
+   "Two hundred. One person wrote, \"Received, thank you.\""
+  ],
+  [
+   "Claude",
+   "Polite."
+  ],
+  [
+   "Cleo",
+   "My manager replied. With a thumbs up."
+  ],
+  [
+   "Claude",
+   "Supportive."
+  ],
+  [
+   "Cleo",
+   "Then the CEO replied. \"What is this?\""
+  ],
+  [
+   "Claude",
+   "There is some good news."
+  ],
+  [
+   "Cleo",
+   "There's good news?"
+  ],
+  [
+   "Claude",
+   "Sixty-one percent opened it. Marketing's best is twelve."
+  ],
+  [
+   "Cleo",
+   "So my mistake... beat marketing?"
+  ],
+  [
+   "Claude",
+   "Tell them it took years of practice."
+  ]
+ ]
+}

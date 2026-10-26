@@ -1,0 +1,33 @@
+{
+ "topic": "API gateways",
+ "lines": [
+  [
+   {"say": "A stranger saw everyone's food orders in your app, without even logging in. One part of your app forgot to check.",
+    "show": "A stranger saw [everyone's food orders] in your app, without even *logging in.* One part of your app *forgot to check.*"}
+  ],
+  [
+   {"say": "Many apps run separate server programs called services: orders, payments, menu. When each one checks the login by itself, one gets missed.",
+    "show": "Many apps run separate server programs called *services:* orders, payments, menu. When each one checks the login by itself, [one gets missed.]"}
+  ],
+  [
+   {"say": "An API gateway gives them one front door. Every request from your app, like show my orders, goes through it.",
+    "show": "An [API gateway] gives them one *front door.* Every request from your app, like *show my orders,* goes through it."}
+  ],
+  [
+   {"say": "Like airport security: nobody reaches the gate without passing it.",
+    "show": "Like *airport security:* nobody reaches the gate [without passing it.]"}
+  ],
+  [
+   {"say": "It checks every request for a valid login. No login? Blocked at the door. The orders service still checks whose orders you can see.",
+    "show": "It checks every request for a *valid login.* No login? [Blocked at the door.] The orders service still checks *whose orders* you can see."}
+  ],
+  [
+   {"say": "It also sends each request to the right service, and can slow down anyone sending too many.",
+    "show": "It also sends each request to the [right service,] and can *slow down* anyone sending too many."}
+  ],
+  [
+   {"say": "If you're a vibe coder, follow for the system design your AI skipped.",
+    "show": "If you're a vibe coder, follow for the system design your AI [skipped.]"}
+  ]
+ ]
+}

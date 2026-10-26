@@ -1,0 +1,65 @@
+{
+  "topic": "Distributed locks",
+  "lines": [
+    [
+      {
+        "say": "Your billing job ran at midnight. On all three of your servers. Every customer got three invoices.",
+        "show": "Your billing job ran at midnight. On all *three* of your servers. Every customer got [three invoices.]"
+      }
+    ],
+    [
+      {
+        "say": "A regular lock in your code lives inside one server's memory. It can't stop the other two.",
+        "show": "A regular lock in your code lives inside *one server's* memory. It [can't stop the other two.]"
+      }
+    ],
+    [
+      {
+        "say": "A distributed lock lives in one shared place that every server can reach, like Redis.",
+        "show": "A *distributed lock* lives in one *shared place* that every server can reach, like *Redis.*"
+      }
+    ],
+    [
+      {
+        "say": "At midnight, all three race to grab that lock. Only the first one gets it.",
+        "show": "At midnight, all three *race* to grab that lock. Only the [first one] gets it."
+      }
+    ],
+    [
+      {
+        "say": "Server two wins and sends the invoices. Servers one and three see the lock is taken, and skip the job.",
+        "show": "Server two *wins* and sends the invoices. Servers one and three see the lock is taken, and *skip the job.*"
+      }
+    ],
+    [
+      {
+        "say": "Like a talking stick: only the one holding it gets to speak.",
+        "show": "Like a *talking stick:* only the one holding it [gets to speak.]"
+      }
+    ],
+    [
+      {
+        "say": "But what if server two crashes while holding it? So the lock gets a thirty-second timer. When time's up, it frees itself.",
+        "show": "But what if server two [crashes] while holding it? So the lock gets a *thirty-second timer.* When time's up, it *frees itself.*"
+      }
+    ],
+    [
+      {
+        "say": "In Redis, one SET command grabs the lock only if it's free, and starts the timer. Et-see-dee and ZooKeeper offer locks too.",
+        "show": "In Redis, one *SET command* grabs the lock only if it's free, and starts the timer. *etcd* and *ZooKeeper* offer locks too."
+      }
+    ],
+    [
+      {
+        "say": "One catch: a frozen server can wake up after its timer ran out, still thinking it's in charge. The fix is a fencing token: each new lock gets a higher number, and storage rejects writes with an older one.",
+        "show": "One catch: a frozen server can wake up after its timer [ran out,] still thinking it's in charge. The fix is a *fencing token:* each new lock gets a higher number, and storage [rejects writes with an older one.]"
+      }
+    ],
+    [
+      {
+        "say": "If you're a vibe coder, follow for the system design your AI skipped.",
+        "show": "If you're a vibe coder, follow for the system design your AI [skipped.]"
+      }
+    ]
+  ]
+}

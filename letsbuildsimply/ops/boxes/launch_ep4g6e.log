@@ -1,0 +1,95 @@
+02:37:16 spot us-east-1 g6e.xlarge (InsufficientInstanceCapacity)
+02:37:23 spot us-east-1 g6e.xlarge (InsufficientInstanceCapacity)
+02:37:31 spot us-east-1 g6e.xlarge (InsufficientInstanceCapacity)
+02:37:37 spot us-east-1 g6e.xlarge (InsufficientInstanceCapacity)
+02:37:39 spot us-east-1 g6e.xlarge (Unsupported)
+02:37:42 spot us-east-1 g6e.xlarge (Unsupported)
+NO SPOT CAPACITY
+02:37:55 spot us-east-1 g6e.xlarge (InsufficientInstanceCapacity)
+02:38:03 spot us-east-1 g6e.xlarge (InsufficientInstanceCapacity)
+02:38:12 spot us-east-1 g6e.xlarge (InsufficientInstanceCapacity)
+02:38:20 spot us-east-1 g6e.xlarge (InsufficientInstanceCapacity)
+02:38:22 spot us-east-1 g6e.xlarge (Unsupported)
+02:38:24 spot us-east-1 g6e.xlarge (Unsupported)
+NO SPOT CAPACITY
+02:38:35 spot us-east-1 g6e.xlarge (InsufficientInstanceCapacity)
+02:38:43 spot us-east-1 g6e.xlarge (InsufficientInstanceCapacity)
+02:38:50 spot us-east-1 g6e.xlarge (InsufficientInstanceCapacity)
+02:38:58 spot us-east-1 g6e.xlarge (InsufficientInstanceCapacity)
+02:39:00 spot us-east-1 g6e.xlarge (Unsupported)
+02:39:02 spot us-east-1 g6e.xlarge (Unsupported)
+NO SPOT CAPACITY
+02:39:15 spot us-east-1 g6e.xlarge (InsufficientInstanceCapacity)
+02:39:21 spot us-east-1 g6e.xlarge (InsufficientInstanceCapacity)
+02:39:28 spot us-east-1 g6e.xlarge (InsufficientInstanceCapacity)
+02:39:36 spot us-east-1 g6e.xlarge (InsufficientInstanceCapacity)
+02:39:38 spot us-east-1 g6e.xlarge (Unsupported)
+02:39:40 spot us-east-1 g6e.xlarge (Unsupported)
+NO SPOT CAPACITY
+02:39:53 spot us-east-1 g6e.xlarge (InsufficientInstanceCapacity)
+02:40:01 spot us-east-1 g6e.xlarge (InsufficientInstanceCapacity)
+02:40:08 spot us-east-1 g6e.xlarge (InsufficientInstanceCapacity)
+02:40:16 spot us-east-1 g6e.xlarge (InsufficientInstanceCapacity)
+02:40:18 spot us-east-1 g6e.xlarge (Unsupported)
+02:40:20 spot us-east-1 g6e.xlarge (Unsupported)
+NO SPOT CAPACITY
+02:40:32 spot us-east-1 g6e.xlarge (InsufficientInstanceCapacity)
+02:40:41 spot us-east-1 g6e.xlarge (InsufficientInstanceCapacity)
+02:40:49 spot us-east-1 g6e.xlarge (InsufficientInstanceCapacity)
+02:40:57 spot us-east-1 g6e.xlarge (InsufficientInstanceCapacity)
+02:40:59 spot us-east-1 g6e.xlarge (Unsupported)
+02:41:01 spot us-east-1 g6e.xlarge (Unsupported)
+NO SPOT CAPACITY
+02:41:14 spot us-east-1 g6e.xlarge (InsufficientInstanceCapacity)
+02:41:21 spot us-east-1 g6e.xlarge (InsufficientInstanceCapacity)
+02:41:29 spot us-east-1 g6e.xlarge (InsufficientInstanceCapacity)
+02:41:36 spot us-east-1 g6e.xlarge (InsufficientInstanceCapacity)
+02:41:38 spot us-east-1 g6e.xlarge (Unsupported)
+02:41:41 spot us-east-1 g6e.xlarge (Unsupported)
+NO SPOT CAPACITY
+02:41:52 spot us-east-1 g6e.xlarge (InsufficientInstanceCapacity)
+02:41:59 spot us-east-1 g6e.xlarge (InsufficientInstanceCapacity)
+02:42:17 spot us-east-1 g6e.xlarge (InsufficientInstanceCapacity)
+02:42:24 spot us-east-1 g6e.xlarge (InsufficientInstanceCapacity)
+02:42:32 spot us-east-1 g6e.xlarge (InsufficientInstanceCapacity)
+02:42:39 spot us-east-1 g6e.xlarge (InsufficientInstanceCapacity)
+02:42:41 spot us-east-1 g6e.xlarge (Unsupported)
+02:42:43 spot us-east-1 g6e.xlarge (Unsupported)
+02:42:51 ondemand us-east-1 g6e.xlarge (InsufficientInstanceCapacity)
+02:42:58 ondemand us-east-1 g6e.xlarge (InsufficientInstanceCapacity)
+02:43:05 ondemand us-east-1 g6e.xlarge (InsufficientInstanceCapacity)
+02:43:13 ondemand us-east-1 g6e.xlarge (InsufficientInstanceCapacity)
+02:43:15 ondemand us-east-1 g6e.xlarge (Unsupported)
+02:43:18 ondemand us-east-1 g6e.xlarge (Unsupported)
+NO CAPACITY
+02:43:47 spot us-east-1 g6e.xlarge (InsufficientInstanceCapacity)
+02:43:53 spot us-east-1 g6e.xlarge (InsufficientInstanceCapacity)
+02:44:00 spot us-east-1 g6e.xlarge (InsufficientInstanceCapacity)
+02:44:09 spot us-east-1 g6e.xlarge (InsufficientInstanceCapacity)
+02:44:11 spot us-east-1 g6e.xlarge (Unsupported)
+02:44:13 spot us-east-1 g6e.xlarge (Unsupported)
+02:44:19 ondemand us-east-1 g6e.xlarge (InsufficientInstanceCapacity)
+02:44:26 ondemand us-east-1 g6e.xlarge (InsufficientInstanceCapacity)
+02:44:35 ondemand us-east-1 g6e.xlarge (InsufficientInstanceCapacity)
+02:44:42 ondemand us-east-1 g6e.xlarge (InsufficientInstanceCapacity)
+02:44:44 ondemand us-east-1 g6e.xlarge (Unsupported)
+02:44:46 ondemand us-east-1 g6e.xlarge (Unsupported)
+NO CAPACITY
+02:45:02 spot ap-south-1 g6e.xlarge (InsufficientInstanceCapacity)
+02:45:07 spot ap-south-1 g6e.xlarge (InsufficientInstanceCapacity)
+02:45:08 spot ap-south-1 g6e.xlarge (Unsupported)
+02:45:16 spot us-east-1 g6e.xlarge (InsufficientInstanceCapacity)
+02:45:23 spot us-east-1 g6e.xlarge (InsufficientInstanceCapacity)
+02:45:30 spot us-east-1 g6e.xlarge (InsufficientInstanceCapacity)
+02:45:39 spot us-east-1 g6e.xlarge (InsufficientInstanceCapacity)
+02:45:41 spot us-east-1 g6e.xlarge (Unsupported)
+02:45:43 spot us-east-1 g6e.xlarge (Unsupported)
+GOT ondemand g6e.xlarge ap-south-1 i-0f12fc91e139ae0fa 02:45:44
+W: Target Packages (Packages) is configured multiple times in /etc/apt/sources.list.d/archive_uri-https_developer_download_nvidia_com_compute_cuda_repos_ubuntu2204_x86_64_-jammy.list:1 and /etc/apt/sources.list.d/cuda-ubuntu2204-x86_64.list:1
+W: Target Translations (en) is configured multiple times in /etc/apt/sources.list.d/archive_uri-https_developer_download_nvidia_com_compute_cuda_repos_ubuntu2204_x86_64_-jammy.list:1 and /etc/apt/sources.list.d/cuda-ubuntu2204-x86_64.list:1
+W: Target Packages (Packages) is configured multiple times in /etc/apt/sources.list.d/archive_uri-https_developer_download_nvidia_com_compute_cuda_repos_ubuntu2204_x86_64_-jammy.list:1 and /etc/apt/sources.list.d/cuda-ubuntu2204-x86_64.list:1
+W: Target Translations (en) is configured multiple times in /etc/apt/sources.list.d/archive_uri-https_developer_download_nvidia_com_compute_cuda_repos_ubuntu2204_x86_64_-jammy.list:1 and /etc/apt/sources.list.d/cuda-ubuntu2204-x86_64.list:1
+Blender 5.2.2 LTS
+NVIDIA L40S
+whisper ok
+READY 02:47:56

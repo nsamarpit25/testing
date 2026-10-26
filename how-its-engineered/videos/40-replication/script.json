@@ -1,0 +1,23 @@
+{
+ "topic": "Replication",
+ "lines": [
+  [{"say": "At 3 AM, the server holding your database dies, and its disk with it. If that was your only copy, every user and every order is gone.",
+    "show": "At 3 AM, the server holding your database *dies,* and its disk with it. If that was your *only copy,* every user and every order is [gone.]"}],
+  [{"say": "Replication means keeping live copies of your data on other servers. In the usual setup, the main one is called the leader, and every change it makes is sent to the copies.",
+    "show": "[Replication] means keeping live *copies* of your data on other servers. In the usual setup, the main one is called the [leader,] and every change it makes is sent to the *copies.*"}],
+  [{"say": "Like a document that gets copied again after every edit, with the copies kept in safes in different buildings. One building floods, the others still have it.",
+    "show": "Like a document that gets *copied again* after every edit, with the copies kept in safes in [different buildings.] One building *floods,* the others [still have it.]"}],
+  [{"say": "So the copies live somewhere else: another rack, another data center, even another city. One power cut or flood can't take them all.",
+    "show": "So the copies live somewhere else: another *rack,* another *data center,* even another *city.* One power cut or flood [can't take them all.]"}],
+  [{"say": "Now the leader dies. If failover is set up, a copy is promoted to be the new leader, and after a short blip your app keeps running.",
+    "show": "Now the leader *dies.* If [failover] is set up, a copy is *promoted* to be the new leader, and after a short blip your app [keeps running.]"}],
+  [{"say": "But when is a write really saved? The leader can wait until a copy confirms it, or say done right away and let the copies catch up.",
+    "show": "But when is a write *really saved?* The leader can [wait] until a copy *confirms* it, or say done [right away] and let the copies catch up."}],
+  [{"say": "Waiting is safer, but slower. Not waiting is faster, but if the leader dies before the copies catch up, the newest writes are lost.",
+    "show": "Waiting is *safer,* but slower. Not waiting is *faster,* but if the leader dies before the copies catch up, the [newest writes are lost.]"}],
+  [{"say": "One more thing: replication isn't a backup. Delete your data by mistake, and every copy deletes it too. You still need backups.",
+    "show": "One more thing: replication [isn't a backup.] Delete your data by *mistake,* and every copy [deletes it too.] You still need *backups.*"}],
+  [{"say": "If you're a vibe coder, follow for the system design your AI skipped.",
+    "show": "If you're a vibe coder, follow for the system design your AI [skipped.]"}]
+ ]
+}

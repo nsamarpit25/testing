@@ -1,0 +1,208 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- 06 API gateways (v2), in the ember style. World: a PHONE (a stranger, not logged in), three services in a row
+     (ORDERS, PAYMENTS, MENU) and, from "API gateway", a GATEWAY box between the phone and the services. Hook: the
+     stranger's request goes straight to ORDERS, which never checks the login and sends back everyone's orders. Then each
+     service checks the login itself and ORDERS is the one that missed it. The gateway rises, every request goes through
+     it: the stranger is blocked at the door, a logged-in user gets through and ORDERS still returns only their orders.
+     Last: the gateway routes each request to the right service and slows a flood. Beats from voice/words.json via at(). -->
+<link rel="stylesheet" href="../_ember/fonts.css">
+<link rel="stylesheet" href="../_ember/reel.css">
+</head>
+<body>
+<div id="stage">
+  <div id="world">
+    <canvas id="cv" width="1080" height="1920"></canvas>
+    <div class="layer" id="lbls"></div>
+  </div>
+</div>
+<script src="../../tools/lib.js"></script>
+<script src="voice/words.js"></script>
+<script src="../_ember/three.js"></script>
+<script src="../_ember/world.js"></script>
+<script src="../_ember/base.js"></script>
+<script>
+for (let i = 0; i < 16; i++) ORBS.push({ core: orbSprite(9), glow: orbSprite(34), trail: [0, 1, 2, 3, 4].map(() => orbSprite(10)) });
+
+/* ---------------- beats */
+const T = {
+  stranger: at('stranger'), everyones: at('everyones'), logging: at('logging'), forgot: at('forgot'), check: at('check'),
+  many: at('many'), services: at('services'), orders2: at('orders', 2), payments: at('payments'), menu: at('menu'), each: at('each'), missed: at('missed'),
+  api: at('api'), gateway: at('gateway'), front: at('front'), every1: at('every'), show: at('show'), orders3: at('orders', 3),
+  airport: at('airport'), security: at('security'), gate: at('gate'), passing: at('passing'),
+  checks2: at('checks', 2), valid: at('valid'), no: at('no'), blocked: at('blocked'), still: at('still'), whose: at('whose'), see: at('see'),
+  sends: at('sends'), right: at('right'), slow: at('slow'), anyone: at('anyone'), ifv: at('if'), follow: at('follow'),
+};
+const CUT = { SPLIT: T.many - 0.3, GW: T.api - 0.3, AIR: T.airport - 0.3, CHECK: T.checks2 - 0.3, ROUTE: T.sends - 0.6, END: T.ifv - 0.15 };
+
+/* ---------------- layout */
+const PH = [-205, 20], GW = [-95, 25], SV = { orders: [5, 40], payments: [97, 40], menu: [189, 40] };
+const NAMES = ['orders', 'payments', 'menu'];
+const TRIP = 0.4;
+const P_direct = [[PH[0] + 42, PH[1], 90], [GW[0], GW[1], 120], [SV.orders[0] - 39, SV.orders[1], 90]];
+const P_PG = [[PH[0] + 42, PH[1], 80], [GW[0] - 26, GW[1], 80]], P_GP = [...P_PG].reverse();
+const P_GS = Object.fromEntries(NAMES.map((n) => [n, [[GW[0] + 26, GW[1], 80], [SV[n][0], SV[n][1] - 45, 70], [SV[n][0], SV[n][1] - 26, 60]]]));
+const P_SG = Object.fromEntries(NAMES.map((n) => [n, [...P_GS[n]].reverse()]));
+const GW_UP = T.gateway - 0.15;
+// requests: { a, who: 'stranger' | 'sam', to, via gateway?, blocked? }
+const REQ = [];
+REQ.push({ a: 0.25, to: 'orders', direct: true });
+REQ.push({ a: T.show - 0.2, to: 'orders', gw: true, who: 'sam' });
+REQ.push({ a: T.checks2 - 0.1, to: 'orders', gw: true, blocked: true });
+REQ.push({ a: T.blocked - 0.55, to: 'orders', gw: true, blocked: true });
+REQ.push({ a: T.still - 0.5, to: 'orders', gw: true, who: 'sam' });
+NAMES.forEach((n, k) => REQ.push({ a: T.sends + k * 0.35, to: n, gw: true, who: 'sam' }));
+for (let k = 0; k < 6; k++) REQ.push({ a: T.slow - 0.3 + k * 0.12, to: 'menu', gw: true, who: 'bot', held: k >= 2 });
+REQ.forEach((r) => {
+  r.atG = r.a + TRIP;
+  r.atS = r.direct ? r.a + TRIP * 1.6 : r.atG + TRIP;
+  r.back = r.direct ? r.atS + TRIP * 1.6 : r.blocked ? r.atG + TRIP : r.atS + 2 * TRIP;
+});
+const HOOK = REQ[0], SAM_OK = REQ[4];
+const lastHit = (t, f) => REQ.filter((r) => f(r) && t >= r.atS && !r.blocked && !r.held).map((r) => r.atS).pop() ?? -9;
+
+/* ---------------- camera */
+const SHOTS = [
+  { t: 0, d: 0, f: [-10, 15, 60], s: 0.95, a: -0.4, e: 0.58, sy: 500 },
+  { t: CUT.SPLIT, d: 1.0, f: [5, 20, 60], s: 0.9, a: -0.42, e: 0.58, sy: 500 },
+  { t: CUT.GW, d: 1.0, f: [-20, 15, 60], s: 0.92, a: -0.42, e: 0.6, sy: 500 },
+  { t: CUT.AIR, d: 1.0, f: [-30, 15, 60], s: 0.96, a: -0.42, e: 0.6, sy: 500 },
+  { t: CUT.CHECK, d: 1.0, f: [-20, 15, 60], s: 0.92, a: -0.42, e: 0.6, sy: 500 },
+  { t: CUT.ROUTE, d: 1.0, f: [0, 20, 60], s: 0.88, a: -0.42, e: 0.6, sy: 500 },
+  { t: CUT.END, d: 2.0, f: [0, 15, 60], s: 0.84, a: -0.42, e: 0.6, sy: 580 },
+];
+const KICKS = [[T.everyones, 0.05], [T.forgot, 0.04], [T.services, 0.03], [T.missed, 0.05], [T.gateway, 0.05], [T.front, 0.03], [T.airport, 0.03],
+  [T.blocked, 0.05], [T.whose, 0.03], [T.right, 0.03], [T.slow, 0.04]];
+const SHAKES = [[T.everyones, 2, 0.25], [T.missed, 2, 0.2]];
+
+/* ---------------- build the world */
+const label = (g, W_, H_, txt, col, size, y = H_ / 2) => { g.fillStyle = col; g.font = `800 ${size}px Mono`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.shadowColor = col; g.shadowBlur = 12; g.fillText(txt, W_ / 2, y); g.shadowBlur = 0; g.textAlign = 'left'; };
+const mk = (p, w, d, h, col, k = 5) => { const b = emberBox(p[0], p[1], w, d, h, col); const f = decal(w, h, 'front', k, b.g); f.m.position.set(0, -d / 2 - 0.3, h / 2); return { b, f, pl: pool(p[0], p[1], w * 1.3, col), p }; };
+const ph = mk(PH, 84, 18, 150, O, 5), gw = mk(GW, 52, 70, 160, AMB, 5);
+const sv = Object.fromEntries(NAMES.map((n) => [n, mk(SV[n], 78, 46, 115, O, 4)]));
+const rDirect = road(P_direct, O2), rPG = road(P_PG, AMB);
+const rGS = Object.fromEntries(NAMES.map((n) => [n, road(P_GS[n], O2)]));
+
+function phoneDraw(g, W_, H_, col, who, whoCol, rows, st, stCol) {
+  g.strokeStyle = col + 'aa'; g.lineWidth = 6; rrect(g, 14, 14, W_ - 28, H_ - 28, 34); g.stroke();
+  label(g, W_, H_, 'FOOD APP', col, 44, 76);
+  label(g, W_, H_, who, whoCol, 32, 140);
+  rows.forEach(([txt, c], i) => label(g, W_, H_, txt, c, 34, 250 + i * 80));
+  if (st) label(g, W_, H_, st, stCol, 38, H_ - 80);
+}
+function svDraw(g, W_, H_, col, name, sub, subCol) {
+  label(g, W_, H_, name, col, 46, H_ * 0.2);
+  g.strokeStyle = col + '55'; g.lineWidth = 4; for (let k = 0; k < 2; k++) { rrect(g, 30, H_ * (0.36 + k * 0.14), W_ - 60, H_ * 0.08, 6); g.stroke(); }
+  if (sub) label(g, W_, H_, sub, subCol || GR, 34, H_ * 0.8);
+}
+function gwDraw(g, W_, H_, col, st, stCol) {
+  label(g, W_, H_, 'API', col, 46, H_ * 0.12); label(g, W_, H_, 'GATEWAY', col, 34, H_ * 0.2);
+  g.strokeStyle = col + 'aa'; g.lineWidth = 6; g.beginPath(); g.moveTo(W_ * 0.22, H_ * 0.78); g.lineTo(W_ * 0.22, H_ * 0.36); g.arc(W_ / 2, H_ * 0.36, W_ * 0.28, Math.PI, 0); g.lineTo(W_ * 0.78, H_ * 0.78); g.stroke();
+  if (st) label(g, W_, H_, st, stCol || col, 34, H_ * 0.88);
+}
+
+/* ---------------- the world, frame by frame */
+function world(t) {
+  const thru = (pts, t0, dur, col, size = 1) => { const q = (t - t0) / dur; if (q > -0.02 && q < 1.1) orb(pts, clamp(q), col, clamp(q / 0.08) * (1 - clamp((q - 1) / 0.1)), size); };
+  const q0 = ease.back(prog(t, 0.05, 0.4));
+  const qg = ease.back(prog(t, GW_UP, GW_UP + 0.5));
+  const leak = t > HOOK.atS && t < CUT.GW;
+  // services: their own login checks (line 2), orders is the one that missed it
+  NAMES.forEach((n, k) => {
+    const s = sv[n];
+    const own = t > T.each + k * 0.3 && t < CUT.GW;
+    const miss = n === 'orders' && ((t > HOOK.atS && t < CUT.SPLIT) || (t > T.missed - 0.1 && t < CUT.GW));
+    const hit = lastHit(t, (r) => r.to === n);
+    const col = miss ? RED : t - hit < 0.6 ? mixHex(O, OK, 0.5) : O;
+    let sub = '';
+    if (own) sub = n === 'orders' ? (t > T.missed - 0.1 ? '✕ no check' : 'login? …') : 'login ✓';
+    else if (miss) sub = '✕ no check';
+    else if (n === 'orders' && t > SAM_OK.atS && t < CUT.ROUTE) sub = "Sam's only";
+    else if (t - hit < 0.8 && t > CUT.ROUTE) sub = '✓ handled';
+    const subCol = sub.startsWith('✕') ? RED : sub.includes('…') ? GR : OK;
+    s.b.g.visible = q0 > 0.01; s.b.g.scale.set(1, 1, Math.max(0.01, q0)); s.b.setLook(col, 1.2 + 2 * Math.max(pulse(t, hit), n === 'orders' ? pulse(t, T.missed) : 0), 1);
+    s.f.m.visible = s.b.g.visible; s.f.draw((g, W_, H_) => svDraw(g, W_, H_, col, n.toUpperCase(), sub, subCol)); s.pl.set(col, 0.45 * q0);
+  });
+  // the gateway
+  const blk = REQ.filter((r) => r.blocked && t >= r.atG).map((r) => r.atG).pop() ?? -9;
+  const heldN = REQ.filter((r) => r.held && t >= r.atG).length;
+  const gCol = t - blk < 0.7 ? RED : heldN && t < CUT.END ? AMB : mixHex(AMB, OK, 0.3);
+  const gSt = t - blk < 1.2 ? '✕ NO LOGIN' : heldN && t < CUT.END + 1 ? `slowed ×${heldN}` : t > CUT.CHECK ? 'login ✓' : '';
+  gw.b.g.visible = qg > 0.01; gw.b.g.scale.set(1, 1, Math.max(0.01, qg)); gw.b.setLook(gCol, 1.3 + 2.5 * Math.max(pulse(t, T.gateway), pulse(t, blk)), 1);
+  gw.f.m.visible = gw.b.g.visible; gw.f.draw((g, W_, H_) => gwDraw(g, W_, H_, gCol, gSt, gSt.startsWith('✕') ? RED : gSt.startsWith('slowed') ? AMB : OK)); gw.pl.set(gCol, 0.5 * qg);
+  // the phone: a stranger, then Sam (logged in)
+  const sam = t > T.show - 0.3 && !(t > T.checks2 - 0.2 && t < T.still - 0.6);
+  let who = sam ? 'Sam · logged in' : 'guest · NOT logged in', whoCol = sam ? OK : AMB;
+  let rows = [], st = '', stCol = GR;
+  if (leak) { rows = [['Asha · biryani', RED], ['Ravi · pizza', RED], ['Meena · dosa', RED]]; st = "EVERYONE'S ORDERS"; stCol = RED; }
+  if (t > CUT.CHECK && t < T.still - 0.6 && t > REQ[2].back) { rows = []; st = '✕ 401 · LOG IN'; stCol = RED; }
+  if (t > SAM_OK.back) { rows = [['Sam · biryani', OK]]; st = '✓ YOUR ORDERS'; stCol = OK; }
+  if (t > CUT.ROUTE + 0.3) { rows = [['menu ✓', OK], ['pay ✓', OK], ['orders ✓', OK]]; st = ''; }
+  const pCol = leak || st.startsWith('✕') ? mixHex(O, RED, 0.45) : st.startsWith('✓') ? mixHex(O, OK, 0.35) : O;
+  ph.b.g.visible = q0 > 0.01; ph.b.g.scale.set(1, 1, Math.max(0.01, q0)); ph.b.setLook(pCol, 1.2 + 2 * Math.max(pulse(t, HOOK.back), pulse(t, SAM_OK.back)), 1);
+  ph.f.m.visible = ph.b.g.visible; ph.f.draw((g, W_, H_) => phoneDraw(g, W_, H_, pCol, who, whoCol, rows, st, stCol)); ph.pl.set(pCol, 0.5 * q0);
+  // roads and trips
+  rDirect.set(1, leak ? RED : O2, 0.7 * q0 * (1 - qg), t);
+  rPG.set(1, AMB, 0.75 * qg, t);
+  NAMES.forEach((n) => rGS[n].set(1, O2, 0.6 * qg, t));
+  REQ.forEach((r) => {
+    if (r.direct) { thru(P_direct, r.a, TRIP * 1.6, AMB, 0.9); thru([...P_direct].reverse(), r.atS, TRIP * 1.6, RED, 0.9); return; }
+    const col = r.who === 'sam' ? OK : r.who === 'bot' ? AMB : AMB;
+    thru(P_PG, r.a, TRIP, col, 0.85);
+    if (r.blocked) { thru(P_GP, r.atG, TRIP, RED, 0.8); ripple(t, r.atG, GW[0], GW[1], 2, RED, 70, 0.5); sparks(t, r.atG, GW[0] - 20, GW[1], 80, RED, 10, r.a * 3, 100, 0.5); return; }
+    if (r.held) { ripple(t, r.atG, GW[0], GW[1], 2, AMB, 50, 0.4); return; }
+    thru(P_GS[r.to], r.atG, TRIP, col, 0.85); thru(P_SG[r.to], r.atS, TRIP, OK, 0.8); thru(P_GP, r.atS + TRIP, TRIP, OK, 0.85);
+  });
+  ripple(t, HOOK.atS, SV.orders[0], SV.orders[1], 2, RED, 90, 0.6);
+  ripple(t, T.gateway, GW[0], GW[1], 2, AMB, 100, 0.7);
+}
+
+/* ---------------- world tags */
+function tags(t) {
+  const P_T = [PH[0] + 20, PH[1], 200], G_T = [GW[0], GW[1], 215], O_T = [SV.orders[0], SV.orders[1], 165], S_T = [SV.payments[0], SV.payments[1], 175];
+  const big = (c) => `font-size:15px;padding:9px 13px;letter-spacing:1px;border-color:${c}`;
+  tag('guest', `<span style="color:${AMB}">NOT LOGGED IN</span>`, big(AMB), P_T, t, T.logging - 0.2, T.forgot - 0.1);
+  tag('never', `<span style="color:${RED}">ORDERS NEVER CHECKED</span>`, big(RED), O_T, t, T.forgot - 0.1, CUT.SPLIT + 0.1);
+  tag('own', `<span style="color:${WH}">EACH ONE CHECKS BY ITSELF</span>`, '', S_T, t, T.each, T.missed - 0.1);
+  tag('miss', `<span style="color:${RED}">ONE GETS MISSED</span>`, big(RED), O_T, t, T.missed - 0.1, CUT.GW + 0.1);
+  tag('door', `<span style="color:${AMB}">ONE FRONT DOOR</span>`, big(AMB), G_T, t, T.front - 0.1, T.airport - 0.1);
+  tag('air', `<span style="color:${AMB}">AIRPORT SECURITY</span>`, big(AMB), G_T, t, T.airport - 0.1, CUT.CHECK + 0.1);
+  tag('blk', `<span style="color:${RED}">✕ BLOCKED AT THE DOOR</span>`, big(RED), G_T, t, T.blocked - 0.1, T.still - 0.2);
+  tag('whose', `<span style="color:${OK}">ORDERS STILL CHECKS WHOSE</span>`, big(OK), O_T, t, T.whose - 0.2, CUT.ROUTE + 0.2);
+  tag('route', `<span style="color:${OK}">EACH TO THE RIGHT SERVICE</span>`, big(OK), S_T, t, T.right - 0.1, T.slow - 0.2);
+  tag('slow', `<span style="color:${AMB}">TOO MANY? SLOWED DOWN</span>`, big(AMB), G_T, t, T.slow, CUT.END + 0.3);
+}
+
+/* ---------------- reel config */
+const REEL = {
+  shots: SHOTS, kicks: KICKS, shakes: SHAKES, world, tags,
+  code: [
+    [0.3, CUT.GW - 0.1, 'orders.js', 'GET /orders', [[0, 'OPEN', RED]],
+      [["app.get('/orders', (req, res) =>"], ['  res.json(db.allOrders()))', 0.5], ['// login check missing', T.forgot - 0.1]],
+      [[HOOK.atS, 2, "everyone's", 'bad'], [T.forgot, 3, '✕ missing', 'bad']], 'type'],
+    [T.checks2 - 0.2, CUT.ROUTE - 0.1, 'gateway', 'every request', [[0, 'CHECKING', AMB], [T.blocked, 'BLOCKED', RED], [SAM_OK.back, 'OK', OK]],
+      [['no valid login → 401'], ['valid → forward to service', T.still - 0.6], ["orders: only Sam's orders", T.whose - 0.2]],
+      [[REQ[2].atG, 1, '✕ blocked', 'bad'], [SAM_OK.atG, 2, '✓ forwarded', 'good'], [SAM_OK.atS, 3, '✓ 1 order', 'good']]],
+    [CUT.ROUTE, CUT.END - 0.1, 'gateway', 'routes', [[0, 'ROUTING', OK], [T.slow, 'LIMIT', AMB]],
+      [['/orders → orders'], ['/pay → payments', T.sends + 0.2], ['/menu → menu', T.sends + 0.5], ['too many? → slow down', T.slow - 0.2]],
+      [[REQ[5].atS, 1, '✓', 'good'], [REQ[6].atS, 2, '✓', 'good'], [REQ[7].atS, 3, '✓', 'good'], [T.anyone, 4, (t) => `slowed ×${REQ.filter((r) => r.held && t >= r.atG).length}`, 'amb']]],
+  ],
+  hl: /\b(app|get|res|json|db|orders|login|gateway|payments|menu|forward)\b/g,
+  tools: [],
+  slams: [
+    { a: T.api - 0.15, b: T.front - 0.2, text: 'API gateway', sub: 'ONE FRONT DOOR FOR EVERY REQUEST', size: 72 },
+  ],
+  bad: ['everyones', 'missed'],
+  good: ['gateway', 'passing'],
+  tiles: [['⛩', 'API<br>GATEWAYS'], ['⇆', 'REVERSE<br>PROXIES'], ['⏱', 'RATE<br>LIMITING']],
+  end: CUT.END, follow: T.follow,
+  cover: { t: 'API GATEWAYS', at: HOOK.atS + 0.8, zoom: 0.95, dy: 40 },
+  flash: (t) => 0.07 * pulse(t, HOOK.atS, 7) + 0.06 * pulse(t, T.blocked, 7),
+};
+</script>
+<script src="../_ember/overlay.js"></script>
+<script src="../_ember/play.js"></script>
+</body>
+</html>

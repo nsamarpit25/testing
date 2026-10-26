@@ -1,0 +1,65 @@
+{
+  "topic": "Health checks (trial remake t2)",
+  "lines": [
+    [
+      {
+        "say": "Your app froze. Saturday night, peak traffic.",
+        "show": "Your app [froze.] Saturday night, peak traffic."
+      },
+      {
+        "say": "The process is still running, but it's not answering anyone.",
+        "show": "The process is *still running,* but it's [not answering anyone.]"
+      },
+      {
+        "say": "Then, thirty seconds later, something restarted it. How did it know?",
+        "show": "Then, 30 seconds later, something *restarted it.* How did it know?"
+      }
+    ],
+    [
+      {
+        "say": "Here's the catch: running isn't the same as working. A frozen app looks fine, so crash recovery never kicks in.",
+        "show": "Here's the catch: *running* isn't the same as [working.] A frozen app looks fine, so crash recovery [never kicks in.]"
+      }
+    ],
+    [
+      {
+        "say": "The fix is called a health check. The system hosting your app keeps asking it: are you okay?",
+        "show": "The fix is called a *health check.* The system hosting your app keeps asking it: *are you okay?*"
+      }
+    ],
+    [
+      {
+        "say": "It's like a nurse taking your pulse every few minutes.",
+        "show": "It's like a *nurse* taking your *pulse* every few minutes."
+      }
+    ],
+    [
+      {
+        "say": "Check one: are you alive? Every few seconds, it hits a health page on your app.",
+        "show": "Check one: *are you alive?* Every few seconds, it hits a health page on your app."
+      },
+      {
+        "say": "After three missed answers in a row, the common default, it restarts the app.",
+        "show": "After *3 missed answers in a row,* the common default, it [restarts the app.]"
+      }
+    ],
+    [
+      {
+        "say": "Check two: are you ready? A new copy that's still starting up says not yet, so user requests skip it until it's ready.",
+        "show": "Check two: *are you ready?* A new copy that's still starting up says [not yet,] so user requests skip it until it's ready."
+      }
+    ],
+    [
+      {
+        "say": "Kubernetes calls these liveness and readiness probes.",
+        "show": "*Kubernetes* calls these *liveness* and *readiness* probes."
+      }
+    ],
+    [
+      {
+        "say": "If you ship code with AI, follow for the system design it quietly skips.",
+        "show": "If you ship code with AI, follow for the system design it quietly [skips.]"
+      }
+    ]
+  ]
+}

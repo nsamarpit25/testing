@@ -1,0 +1,395 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- 43 Eventual consistency. A perspective three.js world with bloom (own camera + post pass), built like 41.
+     World: YOUR PHONE (front, a like counter on its screen) and three copies of the data, A and B to the sides and
+     C far at the back. Hook: the phone reads 100 from A, refreshes, lands on C and reads 98. The copies get their
+     counts; a like is saved by A first and passed on A → B → C a moment later, so for a while they disagree, then all
+     match (101). Gossip card (one house hears, tells a few, everyone knows). Update every copy at once: the like waits
+     for the slow, far C, then C goes down and the like fails. Trade: A alone saves the next like (fast, always up), C
+     comes back a few seconds behind and catches up. Like count vs bank balance card, DynamoDB tool card, end card.
+     A per-copy count HUD sits on top. Beats from voice/words.json. -->
+<link rel="stylesheet" href="../_ember/fonts.css">
+<link rel="stylesheet" href="../_ember/reel.css">
+<style>
+#cap { top: 728px !important; }
+#cap .box { background: linear-gradient(90deg, transparent, rgba(8,7,6,0.82) 16%, rgba(8,7,6,0.82) 84%, transparent); }
+.lbl { background: rgba(12,11,10,0.95); }
+#mt { position: absolute; left: 60px; right: 60px; top: 114px; height: 72px; opacity: 0; padding: 8px 14px; box-sizing: border-box; display: flex; align-items: center; gap: 6px;
+  background: rgba(14,12,11,0.95); border: 1px solid rgba(255,255,255,0.12); border-radius: 12px; box-shadow: 0 14px 34px rgba(0,0,0,0.6); }
+#mt .c { display: flex; flex-direction: column; align-items: center; min-width: 62px; }
+#mt .n { font: 800 22px/1 Inter; white-space: nowrap; }
+#mt .k { font: 800 9.5px/1 Mono; letter-spacing: 1px; margin-top: 6px; color: #9c948c; white-space: nowrap; }
+#mt .st { flex: 1; text-align: center; font: 800 11.5px/1.25 Mono; letter-spacing: 1px; border-left: 1px solid rgba(255,255,255,0.1); padding-left: 8px; }
+.cd2 { position: absolute; left: 40px; right: 40px; top: 196px; opacity: 0; background: rgba(16,14,12,0.96); border: 1px solid rgba(111,195,255,0.4); border-radius: 14px; box-shadow: 0 20px 50px rgba(0,0,0,0.7); overflow: hidden; padding: 14px 16px 12px; }
+.cd2 .h { font: italic 400 30px/1 Instrument; color: #efe6d8; margin-bottom: 4px; }
+.cd2 svg { display: block; width: 100%; height: 220px; }
+.cd2 .f { margin-top: 2px; font: 800 12px/1 Mono; letter-spacing: 1.2px; text-align: center; }
+.cd2 .row { display: flex; align-items: center; gap: 14px; padding: 16px 6px; border-top: 1px solid rgba(255,255,255,0.07); }
+.cd2 .row .ic { width: 46px; height: 46px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font: 900 24px/1 Inter; background: #1c1916; flex: none; }
+.cd2 .row .nm { font: 800 19px/1 Inter; letter-spacing: -0.3px; }
+.cd2 .row .sb { font: 800 10.5px/1 Mono; letter-spacing: 1px; color: #9c948c; margin-top: 7px; }
+.cd2 .row .vd { margin-left: auto; font: 800 13px/1 Mono; letter-spacing: 1px; white-space: nowrap; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="world">
+    <canvas id="cv" width="1080" height="1920"></canvas>
+    <div class="layer" id="lbls"></div>
+  </div>
+</div>
+<script src="../../tools/lib.js"></script>
+<script src="voice/words.js"></script>
+<script src="../_ember/three.js"></script>
+<script src="../_ember/world.js"></script>
+<script src="../_ember/base.js"></script>
+<script>
+for (let i = 0; i < 30; i++) ORBS.push({ core: orbSprite(9), glow: orbSprite(34), trail: [0, 1, 2, 3, 4].map(() => orbSprite(10)) });
+const RD = '#6FC3FF', PK = '#FF5C8A';
+
+/* ---------------- beats */
+const T = {
+  refresh: at('refresh'), n100: at('100'), n98: at('98'), nobody: at('nobody'), where: at('where'),
+  l1: line(1).start, copies: at('copies'), places: at('places'), refresh2: at('refresh', 2), land: at('land'), copy: at('copy'),
+  l2: line(2).start, tap: at('tap'), saves: at('saves'), passes: at('passes'), later: at('later'),
+  l3: line(3).start, disagree: at('disagree'), eventual: at('eventual'), match: at('match'), instantly: at('instantly'),
+  l4: line(4).start, hears: at('hears'), tells: at('tells'), others: at('others', 2), everyone: at('everyone'),
+  l5: line(5).start, update: at('update'), once: at('once'), waits: at('waits'), slowest: at('slowest'), farthest: at('farthest'), down: at('down'), fails: at('fails'),
+  l6: line(6).start, fast: at('working'), always: at('down', 2), behind: at('behind'),
+  l7: line(7).start, count2: at('count', 2), bank: at('bank'), right: at('right'),
+  l8: line(8).start, dynamo: at('dynamodb'), dflt: at('default'), second: at('second'), strongly: at('strongly'),
+  ifv: line(9).start, follow: at('follow'),
+};
+
+/* ---------------- layout: Z up */
+const PHX = 0, PHY = -380, PHW = 150, PHD = 18, PHH = 230;    // your phone, standing, screen to the camera
+const SW = 130, SD = 130, SH = 58;
+const SP = [[-290, 130], [290, 130], [0, 720]];               // copies A, B and the far one, C
+const NM = ['A', 'B', 'C'];
+const phTop = [PHX, PHY, PHH + 14], topS = (i, e = 0) => [SP[i][0], SP[i][1], SH + 10 + e];
+function arc(a, b, h, n = 24) { return [...Array(n + 1)].map((_, i) => { const q = i / n; return [lerp(a[0], b[0], q), lerp(a[1], b[1], q), lerp(a[2], b[2], q) + h * 4 * q * (1 - q)]; }); }
+
+/* ---------------- the likes each copy holds, and what the phone shows */
+const CNT = [
+  [[0, 100], [T.saves, 101], [T.slowest + 0.6, 102], [T.l6 + 0.4, 103]],
+  [[0, 99], [T.passes + 1.0, 101], [T.slowest + 0.6, 102], [T.l6 + 1.2, 103]],
+  [[0, 98], [T.match, 101], [T.slowest + 0.6, 102], [T.behind + 1.1, 103]],
+];
+const PV = [[0, 100], [T.n98, 98], [T.land, 99], [T.copy + 0.05, 100], [T.saves + 0.5, 101], [T.slowest + 1.0, 102], [T.l6 + 0.8, 103]];
+const valAt = (keys, t) => { let v = keys[0][1]; for (const [a, x] of keys) if (t >= a) v = x; return v; };
+const cDown = (t) => t > T.down - 0.05 && t < T.behind - 0.6;     // C is down
+const cBack = (t) => t >= T.behind - 0.6 && t < T.behind + 1.1;    // C is back, still behind
+const syncWin = (t) => t > T.once - 0.05 && t < T.slowest + 1.0;   // "update every copy at once": the like waits
+
+/* ---------------- traffic: [start, from, to, colour, size, kind, dur] (from/to: 'ph' or a copy index) */
+const TR = [
+  // hook: read A (100), refresh lands on C (98)
+  [0.15, 'ph', 0, WH, 0.7, '', 0.5], [0.65, 0, 'ph', RD, 0.7, '', 0.5],
+  [T.n98 - 1.6, 'ph', 2, WH, 0.7, '', 0.8], [T.n98 - 0.8, 2, 'ph', RD, 0.7, '', 0.8],
+  // each refresh can land on a different copy: B (99), then A (100)
+  [T.refresh2 - 0.1, 'ph', 1, WH, 0.7, '', 0.4], [T.land - 0.4, 1, 'ph', RD, 0.7, '', 0.4],
+  [T.land + 0.05, 'ph', 0, WH, 0.7, '', 0.3], [T.copy - 0.25, 0, 'ph', RD, 0.7, '', 0.3],
+  // a like: A saves it first, then passes it on, A → B, then B → C a moment later
+  [T.tap - 0.05, 'ph', 0, PK, 1.1, '', T.saves - T.tap + 0.05], [T.saves, 0, 'ph', OK, 0.6, '', 0.5],
+  [T.passes, 0, 1, PK, 0.9, '', 1.0], [T.match - 1.3, 1, 2, PK, 0.9, '', 1.3],
+  // update every copy at once: the like waits for the slow, far C
+  [T.update - 0.1, 'ph', 0, PK, 1.1, '', 0.6], [T.once + 0.05, 0, 1, PK, 0.9, '', 0.6], [T.once + 0.05, 0, 2, PK, 0.9, '', T.slowest - T.once - 0.05],
+  [T.once + 0.65, 1, 0, OK, 0.6, '', 0.6], [T.slowest, 2, 0, OK, 0.6, '', 0.6], [T.slowest + 0.6, 0, 'ph', OK, 0.7, '', 0.4],
+  // C is down: the next like can't reach every copy and fails
+  [T.down - 0.5, 'ph', 0, PK, 1.1, '', 0.45], [T.down, 0, 2, PK, 0.9, 'block', 0.7],
+  // eventual: A alone saves it (fast), passes it to B, and to C once it's back
+  [T.l6 - 0.1, 'ph', 0, PK, 1.1, '', 0.5], [T.l6 + 0.4, 0, 'ph', OK, 0.7, '', 0.4], [T.l6 + 0.5, 0, 1, PK, 0.9, '', 0.7],
+  [T.behind + 0.1, 1, 2, PK, 0.9, '', 1.0],
+  // a strongly consistent read
+  [T.strongly - 0.3, 'ph', 0, WH, 0.8, '', 0.45], [T.strongly + 0.15, 0, 'ph', OK, 0.8, '', 0.45],
+];
+const ptOf = (e) => (e === 'ph' ? phTop : topS(e, -6));
+
+/* ---------------- camera */
+const pcam = new TH.PerspectiveCamera(44, 540 / 960, 5, 20000); pcam.up.set(0, 0, 1);
+const SHOTS = [
+  { t: 0, p: [40, -1450, 960], l: [0, 70, 60], f: 44 },
+  { t: 0.01, d: 6.5, p: [0, -1360, 920], l: [0, 90, 50], f: 44, e: ease.out },
+  { t: T.l1 - 0.2, d: 1.4, p: [0, -1250, 1080], l: [0, 170, 0], f: 44 },
+];
+const KICKS = [[T.n98, 0.04], [T.saves, 0.03], [T.match, 0.04], [T.fails, 0.04], [T.fast, 0.03]];
+const SHAKES = [[T.n98, 3, 0.3], [T.fails, 4, 0.35]];
+const _rv = new TH.Vector3();
+function shoot(t) {
+  let p = SHOTS[0].p.slice(), l = SHOTS[0].l.slice(), f = SHOTS[0].f;
+  for (let i = 1; i < SHOTS.length; i++) {
+    const k = SHOTS[i]; if (t < k.t) break;
+    const q = k.d ? (k.e || ease.inOut)(prog(t, k.t, k.t + k.d)) : 1;
+    p = p.map((v, j) => lerp(v, k.p[j], q)); l = l.map((v, j) => lerp(v, k.l[j], q)); f = lerp(f, k.f, q);
+  }
+  let kick = 0;
+  for (const [t0, amp] of KICKS) { const dt = t - t0; if (dt > 0 && dt < 1.2) kick += amp * (dt < 0.05 ? dt / 0.05 : Math.exp(-(dt - 0.05) * 6)); }
+  let sx = 0, sy = 0;
+  for (const [t0, amp, dur] of SHAKES) { const dt = t - t0; if (dt > 0 && dt < dur) { const k = amp * (1 - dt / dur); sx += k * Math.sin(t * 91); sy += k * Math.cos(t * 67); } }
+  pcam.position.set(p[0] + 6 * Math.sin(t * 0.37), p[1] + 6 * Math.cos(t * 0.29), p[2] + 4 * Math.sin(t * 0.23));
+  pcam.lookAt(l[0] + sx, l[1], l[2] + sy);
+  pcam.fov = f * (1 - kick); pcam.updateProjectionMatrix(); pcam.updateMatrixWorld();
+  cam.f = l;
+  _rv.setFromMatrixColumn(pcam.matrixWorld, 0); const n = Math.hypot(_rv.x, _rv.y) || 1; camRight = [_rv.x / n, _rv.y / n, 0];
+  const d = Math.hypot(p[0] - l[0], p[1] - l[1], p[2] - l[2]);
+  scene.fog.near = d * 0.9; scene.fog.far = d * 3.4;
+}
+const _pv = new TH.Vector3();
+P = function (x, y, z) { _pv.set(x, y, z).project(pcam); return [(_pv.x + 1) * 270, (1 - _pv.y) * 480, _pv.z]; };
+
+/* ---------------- the stage */
+floor.scale.set(2.2, 2.2, 1); floor.position.set(0, 1500, -0.5);
+const PH = emberBox(PHX, PHY, PHW, PHD, PHH, O2), POOLP = pool(PHX, PHY, 230, O2);
+const SCR = decal(PHW - 14, PHH - 18, 'front', 4, PH.g); SCR.m.position.set(0, -PHD / 2 - 0.4, PHH / 2);
+const SRV = SP.map((p) => emberBox(p[0], p[1], SW, SD, SH, RD));
+const POOLS = SP.map((p) => pool(p[0], p[1], 210, RD));
+const LINKS = [[0, 1], [1, 2], [2, 0]].map(([a, b]) => ({ a, b, r: road([[SP[a][0], SP[a][1], 0], [SP[b][0], SP[b][1], 0]], RD) }));
+const HEART = new Path2D('M50 88 C20 66 6 50 6 32 C6 18 17 8 30 8 C39 8 46 13 50 20 C54 13 61 8 70 8 C83 8 94 18 94 32 C94 50 80 66 50 88 Z');
+
+// the phone screen: a post, a heart and the like count it got from whichever copy answered
+let _scrKey = '';
+function screen(t) {
+  const v = valAt(PV, t), liked = t > T.saves + 0.5, drop = t > T.n98 - 0.05 && t < T.l1 - 0.3;
+  const fail = t > T.fails - 0.1 && t < T.l6 - 0.2, wait = syncWin(t) && t > T.once + 0.05 && t < T.slowest + 0.95;
+  const bump = pulse(t, T.n98, 3) + pulse(t, T.saves + 0.5, 4) + pulse(t, T.slowest + 1.0, 4) + pulse(t, T.l6 + 0.8, 4) + pulse(t, T.land, 4) + pulse(t, T.copy + 0.05, 4);
+  const spin = wait ? Math.floor(t * 8) % 8 : -1;
+  const key = [v, liked, drop, fail, spin, Math.round(bump * 20)].join();
+  if (key === _scrKey) return; _scrKey = key;
+  SCR.draw((g, W, H) => {
+    rrect(g, 0, 0, W, H, 34); g.fillStyle = '#0f0d0c'; g.fill();
+    g.fillStyle = '#bdb4aa'; g.font = '800 22px Mono'; rrect(g, 28, 22, 30, 30, 15); g.fillStyle = '#FF6A1F'; g.fill();
+    g.fillStyle = '#bdb4aa'; g.fillText('@friend', 70, 45);
+    // heart + count, at the top so the caption never covers it
+    const col = drop || fail ? '#FF4632' : '#F2EEE8', s = 1 + 0.12 * Math.min(1, bump);
+    g.save(); g.translate(26, 92); g.scale(0.95, 0.95);
+    g.fillStyle = liked ? PK : 'transparent'; g.strokeStyle = liked ? PK : '#F2EEE8'; g.lineWidth = 9; g.fill(HEART); g.stroke(HEART); g.restore();
+    g.save(); g.translate(138, 186); g.scale(s, s);
+    g.fillStyle = col; g.font = '900 112px Inter'; g.textBaseline = 'alphabetic'; g.fillText(String(v), 0, 0); g.restore();
+    g.fillStyle = '#9c948c'; g.font = '800 22px Mono'; g.fillText('LIKES', 142, 222);
+    if (drop) { g.fillStyle = '#FF4632'; g.font = '900 46px Inter'; g.fillText('−2', W - 110, 120); }
+    // the post
+    const gr = g.createLinearGradient(0, 250, 0, 520); gr.addColorStop(0, '#3a2a55'); gr.addColorStop(1, '#ff8a4a');
+    rrect(g, 28, 250, W - 56, 270, 18); g.fillStyle = gr; g.fill();
+    g.save(); rrect(g, 28, 250, W - 56, 270, 18); g.clip(); g.beginPath(); g.arc(W / 2, 470, 62, 0, Math.PI * 2); g.fillStyle = '#ffd9a8'; g.fill(); g.fillStyle = '#1b1714'; g.fillRect(28, 490, W - 56, 40); g.restore();
+    if (fail) { rrect(g, 28, 560, W - 56, 76, 14); g.fillStyle = 'rgba(255,70,50,0.2)'; g.fill(); g.fillStyle = '#FF4632'; g.font = '800 32px Mono'; g.fillText('✕ LIKE FAILED', 52, 610); }
+    if (spin >= 0) {
+      for (let k = 0; k < 8; k++) { const a = (k / 8) * Math.PI * 2; g.beginPath(); g.arc(W / 2 + Math.cos(a) * 34, 600 + Math.sin(a) * 34, 7, 0, Math.PI * 2); g.fillStyle = `rgba(255,195,77,${((k - spin + 8) % 8) / 8})`; g.fill(); }
+    }
+    g.fillStyle = '#2c2925'; rrect(g, W / 2 - 60, H - 34, 120, 10, 5); g.fill();
+  });
+}
+
+/* ---------------- the world, frame by frame */
+function world(t) {
+  PH.setLook(O2, 1, ep(t, 0, 0.4)); POOLP.set(O2, 0.4 * ep(t, 0, 0.4)); screen(t);
+  const mx = Math.max(...CNT.map((k) => valAt(k, t)));
+  for (let i = 0; i < 3; i++) {
+    const a = ep(t, 0.05 + i * 0.1, 0.5 + i * 0.1);
+    const v = valAt(CNT[i], t);
+    let c = RD, g = 1.1;
+    if (t > T.copies - 0.1 && v < mx) c = AMB;
+    if (i === 2 && cDown(t)) c = mixHex(RED, DIM, clamp((t - T.down) / 0.5) * 0.5);
+    if (i === 2 && t > T.down - 0.05 && t < T.down + 0.5) c = mixHex(c, RED, 0.5 + 0.5 * Math.sin(t * 30) ** 2);
+    if (i === 2 && syncWin(t) && t < T.slowest) g = 1.1 + 0.35 * Math.sin(t * 7) ** 2;
+    for (const k of CNT[i]) g += 0.7 * pulse(t, k[0], 4) * (k[0] > 0);
+    const hl = i === 0 && t > T.tap && t < T.l3 ? 0.3 : 0;
+    SRV[i].setLook(c, g + hl, a); POOLS[i].set(c, 0.4 * a * (c === DIM ? 0.3 : 1));
+  }
+  for (const L of LINKS) {
+    const a = ep(t, T.copies - 0.3, T.copies + 0.4) * 0.6, dn = (L.a === 2 || L.b === 2) && cDown(t);
+    L.r.set(1, dn ? RED : mixHex(RD, DIM, 0.45), a * (dn ? 0.35 : 1), t);
+  }
+  for (const [s0, f, d, col, size, kind, du] of TR) {
+    const dur = du || 0.5, q = prog(t, s0, s0 + dur);
+    if (q <= 0 || q >= 1) continue;
+    const path = arc(ptOf(f), ptOf(d), f === 'ph' || d === 'ph' ? 150 : 90);
+    if (kind === 'block') { const qq = Math.min(q, 0.6); orb(path, ease.inOut(qq), q > 0.5 ? RED : col, 1 - prog(q, 0.6, 1), size); continue; }
+    orb(path, ease.inOut(q), col, 1, size);
+  }
+  for (const [s0, f, d, col, size, kind, du] of TR) {
+    const e = s0 + (du || 0.5);
+    if (kind === 'block' && t > s0 + (du || 0.5) * 0.55 && t < s0 + 1.3) { const p = arc(ptOf(f), ptOf(d), 90)[14]; sparks(t, s0 + (du || 0.5) * 0.55, p[0], p[1], p[2], RED, 14, 23, 150, 0.7, 200); }
+    if (d !== 'ph' && !kind && t > e && t < e + 0.6) ripple(t, e, SP[d][0], SP[d][1], SH + 4, col, 120, 0.6);
+    if (d === 'ph' && t > e && t < e + 0.6) ripple(t, e, PHX, PHY, 1, col, 95, 0.5);
+  }
+  if (t > T.match && t < T.match + 0.9) for (let i = 0; i < 3; i++) ripple(t, T.match + i * 0.05, SP[i][0], SP[i][1], 1, OK, 200, 0.8);
+  if (t > T.down && t < T.down + 0.9) sparks(t, T.down, SP[2][0], SP[2][1], SH + 20, RED, 22, 11, 200, 0.9, 240);
+  if (t > T.n98 && t < T.n98 + 0.8) sparks(t, T.n98, PHX, PHY - 10, PHH * 0.6, RED, 14, 7, 140, 0.7, 200);
+}
+
+/* ---------------- world tags */
+const tg = (key, html, style, wp, t, a, b, dy = 0) => { const e = tag(key, html, style, wp, t, a, b, dy); if (P(...wp)[2] > 1) e.style.display = 'none'; return e; };
+function tags(t) {
+  const big = (c) => `font-size:15px;padding:9px 13px;letter-spacing:1px;border-color:${c}`;
+  const sm = (c) => `font-size:13px;padding:7px 11px;letter-spacing:1px;border-color:${c}`;
+  const sp = (c, s) => `<span style="color:${c}">${s}</span>`;
+  const hd = (i) => topS(i, 20), ft = (i) => [SP[i][0], SP[i][1] - SD / 2 - 10, 0];
+  const top = [PHX, PHY, PHH + 30];
+  for (let i = 0; i < 3; i++) tg('n' + i, sp(GR, 'COPY ' + NM[i]), `font-size:10.5px;padding:5px 8px;border-color:#3a332d`, ft(i), t, 0.4 + i * 0.1, T.ifv - 0.2, 14);
+  // the count each copy holds
+  const mx = Math.max(...CNT.map((k) => valAt(k, t)));
+  for (let i = 0; i < 3; i++) {
+    const v = valAt(CNT[i], t);
+    let h, c;
+    if (i === 2 && cDown(t)) { h = sp(RED, '✕ DOWN'); c = RED; }
+    else if (v < mx) { h = sp(AMB, '♥ ' + v + (i === 2 && cBack(t) ? ' · BEHIND' : '')); c = AMB; }
+    else { const fresh = CNT[i].some((k) => k[0] > 0 && t > k[0] && t < k[0] + 0.9); h = sp(fresh ? OK : WH, '♥ ' + v + (fresh ? ' ✓' : '')); c = fresh ? OK : '#3a332d'; }
+    tg('v' + i, h, `font-size:15px;padding:7px 11px;letter-spacing:0.5px;border-color:${c}`, hd(i), t, T.copies - 0.1 + i * 0.12, T.ifv - 0.2, -24);
+  }
+  // hook
+  tg('rd', sp(RD, 'READ FROM COPY C'), sm(RD), top, t, T.n98 - 1.6, T.nobody - 0.1, -20);
+  tg('nb', sp(RED, 'NOBODY UNLIKED IT'), big(RED), top, t, T.nobody - 0.1, T.where - 0.1, -20);
+  tg('wh', sp(WH, 'WHERE DID 2 LIKES GO?'), big(WH), top, t, T.where - 0.1, T.l1 - 0.2, -20);
+  // copies
+  tg('cp', sp(RD, '3 COPIES · 3 PLACES'), big(RD), top, t, T.copies - 0.1, T.refresh2 - 0.15, -20);
+  tg('dc', sp(WH, 'EACH REFRESH: A DIFFERENT COPY'), big(WH), top, t, T.refresh2 - 0.1, T.l2 - 0.15, -20);
+  // the like
+  tg('sf', sp(PK, '♥ A SAVES IT FIRST'), sm(PK), ft(0), t, T.saves - 0.1, T.passes - 0.1, 46);
+  tg('po', sp(PK, 'PASSES IT ON → B → C'), big(PK), top, t, T.passes - 0.1, T.l3 - 0.15, -20);
+  tg('dg', sp(RED, '✕ THE COPIES DISAGREE'), big(RED), top, t, T.disagree - 0.15, T.eventual - 0.15, -20);
+  tg('ev', sp(OK, '…EVENTUALLY THEY ALL MATCH'), big(OK), top, t, T.eventual - 0.1, T.l4 - 0.2, -20);
+  tg('st', sp(AMB, 'STILL 98: NOT UPDATED YET'), sm(AMB), ft(2), t, T.disagree - 0.1, T.match - 0.05, 46);
+  // all at once
+  tg('ao', sp(WH, 'UPDATE EVERY COPY AT ONCE?'), big(WH), top, t, T.once - 0.5, T.waits - 0.15, -20);
+  tg('wt', sp(AMB, '⏳ THE LIKE WAITS FOR ALL 3'), big(AMB), top, t, T.waits - 0.1, T.down - 0.15, -20);
+  tg('sl', sp(AMB, 'SLOWEST · FARTHEST'), sm(AMB), ft(2), t, T.slowest - 0.1, T.down - 0.1, 46);
+  tg('dn', sp(RED, 'ONE COPY DOWN → ✕ THE LIKE FAILS'), big(RED), top, t, T.down - 0.05, T.l6 - 0.2, -20);
+  // the trade
+  tg('fs', sp(OK, '✓ LIKES KEEP WORKING: ONE COPY SAVES IT'), big(OK), top, t, T.fast - 0.1, T.always - 0.1, -20);
+  tg('au', sp(OK, '✓ EVEN WITH C DOWN'), big(OK), top, t, T.always - 0.1, T.behind - 0.4, -20);
+  tg('bh', sp(AMB, 'C: A FEW SECONDS BEHIND'), big(AMB), top, t, T.behind - 0.35, T.l7 - 0.15, -20);
+  // a strongly consistent read
+  tg('sr', sp(OK, '✓ STRONGLY CONSISTENT READ (ONE REGION): THE LATEST'), sm(OK), top, t, T.strongly - 0.1, T.ifv - 0.2, -20);
+}
+
+/* ---------------- reel config */
+const svgDdb = `<svg width="46" height="46" viewBox="0 0 100 100" fill="none" stroke="#7CF29A" stroke-width="7" stroke-linejoin="round" stroke-linecap="round"><ellipse cx="50" cy="22" rx="32" ry="11"/><path d="M18 22 V78 C18 84 32 89 50 89 C68 89 82 84 82 78 V22 M18 50 C18 56 32 61 50 61 C68 61 82 56 82 50"/></svg>`;
+const REEL = {
+  shots: [], world, tags,
+  code: [],
+  tools: [{ a: T.dynamo - 0.25, b: T.ifv - 0.15, svg: svgDdb, name: 'Amazon DynamoDB', sub: 'READS ARE EVENTUALLY CONSISTENT BY DEFAULT', src: 'COPIES USUALLY MATCH WITHIN <span style="color:#7CF29A">A SECOND</span> · <span style="color:#7CF29A">STRONGLY CONSISTENT READS</span> WITHIN ONE AWS REGION', top: 196 }],
+  slams: [],
+  bad: ['unliked', 'where', 'did', 'do', 'those', 'likes', 'go', '98', 'disagree', 'slowest', 'fails', 'behind', 'bank', 'balance'],
+  good: ['working', 'copies', 'different', 'copy', 'passes', 'the', 'change', 'on', 'one', 'eventual', 'consistency', 'gossip', 'everyone', 'knows', 'fast', 'always', 'up', 'dynamodb', 'eventually', 'consistent', 'strongly', 'read', 'skipped', 'right'],
+  tiles: [['⇄', 'EVENTUAL<br>CONSISTENCY'], ['⧉', 'REPLICATION'], ['★', 'LEADER<br>ELECTION']],
+  end: T.ifv - 0.15, follow: T.follow,
+  cover: { t: 'EVENTUAL<br>CONSISTENCY', at: T.disagree + 0.4, zoom: 1, dy: 30 },
+  flash: (t) => 0.05 * pulse(t, T.n98, 7) + 0.05 * pulse(t, T.fails, 7) + 0.03 * pulse(t, T.down, 7),
+};
+</script>
+<script src="../_ember/overlay.js"></script>
+<script>
+/* ---------------- bloom: scene → half-float target, bright pass, three blur levels, composite to the canvas */
+const RT = (w, h, s = 0) => new TH.WebGLRenderTarget(w, h, { type: TH.HalfFloatType, samples: s, depthBuffer: s > 0 });
+const rtMain = RT(1080, 1920, 4), BL = [[RT(540, 960), RT(540, 960)], [RT(270, 480), RT(270, 480)], [RT(135, 240), RT(135, 240)]];
+const fsCam = new TH.OrthographicCamera(-1, 1, 1, -1, 0, 1), fsScene = new TH.Scene(), fsQuad = new TH.Mesh(new TH.PlaneGeometry(2, 2));
+fsQuad.frustumCulled = false; fsScene.add(fsQuad);
+const VS = 'varying vec2 vUv; void main() { vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }';
+const shm = (fs, u) => new TH.ShaderMaterial({ uniforms: u, vertexShader: VS, fragmentShader: fs, depthTest: false, depthWrite: false });
+const mBright = shm(`uniform sampler2D tex; uniform float th; varying vec2 vUv;
+void main() { vec3 c = texture2D(tex, vUv).rgb; float l = max(c.r, max(c.g, c.b)); gl_FragColor = vec4(c * smoothstep(th, th + 0.4, l), 1.0); }`,
+  { tex: { value: null }, th: { value: 0.8 } });
+const mBlur = shm(`uniform sampler2D tex; uniform vec2 dir; varying vec2 vUv;
+void main() {
+  vec3 c = texture2D(tex, vUv).rgb * 0.2270270270;
+  c += (texture2D(tex, vUv + dir * 1.3846153846).rgb + texture2D(tex, vUv - dir * 1.3846153846).rgb) * 0.3162162162;
+  c += (texture2D(tex, vUv + dir * 3.2307692308).rgb + texture2D(tex, vUv - dir * 3.2307692308).rgb) * 0.0702702703;
+  gl_FragColor = vec4(c, 1.0);
+}`, { tex: { value: null }, dir: { value: new TH.Vector2() } });
+const mComp = shm(`uniform sampler2D base, b1, b2, b3; uniform float k1, k2, k3; varying vec2 vUv;
+void main() {
+  vec3 c = texture2D(base, vUv).rgb + texture2D(b1, vUv).rgb * k1 + texture2D(b2, vUv).rgb * k2 + texture2D(b3, vUv).rgb * k3;
+  c = c / (1.0 + max(c - 1.0, 0.0) * 0.6);
+  gl_FragColor = vec4(c, 1.0);
+  #include <colorspace_fragment>
+}`, { base: { value: rtMain.texture }, b1: { value: BL[0][0].texture }, b2: { value: BL[1][1].texture }, b3: { value: BL[2][1].texture }, k1: { value: 0.5 }, k2: { value: 0.65 }, k3: { value: 0.8 } });
+function pass(mat, dst) { fsQuad.material = mat; renderer.setRenderTarget(dst); renderer.render(fsScene, fsCam); }
+function blur(src, dst, dx, dy) { mBlur.uniforms.tex.value = src.texture; mBlur.uniforms.dir.value.set(dx / src.width, dy / src.height); pass(mBlur, dst); }
+function bloom() {
+  mBright.uniforms.tex.value = rtMain.texture; pass(mBright, BL[0][0]);
+  blur(BL[0][0], BL[0][1], 1, 0); blur(BL[0][1], BL[0][0], 0, 1);
+  blur(BL[0][0], BL[1][0], 1, 0); blur(BL[1][0], BL[1][1], 0, 1);
+  blur(BL[1][1], BL[2][0], 1, 0); blur(BL[2][0], BL[2][1], 0, 1);
+  pass(mComp, null);
+}
+
+/* ---------------- HUD (the count on each copy + status), gossip card, "is behind OK?" card */
+const stg = $('stage'), before = $('prof');
+const mk = (html) => { const w = document.createElement('div'); w.innerHTML = html.trim(); const n = w.firstChild; stg.insertBefore(n, before); return n; };
+const MT = mk(`<div id="mt">${NM.map((n, i) => `<div class="c"><div class="n" id="hn${i}"></div><div class="k">COPY ${n}</div></div>`).join('')}<div class="st" id="hst"></div></div>`);
+const GOS = mk(`<div id="gos" class="cd2"><div class="h">Gossip in a small town</div><svg id="goS" viewBox="0 0 460 220"></svg><div class="f" id="goF"></div></div>`);
+const BAL = mk(`<div id="bal" class="cd2" style="top:210px"><div class="h">A few seconds behind: OK?</div>
+  <div class="row"><div class="ic" style="color:#FF5C8A">♥</div><div><div class="nm">Like count</div><div class="sb">SHOWS 98 FOR A SECOND</div></div><div class="vd" id="bv1"></div></div>
+  <div class="row"><div class="ic" style="color:#FFC34D">$</div><div><div class="nm">Bank balance</div><div class="sb">EVERY READ HAS TO BE RIGHT</div></div><div class="vd" id="bv2"></div></div></div>`);
+if (/cover/.test(location.hash)) { const s = document.createElement('style'); s.textContent = '#mt, .cd2 { display: none !important; }'; document.head.appendChild(s); }
+// the town: ten houses; house 0 hears first, tells 2, 3 and 6; they tell everyone else
+const HX = [[60, 70], [150, 50], [240, 70], [330, 50], [410, 75], [60, 170], [150, 150], [240, 175], [330, 150], [410, 170]];
+const FROM = [-1, 0, 0, 2, 3, 6, 0, 6, 3, 8], WAVE = [0, 1, 1, 2, 2, 2, 1, 2, 2, 2];
+(() => {
+  const house = (x, y, i) => `<g id="h${i}"><path d="M${x - 22} ${y + 18} V${y - 4} L${x} ${y - 24} L${x + 22} ${y - 4} V${y + 18} Z" fill="#15130f" stroke-width="3" stroke-linejoin="round"/><rect x="${x - 6}" y="${y + 4}" width="12" height="14" fill="none" stroke-width="2"/></g>`;
+  $('goS').innerHTML = HX.map(([x, y], i) => FROM[i] < 0 ? '' : `<line id="gl${i}" x1="${HX[FROM[i]][0]}" y1="${HX[FROM[i]][1]}" x2="${x}" y2="${y}" stroke-width="3" stroke-dasharray="5 6" opacity="0"/>`).join('')
+    + HX.map(([x, y], i) => house(x, y, i)).join('') + `<text id="gb" x="${HX[0][0]}" y="${HX[0][1] - 34}" text-anchor="middle" font-family="Inter" font-size="22" font-weight="900" fill="#FFC34D" opacity="0">!</text>`;
+})();
+function gosDom(t) {
+  const p = popIn(t, T.l4 - 0.1, T.l5 - 0.05); vis(GOS, p.a, `translateY(${p.y}px) scale(${p.s})`);
+  if (p.a <= 0.001) return;
+  const w1 = T.tells, w2 = T.others + 0.1, all = t > T.everyone - 0.1;
+  HX.forEach((_, i) => {
+    const at_ = WAVE[i] === 0 ? T.hears - 0.1 : WAVE[i] === 1 ? w1 + 0.15 * (i % 3) : w2 + 0.08 * i, on = t > at_;
+    const c = all ? OK : on ? AMB : '#4a433d';
+    $('h' + i).querySelector('path').setAttribute('stroke', c); $('h' + i).querySelector('rect').setAttribute('stroke', c);
+    if (FROM[i] >= 0) { const l = $('gl' + i); l.setAttribute('opacity', ep(t, at_ - 0.3, at_)); l.setAttribute('stroke', all ? OK : AMB); }
+  });
+  $('gb').setAttribute('opacity', ep(t, T.hears - 0.1, T.hears + 0.1));
+  setH('goF', all ? '✓ SOON EVERYONE KNOWS THE SAME STORY' : t > w1 - 0.1 ? 'TELLS A FEW OTHERS → THEY TELL THE REST' : t > T.hears - 0.2 ? 'ONE PERSON HEARS THE NEWS' : 'NEWS SPREADS HOUSE BY HOUSE');
+  $('goF').style.color = all ? OK : AMB;
+}
+function balDom(t) {
+  const p = popIn(t, T.l7 - 0.1, T.l8 - 0.1); vis(BAL, p.a, `translateY(${p.y}px) scale(${p.s})`);
+  if (p.a <= 0.001) return;
+  setH('bv1', t > T.count2 - 0.3 ? '✓ FINE' : ''); $('bv1').style.color = OK;
+  setH('bv2', t > T.bank + 0.1 ? '✕ NOT FINE' : ''); $('bv2').style.color = RED;
+}
+function hudDom(t) {
+  const p = popIn(t, T.copies - 0.15, T.ifv - 0.15); vis(MT, p.a, `translateY(${p.y}px) scale(${p.s})`);
+  if (p.a <= 0.001) return;
+  const vs = CNT.map((k) => valAt(k, t)), mx = Math.max(...vs);
+  vs.forEach((v, i) => { const dn = i === 2 && cDown(t); setH('hn' + i, dn ? '✕' : String(v)); $('hn' + i).style.color = dn ? RED : v < mx ? AMB : WH; });
+  let s, c;
+  if (cDown(t)) { s = '✕ C IS DOWN'; c = RED; }
+  else if (syncWin(t) && t < T.slowest + 0.6) { s = '⏳ WAITING FOR ALL 3'; c = AMB; }
+  else if (vs.every((v) => v === mx)) { s = '✓ ALL COPIES MATCH'; c = OK; }
+  else if (t > T.disagree - 0.15 && t < T.match) { s = '✕ COPIES DISAGREE'; c = RED; }
+  else { s = 'CATCHING UP…'; c = AMB; }
+  setH('hst', s); $('hst').style.color = c;
+}
+function clampTags() {
+  for (const k in LB) {
+    const e = LB[k]; if (e.style.display === 'none') continue;
+    const w = e.offsetWidth, x = parseFloat(e.style.left), y = clamp(parseFloat(e.style.top), 200, 700);
+    const right = y > 450 ? 540 - 70 : 540 - 14;
+    e.style.left = clamp(x, 14 + w / 2, right - w / 2) + 'px'; e.style.top = y + 'px';
+  }
+}
+
+window.render = (t) => {
+  shoot(t);
+  orbsReset(); sparksReset(); ringsReset();
+  REEL.world(t);
+  sparksFlush(); updateEmbers(t);
+  renderer.setRenderTarget(rtMain); renderer.render(scene, pcam);
+  bloom();
+  REEL.tags(t); clampTags();
+  card(t); tools(t);
+  hudDom(t); gosDom(t); balDom(t);
+  $('dim').style.opacity = Math.max(0.55 * ep(t, REEL.end, REEL.end + 0.6), 0.6 * window01(t, T.l4 - 0.1, T.l5 - 0.05, 0.3), 0.6 * window01(t, T.l7 - 0.1, T.l8 - 0.05, 0.3));
+  $('flash').style.opacity = REEL.flash(t);
+  caps(t);
+  profile(t);
+};
+</script>
+<script src="../_ember/play.js"></script>
+</body>
+</html>

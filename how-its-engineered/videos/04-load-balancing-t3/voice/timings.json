@@ -1,0 +1,74 @@
+[
+ {
+  "li": 0,
+  "pi": 0,
+  "say": "It went viral: 100,000 people opened your app at once. So why didn't it go down?",
+  "show": "It went *viral:* 100,000 people opened your app at once. So why didn't it go [down?]",
+  "start": 0.0,
+  "end": 4.62
+ },
+ {
+  "li": 1,
+  "pi": 0,
+  "say": "One server would crash under that crowd. So you run copies of your app on ten servers.",
+  "show": "One server would [crash] under that crowd. So you run *copies* of your app on 10 servers.",
+  "start": 5.34,
+  "end": 9.3
+ },
+ {
+  "li": 2,
+  "pi": 0,
+  "say": "But who decides which server gets each request? A load balancer.",
+  "show": "But who *decides* which server gets each request? A *load balancer.*",
+  "start": 9.62,
+  "end": 12.64
+ },
+ {
+  "li": 3,
+  "pi": 0,
+  "say": "Like a store manager sending you to the shortest checkout line.",
+  "show": "Like a *store manager* sending you to the *shortest* checkout line.",
+  "start": 13.06,
+  "end": 15.48
+ },
+ {
+  "li": 4,
+  "pi": 0,
+  "say": "The simplest rule, round robin, just takes turns: one, two, three, back to one. A smarter rule, least connections, picks the server with the fewest open connections.",
+  "show": "The simplest rule, *round robin,* just takes turns: one, two, three, back to one. A smarter rule, *least connections,* picks the server with the fewest open connections.",
+  "start": 16.1,
+  "end": 24.08
+ },
+ {
+  "li": 5,
+  "pi": 0,
+  "say": "It also pings every server every few seconds. Any server that stops answering gets skipped.",
+  "show": "It also *pings* every server every few seconds. Any server that [stops answering] gets *skipped.*",
+  "start": 24.4,
+  "end": 28.3
+ },
+ {
+  "li": 6,
+  "pi": 0,
+  "say": "Need more power? Add servers behind it, and users keep the same address.",
+  "show": "Need more power? *Add servers* behind it, and users keep the *same address.*",
+  "start": 28.88,
+  "end": 32.04
+ },
+ {
+  "li": 7,
+  "pi": 0,
+  "say": "AWS, Engine X and Cloudflare do this for you.",
+  "show": "*AWS, NGINX* and *Cloudflare* do this for you.",
+  "start": 32.38,
+  "end": 34.66
+ },
+ {
+  "li": 8,
+  "pi": 0,
+  "say": "If AI writes your code, follow for the system design it leaves out.",
+  "show": "If AI writes your code, *follow* for the system design it leaves out.",
+  "start": 35.18,
+  "end": 37.88
+ }
+]

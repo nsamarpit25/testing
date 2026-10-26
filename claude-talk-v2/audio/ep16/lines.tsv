@@ -1,0 +1,12 @@
+cleo	Claude, checkout's extinct. A hundred and twenty-eight commits. I'm checking them one by one.
+claude	Here we observe the junior developer, in her natural habitat.
+claude	She is on commit four. At this pace, she will finish on Thursday.
+cleo	Are you... narrating me?
+claude	The developer has noticed us.
+claude	Run git bisect start. Mark an earlier commit good, the broken one bad. Git picks between them.
+cleo	And then?
+claude	Test checkout. Tell Git good or bad. Repeat. Each test roughly halves the suspects.
+cleo	Bad. Good. Good. Bad. Good. Bad. Bad.
+claude	A hundred and twenty-eight suspects. Seven checks. Remarkable.
+cleo	Found it! "Small harmless cleanup." Who wrote... oh. It's me.
+claude	Cause of extinction: the developer.

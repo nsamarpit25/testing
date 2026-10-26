@@ -1,0 +1,59 @@
+{
+ "topic": "Cron jobs",
+ "lines": [
+  [
+   {
+    "say": "You add a second server to make your app safer. At three a.m., every customer gets the same receipt twice.",
+    "show": "You add a second server to make your app safer. At three a.m., every customer gets the same receipt twice."
+   }
+  ],
+  [
+   {
+    "say": "Both servers had the same alarm. Nobody needed to press a button.",
+    "show": "Both servers had the same alarm. Nobody needed to press a button."
+   }
+  ],
+  [
+   {
+    "say": "A cron job is a scheduled task. Think of a repeating alarm that runs code instead of waking you up.",
+    "show": "A cron job is a scheduled task. Think of a repeating alarm that runs code instead of waking you up."
+   }
+  ],
+  [
+   {
+    "say": "You set the timing once: every day at three a.m. Those five fields describe when to run.",
+    "show": "You set the timing once: every day at three a.m. Those five fields describe when to run."
+   }
+  ],
+  [
+   {
+    "say": "When the alarm rings, the server runs the code and emails the receipts.",
+    "show": "When the alarm rings, the server runs the code and emails the receipts."
+   }
+  ],
+  [
+   {
+    "say": "Copy that schedule onto two servers, and both can run the same work. That is how people get two receipts.",
+    "show": "Copy that schedule onto two servers, and both can run the same work. That is how people get two receipts."
+   }
+  ],
+  [
+   {
+    "say": "Keep one schedule responsible for starting the task, and make the task safe to retry.",
+    "show": "Keep one schedule responsible for starting the task, and make the task safe to retry."
+   }
+  ],
+  [
+   {
+    "say": "A receipt identifier can help the sender detect work it already completed and skip the duplicate.",
+    "show": "A receipt identifier can help the sender detect work it already completed and skip the duplicate."
+   }
+  ],
+  [
+   {
+    "say": "Linux cron and Kubernetes CronJobs start work on a schedule. Your code still has to handle failures and repeated runs.",
+    "show": "Linux cron and Kubernetes CronJobs start work on a schedule. Your code still has to handle failures and repeated runs."
+   }
+  ]
+ ]
+}

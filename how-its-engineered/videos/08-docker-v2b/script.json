@@ -1,0 +1,65 @@
+{
+ "topic": "Docker",
+ "lines": [
+  [
+   {
+    "say": "Your code works perfectly on your laptop.",
+    "show": "Your code works *perfectly* on your laptop."
+   },
+   {
+    "say": "You put it on a server, and it crashes.",
+    "show": "You put it on a server, and it [crashes.]"
+   }
+  ],
+  [
+   {
+    "say": "Same code. Nobody changed a line.",
+    "show": "Same code. Nobody changed *a line.*"
+   }
+  ],
+  [
+   {
+    "say": "The server had an older Python, and it was missing a library your code needs.",
+    "show": "The server had an *older Python,* and it was [missing a library] your code needs."
+   }
+  ],
+  [
+   {
+    "say": "Docker fixes this. Don't ship just your code. Ship your code plus everything it needs, sealed in one box.",
+    "show": "*Docker* fixes this. Don't ship just your code. Ship [everything it needs,] sealed in one box."
+   }
+  ],
+  [
+   {
+    "say": "Like a shipping container. By truck, ship, or train, what's inside arrives exactly the same.",
+    "show": "Like a *shipping container.* By truck, ship, or train, what's inside arrives [exactly the same.]"
+   }
+  ],
+  [
+   {
+    "say": "You list what goes in the box, in a file called a Dockerfile.",
+    "show": "You list what goes in the box, in a file called a [Dockerfile.]"
+   },
+   {
+    "say": "Docker builds it into an image: your code, Python, every library, frozen together.",
+    "show": "Docker builds it into an *image:* your code, Python, every library, [frozen together.]"
+   }
+  ],
+  [
+   {
+    "say": "Run that image, and you get a container: your app, running inside its box.",
+    "show": "Run that image, and you get a [container:] your app, running inside its box."
+   },
+   {
+    "say": "Laptop, server, or cloud. The inside is identical.",
+    "show": "Laptop, server, or cloud. The inside is *identical.*"
+   }
+  ],
+  [
+   {
+    "say": "If you're a vibe coder, follow for the system design your AI skipped.",
+    "show": "If you're a vibe coder, follow for the system design your AI [skipped.]"
+   }
+  ]
+ ]
+}

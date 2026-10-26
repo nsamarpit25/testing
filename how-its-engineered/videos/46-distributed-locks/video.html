@@ -1,0 +1,407 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- 46 Distributed locks (same kit as 44/45). Three SERVER boxes in front, a CUSTOMER INBOX (later "STORAGE") and a REDIS lock box at
+     the back. Hook: a midnight billing job runs on all three servers, the inbox fills with 3 invoices. Local locks can't see each other.
+     Redis appears; three claims race, server 2 lands first, the others bounce; server 2 sends one invoice, 1 and 3 skip. Talking-stick
+     card. Server 2 crashes, the lock's 30 s timer runs out and frees it, server 1 takes it. SET ... NX PX code card, etcd/ZooKeeper card.
+     Fencing: server 1 freezes holding token 33, the timer runs out, server 3 takes token 34 and writes; server 1 wakes and writes with 33,
+     storage rejects it. HUD on top: invoices · lock holder · timer. Beats from voice/words.json. -->
+<link rel="stylesheet" href="../_ember/fonts.css">
+<link rel="stylesheet" href="../_ember/reel.css">
+<style>
+#cap { top: 728px !important; }
+#cap .box { background: linear-gradient(90deg, transparent, rgba(8,7,6,0.82) 16%, rgba(8,7,6,0.82) 84%, transparent); }
+#ed { top: 196px !important; }
+#mt .n.lk { font-size: 19px; }
+.lbl { background: rgba(12,11,10,0.95); }
+#mt { position: absolute; left: 70px; right: 70px; top: 114px; height: 72px; opacity: 0; padding: 8px 14px; box-sizing: border-box; display: flex; align-items: center; justify-content: space-around;
+  background: rgba(14,12,11,0.95); border: 1px solid rgba(255,255,255,0.12); border-radius: 12px; box-shadow: 0 14px 34px rgba(0,0,0,0.6); }
+#mt .c { display: flex; flex-direction: column; align-items: center; min-width: 84px; }
+#mt .n { font: 800 22px/1 Inter; white-space: nowrap; }
+#mt .k { font: 800 9.5px/1 Mono; letter-spacing: 1px; margin-top: 6px; color: #9c948c; white-space: nowrap; }
+#mt .sep { width: 1px; height: 40px; background: rgba(255,255,255,0.08); }
+.cd2 { position: absolute; left: 40px; right: 40px; top: 196px; opacity: 0; background: rgba(16,14,12,0.96); border: 1px solid rgba(111,195,255,0.4); border-radius: 14px; box-shadow: 0 20px 50px rgba(0,0,0,0.7); overflow: hidden; padding: 14px 16px 12px; }
+.cd2 .h { font: italic 400 30px/1 Instrument; color: #efe6d8; margin-bottom: 4px; }
+.cd2 svg { display: block; width: 100%; height: 240px; }
+.cd2 .f { margin-top: 2px; font: 800 12px/1 Mono; letter-spacing: 1.2px; text-align: center; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="world">
+    <canvas id="cv" width="1080" height="1920"></canvas>
+    <div class="layer" id="lbls"></div>
+  </div>
+</div>
+<script src="../../tools/lib.js"></script>
+<script src="voice/words.js"></script>
+<script src="../_ember/three.js"></script>
+<script src="../_ember/world.js"></script>
+<script src="../_ember/base.js"></script>
+<script>
+for (let i = 0; i < 24; i++) ORBS.push({ core: orbSprite(9), glow: orbSprite(34), trail: [0, 1, 2, 3, 4].map(() => orbSprite(10)) });
+const RD = '#6FC3FF', PU = '#C9A0FF';
+
+/* ---------------- beats */
+const T = {
+  midnight: at('midnight'), three: at('three'), servers: at('servers'), every: at('every'), invoices: at('invoices'),
+  l1: line(1).start, regular: at('regular'), memory: at('memory'), cant: at('cant'),
+  l2: line(2).start, distributed: at('distributed'), shared: at('shared'), redis: at('redis'),
+  l3: line(3).start, race: at('race'), first: at('first'),
+  l4: line(4).start, wins: at('wins'), sends: at('sends'), invoices2: at('invoices', 2), taken: at('taken'), skip: at('skip'),
+  l5: line(5).start, talking: at('talking'), speak: at('speak'),
+  l6: line(6).start, crashes: at('crashes'), timer: at('timer'), frees: at('frees'),
+  l7: line(7).start, set: at('set'), free: at('free'), starts: at('starts'), etcd: at('zookeeper') - 0.55,
+  l8: line(8).start, frozen: at('frozen'), ran: at('ran', 2), charge: at('charge'), fencing: at('fencing'), higher: at('higher'), rejects: at('rejects'),
+  ifv: line(9).start, follow: at('follow'),
+};
+const FLY = 0.55, land = (s) => s + FLY;
+// trips
+const HOOK = [0, 1, 2].map((i) => T.every - 0.35 + i * 0.22);                       // each server sends invoices (hook)
+const RACE = [T.race + 0.25, T.first - FLY, T.race + 0.55];                          // claims: server 2 lands on "first"
+RACE[0] = Math.max(RACE[0], RACE[1] + 0.12); RACE[2] = Math.max(RACE[2], RACE[1] + 0.24);
+const SEND2 = T.sends - 0.15;                                                         // server 2 → inbox
+const CRASH = T.crashes, TSTART = T.timer, TFREE = T.frees;                         // the 30 s timer runs (fast) from "timer" to "frees"
+const TAKE1 = TFREE + 0.35;                                                           // server 1 takes the freed lock
+const FROZE = T.frozen, RUNOUT = T.ran + 0.1, TAKE3 = RUNOUT + 0.25, W3 = TAKE3 + FLY + 0.25, WAKE = T.charge - 0.4;
+const W1 = T.rejects - FLY;                                                           // server 1's stale write bounces on "rejects"
+
+/* ---------------- state per time */
+const invAt = (t) => t < T.l2 - 0.3 ? HOOK.filter((s) => t >= land(s)).length : t < land(SEND2) ? 0 : 1;
+const holderAt = (t) => t < land(RACE[1]) ? '' : t < TFREE ? '2' : t < land(TAKE1) ? '' : t < RUNOUT ? '1' : t < land(TAKE3) ? '' : '3';
+const timerAt = (t) => (t >= TSTART && t < TFREE) ? Math.ceil(30 * (1 - prog(t, TSTART, TFREE))) : (t >= FROZE && t < RUNOUT) ? Math.max(1, Math.ceil(30 * (1 - prog(t, FROZE, RUNOUT)) * 0.4)) : (holderAt(t) ? 30 : 0);
+const tokenAt = (t) => t < T.l8 - 0.2 ? 0 : t < land(TAKE3) ? 33 : 34;
+const storeAt = (t) => t < T.l8 - 0.2 ? 0 : t < land(W3) ? 33 : 34;
+
+/* ---------------- layout: Z up */
+const BX = [-230, 230], BY = 340, BW = 300, BD = 110, BH = 110;     // inbox (0) and redis (1) at the back
+const SX = [-290, 0, 290], SY = -210, SW = 150, SD = 60, SH = 230;    // three servers
+const SC = [O2, RD, PU];
+const bTop = (k) => [BX[k], BY, BH + 8], sTop = (i) => [SX[i], SY, SH + 10];
+const sMid = (i) => [SX[i], SY + 20, SH * 0.62];
+const bFront = (k, i) => [BX[k] + (i - 1) * 60, BY - BD / 2, BH * 0.6];
+function arc(a, b, h, n = 24) { return [...Array(n + 1)].map((_, i) => { const q = i / n; return [lerp(a[0], b[0], q), lerp(a[1], b[1], q), lerp(a[2], b[2], q) + h * 4 * q * (1 - q)]; }); }
+const up = (i, k) => arc(sMid(i), bFront(k, i), 160), down = (i, k) => arc(bFront(k, i), sMid(i), 160);
+
+/* ---------------- camera */
+const pcam = new TH.PerspectiveCamera(42, 540 / 960, 5, 20000); pcam.up.set(0, 0, 1);
+const SHOTS = [
+  { t: 0, p: [0, -1450, 1220], l: [0, 70, 90], f: 42 },
+  { t: 0.01, d: 6, p: [0, -1600, 1340], l: [0, 70, 80], f: 42, e: ease.out },
+  { t: T.l2 - 0.1, d: 1.2, p: [0, -1560, 1300], l: [0, 110, 80], f: 42 },
+  { t: T.l4 - 0.1, d: 1.2, p: [-40, -1600, 1340], l: [-30, 80, 80], f: 42 },
+  { t: T.l6 - 0.1, d: 1.2, p: [30, -1480, 1220], l: [30, 110, 80], f: 42 },
+  { t: T.l8 - 0.2, d: 1.2, p: [0, -1660, 1400], l: [0, 80, 60], f: 42 },
+];
+const KICKS = [[land(HOOK[2]), 0.04], [T.cant, 0.03], [T.redis, 0.03], [land(RACE[1]), 0.05], [land(SEND2), 0.03], [CRASH, 0.05], [TFREE, 0.04], [T.rejects, 0.05]];
+const SHAKES = [[land(HOOK[2]), 4, 0.35], [CRASH, 6, 0.45], [T.rejects, 4, 0.35]];
+const _rv = new TH.Vector3();
+function shoot(t) {
+  let p = SHOTS[0].p.slice(), l = SHOTS[0].l.slice(), f = SHOTS[0].f;
+  for (let i = 1; i < SHOTS.length; i++) {
+    const k = SHOTS[i]; if (t < k.t) break;
+    const q = k.d ? (k.e || ease.inOut)(prog(t, k.t, k.t + k.d)) : 1;
+    p = p.map((v, j) => lerp(v, k.p[j], q)); l = l.map((v, j) => lerp(v, k.l[j], q)); f = lerp(f, k.f, q);
+  }
+  let kick = 0;
+  for (const [t0, amp] of KICKS) { const dt = t - t0; if (dt > 0 && dt < 1.2) kick += amp * (dt < 0.05 ? dt / 0.05 : Math.exp(-(dt - 0.05) * 6)); }
+  let sx = 0, sy = 0;
+  for (const [t0, amp, dur] of SHAKES) { const dt = t - t0; if (dt > 0 && dt < dur) { const k = amp * (1 - dt / dur); sx += k * Math.sin(t * 91); sy += k * Math.cos(t * 67); } }
+  pcam.position.set(p[0] + 6 * Math.sin(t * 0.37), p[1] + 6 * Math.cos(t * 0.29), p[2] + 4 * Math.sin(t * 0.23));
+  pcam.lookAt(l[0] + sx, l[1], l[2] + sy);
+  pcam.fov = f * (1 - kick); pcam.updateProjectionMatrix(); pcam.updateMatrixWorld();
+  cam.f = l;
+  _rv.setFromMatrixColumn(pcam.matrixWorld, 0); const n = Math.hypot(_rv.x, _rv.y) || 1; camRight = [_rv.x / n, _rv.y / n, 0];
+  const d = Math.hypot(p[0] - l[0], p[1] - l[1], p[2] - l[2]);
+  scene.fog.near = d * 0.9; scene.fog.far = d * 3.4;
+}
+const _pv = new TH.Vector3();
+P = function (x, y, z) { _pv.set(x, y, z).project(pcam); return [(_pv.x + 1) * 270, (1 - _pv.y) * 480, _pv.z]; };
+
+/* ---------------- the stage */
+floor.scale.set(2.4, 2.4, 1); floor.position.set(0, 1500, -0.5);
+const BOX = BX.map((x, k) => emberBox(x, BY, BW, BD, BH, k ? AMB : O)), POOLB = BX.map((x, k) => pool(x, BY, 240, k ? AMB : O));
+const SRV = SX.map((x, i) => emberBox(x, SY, SW, SD, SH, SC[i], { lw: 2.2 })), POOLS = SX.map((x, i) => pool(x, SY, 160, SC[i]));
+const ROADS = [0, 1].map((k) => SX.map((x) => road([[x, SY + 40, 0], [lerp(x, BX[k], 0.6), lerp(SY, BY, 0.6), 0], [BX[k] + (x / 290) * 60, BY - BD / 2 - 10, 0]], DIM)));
+const DB = BX.map((x) => { const d = decal(BW - 24, BH - 20, 'front', 6); d.m.position.set(x, BY - BD / 2 - 0.6, BH / 2); return d; });
+const DS = SX.map((x) => { const d = decal(SW - 18, SH - 26, 'front', 6); d.m.position.set(x, SY - SD / 2 - 0.6, SH / 2); return d; });
+function padlock(g, x, y, s, col, open) {
+  g.save(); g.translate(x, y); g.scale(s, s); g.strokeStyle = col; g.fillStyle = col; g.lineWidth = 9; g.lineCap = 'round'; g.shadowColor = col; g.shadowBlur = 14;
+  g.beginPath(); if (open) { g.moveTo(-26, -6); g.lineTo(-26, -46); g.arc(4, -46, 30, Math.PI, 0); g.lineTo(34, -40); } else { g.moveTo(-26, -6); g.lineTo(-26, -40); g.arc(0, -40, 26, Math.PI, 0); g.lineTo(26, -6); } g.stroke();
+  rrect(g, -42, -10, 84, 70, 12); g.fill(); g.fillStyle = '#0d0c0b'; g.beginPath(); g.arc(0, 18, 9, 0, Math.PI * 2); g.fill(); g.fillRect(-4, 18, 8, 20);
+  g.restore();
+}
+function drawInbox(t) {
+  const st = t >= T.l8 - 0.2, n = invAt(t), tok = storeAt(t), rej = t > T.rejects - 0.05 && t < T.ifv;
+  const key = [st, n, tok, rej].join('|'); if (DB[0]._k === key) return; DB[0]._k = key;
+  DB[0].draw((g, w, h) => {
+    g.fillStyle = 'rgba(14,12,10,0.92)'; rrect(g, 0, 0, w, h, 34); g.fill();
+    g.strokeStyle = st ? (rej ? RED : O) : n > 1 ? RED : O; g.lineWidth = 8; rrect(g, 4, 4, w - 8, h - 8, 30); g.stroke();
+    g.textBaseline = 'middle'; g.fillStyle = '#9c948c'; g.font = '800 62px Mono'; g.fillText(st ? 'STORAGE' : 'CUSTOMER INBOX', 46, 84);
+    if (!st) {
+      for (let k = 0; k < 3; k++) { const on = k < n; g.globalAlpha = on ? 1 : 0.18; g.strokeStyle = n > 1 ? RED : OK; g.lineWidth = 9; rrect(g, 60 + k * 230, 190, 190, 260, 16); g.stroke();
+        g.fillStyle = n > 1 ? RED : OK; for (let r = 0; r < 4; r++) g.fillRect(90 + k * 230, 250 + r * 48, 130 - (r % 2) * 40, 14); }
+      g.globalAlpha = 1; g.fillStyle = n > 1 ? RED : n ? OK : '#F2EEE8'; g.font = '900 150px Inter'; g.fillText(n + (n === 1 ? ' INVOICE' : ' INVOICES'), 760, 320);
+    } else {
+      g.fillStyle = '#F2EEE8'; g.font = '900 120px Inter'; g.fillText('LAST TOKEN', 60, 300); g.fillStyle = tok === 34 ? OK : O2; g.font = '900 170px Mono'; g.fillText(String(tok), 1020, 300);
+      if (rej) { g.fillStyle = RED; g.font = '900 100px Mono'; g.fillText('33 → REJECTED', 60, 460); }
+    }
+  });
+}
+function drawRedis(t) {
+  const hd = holderAt(t), tm = timerAt(t), tok = tokenAt(t), freeing = t >= TFREE - 0.05 && t < land(TAKE1) || t >= RUNOUT - 0.05 && t < land(TAKE3);
+  const key = [hd, tm, tok, freeing].join('|'); if (DB[1]._k === key) return; DB[1]._k = key;
+  const col = hd === '1' ? O2 : hd === '2' ? RD : hd === '3' ? PU : AMB;
+  DB[1].draw((g, w, h) => {
+    g.fillStyle = 'rgba(14,12,10,0.92)'; rrect(g, 0, 0, w, h, 34); g.fill();
+    g.strokeStyle = col; g.lineWidth = 8; rrect(g, 4, 4, w - 8, h - 8, 30); g.stroke();
+    g.textBaseline = 'middle'; g.fillStyle = '#9c948c'; g.font = '800 62px Mono'; g.fillText('REDIS · invoice:lock', 46, 84);
+    padlock(g, 170, 330, 2.2, col, !hd);
+    g.fillStyle = col; g.font = '900 120px Inter'; g.fillText(hd ? 'SERVER ' + hd : freeing ? 'FREE' : 'NOBODY', 330, 280);
+    if (hd && tm) { g.fillStyle = tm <= 5 ? RED : '#F2EEE8'; g.font = '800 92px Mono'; g.fillText('⏱ ' + tm + ' s', 330, 430); }
+    if (tok) { g.fillStyle = tok === 34 ? OK : O2; g.font = '800 92px Mono'; g.fillText('TOKEN ' + tok, 930, 430); }
+  });
+}
+// server screens: 'idle' | 'send' | 'local' | 'claim' | 'win' | 'bounce' | 'skip' | 'crash' | 'held' | 'frozen' | 'stale' | 'rej'
+function drawServer(i, st, tok) {
+  const D = DS[i], key = st + '|' + tok; if (D._k === key) return; D._k = key;
+  D.draw((g, w, h) => {
+    g.fillStyle = '#0d0c0b'; rrect(g, 0, 0, w, h, 40); g.fill();
+    g.strokeStyle = SC[i]; g.globalAlpha = 0.5; g.lineWidth = 5; rrect(g, 4, 4, w - 8, h - 8, 36); g.stroke(); g.globalAlpha = 1;
+    g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.fillStyle = '#9c948c'; g.font = '800 70px Mono'; g.fillText('SERVER ' + (i + 1), w / 2, 90);
+    for (let r = 0; r < 3; r++) { g.strokeStyle = '#3a332d'; g.lineWidth = 6; rrect(g, 90, 160 + r * 70, w - 180, 46, 10); g.stroke(); g.fillStyle = r === 0 ? SC[i] : '#3a332d'; g.beginPath(); g.arc(130, 183 + r * 70, 10, 0, Math.PI * 2); g.fill(); }
+    const big = (txt, col, y = 620, s = 150) => { g.fillStyle = col; g.font = `900 ${s}px Inter`; g.shadowColor = col; g.shadowBlur = 18; g.fillText(txt, w / 2, y); g.shadowBlur = 0; };
+    const small = (txt, col, y = 790) => { g.fillStyle = col; g.font = '800 64px Mono'; g.fillText(txt, w / 2, y); };
+    if (st === 'idle') { big('00:00', '#F2EEE8', 620, 130); small('BILLING JOB', '#9c948c'); }
+    if (st === 'send') { big('✉ ✉', RED, 620, 130); small('SENDING…', RED); }
+    if (st === 'local') { big('🔒', SC[i], 610, 170); small('MY LOCK ✓', SC[i]); }
+    if (st === 'claim') { big('🔒?', AMB, 610, 150); small('CLAIMING…', AMB); }
+    if (st === 'win') { big('🔒', OK, 610, 170); small('GOT IT · SENDS', OK); }
+    if (st === 'bounce') { big('✕', RED, 600, 220); small('TAKEN', RED); }
+    if (st === 'skip') { big('SKIP', '#9c948c', 620, 130); small('NOT MY TURN', '#9c948c'); }
+    if (st === 'crash') { big('✕', RED, 600, 240); small('CRASHED', RED); }
+    if (st === 'held') { big('🔒', OK, 610, 170); small(tok ? 'TOKEN ' + tok : 'GOT IT', OK); }
+    if (st === 'frozen') { big('❄', RD, 610, 200); small('FROZEN · TOKEN 33', RD); }
+    if (st === 'stale') { big('🔒?', AMB, 610, 150); small('STILL IN CHARGE?', AMB); }
+    if (st === 'rej') { big('✕', RED, 600, 220); small('33 REJECTED', RED); }
+  });
+}
+function serverState(i, t) {
+  if (t < HOOK[i]) return 'idle';
+  if (t < T.l1) return 'send';
+  if (t < T.l2) return t > T.regular + i * 0.12 ? 'local' : 'send';
+  if (t < RACE[i] - 0.1) return 'idle';
+  if (i === 1) {
+    if (t < land(RACE[1])) return 'claim';
+    if (t < CRASH) return 'win';
+    return t < T.l8 - 0.2 ? 'crash' : 'idle';
+  }
+  if (t < land(RACE[i])) return 'claim';
+  if (t < T.skip - 0.1) return 'bounce';
+  if (t < T.l6 - 0.1) return 'skip';
+  if (i === 0) {
+    if (t < TAKE1) return 'skip';
+    if (t < T.l8 - 0.2) return 'held';
+    if (t < FROZE) return 'held';
+    if (t < WAKE) return 'frozen';
+    if (t < T.rejects) return 'stale';
+    return 'rej';
+  }
+  if (t < TAKE3) return 'skip';
+  return 'held';
+}
+
+/* ---------------- the world, frame by frame */
+function world(t) {
+  const n = invAt(t), hd = holderAt(t), rA = ep(t, T.shared - 0.4, T.shared + 0.3);
+  const ic = t >= T.l8 - 0.2 ? (t > T.rejects - 0.05 && t < T.ifv ? RED : O) : n > 1 ? mixHex(O, RED, 0.6 + 0.4 * Math.sin(t * 8) ** 2) : n ? mixHex(O, OK, 0.5) : O;
+  BOX[0].setLook(ic, 1.1 + 0.8 * pulse(t, land(HOOK[2]), 4) + 0.6 * pulse(t, land(SEND2), 4), ep(t, 0, 0.5)); POOLB[0].set(ic, 0.42 * ep(t, 0, 0.5));
+  const rc = hd === '1' ? O2 : hd === '2' ? RD : hd === '3' ? PU : AMB;
+  BOX[1].setLook(rc, 1.1 + 0.9 * pulse(t, land(RACE[1]), 4) + 0.7 * pulse(t, TFREE, 4) + 0.7 * pulse(t, RUNOUT, 4), rA); POOLB[1].set(rc, 0.42 * rA);
+  drawInbox(t); drawRedis(t);
+  DB[0].m.material.opacity = ep(t, 0.2, 0.7); DB[1].m.material.opacity = rA;
+  for (let i = 0; i < 3; i++) {
+    const a = ep(t, 0.1 + i * 0.1, 0.6 + i * 0.1), s = serverState(i, t);
+    let c = SC[i];
+    if (s === 'send' || s === 'crash' || s === 'rej' || s === 'bounce') c = mixHex(SC[i], RED, s === 'crash' ? 0.6 + 0.4 * Math.sin(t * 13) ** 2 : 0.55);
+    else if (s === 'win' || s === 'held') c = mixHex(SC[i], OK, 0.5); else if (s === 'skip') c = mixHex(SC[i], DIM, 0.5); else if (s === 'frozen') c = mixHex(SC[i], '#BFE6FF', 0.7);
+    SRV[i].setLook(c, (s === 'skip' ? 0.6 : 1) + 0.6 * pulse(t, T.three + i * 0.2, 5), s === 'crash' ? a * (0.55 + 0.45 * Math.abs(Math.sin(t * 9))) : a); POOLS[i].set(c, 0.36 * a);
+    drawServer(i, s, s === 'held' ? (i === 0 ? (t >= T.l8 - 0.2 ? 33 : 0) : 34) : 0); DS[i].m.material.opacity = a;
+    ROADS[0][i].set(1, mixHex(SC[i], DIM, 0.5), 0.6 * ep(t, 0.4, 1.0), t);
+    ROADS[1][i].set(1, mixHex(SC[i], DIM, 0.5), 0.6 * rA, t);
+  }
+  // hook: every server sends invoices
+  HOOK.forEach((s, i) => { const q = prog(t, s, land(s)); if (q > 0 && q < 1) orb(up(i, 0), ease.inOut(q), RED, 1, 1); if (t > land(s) && t < land(s) + 0.7) ripple(t, land(s), BX[0], BY, BH + 4, RED, 170, 0.7); });
+  if (t > land(HOOK[2]) && t < land(HOOK[2]) + 0.9) sparks(t, land(HOOK[2]), BX[0], BY - BD / 2, BH * 0.7, RED, 22, 3, 200, 0.8, 240);
+  // the race: server 2 lands, 1 and 3 bounce
+  RACE.forEach((s, i) => {
+    const q = prog(t, s, land(s));
+    if (i === 1) { if (q > 0 && q < 1) orb(up(i, 1), ease.inOut(q), RD, 1, 1); if (t > land(s) && t < land(s) + 0.8) { ripple(t, land(s), BX[1], BY, BH + 4, OK, 210, 0.8); sparks(t, land(s), BX[1], BY, BH + 10, OK, 18, 9, 150, 0.7, 190); } return; }
+    if (q > 0 && q < 1) orb(up(i, 1), ease.inOut(Math.min(q, 0.93)), SC[i], 1, 1);
+    const qb = prog(t, land(s), land(s) + 0.5); if (qb > 0 && qb < 1) orb(down(i, 1), ease.out(qb) * 0.45, RED, 1 - qb, 1);
+  });
+  { const q = prog(t, SEND2, land(SEND2)); if (q > 0 && q < 1) orb(up(1, 0), ease.inOut(q), OK, 1, 1); if (t > land(SEND2) && t < land(SEND2) + 0.7) ripple(t, land(SEND2), BX[0], BY, BH + 4, OK, 190, 0.7); }
+  // crash, timer, freed, server 1 takes over
+  if (t > CRASH && t < CRASH + 1.0) sparks(t, CRASH, SX[1], SY, SH + 10, RED, 30, 21, 230, 1.0, 260);
+  if (t > TFREE && t < TFREE + 0.9) { ripple(t, TFREE, BX[1], BY, BH + 4, AMB, 220, 0.8); sparks(t, TFREE, BX[1], BY, BH + 10, AMB, 16, 5, 150, 0.7, 180); }
+  { const q = prog(t, TAKE1, land(TAKE1)); if (q > 0 && q < 1) orb(up(0, 1), ease.inOut(q), O2, 1, 1); }
+  // fencing: server 1 frozen, timer runs out, server 3 takes token 34 and writes; server 1's stale write bounces
+  if (t > RUNOUT && t < RUNOUT + 0.8) ripple(t, RUNOUT, BX[1], BY, BH + 4, AMB, 200, 0.7);
+  { const q = prog(t, TAKE3, land(TAKE3)); if (q > 0 && q < 1) orb(up(2, 1), ease.inOut(q), PU, 1, 1); }
+  { const q = prog(t, W3, land(W3)); if (q > 0 && q < 1) orb(up(2, 0), ease.inOut(q), OK, 1, 1); if (t > land(W3) && t < land(W3) + 0.7) ripple(t, land(W3), BX[0], BY, BH + 4, OK, 190, 0.7); }
+  { const q = prog(t, W1, land(W1)); if (q > 0 && q < 1) orb(up(0, 0), ease.inOut(Math.min(q, 0.93)), O2, 1, 1);
+    const qb = prog(t, land(W1), land(W1) + 0.55); if (qb > 0 && qb < 1) orb(down(0, 0), ease.out(qb) * 0.45, RED, 1 - qb, 1);
+    if (t > T.rejects && t < T.rejects + 0.9) { const p = bFront(0, 0); sparks(t, T.rejects, p[0], p[1] - 10, p[2], RED, 26, 41, 220, 0.9, 240); } }
+  if (t > FROZE && t < WAKE) ripple(t, FROZE + Math.floor((t - FROZE) / 0.9) * 0.9, SX[0], SY, 1, '#BFE6FF', 130, 0.9);
+}
+
+/* ---------------- world tags */
+const tg = (key, html, style, wp, t, a, b, dy = 0) => { const e = tag(key, html, style, wp, t, a, b, dy); if (P(...wp)[2] > 1) e.style.display = 'none'; return e; };
+function tags(t) {
+  const big = (c) => `font-size:15px;padding:9px 13px;letter-spacing:1px;border-color:${c}`;
+  const sm = (c) => `font-size:13px;padding:7px 11px;letter-spacing:1px;border-color:${c}`;
+  const sp = (c, s) => `<span style="color:${c}">${s}</span>`;
+  const bot = [0, -400, 0];
+  tg('mn', sp(WH, '00:00 · BILLING JOB STARTS'), big(WH), bot, t, T.midnight - 0.1, T.every - 0.1, 0);
+  tg('x3', sp(RED, '✕ 3 SERVERS · 3 INVOICES EACH'), big(RED), bot, t, T.every - 0.1, T.l1 - 0.1, 0);
+  tg('ml', sp(AMB, 'EACH LOCK ONLY SEES ITS OWN SERVER'), big(AMB), bot, t, T.memory - 0.3, T.cant - 0.1, 0);
+  tg('cs', sp(RED, "✕ CAN'T STOP THE OTHER TWO"), big(RED), bot, t, T.cant - 0.1, T.l2 - 0.1, 0);
+  tg('dl', sp(O, 'ONE SHARED LOCK, EVERY SERVER CAN REACH'), big(O), bot, t, T.shared - 0.1, T.l3 - 0.1, 0);
+  tg('rc', sp(AMB, '00:00 · ALL THREE GRAB AT ONCE'), big(AMB), bot, t, T.race - 0.1, T.first - 0.1, 0);
+  tg('f1', sp(OK, '✓ FIRST CLAIM WINS · SERVER 2'), big(OK), bot, t, T.first - 0.05, T.l4 - 0.1, 0);
+  tg('i1', sp(OK, '✓ 1 INVOICE PER CUSTOMER'), sm(OK), bTop(0), t, land(SEND2), T.l5 - 0.1, -26);
+  for (const i of [0, 2]) tg('sk' + i, sp('#9c948c', 'LOCK TAKEN → SKIP'), sm('#9c948c'), sTop(i), t, T.taken - 0.1, T.l5 - 0.1, -24);
+  tg('cr', sp(RED, '✕ SERVER 2 CRASHED · HOLDING THE LOCK'), big(RED), bot, t, CRASH - 0.05, T.timer - 0.1, 0);
+  tg('tm', sp(AMB, '⏱ EVERY LOCK GETS A 30 S TIMER'), big(AMB), bot, t, T.timer - 0.1, TFREE - 0.1, 0);
+  tg('fr', sp(OK, '🔓 TIME UP → THE LOCK FREES ITSELF'), big(OK), bot, t, TFREE - 0.1, T.l7 - 0.1, 0);
+  tg('fz', sp(RD, '❄ SERVER 1 FREEZES WITH THE LOCK'), big(RD), bot, t, FROZE - 0.1, RUNOUT - 0.1, 0);
+  tg('ro', sp(AMB, '⏱ TIMER RAN OUT → SERVER 3 TAKES IT'), big(AMB), bot, t, RUNOUT - 0.1, WAKE, 0);
+  tg('wk', sp(AMB, 'SERVER 1 WAKES · STILL THINKS IT RULES'), big(AMB), bot, t, WAKE, T.fencing - 0.1, 0);
+  tg('ft', sp(O, 'FENCING TOKEN: EACH LOCK GETS +1'), big(O), bot, t, T.fencing - 0.1, T.rejects - 0.1, 0);
+  tg('t33', sp(O2, 'TOKEN 33'), sm(O2), sTop(0), t, T.higher - 0.2, T.ifv - 0.15, -24);
+  tg('t34', sp(PU, 'TOKEN 34'), sm(PU), sTop(2), t, T.higher - 0.1, T.ifv - 0.15, -24);
+  tg('rj', sp(RED, '33 < 34 → STALE WRITE REJECTED'), big(RED), bot, t, T.rejects - 0.1, T.ifv - 0.15, 0);
+}
+
+/* ---------------- reel config */
+const svgZk = `<svg width="46" height="46" viewBox="0 0 100 100" fill="none" stroke="#7CF29A" stroke-width="7" stroke-linejoin="round" stroke-linecap="round"><circle cx="50" cy="22" r="11"/><circle cx="24" cy="74" r="11"/><circle cx="76" cy="74" r="11"/><path d="M44 32 L30 64 M56 32 L70 64 M35 74 H65"/></svg>`;
+const REEL = {
+  shots: [], world, tags,
+  code: [
+    [T.l7 - 0.2, T.etcd - 0.2, 'redis-cli', 'grab the lock', [[0, 'CLAIM', AMB], [T.set + 0.6, 'SERVER 1: OK · OTHERS: (nil)', OK]],
+      [['SET invoice:lock server-1'], ['    NX PX 30000'], ['-- NX: only if nobody holds it'], ['-- PX 30000: frees itself in 30 s']],
+      [[T.set + 0.6, 1, '→ OK', 'good'], [T.free - 0.1, 2, 'only if free', 'amb'], [T.starts - 0.05, 2, '30 s timer', 'good']], 'type'],
+  ],
+  hl: /\b(SET|NX|PX)\b/g,
+  tools: [
+    { a: T.etcd - 0.15, b: T.l8 - 0.1, svg: svgZk, name: 'etcd · ZooKeeper', sub: 'LOCKS FOR WHOLE CLUSTERS', src: 'A LOCK ENDS WHEN ITS <span style="color:#7CF29A">LEASE</span> RUNS OUT', top: 196 },
+  ],
+  slams: [],
+  bad: ['three', 'invoices', 'cant', 'crashes', 'ran', 'rejects'],
+  good: ['distributed', 'shared', 'redis', 'first', 'wins', 'skip', 'talking', 'stick', 'speak', 'timer', 'frees', 'set', 'etcd', 'zookeeper', 'fencing', 'skipped'],
+  tiles: [['🔒', 'DISTRIBUTED<br>LOCKS'], ['🔒', 'PESSIMISTIC<br>LOCKING'], ['v7', 'OPTIMISTIC<br>LOCKING']],
+  end: T.ifv - 0.15, follow: T.follow,
+  cover: { t: 'DISTRIBUTED<br>LOCKS', at: land(RACE[1]) + 0.4, zoom: 0.88, dy: 60 },
+  flash: (t) => 0.05 * pulse(t, land(HOOK[2]), 7) + 0.04 * pulse(t, land(RACE[1]), 6) + 0.06 * pulse(t, CRASH, 7) + 0.05 * pulse(t, T.rejects, 7),
+};
+</script>
+<script src="../_ember/overlay.js"></script>
+<script>
+/* ---------------- bloom: scene → half-float target, bright pass, three blur levels, composite to the canvas */
+const RT = (w, h, s = 0) => new TH.WebGLRenderTarget(w, h, { type: TH.HalfFloatType, samples: s, depthBuffer: s > 0 });
+const rtMain = RT(1080, 1920, 4), BL = [[RT(540, 960), RT(540, 960)], [RT(270, 480), RT(270, 480)], [RT(135, 240), RT(135, 240)]];
+const fsCam = new TH.OrthographicCamera(-1, 1, 1, -1, 0, 1), fsScene = new TH.Scene(), fsQuad = new TH.Mesh(new TH.PlaneGeometry(2, 2));
+fsQuad.frustumCulled = false; fsScene.add(fsQuad);
+const VS = 'varying vec2 vUv; void main() { vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }';
+const shm = (fs, u) => new TH.ShaderMaterial({ uniforms: u, vertexShader: VS, fragmentShader: fs, depthTest: false, depthWrite: false });
+const mBright = shm(`uniform sampler2D tex; uniform float th; varying vec2 vUv;
+void main() { vec3 c = texture2D(tex, vUv).rgb; float l = max(c.r, max(c.g, c.b)); gl_FragColor = vec4(c * smoothstep(th, th + 0.4, l), 1.0); }`,
+  { tex: { value: null }, th: { value: 0.8 } });
+const mBlur = shm(`uniform sampler2D tex; uniform vec2 dir; varying vec2 vUv;
+void main() {
+  vec3 c = texture2D(tex, vUv).rgb * 0.2270270270;
+  c += (texture2D(tex, vUv + dir * 1.3846153846).rgb + texture2D(tex, vUv - dir * 1.3846153846).rgb) * 0.3162162162;
+  c += (texture2D(tex, vUv + dir * 3.2307692308).rgb + texture2D(tex, vUv - dir * 3.2307692308).rgb) * 0.0702702703;
+  gl_FragColor = vec4(c, 1.0);
+}`, { tex: { value: null }, dir: { value: new TH.Vector2() } });
+const mComp = shm(`uniform sampler2D base, b1, b2, b3; uniform float k1, k2, k3; varying vec2 vUv;
+void main() {
+  vec3 c = texture2D(base, vUv).rgb + texture2D(b1, vUv).rgb * k1 + texture2D(b2, vUv).rgb * k2 + texture2D(b3, vUv).rgb * k3;
+  c = c / (1.0 + max(c - 1.0, 0.0) * 0.6);
+  gl_FragColor = vec4(c, 1.0);
+  #include <colorspace_fragment>
+}`, { base: { value: rtMain.texture }, b1: { value: BL[0][0].texture }, b2: { value: BL[1][1].texture }, b3: { value: BL[2][1].texture }, k1: { value: 0.5 }, k2: { value: 0.65 }, k3: { value: 0.8 } });
+function pass(mat, dst) { fsQuad.material = mat; renderer.setRenderTarget(dst); renderer.render(fsScene, fsCam); }
+function blur(src, dst, dx, dy) { mBlur.uniforms.tex.value = src.texture; mBlur.uniforms.dir.value.set(dx / src.width, dy / src.height); pass(mBlur, dst); }
+function bloom() {
+  mBright.uniforms.tex.value = rtMain.texture; pass(mBright, BL[0][0]);
+  blur(BL[0][0], BL[0][1], 1, 0); blur(BL[0][1], BL[0][0], 0, 1);
+  blur(BL[0][0], BL[1][0], 1, 0); blur(BL[1][0], BL[1][1], 0, 1);
+  blur(BL[1][1], BL[2][0], 1, 0); blur(BL[2][0], BL[2][1], 0, 1);
+  pass(mComp, null);
+}
+
+
+/* ---------------- HUD (invoices · lock · timer), talking-stick card */
+const stg = $('stage'), before = $('prof');
+const mk = (html) => { const w = document.createElement('div'); w.innerHTML = html.trim(); const n = w.firstChild; stg.insertBefore(n, before); return n; };
+const MT = mk(`<div id="mt"><div class="c"><div class="n" id="hi"></div><div class="k">INVOICES</div></div><div class="sep"></div><div class="c"><div class="n lk" id="hl"></div><div class="k">LOCK</div></div><div class="sep"></div><div class="c"><div class="n" id="ht"></div><div class="k">TIMER</div></div></div>`);
+const TS = mk(`<div id="ts" class="cd2"><div class="h">The talking stick</div><svg id="tsS" viewBox="0 0 460 240"></svg><div class="f" id="tsF"></div></div>`);
+if (/cover/.test(location.hash)) { const s = document.createElement('style'); s.textContent = '#mt, .cd2 { display: none !important; }'; document.head.appendChild(s); }
+(() => {
+  const P3 = [[90, '#FFB070', '1'], [230, '#6FC3FF', '2'], [370, '#C9A0FF', '3']];
+  $('tsS').innerHTML = P3.map(([x, c, n], k) => `<g id="tsP${k}"><circle cx="${x}" cy="110" r="34" fill="#15130f" stroke="${c}" stroke-width="3.5"/><text x="${x}" y="119" text-anchor="middle" font-family="Inter" font-size="26" font-weight="900" fill="${c}">${n}</text>
+    <path d="M${x - 46} 200 Q${x} 150 ${x + 46} 200" fill="none" stroke="${c}" stroke-width="3.5"/><text id="tsL${k}" x="${x}" y="232" text-anchor="middle" font-family="Mono" font-size="13" font-weight="800" fill="${c}"></text></g>`).join('')
+    + `<g id="tsStick"><rect x="-6" y="-46" width="12" height="92" rx="5" fill="#FFC34D" transform="rotate(18)"/></g>
+    <g id="tsBub" opacity="0"><rect x="252" y="20" width="120" height="44" rx="12" fill="rgba(124,242,154,0.15)" stroke="#7CF29A" stroke-width="2.5"/><text x="312" y="49" text-anchor="middle" font-family="Mono" font-size="15" font-weight="800" fill="#7CF29A">SPEAKS</text></g>`;
+})();
+function tsDom(t) {
+  const p = popIn(t, T.l5 - 0.1, T.l6 - 0.1); vis(TS, p.a, `translateY(${p.y}px) scale(${p.s})`);
+  if (p.a <= 0.001) return;
+  // the stick slides to person 2, who speaks; 1 and 3 wait
+  const q = ease.inOut(prog(t, T.l5, T.talking + 0.3)), x = lerp(90, 230, q) + 44;
+  $('tsStick').setAttribute('transform', `translate(${x} 120)`);
+  $('tsBub').setAttribute('opacity', ep(t, T.speak - 0.6, T.speak - 0.3));
+  setH('tsL0', 'WAITS'); setH('tsL1', q > 0.95 ? 'HOLDS IT' : ''); setH('tsL2', 'WAITS');
+  setH('tsF', t > T.speak - 0.4 ? '🔒 ONLY THE HOLDER SPEAKS' : 'ONE STICK, ONE SPEAKER'); $('tsF').style.color = t > T.speak - 0.4 ? OK : AMB;
+}
+function hudDom(t) {
+  const p = popIn(t, 0.15, T.ifv - 0.15); vis(MT, p.a, `translateY(${p.y}px) scale(${p.s})`);
+  if (p.a <= 0.001) return;
+  const n = invAt(t), hd = holderAt(t), tm = timerAt(t);
+  const inv = t >= T.l8 - 0.2 ? 1 : n;
+  setH('hi', String(inv) + (inv > 1 ? ' ✕' : inv === 1 && t > T.l2 ? ' ✓' : '')); $('hi').style.color = inv > 1 ? RED : inv === 1 && t > T.l2 ? OK : WH;
+  setH('hl', hd ? '🔒 S' + hd : t > T.shared ? '🔓 FREE' : '—'); $('hl').style.color = hd === '1' ? O2 : hd === '2' ? RD : hd === '3' ? PU : t > T.shared ? AMB : GR;
+  setH('ht', hd && tm ? tm + ' s' : '—'); $('ht').style.color = tm && tm <= 5 ? RED : hd ? WH : GR;
+}
+function clampTags() {
+  for (const k in LB) {
+    const e = LB[k]; if (e.style.display === 'none') continue;
+    const w = e.offsetWidth, x = parseFloat(e.style.left), y = clamp(parseFloat(e.style.top), 200, 690);
+    const right = y > 450 ? 540 - 70 : 540 - 14;
+    e.style.left = clamp(x, 14 + w / 2, right - w / 2) + 'px'; e.style.top = y + 'px';
+  }
+}
+
+window.render = (t) => {
+  shoot(t);
+  orbsReset(); sparksReset(); ringsReset();
+  REEL.world(t);
+  sparksFlush(); updateEmbers(t);
+  renderer.setRenderTarget(rtMain); renderer.render(scene, pcam);
+  bloom();
+  REEL.tags(t); clampTags();
+  card(t); tools(t);
+  hudDom(t); tsDom(t);
+  $('dim').style.opacity = Math.max(0.55 * ep(t, REEL.end, REEL.end + 0.6), 0.6 * window01(t, T.l5 - 0.1, T.l6 - 0.1, 0.3));
+  $('flash').style.opacity = REEL.flash(t);
+  caps(t);
+  profile(t);
+};
+</script>
+<script src="../_ember/play.js"></script>
+</body>
+</html>

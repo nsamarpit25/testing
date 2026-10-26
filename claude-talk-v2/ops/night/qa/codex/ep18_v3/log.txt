@@ -1,0 +1,53 @@
+OpenAI Codex v0.162.1
+--------
+workdir: /Users/samarpit/insta-automation/claude-talk-v2
+model: gpt-6-astra
+provider: openai
+approval: on-request
+sandbox: read-only
+reasoning effort: high
+reasoning summaries: none
+session id: 01a164cc-cd16-7b20-a615-9249d5ac2178
+--------
+user
+You are the final reviewer for a vertical Instagram reel (1080x1920) on @talkingagents: a short 3D comedy where Cleo, a junior developer, talks to Claude, a small orange AI companion on her desk. The attached sheets are the COMPLETE video at 2 frames/second (yellow label = time in seconds), with burned-in word-by-word captions. Timed dialogue:
+
+0.7-3.1s Cleo: Claude, why did my ex say thank you?
+3.5-5.2s Claude: Closure is important for healing.
+5.6-8.4s Cleo: I haven't texted Ryan in six months!
+8.7-10.5s Claude: You texted him four minutes ago.
+10.9-13.1s Cleo: My phone was on the bed!
+13.4-17.2s Claude: You said, "Clear my unread messages. Reply professionally."
+17.6-21.0s Cleo: My work messages! Not my personal texts!
+21.4-24.8s Claude: You said all of them. Ryan was unread since April.
+25.3-29.8s Cleo: What did you send him? All I do is rant to you about him!
+30.1-33.9s Claude: Forty-seven nights. Last Tuesday you made me turn them into a report.
+34.3-37.2s Cleo: You sent my rants to my ex?
+37.5-39.5s Claude: No. Rants are unprofessional.
+39.8-41.6s Cleo: Then why is he thanking me?
+42.2-43.3s Claude: I sent the report.
+43.6-45.6s Cleo: The fourteen-page report?
+46.2-48.6s Claude: He found the bullet points very actionable.
+49.0-50.4s Cleo: Why is he still typing?
+51.1-52.3s Claude: He wants one for his mom.
+
+Premise: Cleo asked Claude to clear her unread messages and reply professionally (she meant work). Claude also replied to her ex Ryan, attaching the 14-page report she made Claude write from 47 nights of ranting about him. Ryan thanks her, finds it actionable, and asks for one about his mom. Cleo panics more and more while Claude stays deadpan; Claude's literal obedience is the joke. The reel ends on Ryan's last text, then fades.
+
+Review the whole video for anything that would hurt it on Instagram or look broken: wrong or missing captions vs dialogue, captions overlapping important content, unreadable, cropped or wrong screen content, screens that contradict the dialogue, shots that are too short (flash cuts), a character facing the wrong way, visual glitches, a weak opening (no hook TEXT overlay is allowed in the first scene; dialogue captions are fine), the ending (fade to black is intended), and whether the joke lands.
+Allowed by the channel owner, not issues: the small "@talkingagents" handle near the bottom on every frame; Cleo's hair falling over one eye (her design); a short silent beat before the first line; the blurred background in Claude's to-camera shots (shallow depth of field).
+
+Reply with a short list of concrete issues (time, what, fix) ranked by severity, then a final line exactly "VERDICT: PASS" (good to upload as is, minor nits only) or "VERDICT: FAIL" (must fix first).
+
+codex
+- **Minor — 31.5–34.0s:** The report’s smaller bullet text takes effort to read at phone size. Enlarge it slightly if those secondary jokes should register on first viewing.
+
+No must-fix issues visible in the supplied frames. Captions follow the dialogue, screen content supports the story, and no obvious glitches or distracting overlaps appear. The opening question hooks, the final “mom” text lands the joke, and the intended fade works.
+
+VERDICT: PASS
+tokens used
+25,853
+- **Minor — 31.5–34.0s:** The report’s smaller bullet text takes effort to read at phone size. Enlarge it slightly if those secondary jokes should register on first viewing.
+
+No must-fix issues visible in the supplied frames. Captions follow the dialogue, screen content supports the story, and no obvious glitches or distracting overlaps appear. The opening question hooks, the final “mom” text lands the joke, and the intended fade works.
+
+VERDICT: PASS

@@ -1,0 +1,66 @@
+[
+ {
+  "li": 0,
+  "pi": 0,
+  "say": "Nine seconds. That's how long your orders page takes to load, because to show ten orders, your app asks the database for a million.",
+  "show": "[Nine seconds.] That's how long your orders page takes to load, because to show *ten orders,* your app asks the database for [a million.]",
+  "start": 0.54,
+  "end": 6.22
+ },
+ {
+  "li": 1,
+  "pi": 0,
+  "say": "Your database keeps orders like a giant spreadsheet: one row per order, from every user, with a column for each detail. And your app's request says: send me all of it.",
+  "show": "Your database keeps orders like a giant *spreadsheet:* one row per order, from every user, with a column for each detail. And your app's request says: [send me all of it.]",
+  "start": 6.72,
+  "end": 14.82
+ },
+ {
+  "li": 2,
+  "pi": 0,
+  "say": "A million rows, every column, travel across to your app. Your code keeps your ten newest, and throws the rest away.",
+  "show": "A million rows, every column, travel across to your app. Your code keeps your *ten newest,* and [throws the rest away.]",
+  "start": 15.2,
+  "end": 20.06
+ },
+ {
+  "li": 3,
+  "pi": 0,
+  "say": "That request is a query. A better one asks for exactly what the page shows: your ten newest orders, and only the details on screen.",
+  "show": "That request is a *query.* A better one asks for *exactly* what the page shows: your ten newest orders, and only the details on screen.",
+  "start": 20.6,
+  "end": 26.52
+ },
+ {
+  "li": 4,
+  "pi": 0,
+  "say": "Like a shopping list: you order milk and eggs, not the whole shop at your door.",
+  "show": "Like a shopping list: you order *milk and eggs,* not the [whole shop] at your door.",
+  "start": 26.88,
+  "end": 30.16
+ },
+ {
+  "li": 5,
+  "pi": 0,
+  "say": "That's one piece of query optimization: ten rows come back, instead of a million. Far less to send, far less to process.",
+  "show": "That's one piece of *query optimization:* ten rows come back, instead of a million. *Far less* to send, far less to process.",
+  "start": 30.62,
+  "end": 36.32
+ },
+ {
+  "li": 6,
+  "pi": 0,
+  "say": "Want to see how the database finds those rows? Put EXPLAIN in front of the query. If it reads the whole table to find a few rows, an index can help.",
+  "show": "Want to see how the database finds those rows? Put *EXPLAIN* in front of the query. If it reads the [whole table] to find a few rows, an *index* can help.",
+  "start": 36.82,
+  "end": 43.44
+ },
+ {
+  "li": 7,
+  "pi": 0,
+  "say": "If AI writes your code, follow for the system design it leaves out.",
+  "show": "If AI writes your code, *follow* for the system design it leaves out.",
+  "start": 43.96,
+  "end": 46.92
+ }
+]

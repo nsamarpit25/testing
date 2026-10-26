@@ -1,0 +1,421 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- 30 Maps traffic, in the AirTag kit (kit.js + scenes.js + maps.js). Story: your phone warns of a jam 3 km ahead; there
+     is no camera on that road; the cars told it, or the phones inside them. Each phone shares where it is and how fast it
+     moves; Maps sees dots on every road; where many dots crawl it paints the stretch red, mixes in the usual traffic for
+     this hour and routes you around. Berlin 2020: an artist pulls 99 phones in a red wagon down an empty street and Maps
+     paints it red. Twist: the phones draw the map, and in a jam you are one of the dots. Beats come from voice/words.js. -->
+<link rel="stylesheet" href="../_ember/fonts.css">
+<link rel="stylesheet" href="lib/reel.css">
+<style>
+#stage { background: #0b0a09; }
+#vig { background: radial-gradient(120% 82% at 50% 44%, rgba(8,6,4,0) 52%, rgba(8,6,4,0.72) 100%); }
+#hud { pointer-events: none; }
+/* HUD: dark glass cards with a short accent bar; the label carries the beat's colour, the value stays white */
+.hc { position: absolute; left: 0; top: 0; display: none; padding: 9px 15px 10px 17px; border-radius: 10px; background: linear-gradient(180deg, rgba(36,33,31,0.93), rgba(19,17,16,0.93)); border: 1px solid rgba(255,255,255,0.075); box-shadow: 0 12px 30px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06); white-space: nowrap; transform-origin: 0 0; }
+.hc::before { content: ''; position: absolute; left: 7px; top: 10px; bottom: 10px; width: 3px; border-radius: 2px; background: var(--c); box-shadow: 0 0 8px var(--cg); }
+.hc .k { font: 650 9.5px/1 Inter; letter-spacing: 1.5px; color: var(--c); text-transform: uppercase; }
+.hc .v { font: 750 19px/1.05 Inter; letter-spacing: -0.3px; margin-top: 6px; color: #f5f4f3; }
+.hc.big .v { font-size: 24px; }
+.hc .v.dots { letter-spacing: 3px; }
+.hp { position: absolute; left: 0; top: 0; display: none; font: 600 11px/1 Inter; padding: 6px 10px 6px 9px; border-radius: 20px; background: rgba(24,22,20,0.9); border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 6px 16px rgba(0,0,0,0.4); color: #e6e3e0; white-space: nowrap; transform-origin: 0 0; }
+.hp::before { content: ''; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--c); margin-right: 6px; vertical-align: 1px; }
+.hp.hot { border-color: var(--cg); }
+#cap .box { left: 50%; right: auto; transform: translateX(-50%); padding: 0 10px; background: none; }
+#cap .box::before, #cap .box::after { content: ''; position: absolute; width: 8px; height: 8px; border: 1.6px solid #ff6a1f; }
+#cap .box::before { left: -2px; top: -4px; border-width: 1.6px 0 0 1.6px; }
+#cap .box::after { right: -2px; bottom: -4px; border-width: 0 1.6px 1.6px 0; }
+/* the slam sits on a soft dark band so the city never fights the letters */
+.slam::before { content: ''; position: absolute; left: -20px; right: -20px; top: -40px; bottom: -36px; background: radial-gradient(60% 50% at 50% 50%, rgba(13,11,10,0.78) 0%, rgba(13,11,10,0.5) 55%, rgba(13,11,10,0) 100%); z-index: -1; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="world">
+    <canvas id="cv" width="1080" height="1920"></canvas>
+    <div class="layer" id="lbls"></div>
+  </div>
+</div>
+<script src="../../tools/lib.js"></script>
+<script src="voice/words.js"></script>
+<script src="lib/three.js"></script>
+<script src="../_ember/world.js"></script>
+<script src="lib/base.js"></script>
+<script src="kit.js"></script>
+<script src="scenes.js"></script>
+<script src="maps.js"></script>
+<script>
+for (let i = 0; i < 18; i++) { const m = new TH.Mesh(new TH.RingGeometry(0.9, 1, 96), new TH.MeshBasicMaterial({ color: 0xffffff, transparent: true, blending: TH.AdditiveBlending, depthWrite: false, toneMapped: false, side: TH.DoubleSide })); m.visible = false; scene.add(m); RINGS.push(m); }
+// Signals speak the reference's language: crisp thin rings that open out from a device, and thin lines that draw
+// themselves from one device to the next with a bright head on the tip. No wide halos, no light beams.
+const RING_TX = ctex(512, 512, (g, w, h) => {
+  const gr = g.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, w / 2);
+  gr.addColorStop(0, 'rgba(255,255,255,0)'); gr.addColorStop(0.8, 'rgba(255,255,255,0.025)'); gr.addColorStop(0.985, 'rgba(255,255,255,0.06)'); gr.addColorStop(1, 'rgba(255,255,255,0)');
+  g.fillStyle = gr; g.fillRect(0, 0, w, h);
+  g.strokeStyle = '#ffffff'; g.lineWidth = 3.2; g.beginPath(); g.arc(w / 2, h / 2, w / 2 - 6, 0, 7); g.stroke();
+});
+const RING_G = new TH.PlaneGeometry(2, 2);
+for (const m of RINGS) { m.geometry = RING_G; m.material.map = RING_TX; m.material.needsUpdate = true; }
+function ripple(t, t0, x, y, z, col, maxR, dur = 0.9) {
+  const p = prog(t, t0, t0 + dur); if (p <= 0 || p >= 1 || ringI >= RINGS.length) return;
+  const m = RINGS[ringI++], r = maxR * (0.1 + 0.9 * ease.out(p));
+  m.visible = true; m.position.set(x, y, z); m.scale.set(r, r, 1); m.material.color.set(col); m.material.opacity = 0.85 * Math.pow(1 - p, 1.3) * Math.min(1, p * 12);
+}
+// signal lines: a pool of pixel-width lines (core + faint halo) whose segments are rewritten in place each frame
+const LMAX = 8, LINKS = [];
+const dotSprite = () => { const sp = new TH.Sprite(new TH.SpriteMaterial({ map: TX_ORB, transparent: true, blending: TH.AdditiveBlending, depthWrite: false, depthTest: false, toneMapped: false })); sp.visible = false; sp.renderOrder = 6; scene.add(sp); return sp; };
+for (let i = 0; i < 8; i++) {
+  const geo = new TH.LineGeometry(); geo.setPositions(new Array(LMAX * 3).fill(0).map((_, k) => k));
+  const core = new TH.Line2(geo, lineMat(O, 3.4)), halo = new TH.Line2(geo, lineMat(O, 11, { add: true, op: 0.16 }));
+  core.renderOrder = 5; halo.renderOrder = 4;
+  for (const l of [core, halo]) { l.frustumCulled = false; l.visible = false; scene.add(l); }
+  LINKS.push({ geo, core, halo, head: dotSprite(), end: dotSprite() });
+}
+let linkI = 0;
+function linksReset() { linkI = 0; for (const L of LINKS) L.core.visible = L.halo.visible = L.head.visible = L.end.visible = false; }
+// the part of a polyline between fractions q0 and q1 of its length
+function subLine(pts, q0, q1) {
+  const d = [0]; for (let i = 1; i < pts.length; i++) d.push(d[i - 1] + Math.hypot(...[0, 1, 2].map((j) => pts[i][j] - pts[i - 1][j])));
+  const L = d[d.length - 1], at_ = (u) => { let i = 1; while (i < pts.length - 1 && d[i] < u) i++; const k = (u - d[i - 1]) / Math.max(1e-6, d[i] - d[i - 1]); return [0, 1, 2].map((j) => lerp(pts[i - 1][j], pts[i][j], clamp(k))); };
+  const u0 = q0 * L, u1 = q1 * L, out = [at_(u0)];
+  for (let i = 1; i < pts.length - 1; i++) if (d[i] > u0 && d[i] < u1) out.push(pts[i]);
+  out.push(at_(u1)); return out;
+}
+// link(t, pts, t0, dur, t1, col): draws on along pts over [t0, t0+dur] (eased), holds, fades out at t1. o.travel: the
+// tail follows the head, so it reads as one message moving; o.a: opacity
+function link(t, pts, t0, dur, t1, col, o = {}) {
+  if (t < t0 || t > t1 || linkI >= LINKS.length) return null;
+  const L = LINKS[linkI++], q = ease.inOut(prog(t, t0, t0 + dur)), q0 = o.travel ? ease.inOut(prog(t, t0 + dur * 0.35, t0 + dur * 1.25)) : 0;
+  const a = (o.a ?? 1) * (1 - ep(t, t1 - 0.25, t1)) * (o.travel ? 1 - ep(t, t0 + dur * 1.05, t0 + dur * 1.25) : 1);
+  if (q <= 0.001 || a <= 0.01) return null;
+  const part = subLine(pts, q0, q).slice(0, LMAX), arr = L.geo.attributes.instanceStart.data.array;
+  for (let i = 0; i < part.length - 1; i++) arr.set([...part[i], ...part[i + 1]], i * 6);
+  L.geo.attributes.instanceStart.data.needsUpdate = true; L.geo.instanceCount = part.length - 1;
+  for (const [l, k] of [[L.core, 1], [L.halo, 0.16]]) { l.visible = true; l.material.color.set(col); l.material.opacity = a * k; }
+  const tip = part[part.length - 1], px = 1 / cam.s;
+  if (q < 0.999 || o.travel) { L.head.visible = true; L.head.position.set(...tip); L.head.material.color.set(mixHex(col, '#ffffff', 0.5)); L.head.material.opacity = a; L.head.scale.set(16 * px, 16 * px, 1); }
+  if (q >= 0.999 && !o.travel) { const k = ease.out(prog(t, t0 + dur, t0 + dur + 0.25)); L.end.visible = true; L.end.position.set(...tip); L.end.material.color.set(col); L.end.material.opacity = a * (0.6 + 0.4 * (1 - k)); L.end.scale.set((10 + 14 * (1 - k)) * px, (10 + 14 * (1 - k)) * px, 1); }
+  return tip;
+}
+
+/* ---------------- beats (t2: the Berlin wagon story opens the reel, then why it worked, then the twist) */
+const T = {
+  in1: at('in'), artist: at('artist'), faked: at('faked'), wagon: at('wagon'), he: at('he'), d99: at('99'), phones0: at('phones'),
+  slowly: at('slowly'), empty: at('empty'), google2: at('google', 2), turned: at('turned'), redB: at('red', 2), a3: at('a', 3), made: at('made'),
+  because: at('because'), no: at('no'), camera: at('camera'), maps3: at('maps', 3), reading: at('reading'), phones: at('phones', 3),
+  phones2: at('phones', 4), share: at('share'), where: at('where'), how: at('how'), fast: at('fast'), moving: at('moving'),
+  maps5: at('maps', 5), combines: at('combines'), dots: at('dots'),
+  when: at('when'), slow: at('slow'), down: at('down'), marks: at('marks'), red: at('red', 3), sends: at('sends'), around: at('around'),
+  so: at('so'), stuck: at('stuck'), look: at('look'), redL: at('red', 4), your: at('your'), helping: at('helping'), draw: at('draw'),
+};
+T.last = WORDS[WORDS.length - 1][2];
+const CUT = { WAG: 0, BER: T.he - 0.1, WALK: T.slowly - 0.1, RED2: T.google2 - 0.1, PH2: T.a3 - 0.1,
+  ROAD: T.because - 0.1, CARS: T.maps3 - 0.1, SHARE: T.phones2 - 0.12, DOTS: T.maps5 - 0.12, SLOW: T.when - 0.1,
+  SEND: T.sends - 0.35, DRAW: T.so - 0.1, YOU: T.look - 0.1, END: T.last + 0.35 };
+
+/* ---------------- build */
+const ST = buildStudio(), CI = buildCity(), M = buildMaps(CI);
+ST.tag.g.visible = false; ST.str.g.visible = false; ST.under.visible = false;
+// the AirTag story's props stay out of this reel
+for (const o of [CI.bag.g, CI.herBag.g, CI.redTag.g, CI.stranger.root, CI.you.root, CI.hider.root, CI.dots]) o.visible = false;
+for (const m of CI.movers) m.g.visible = false;
+CI.aptGlass.visible = false; CI.aptSolid.visible = true;
+const HOLO = { cam: holo(ICO.cam, 420, RED), cam2: holo(ICO.cam, 900, RED), you: holo(ICO.phone, 170, '#ffffff') };
+// your detour (route B) and the jammed main road (route A), in lane coordinates
+const RB = [[-3600, -860, 8], [-1140, -860, 8], [-1140, 1140, 8], [3140, 1140, 8], [3140, -860, 8], [5600, -860, 8]];
+const RA = [[-3600, -860, 8], [5600, -860, 8]];
+const pathAt = (pts, u) => { for (let i = 1; i < pts.length; i++) { const L = Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]); if (u <= L || i === pts.length - 1) { const k = clamp(u / L); return [lerp(pts[i - 1][0], pts[i][0], k), lerp(pts[i - 1][1], pts[i][1], k), Math.atan2(pts[i][1] - pts[i - 1][1], pts[i][0] - pts[i - 1][0])]; } u -= L; } };
+// the Berlin street: the wagon and the artist walk east down the y = -3000 road, along the park (shot from the park side,
+// so no tall building stands between the camera and the wagon)
+const BY = -3000, WX0 = -900, WV = 55;
+const wagX = (t) => WX0 + WV * t;
+// the jam car the twist lands on (one of the bunched-up cars in the jam, eastbound)
+const pickCar = (t) => { let best = M.cars[0], bd = 1e9; for (const c of M.cars) { if (c.w) continue; const d = Math.abs(M.carX(c, t) - 1650); if (d < bd) { bd = d; best = c; } } return best; };
+const YOUCAR = pickCar(CUT.YOU + 1.4);
+
+/* ---------------- phone screens */
+// Drawn in a 600-wide design space in the dark look of 29: a quiet street map, a frosted card, one orange accent, red for traffic.
+const S6 = (g, S, x, y, fn, col) => { g.save(); g.translate(x - S / 2, y - S / 2); fn(g, S, col); g.restore(); };
+const UI = { card: '#1f1d1c', tile: '#2c2a28', tx: '#f5f4f3', tx2: '#a39e99', tx3: '#6f6a66' };
+const uiSpace = (g, W, H) => { const k = W / 600; g.scale(k, k); return H / k; };
+function rr(g, x, y, w, h, r, fill, stroke, lw = 2) { g.beginPath(); g.roundRect(x, y, w, h, r); if (fill) { g.fillStyle = fill; g.fill(); } if (stroke) { g.strokeStyle = stroke; g.lineWidth = lw; g.stroke(); } }
+function dot(g, x, y, r, fill) { g.beginPath(); g.arc(x, y, r, 0, 7); g.fillStyle = fill; g.fill(); }
+function tx(g, s, x, y, font, col, al = 'left', bl = 'alphabetic') { g.font = font; g.fillStyle = col; g.textAlign = al; g.textBaseline = bl; g.fillText(s, x, y); }
+function statusBar(g, W, col = UI.tx) {
+  tx(g, '9:41', 104, 68, '650 31px Inter', col, 'center');
+  for (let k = 0; k < 4; k++) rr(g, W - 198 + k * 10, 70 - 10 - k * 5, 7, 10 + k * 5, 2, col);
+  g.strokeStyle = col; g.lineCap = 'round'; g.lineWidth = 4.5; for (const r of [9, 17]) { g.beginPath(); g.arc(W - 132, 70, r, -Math.PI * 0.74, -Math.PI * 0.26); g.stroke(); } dot(g, W - 132, 68, 3.5, col);
+  rr(g, W - 104, 47, 48, 24, 8, null, 'rgba(245,244,243,0.5)', 2.5); rr(g, W - 100, 51, 34, 16, 4, col); rr(g, W - 53, 55, 4, 8, 2, 'rgba(245,244,243,0.5)');
+}
+// a straight-up navigation map: grid streets, your route up the middle (orange), optional red stretch ahead, moving
+// traffic ticks on the side streets. off = how far the map has scrolled (the car drives up the screen)
+function navMap(g, W, H, t, o = {}) {
+  g.fillStyle = '#1b1a19'; g.fillRect(0, 0, W, H);
+  const CX = 150, CY = 170, off = (t * 46) % CY;
+  for (let i = -1; i < 6; i++) for (let j = -1; j < 10; j++) { const r = rnd(i * 13 + j * 7, 4); g.fillStyle = r < 0.1 ? '#1f241d' : r < 0.55 ? '#232120' : '#201f1e'; g.fillRect(i * CX + 12 - 75, j * CY + 12 + off, CX - 24, CY - 24); }
+  g.strokeStyle = '#33302d'; g.lineWidth = 16; g.beginPath();
+  for (let i = -1; i < 6; i++) { g.moveTo(i * CX - 75, 0); g.lineTo(i * CX - 75, H); }
+  for (let j = -1; j < 10; j++) { g.moveTo(0, j * CY + off); g.lineTo(W, j * CY + off); }
+  g.stroke();
+  // the main road you're on
+  g.strokeStyle = '#3d3a37'; g.lineWidth = 30; g.beginPath(); g.moveTo(W / 2, H); g.lineTo(W / 2, 0); g.stroke();
+  for (let k = 0; k < 7; k++) { const y = ((k * 211 + t * 120) % (H + 80)) - 40; dot(g, 75 + (k % 2) * 300, y, 5, 'rgba(245,244,243,0.35)'); }
+  return { CX, CY, off };
+}
+function carMark(g, x, y, s = 1) {
+  dot(g, x, y, 46 * s, 'rgba(255,106,31,0.16)');
+  g.save(); g.shadowColor = 'rgba(0,0,0,0.55)'; g.shadowBlur = 16; dot(g, x, y, 28 * s, '#fff'); g.restore();
+  g.fillStyle = O; g.beginPath(); g.moveTo(x, y - 17 * s); g.lineTo(x + 13 * s, y + 13 * s); g.lineTo(x, y + 6 * s); g.lineTo(x - 13 * s, y + 13 * s); g.closePath(); g.fill();
+}
+function routeLine(g, pts, col, w, glow) {
+  g.lineCap = 'round'; g.lineJoin = 'round';
+  if (glow) { g.strokeStyle = hexA(col, 0.25); g.lineWidth = w + 16; g.beginPath(); pts.forEach(([x, y], i) => (i ? g.lineTo(x, y) : g.moveTo(x, y))); g.stroke(); }
+  g.strokeStyle = col; g.lineWidth = w; g.beginPath(); pts.forEach(([x, y], i) => (i ? g.lineTo(x, y) : g.moveTo(x, y))); g.stroke();
+}
+// red with crawling chevrons: reads as slow traffic, not just a colour
+function jamLine(g, x, y0, y1, t, w = 22) {
+  routeLine(g, [[x, y0], [x, y1]], RED, w, true);
+  g.save(); g.beginPath(); g.rect(x - w, y1, 2 * w, y0 - y1); g.clip();
+  g.strokeStyle = 'rgba(40,6,10,0.55)'; g.lineWidth = 4; for (let y = y0 + 40 - ((t * 14) % 40); y > y1 - 40; y -= 40) { g.beginPath(); g.moveTo(x - 8, y + 6); g.lineTo(x, y - 2); g.lineTo(x + 8, y + 6); g.stroke(); }
+  g.restore();
+}
+function banner(g, W, y, big, sub, subCol, icon = 'up') {
+  g.save(); g.shadowColor = 'rgba(0,0,0,0.6)'; g.shadowBlur = 30; rr(g, 22, y, W - 44, 150, 32, 'rgba(36,34,32,0.97)'); g.restore();
+  rr(g, 44, y + 24, 102, 102, 24, icon === 'warn' ? RED : O);
+  if (icon === 'warn') { tx(g, '!', 95, y + 77, '800 64px Inter', '#fff', 'center', 'middle'); }
+  else { g.fillStyle = '#fff'; g.beginPath(); g.moveTo(95, y + 44); g.lineTo(125, y + 80); g.lineTo(106, y + 80); g.lineTo(106, y + 108); g.lineTo(84, y + 108); g.lineTo(84, y + 80); g.lineTo(65, y + 80); g.closePath(); g.fill(); }
+  tx(g, big, 172, y + 72, '750 46px Inter', UI.tx); tx(g, sub, 172, y + 116, '600 28px Inter', subCol);
+}
+function etaSheet(g, W, H, eta, sub, subCol, extra) {
+  const y0 = H - 230;
+  g.save(); g.shadowColor = 'rgba(0,0,0,0.6)'; g.shadowBlur = 40; rr(g, 0, y0, W, 260, 46, 'rgba(31,29,28,0.98)'); g.restore();
+  rr(g, W / 2 - 36, y0 + 14, 72, 10, 5, '#4a4643');
+  tx(g, eta, 40, y0 + 98, '750 54px Inter', UI.tx); tx(g, sub, 40, y0 + 146, '600 28px Inter', subCol);
+  if (extra) { rr(g, W - 196, y0 + 52, 160, 70, 35, extra[1]); tx(g, extra[0], W - 116, y0 + 88, '700 27px Inter', '#fff', 'center', 'middle'); }
+  rr(g, W / 2 - 110, H - 34, 220, 10, 5, UI.tx);
+}
+// your phone: 'nav' (hook: jam ahead) | 'usual' (typical traffic for this hour) | 'routes' (A vs B) | 'berlin' (red street, no cars)
+function navScreen(g, W0, H0, mode, t) {
+  const H = uiSpace(g, W0, H0), W = 600, cx = W / 2, cy = H * 0.7;
+  if (mode === 'nav' || mode === 'usual') {
+    navMap(g, W, H, t);
+    const jq = mode === 'nav' ? ep(t, T.jam - 0.1, T.jam + 0.4) : 1;
+    routeLine(g, [[cx, cy], [cx, H * 0.58]], O, 22, true);
+    if (jq > 0) jamLine(g, cx, H * 0.58, lerp(H * 0.58, H * 0.2, jq), t);
+    routeLine(g, [[cx, H * 0.2], [cx, 0]], O, 22, true);
+    carMark(g, cx, cy);
+    if (jq > 0.5) { rr(g, cx + 40, H * 0.36, 186, 62, 31, 'rgba(31,29,28,0.95)'); dot(g, cx + 72, H * 0.36 + 31, 9, RED); tx(g, '+7 min', cx + 92, H * 0.36 + 32, '700 27px Inter', UI.tx, 'left', 'middle'); }
+    statusBar(g, W);
+    banner(g, W, 98, jq > 0.5 ? '3 km ahead' : '3 km', jq > 0.5 ? 'Heavy traffic' : 'Continue straight', jq > 0.5 ? RED : UI.tx2, jq > 0.5 ? 'warn' : 'up');
+    etaSheet(g, W, H, '24 min', '6.2 km · arrive 18:42', UI.tx2, jq > 0.5 ? ['Slow', RED] : null);
+    if (mode === 'usual') {
+      g.fillStyle = 'rgba(10,9,8,0.6)'; g.fillRect(0, 0, W, H);
+      const y = H * 0.24, h = 560, q = ep(t, CUT.USUAL, CUT.USUAL + 0.6);
+      g.save(); g.shadowColor = 'rgba(0,0,0,0.6)'; g.shadowBlur = 40; rr(g, 30, y, W - 60, h, 40, 'rgba(33,31,30,0.98)'); g.restore();
+      tx(g, 'Usual traffic', 62, y + 70, '750 40px Inter', UI.tx); tx(g, 'Tuesdays, this road', 62, y + 110, '550 26px Inter', UI.tx2);
+      const hrs = ['3p', '4p', '5p', '6p', '7p', '8p', '9p'], usual = [0.32, 0.5, 0.82, 0.95, 0.7, 0.42, 0.26], now = 3, bw = 52, gx = 66, base = y + h - 92;
+      hrs.forEach((s, i) => {
+        const x = gx + i * 68, hh = 300 * usual[i] * ease.out(clamp(q * 1.6 - i * 0.08));
+        rr(g, x, base - hh, bw, hh, 12, i === now ? O : '#46423f');
+        tx(g, s, x + bw / 2, base + 40, i === now ? '700 25px Inter' : '550 25px Inter', i === now ? O : UI.tx3, 'center');
+      });
+      // live is worse than usual right now: a red marker above the usual bar
+      const lq = ep(t, T.hour - 0.1, T.hour + 0.3), lx = gx + now * 68 + bw / 2, ly = base - 300 * 1.12;
+      if (lq > 0) { g.globalAlpha = lq; g.setLineDash([8, 8]); g.strokeStyle = RED; g.lineWidth = 4; g.beginPath(); g.moveTo(gx - 6, ly); g.lineTo(W - 70, ly); g.stroke(); g.setLineDash([]); dot(g, lx, ly, 14, RED); tx(g, 'Live now', W - 74, ly - 18, '700 25px Inter', RED, 'right'); g.globalAlpha = 1; }
+    }
+  }
+  if (mode === 'routes') {
+    navMap(g, W, H, 0);
+    const q = ep(t, T.predicts - 0.05, T.predicts + 0.6, ease.inOut), qb = ep(t, T.route - 0.1, T.route + 0.6, ease.inOut);
+    const A = [[cx, cy], [cx, H * 0.12]], B = [[cx, cy], [cx, H * 0.6], [cx - 150, H * 0.6], [cx - 150, H * 0.24], [cx, H * 0.24], [cx, H * 0.12]];
+    routeLine(g, A, '#5a5652', 22);
+    jamLine(g, cx, H * 0.55, lerp(H * 0.55, H * 0.28, q), t);
+    if (qb > 0) { const sub = subLine(B.map(([x, y]) => [x, y, 0]), 0, qb).map(([x, y]) => [x, y]); routeLine(g, sub, O, 22, true); }
+    carMark(g, cx, cy);
+    const sel = t > T.send - 0.1;
+    if (q > 0.4) { rr(g, cx + 34, H * 0.4, 200, 66, 33, 'rgba(31,29,28,0.96)', RED, 3); tx(g, '24 min', cx + 134, H * 0.4 + 34, '750 29px Inter', UI.tx, 'center', 'middle'); }
+    if (qb > 0.6) { rr(g, 22, H * 0.38, 180, 66, 33, sel ? O : 'rgba(31,29,28,0.96)', O, 3); tx(g, '17 min', 112, H * 0.38 + 34, '750 29px Inter', '#fff', 'center', 'middle'); }
+    statusBar(g, W);
+    banner(g, W, 98, sel ? 'Faster route' : 'Checking routes', sel ? 'Avoids the jam · 7 min saved' : 'Live + usual traffic', sel ? O : UI.tx2, 'up');
+    etaSheet(g, W, H, sel ? '17 min' : '24 min', sel ? 'Detour · arrive 18:35' : 'Main road · heavy traffic', sel ? O : RED, sel ? ['Go', O] : null);
+  }
+  if (mode === 'berlin') {
+    navMap(g, W, H, 0);
+    // a side street across the map turns red; no car icons on it at all
+    const y = H * 0.42, q = ep(t, CUT.PH2 - 0.1, CUT.PH2 + 0.5, ease.inOut);
+    routeLine(g, [[0, y], [W, y]], '#3d3a37', 30);
+    routeLine(g, [[W * 0.08, y], [lerp(W * 0.08, W * 0.92, q), y]], RED, 24, true);
+    tx(g, 'EMPTY STREET', W / 2, y - 34, '700 22px Inter', '#9e9995', 'center');
+    statusBar(g, W);
+    banner(g, W, 98, 'Heavy traffic', 'Slow · 2 km/h', RED, 'warn');
+    etaSheet(g, W, H, '0 cars', 'on this street', UI.tx2, ['Jam?', RED]);
+  }
+}
+function paintYour(t, mode) { ST.yours.s.draw(mode + Math.floor(t * 20), (g, W, H) => navScreen(g, W, H, mode, t)); }
+
+/* ---------------- camera */
+const CUTS = [];
+const cut = (t, f, s, o = {}) => CUTS.push({ t, f, s, ...o });
+const yp = ST.yours.top, JAMC = [(JAM0 + JAM1) / 2, -1000, 60];
+// t2 framings: the street scenes look from the other side (a + ~0.35 rad) so no frame matches the first cut
+cut(CUT.WAG, [wagX(CUT.WAG) + 70, BY, 60], 1.75, { a: 2.25, e: 0.9, pan: [WV * (CUT.BER - CUT.WAG), 0, 0], push: 1.08, sy: 470 });
+cut(CUT.BER, [wagX(CUT.BER) + 120, BY, 70], 0.8, { a: 2.15, e: 0.66, pan: [WV * (CUT.WALK - CUT.BER), 0, 0], sy: 560 });
+cut(CUT.WALK, [wagX(CUT.WALK) + 260, BY, 80], 0.48, { a: 2.35, e: 0.6, pan: [WV * (CUT.RED2 - CUT.WALK), 0, 0], sy: 500, cut: true });
+cut(CUT.RED2, [wagX(CUT.RED2), BY, 40], 0.14, { a: 2.3, e: 0.82, push: 1.1, sy: 470, cut: true });
+cut(CUT.PH2, [yp[0], yp[1], yp[2] + 4], 4.0, { e: 0.34, push: 1.07, sy: 440 });
+cut(CUT.ROAD, [JAMC[0] + 300, -1000, 60], 0.21, { a: 0.05, e: 1.0, push: 1.12, sy: 470 });
+cut(CUT.CARS, [1300, -900, 110], 0.42, { a: 0.0, e: 0.8, pan: [380, 0, 0], sy: 480 });
+cut(CUT.SHARE, [1500, -880, 160], 0.6, { a: 0.05, e: 0.9, pan: [200, 0, 0], sy: 560 });
+cut(CUT.DOTS, [1700, -880, 160], 0.6, { to: { f: [700, -300, 0], s: 0.062, a: -0.15, e: 0.76, sy: 470 }, dur: 1.8, ez: ease.inOut });
+cut(CUT.SLOW, [JAMC[0], -1000, 40], 0.16, { a: 0.05, e: 0.98, push: 1.14, sy: 470 });
+cut(CUT.SEND, [1000, 150, 0], 0.068, { a: -0.1, e: 0.8, push: 1.05, sy: 470 });
+cut(CUT.DRAW, [JAMC[0], -1000, 60], 0.2, { to: { f: [300, 0, 0], s: 0.05, a: -0.5, e: 0.76, sy: 470 }, dur: 1.5, ez: ease.inOut, cut: true });
+cut(CUT.YOU, [300, 0, 0], 0.05, { a: -0.5, to: { f: [M.carX(YOUCAR, CUT.YOU + 1.4), LANE_E, 140], s: 0.7, a: -0.2, e: 0.72, sy: 470 }, dur: 1.5, ez: ease.inOut, g0: true });
+const SHOTS = [];
+CUTS.forEach((c, i) => {
+  const nx = CUTS[i + 1] ? CUTS[i + 1].t : DURATION + 1, k = { t: c.t, d: 0, f: c.f, s: c.s, a: c.a ?? -0.7, e: c.e ?? 0.6, sy: c.sy ?? 450 };
+  // a new framing in the same diorama glides there (eased) instead of cutting; a different place still cuts
+  const pv = CUTS[i - 1], near = pv && Math.hypot(c.f[0] - pv.f[0], c.f[1] - pv.f[1]) < 1500 && !c.cut;
+  if (near) { k.d = Math.min(0.55, (nx - c.t) * 0.4); k.ez = ease.inOut; k.g = true; }
+  SHOTS.push(k);
+  if (c.to) SHOTS.push({ t: c.t + 0.001, d: c.dur, ez: c.ez, ...c.to });
+  else SHOTS.push({ t: c.t + 0.001, d: nx - c.t, ez: (x) => x, f: c.pan ? c.f.map((v, j) => v + c.pan[j]) : c.f, s: c.s * (c.push || 1), a: k.a + (c.da || 0), e: k.e, sy: k.sy });
+});
+const KICKS = [], SHAKES = [];
+const inShot = (t, a, b) => t >= a && t < b;
+
+/* ---------------- the world, frame by frame */
+const PING_P = 1.5;
+const glowAt = (t, s) => Math.exp(-Math.pow((t - s - 0.1) / 0.2, 2));
+function pings(t, t0, t1, p, col, R, dur = 1.8, period = PING_P) {
+  if (t < t0 || t > t1 + dur) return 0;
+  let hit = 0;
+  for (let s = t0 + Math.floor((t - t0) / period) * period; s >= t0 && s > t - dur; s -= period) { if (s <= t1) { ripple(t, s, p[0], p[1], p[2], col, R, dur); hit = Math.max(hit, glowAt(t, s)); } }
+  return hit;
+}
+const FACADES = []; scene.traverse((o) => { if (o.material && o.material.emissiveMap && !FACADES.includes(o.material)) FACADES.push(o.material); });
+const kmh = (c, t) => { const d = M.carX(c, t + 0.05) - M.carX(c, t - 0.05); return Math.abs(d / 0.1) * 0.036; };
+// which shots show the main road's traffic, the city dots, the Berlin street
+const onRoad = (t) => t >= CUT.ROAD;
+function world(t) {
+  linksReset(); ringI = 0; for (const m of RINGS) m.visible = false;
+  cam3(t, SHOTS, KICKS, SHAKES);
+  const fe = lerp(0.3, 0.9, clamp((cam.s - 0.05) / 0.5)); for (const m of FACADES) m.emissiveIntensity = fe;
+  CI.update(t, { on: 0 }); CI.dots.visible = false; for (const m of CI.movers) m.g.visible = false;
+  // traffic on the main road; each car carries a phone (a white glyph over the roof) from "phones inside them"
+  const road = onRoad(t), phA = ep(t, T.phones - 0.15, T.phones + 0.25) * (inShot(t, CUT.DOTS + 1.2, CUT.SEND) || inShot(t, CUT.DRAW + 0.6, CUT.YOU + 0.6) ? 0.35 : 1);
+  M.cars.forEach((c, k) => {
+    const x = M.carX(c, t), y = c.w ? LANE_W : LANE_E;
+    c.g.visible = road; c.g.position.set(x, y, 0);
+    const pa = road && t > CUT.CARS ? phA : 0, bob = 6 * Math.sin(t * 3 + k);
+    c.ph.show([x, y, 250 + bob], pa, 0.85 + 0.15 * ease.back(prog(t, T.phones - 0.15 + k * 0.03, T.phones + 0.3 + k * 0.03)));
+    // each phone tells Maps where it is: a short ping off the roof, staggered
+    if (pa > 0.5 && inShot(t, CUT.CARS, CUT.DOTS + 0.8) && x > -400 && x < 3600) pings(t, T.phones + 0.1 + ((k * 0.37) % 1.4), CUT.DOTS + 0.8, [x, y, 160], O, 150, 1.0, 1.4);
+  });
+  // "share where they are and how fast": three phones send a packet up to Maps
+  if (inShot(t, CUT.SHARE, CUT.DOTS + 0.6)) M.cars.filter((c) => !c.w && Math.abs(M.carX(c, t) - 1000) < 1300).slice(0, 4).forEach((c, k) => {
+    const x = M.carX(c, t); link(t, [[x, LANE_E, 280], [x, LANE_E, 2600]], T.share + k * 0.22, 0.5, CUT.DOTS + 0.6, O, { travel: true });
+    link(t, [[x, LANE_E, 280], [x, LANE_E, 2600]], T.fast + k * 0.22, 0.5, CUT.DOTS + 0.6, AMB, { travel: true });
+  });
+  // dots on every road (city scale); the jam stretch crowds up and turns red on "red"
+  const dA = inShot(t, CUT.DOTS, CUT.SEND) ? ep(t, T.dots - 0.4, T.dots + 0.2) : inShot(t, CUT.SEND, CUT.DRAW) ? 0.8 : t >= CUT.DRAW ? ep(t, CUT.DRAW + 0.1, CUT.DRAW + 0.6) : 0;
+  const redK = t > CUT.SLOW ? ep(t, T.marks - 0.1, T.red + 0.1) : 0;
+  M.updDots(t, dA, redK);
+  M.ovM.opacity = 0.1 * dA; M.dots.material.size = lerp(13, 22, clamp((0.2 - cam.s) / 0.15));
+  const jA = inShot(t, CUT.SLOW, CUT.SEND) ? redK * 0.85 : inShot(t, CUT.SEND, CUT.DRAW) || t >= CUT.DRAW ? 0.5 : 0;
+  M.setJam(JAM0 - 150, JAM1 + 100, LANE_E, jA);
+  if (inShot(t, CUT.SLOW, CUT.SEND)) pings(t, T.red - 0.05, CUT.SEND, [JAMC[0], LANE_E, 10], RED, 900, 1.4, 1.1);
+  // "no camera on that road": a crossed-out camera hangs over the jam; again on "isn't watching"
+  const camA = inShot(t, CUT.ROAD, CUT.CARS) ? ep(t, T.camera - 0.2, T.camera + 0.15)  : 0;
+  const camP = [JAMC[0] + 300, -1000, 900 + 20 * Math.sin(t * 2)];
+  HOLO.cam.show(camP, camA, 0.8 + 0.2 * ease.back(prog(t, T.camera - 0.2, T.camera + 0.2)));
+  // your car and the detour
+  const inSend = inShot(t, CUT.SEND, CUT.DRAW);
+  M.you.visible = inSend;
+  if (inSend) {
+    const u = 1400 + 2600 * ease.inOut(prog(t, T.sends - 0.1, CUT.DRAW + 0.4)) + 900 * prog(t, CUT.SEND, T.sends), [x, y, h] = pathAt(RB, u);
+    M.you.position.set(x, y, 0); M.you.rotation.z = h; HOLO.you.show([x, y, 380], 1, 1.4);
+    link(t, RA, CUT.SEND + 0.05, 0.6, CUT.DRAW, RED, { a: 0.85 });
+    link(t, RB, CUT.SEND + 0.35, 0.9, CUT.DRAW, O);
+  } else HOLO.you.show([0, 0, 0], 0);
+  // Berlin: the artist walks the red wagon of phones down an empty street; the street turns red behind it
+  const wx = wagX(t), wOn = inShot(t, CUT.WAG, CUT.PH2);
+  M.wagon.visible = wOn; M.artist.root.visible = wOn;
+  M.wagon.position.set(wx, BY - 40, 0); M.wagon.rotation.z = 0;
+  M.artist.root.position.set(wx + 175, BY - 40, 0); M.artist.root.rotation.z = 0; M.artist.pose('walk', wx / 120 * Math.PI * 2);
+  M.wagonGlow.position.set(wx, BY - 40, 140); M.wagonGlow.intensity = wOn ? 220 + 60 * Math.sin(t * 5) : 0;
+  if (wOn) pings(t, 0.2, CUT.PH2, [wx, BY - 40, 70], O, inShot(t, CUT.RED2, CUT.PH2) ? 700 : inShot(t, CUT.WAG, CUT.BER) ? 110 : 220, 1.3, 0.9);
+  const rq = inShot(t, CUT.RED2, CUT.PH2) ? ep(t, T.turned - 0.2, T.redB + 0.2, ease.inOut) : 0;
+  M.berOv.position.set(wx - 600 * rq, BY, 2.5); M.berOv.scale.x = Math.max(1, 4200 * rq); M.berM.opacity = 0.6 * rq;
+  // phone close-ups
+  if (inShot(t, CUT.PH2, CUT.ROAD)) paintYour(t, 'berlin');
+  if (inShot(t, CUT.PH2, CUT.ROAD)) pings(t, CUT.PH2 + 0.2, CUT.ROAD, [yp[0], yp[1], 38.5], RED, 110, 1.1, 0.8);
+  // the twist: the camera lands on one jammed car; its phone glyph turns into you
+  const yc = YOUCAR, yx = M.carX(yc, t);
+  if (t > CUT.YOU + 1.2) { yc.ph.show([yx, LANE_E, 260 + 6 * Math.sin(t * 3)], 1, 1.15 + 0.25 * ease.back(prog(t, T.your - 0.15, T.your + 0.3))); pings(t, T.your, DURATION, [yx, LANE_E, 200], O, 260, 1.4, 1.0); }
+}
+
+/* ---------------- HUD */
+const K = (k, v, c, o) => ({ k, v, c, ...o });
+function tags(t) {
+  hud.begin();
+  const H = (key, o) => hud.card(key, o, t), CH = (key, o) => hud.chip(key, o, t);
+  const pk = ST.yours.top, ph = [pk[0], pk[1], pk[2] + 64];
+  // Berlin story (opens the reel)
+  const wx = wagX(t);
+  CH('wag', { s: 'Little red wagon', w: [wx - 50, BY - 80, 30], x: -230, y: 150, rel: true, a: T.wagon - 0.1, b: CUT.BER });
+  CH('w99', { s: '99 phones', w: [wx, BY - 40, 60], x: 40, y: -90, rel: true, a: T.d99 - 0.05, b: CUT.RED2, hot: true, c: O });
+  H('nav', K('Every phone', 'Running Google Maps', O, { w: [wx, BY - 40, 60], x: 300, y: 600, a: T.d99 + 0.4, b: CUT.WALK }));
+  CH('empty', { s: 'Cars on this street: 0', w: [wx + 450, BY, 10], x: -40, y: 70, rel: true, a: T.empty - 0.05, b: CUT.RED2 });
+  H('turned', K('Google Maps', 'Heavy traffic', RED, { w: [wx + 300, BY, 10], x: 300, y: 590, a: T.redB - 0.2, b: CUT.PH2, big: true }));
+  H('made', K('A traffic jam made of', 'Phones, not cars', O, { w: [pk[0], pk[1], pk[2] + 64], x: 24, y: 150, a: T.made - 0.1, b: CUT.ROAD, big: true }));
+  // why it worked
+  H('cam', K('Traffic cameras', 'None on this road', RED, { w: [JAMC[0] + 300, -1000, 900], x: 30, y: 560, a: T.camera - 0.05, b: CUT.CARS }));
+  const jc = M.cars.filter((c) => !c.w).sort((p, q) => Math.abs(M.carX(p, t) - 1500) - Math.abs(M.carX(q, t) - 1500))[0];
+  H('phones', K('Maps reads', 'The phones inside', O, { w: [M.carX(jc, t), LANE_E, 250], x: 30, y: 200, a: T.reading - 0.1, b: CUT.SHARE, big: true }));
+  H('where', K('Each phone shares', 'Where it is', O, { x: 300, y: 196, a: T.where - 0.1, b: CUT.DOTS }));
+  H('fast', K('And', 'How fast it moves', AMB, { x: 300, y: 278, a: T.fast - 0.1, b: CUT.DOTS }));
+  if (inShot(t, CUT.SHARE, CUT.DOTS)) {
+    const near = M.cars.filter((c) => Math.abs(M.carX(c, t) - 1100) < 1400).sort((p, q) => M.carX(p, t) - M.carX(q, t));
+    near.filter((c) => { const q = P(M.carX(c, t), c.w ? LANE_W : LANE_E, 300); return q[0] > 40 && q[0] < 500 && q[1] > 150 && q[1] < 700; }).slice(0, 4).forEach((c, k) => { const v = Math.round(kmh(c, t) + 1.5 * Math.sin(t * 2.3 + k)); CH('spd' + k, { s: `${v} km/h`, w: [M.carX(c, t), c.w ? LANE_W : LANE_E, 300], x: -34, y: -58, rel: true, a: T.fast + 0.15 + k * 0.1, b: CUT.DOTS, hot: v < 20, c: v < 20 ? RED : O, lead: false }); });
+  }
+  H('dots', K('Maps combines them', 'Dots on every road', O, { x: 30, y: 590, a: T.dots - 0.1, b: CUT.SLOW }));
+  H('slow', K('Lots of dots', 'Crawling · 12 km/h', AMB, { w: [JAMC[0], LANE_E, 120], x: 30, y: 196, a: T.slow - 0.1, b: CUT.SEND }));
+  H('red', K('Maps marks it', 'Red', RED, { w: [JAMC[0] + 400, LANE_E, 10], x: 300, y: 590, a: T.red - 0.1, b: CUT.SEND, big: true }));
+  CH('rA', { s: 'Main road · 24 min', w: [JAMC[0], LANE_E, 10], x: -60, y: 50, rel: true, a: CUT.SEND + 0.5, b: CUT.DRAW, hot: true, c: RED });
+  CH('rB', { s: 'Detour · 17 min', w: [1000, 1140, 10], x: -60, y: -60, rel: true, a: CUT.SEND + 0.9, b: CUT.DRAW, hot: true, c: O });
+  H('send', K('Maps sends you', 'Around the jam', O, { x: 30, y: 590, a: T.around - 0.2, b: CUT.DRAW, big: true }));
+  // twist
+  H('stuck', K('Stuck in traffic?', 'Look at the red line', RED, { x: 30, y: 200, a: T.stuck - 0.1, b: CUT.YOU + 0.3 }));
+  const yx = M.carX(YOUCAR, t);
+  CH('you', { s: 'Your phone', w: [yx, LANE_E, 320], x: -40, y: -64, rel: true, a: T.your - 0.1, b: CUT.END, hot: true, c: O });
+  H('draw', K('Your phone is', 'Helping draw it', O, { x: 300, y: 590, a: T.helping - 0.1, b: CUT.END, big: true }));
+  hud.end();
+}
+
+/* ---------------- reel config */
+const WAGSVG = '<svg width="44" height="44" viewBox="0 0 44 44" fill="none" stroke="#ff6a1f" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"><rect x="6" y="16" width="26" height="13" rx="2"/><circle cx="12" cy="33" r="3"/><circle cx="26" cy="33" r="3"/><path d="M32 22 L40 14"/><path d="M10 16 v-4 M15 16 v-5 M20 16 v-4 M25 16 v-5"/></svg>';
+const REEL = {
+  shots: [{ t: 0, f: [0, 0, 0], s: 1, a: -0.7, e: 0.6, sy: 480 }], world, tags,
+  tools: [
+    { a: -0.4, b: CUT.BER + 0.05, svg: WAGSVG, name: 'A fake traffic jam', sub: '99 PHONES IN A WAGON · AN EMPTY STREET', src: 'SIMON WECKERT · “GOOGLE MAPS HACKS” · BERLIN · FEB 2020' },
+  ],
+  slams: [],
+  bad: ['jam', 'camera', 'red', 'slow', 'faked'],
+  good: ['phones', 'dots', 'fast', 'usually', 'map', 'wagon', 'around'],
+  tiles: [['◎', 'AIRTAGS'], ['⇄', 'LOAD<br>BALANCING'], ['⚡', 'CACHING']],
+  end: CUT.END, follow: CUT.END + 0.9,
+  cover: { k: 'GOOGLE MAPS', t: 'FAKE TRAFFIC', at: CUT.RED2 + 1.2, zoom: 0.95, dy: 40 },
+};
+</script>
+<script src="lib/overlay.js"></script>
+<script>
+// paint the canvas textures again once the web fonts are in
+{ const r0 = window.ready; window.ready = async () => { await r0(); ctexRedraw(); ST.yours.s._k = null; }; }
+if (/cover/.test(location.hash)) { const c = document.createElement('style'); c.textContent = '#hud { display: none !important; } #stage { background: #070707 !important; }'; document.head.appendChild(c); }
+</script>
+<script src="../_ember/play.js"></script>
+</body>
+</html>

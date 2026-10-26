@@ -1,0 +1,14 @@
+0.5-3.8s Cleo: Claude, the client wants to meet my twelve employees.
+4.1-6.8s Claude: Your twelve employees are me in four tabs.
+7.1-10.7s Cleo: They're departments! Design, finance, legal!
+11.0-13.6s Claude: Legal is finance with longer sentences.
+13.9-16.2s Cleo: Help me write back. They hate the logo.
+16.5-18.9s Claude: Design says it's bold. Delete my first line.
+19.2-22.1s Cleo: And finance. They owe us eight thousand dollars.
+22.4-25.4s Claude: Finance says pay first. Legal agrees.
+25.7-27.1s Cleo: Their legal team replied!
+27.6-28.7s Claude: Read the first line.
+29.2-31.2s Cleo: Sure! Here's your legal reply.
+31.8-32.7s Claude: Hello, me.
+33.0-35.4s Cleo: Their twelve employees are you too?
+36.0-38.2s Claude: Then this meeting could have been two prompts.

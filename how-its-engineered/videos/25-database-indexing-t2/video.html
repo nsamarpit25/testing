@@ -1,0 +1,636 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- 25 Database indexing, v2. A perspective three.js world with bloom (own camera + post pass, replacing overlay.js's render).
+     World: a TABLE (six long columns of glowing row slabs running into the fog, one slab = one user) and, on its left, the
+     email INDEX lane: one slab per user, sorted A→Z, with section letters. Hook: a login is found through the index in 4 ms;
+     the CREATE INDEX line is deleted, the lane burns away and every login scans rows. Table: rows are in no order; a scanner
+     reads row after row, then every column at once (100M). Index: the email cells lift off the rows into the lane, then
+     re-sort; arcs point back to rows. Lookup: not from the top, jump to S, narrow in three hops, arc to sam's row. Book page.
+     Catch: two more index lanes, a new user has to be inserted into all three; keep email, drop the rest. Beats come from
+     voice/words.json via at(). Shared pieces live in ../_ember/. -->
+<link rel="stylesheet" href="../_ember/fonts.css">
+<link rel="stylesheet" href="../_ember/reel.css">
+<style>
+#cap { top: 728px !important; }   /* subtitles below the stacks, still clear of Instagram's caption bar (ends 768 < 790) */
+#cap .box { background: linear-gradient(90deg, transparent, rgba(8,7,6,0.82) 16%, rgba(8,7,6,0.82) 84%, transparent); }   /* soft band so words never mix with row text behind */
+#lg { position: absolute; left: 84px; right: 84px; top: 128px; opacity: 0; background: rgba(16,14,12,0.95); border: 1px solid rgba(255,176,112,0.35); border-radius: 16px; padding: 14px 16px 16px; box-shadow: 0 18px 50px rgba(0,0,0,0.7); font-family: Inter; }
+#lg .h { font: 600 10px/1 Mono; color: #77706A; letter-spacing: 1px; display: flex; align-items: center; gap: 6px; }
+#lg .h i { width: 6px; height: 6px; border-radius: 50%; background: #7CF29A; }
+#lg .t { font: 800 20px/1 Inter; margin: 12px 0 10px; letter-spacing: -0.4px; }
+#lg .f { height: 34px; border-radius: 9px; background: #1c1916; border: 1px solid #2c2722; display: flex; align-items: center; padding: 0 11px; font: 600 14px/1 Mono; color: #F2EEE8; }
+#lg .f .caret { height: 16px; width: 2px; }
+#lg .b { display: flex; align-items: center; gap: 14px; margin-top: 10px; }
+#lgB { width: 92px; height: 34px; border-radius: 9px; background: #FF6A1F; color: #0b0a09; font: 900 13px/34px Inter; text-align: center; }
+#lgS { font: 800 16px/1 Mono; letter-spacing: 0.5px; }
+#ln { position: absolute; left: 46px; right: 46px; top: 300px; opacity: 0; background: rgba(12,11,10,0.96); border: 1px solid rgba(255,106,31,0.35); border-radius: 10px; overflow: hidden; box-shadow: 0 14px 34px rgba(0,0,0,0.6); }
+#ln .tb { height: 24px; display: flex; align-items: center; gap: 5px; padding: 0 10px; border-bottom: 1px solid rgba(255,255,255,0.06); font: 600 10px/1 Mono; color: #9c948c; }
+#ln .tb i { width: 7px; height: 7px; border-radius: 50%; background: #2c2925; display: inline-block; }
+#ln .tb b { color: #FF6A1F; font-weight: 600; margin-left: 6px; }
+#lnS { margin-left: auto; font-weight: 800; letter-spacing: 1.2px; }
+#ln .cd { position: relative; height: 42px; display: flex; align-items: center; padding: 0 14px; font: 700 14.5px/1 Mono; white-space: pre; color: #d9d2ca; }
+#lnX { position: absolute; left: 12px; top: 20px; height: 3px; border-radius: 2px; background: #FF4632; box-shadow: 0 0 10px #FF4632; }
+#bk { position: absolute; left: 62px; right: 62px; top: 150px; opacity: 0; background: rgba(20,17,15,0.96); color: #efe6d8; border: 1px solid rgba(255,176,112,0.35); border-radius: 12px; padding: 20px 22px 16px; box-shadow: 0 24px 60px rgba(0,0,0,0.75); }
+#bk .hd { font: italic 400 36px/1 Instrument; letter-spacing: -0.5px; border-bottom: 1px solid rgba(239,230,216,0.16); padding-bottom: 10px; margin-bottom: 6px; display: flex; align-items: baseline; }
+#bk .hd span { margin-left: auto; font: 700 10px/1 Mono; letter-spacing: 2px; color: #9c948c; font-style: normal; }
+#bk .e { display: flex; align-items: baseline; font: 400 22px/1 Instrument; padding: 6px 8px; border-radius: 6px; }
+#bk .e .d { flex: 1; border-bottom: 2px dotted rgba(239,230,216,0.22); margin: 0 8px; transform: translateY(-5px); }
+#bk .e .p { font: 700 15px/1 Mono; color: #9c948c; }
+#bk .e.on .p { color: #FFB070; }
+#bk .e.on { background: rgba(255,106,31,0.14); box-shadow: inset 0 0 0 1.5px #FF6A1F, 0 0 24px rgba(255,106,31,0.25); }
+#bkP { margin-top: 10px; display: flex; align-items: center; gap: 10px; font: 800 13px/1 Mono; letter-spacing: 1.2px; color: #9c948c; }
+#bkP b { background: #FF6A1F; color: #0b0a09; padding: 7px 10px; border-radius: 6px; }
+.lbl { background: rgba(12,11,10,0.82); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="world">
+    <canvas id="cv" width="1080" height="1920"></canvas>
+    <div class="layer" id="lbls"></div>
+  </div>
+</div>
+<script src="../../tools/lib.js"></script>
+<script src="voice/words.js"></script>
+<script src="../_ember/three.js"></script>
+<script src="../_ember/world.js"></script>
+<script src="../_ember/base.js"></script>
+<script>
+for (let i = 0; i < 8; i++) ORBS.push({ core: orbSprite(9), glow: orbSprite(34), trail: [0, 1, 2, 3, 4].map(() => orbSprite(10)) });
+
+/* ---------------- beats */
+const T = {
+  finds: at('finds'), ms: at('milliseconds'), del: at('drop'), line1: at('index'), every1: at('logins'), seconds: at('seconds'), whats: at('whats'),
+  users2: at('users', 2), table: at('table'), row1: at('row'), order: at('order'), byDef: at('without'), reads: at('scan'), finds2: at('row', 3),
+  m100: at('100', 2), read: at('read'), every2: at('every'),
+  that2: line(2).start, index1: at('index', 4), separate: at('separate'), column: at('column'), sorted: at('sorted'), points: at('points'),
+  because: at('because'), never: at('doesnt'), jumps: at('jumps'), S: at('s'), narrows: at('narrows'), hops: at('hops'), lands: at('lands'), exact: at('exact'), row5: at('row', 5),
+  like2: at('like', 2), find: at('find'), page: at('page'), skip: at('skip'),
+  catch_: at('catch'), every3: at('every', 2), space: at('space'), saving: at('saving'), slower: at('slower'), each3: at('each', 3), so: at('so'), search1: at('search'), everything: at('everything'),
+  dbs: line(6).start, id: at('primary'), postgres: at('postgres'), mysql: at('mysql'), search2: at('search', 2), make: at('make'), ifv: at('if'), follow: at('follow'),
+};
+
+/* ---------------- layout: Z up, rows run along +y */
+const PY = 28, RD = 22, RH = 5, NR = 234;                 // row pitch, slab depth, slab height, rows per column (= lane slots)
+const TX = 110, TW = 170, TC = 6, TG = 200;               // table: column 0 centre, slab width, columns, column spacing
+const IX = -90, IW = 120, NX = -250, CX = -410;           // index lanes: email, name, city
+const colX = (c) => TX + c * TG, rowY = (r) => r * PY;
+const NEAR = ['max', 'ana', 'zoe', 'ben', 'cara', 'kim', 'abby', 'leo', 'dev', 'ivy', 'bo', 'eli', 'raj', 'fay', 'gus', 'adam'];   // table rows 0..15
+const SLOT = { abby: 1, adam: 3, ana: 6, ben: 10, bo: 14, cara: 20, dev: 30, eli: 38, fay: 49, gus: 57, ivy: 78, kim: 94, leo: 101, max: 109, raj: 153, zoe: 232,
+  sal: 162, sam: 163, sara: 164, sean: 165, sid: 166, sky: 167, sol: 168, sue: 169, sven: 170 };    // sorted place in the lane (9 slots per letter)
+const SROW = { sal: 40, sam: 150, sara: 77, sean: 201, sid: 118, sky: 63, sol: 180, sue: 99, sven: 222 };
+const NAME = {}; NEAR.forEach((n, r) => (NAME[r] = n)); for (const n in SROW) NAME[SROW[n]] = n;
+const SORT = (() => {                                      // table row r → its slot in the sorted lane
+  const s = new Array(NR).fill(-1), used = new Set();
+  for (const r in NAME) { s[r] = SLOT[NAME[r]]; used.add(s[r]); }
+  const free = [...Array(NR).keys()].filter((j) => !used.has(j)).sort((a, b) => rnd(a, 9) - rnd(b, 9));
+  let k = 0; for (let r = 0; r < NR; r++) if (s[r] < 0) s[r] = free[k++];
+  return s;
+})();
+const SHUF = [9, 3, 14, 0, 11, 6, 1, 15, 4, 12, 7, 2, 10, 13, 5, 8];   // near rows after "in no order"
+const SAM = 150, SAMJ = 163, INSJ = 7;                    // sam's row, sam's lane slot, where the new user is inserted
+const uid = (r) => 1000 + Math.floor(rnd(r, 5) * 9000);
+const cap1 = (s) => s[0].toUpperCase() + s.slice(1);
+
+// scan: row after row, then faster and faster
+const SC0 = T.reads, SC1 = T.finds2 - 0.25;
+const scanRows = (t) => Math.min(TC * NR, Math.max(0, (t - SC0) * 3.4) + 95 * Math.pow(Math.max(0, t - SC1), 2.5));   // one scanner, column after column
+const rowsRead = (t) => (t < SC1 ? Math.floor(scanRows(t)) + 1
+  : Math.round(Math.exp(lerp(Math.log(Math.floor(scanRows(SC1)) + 1), Math.log(1e8), ease.inOut(prog(t, SC1, T.read + 0.05))))));
+const LIFT = T.index1 - 0.12;                              // email cells start lifting off the rows
+const INS = T.slower + 0.3;                                // the new user is slotted into each index
+const qIns = (t, k = 0) => ep(t, INS + k * 0.12, INS + 0.45 + k * 0.12, ease.inOut);
+
+/* ---------------- camera: perspective shots {t, d, p (position), l (look at), f (fov)} */
+const pcam = new TH.PerspectiveCamera(44, 540 / 960, 5, 20000); pcam.up.set(0, 0, 1);
+const SHOTS = [
+  { t: 0, p: [330, 3440, 560], l: [10, 4330, 0], f: 46 },
+  { t: 0.01, d: 2.6, p: [250, 3600, 430], l: [10, 4330, 0], f: 46, e: ease.out },
+  { t: T.every1 - 0.1, d: 2.6, p: [560, 3150, 980], l: [260, 4400, 0], f: 48 },
+  { t: T.users2 - 0.3, d: 1.1, p: [84, -280, 540], l: [84, 115, 0], f: 40 },
+  { t: T.finds2 - 0.3, d: 1.7, p: [640, -1000, 1500], l: [560, 1900, 0], f: 46 },
+  { t: T.every2 - 0.1, d: 1.2, p: [600, -760, 1200], l: [560, 1900, 0], f: 44 },
+  { t: T.that2 - 0.25, d: 1.1, p: [-15, -480, 440], l: [-25, 230, 0], f: 42 },
+  { t: T.sorted - 0.2, d: 1.2, p: [-55, -430, 410], l: [-35, 260, 0], f: 42 },
+  { t: T.because - 0.15, d: 0.9, p: [-90, -340, 180], l: [-90, 390, 0], f: 50 },
+  { t: T.jumps - 0.04, d: 0.75, p: [-90, 4170, 220], l: [-90, 4640, 0], f: 48 },
+  { t: T.narrows - 0.1, d: 0.9, p: [-40, 4350, 240], l: [-95, 4590, 0], f: 44 },
+  { t: T.lands - 0.15, d: 0.9, p: [320, 3820, 600], l: [40, 4290, 0], f: 46 },
+  { t: T.catch_ - 0.25, d: 1.2, p: [-190, -1250, 1350], l: [-100, 190, 0], f: 48 },   // wide enough for city lane → new user's row, clear of IG's buttons
+  { t: T.each3, d: 2.6, p: [-160, -1350, 1350], l: [-85, 170, 0], f: 48 },
+  { t: T.dbs - 0.25, d: 6.5, p: [420, -720, 720], l: [30, 320, 0], f: 44 },
+];
+// t2: new angles — orbit each shot around its target (alternating sides), a touch lower and wider
+const ORBIT = [0.26, -0.22, 0.3, -0.24, 0.2, -0.26, 0.28, -0.2, 0.18, -0.22, 0.24, -0.26, 0.2, -0.18, 0.3];
+SHOTS.forEach((s, i) => {
+  const a = ORBIT[i % ORBIT.length], dx = s.p[0] - s.l[0], dy = s.p[1] - s.l[1];
+  s.p = [s.l[0] + dx * Math.cos(a) - dy * Math.sin(a), s.l[1] + dx * Math.sin(a) + dy * Math.cos(a), s.p[2] * (i % 2 ? 0.9 : 1.06)];
+  s.f += 2;
+});
+const KICKS = [[T.ms, 0.04], [T.line1, 0.05], [T.seconds, 0.04], [T.order, 0.03], [T.m100, 0.04], [T.every2, 0.05], [T.index1, 0.05], [T.sorted, 0.04],
+  [T.points, 0.03], [T.S, 0.04], [T.hops, 0.04], [T.lands, 0.04], [T.space, 0.03], [INS, 0.04], [T.search1, 0.04], [T.everything, 0.03], [T.postgres, 0.03], [T.mysql, 0.03]];
+const SHAKES = [[T.line1, 5, 0.3], [T.every2, 8, 0.45]];
+function shoot(t) {
+  let p = SHOTS[0].p.slice(), l = SHOTS[0].l.slice(), f = SHOTS[0].f;
+  for (let i = 1; i < SHOTS.length; i++) {
+    const k = SHOTS[i]; if (t < k.t) break;
+    const q = k.d ? (k.e || ease.inOut)(prog(t, k.t, k.t + k.d)) : 1;
+    p = p.map((v, j) => lerp(v, k.p[j], q)); l = l.map((v, j) => lerp(v, k.l[j], q)); f = lerp(f, k.f, q);
+  }
+  let kick = 0;
+  for (const [t0, amp] of KICKS) { const dt = t - t0; if (dt > 0 && dt < 1.2) kick += amp * (dt < 0.05 ? dt / 0.05 : Math.exp(-(dt - 0.05) * 6)); }
+  let sx = 0, sy = 0;
+  for (const [t0, amp, dur] of SHAKES) { const dt = t - t0; if (dt > 0 && dt < dur) { const k = amp * (1 - dt / dur); sx += k * Math.sin(t * 91); sy += k * Math.cos(t * 67); } }
+  pcam.position.set(p[0] + 6 * Math.sin(t * 0.37), p[1] + 6 * Math.cos(t * 0.29), p[2] + 4 * Math.sin(t * 0.23));
+  pcam.lookAt(l[0] + sx, l[1], l[2] + sy);
+  pcam.fov = f * (1 - kick); pcam.updateProjectionMatrix(); pcam.updateMatrixWorld();
+  cam.f = l;
+  const d = Math.hypot(p[0] - l[0], p[1] - l[1], p[2] - l[2]);
+  scene.fog.near = d * 0.9; scene.fog.far = d * 3.4;
+}
+const _pv = new TH.Vector3();
+P = function (x, y, z) { _pv.set(x, y, z).project(pcam); return [(_pv.x + 1) * 270, (1 - _pv.y) * 480, _pv.z]; };
+
+/* ---------------- the stage: a longer floor and grid */
+floor.scale.set(2.2, 2.2, 1); floor.position.set(0, 3000, -0.5);
+scene.children.filter((o) => o.type === 'LineSegments').forEach((o) => scene.remove(o));
+(() => {
+  const pts = [], S = 56;
+  for (let x = -2800; x <= 3200; x += S) pts.push(x, -2000, 0, x, 8400, 0);
+  for (let y = -2000; y <= 8400; y += S) pts.push(-2800, y, 0, 3200, y, 0);
+  const geo = new TH.BufferGeometry(); geo.setAttribute('position', new TH.Float32BufferAttribute(pts, 3));
+  const m = new TH.LineSegments(geo, new TH.LineBasicMaterial({ color: 0x2a221c, transparent: true, opacity: 0.5, fog: true }));
+  m.position.z = 0.05; scene.add(m);
+})();
+
+/* ---------------- slabs: instanced boxes with a glowing rim texture, tinted per instance */
+function rimTex(dividers) {
+  const c = document.createElement('canvas'); c.width = 256; c.height = 64; const g = c.getContext('2d');
+  g.fillStyle = 'rgb(58,58,58)'; g.fillRect(0, 0, 256, 64);
+  g.strokeStyle = '#fff'; g.lineWidth = 6; g.strokeRect(3, 3, 250, 58);
+  g.fillStyle = 'rgba(255,255,255,0.45)'; for (const d of dividers) g.fillRect(d * 256 - 1.5, 10, 3, 44);
+  const tx = new TH.CanvasTexture(c); tx.colorSpace = TH.SRGBColorSpace; tx.anisotropy = 8; return tx;
+}
+const TX_ROW = rimTex([0.2, 0.7]), TX_IDX = rimTex([]);
+function slabs(n, tex) {
+  const geo = new TH.BoxGeometry(1, 1, 1); geo.translate(0, 0, 0.5);
+  const m = new TH.InstancedMesh(geo, new TH.MeshBasicMaterial({ map: tex, toneMapped: false, fog: true }), n);
+  m.instanceMatrix.setUsage(TH.DynamicDrawUsage); m.setColorAt(0, new TH.Color()); m.instanceColor.setUsage(TH.DynamicDrawUsage);
+  m.frustumCulled = false; scene.add(m); return m;
+}
+const TBL = slabs(TC * NR + 1, TX_ROW), LE = slabs(NR + 1, TX_IDX), LN = slabs(NR + 1, TX_IDX), LC = slabs(NR + 1, TX_IDX);
+const CO = { O: C(O), O2: C(O2), OK: C(OK), RED: C(RED), AMB: C(AMB), WH: C(WH), DIM: C(DIM) };
+const _o = new TH.Object3D(), _c = new TH.Color(), _c2 = new TH.Color();
+const tint = (a, k, b, m = 0) => (b ? _c.copy(a).lerp(b, clamp(m)) : _c.copy(a)).multiplyScalar(k);
+function put(M, i, x, y, z, w, d, h, col) {
+  _o.position.set(x, y, z); _o.scale.set(Math.max(0.001, w), Math.max(0.001, d), Math.max(0.001, h)); _o.updateMatrix();
+  M.setMatrixAt(i, _o.matrix); M.setColorAt(i, col);
+}
+const hide = (M, i) => put(M, i, 0, 0, -50, 0, 0, 0, _c.setRGB(0, 0, 0));
+const done = (M) => { M.instanceMatrix.needsUpdate = true; M.instanceColor.needsUpdate = true; };
+
+/* ---------------- text decals lying on top of slabs (redrawn only when the text or colour changes) */
+function lbl3(w, d) {
+  const W_ = 512, H_ = Math.round(512 * d / w), c = document.createElement('canvas'); c.width = W_; c.height = H_;
+  const g = c.getContext('2d'), tex = new TH.CanvasTexture(c); tex.colorSpace = TH.SRGBColorSpace; tex.anisotropy = 8;
+  const mat = new TH.MeshBasicMaterial({ map: tex, transparent: true, toneMapped: false, depthWrite: false, fog: true });
+  mat.color.setScalar(0.74);
+  const m = new TH.Mesh(new TH.PlaneGeometry(w, d), mat); m.renderOrder = 3; m.visible = false; scene.add(m);
+  const o = { m, key: '' };
+  o.set = (key, fn, x, y, z, a, sx = 1) => {
+    m.visible = a > 0.01; if (!m.visible) return;
+    if (key !== o.key) { o.key = key; g.clearRect(0, 0, W_, H_); fn(g, W_, H_); tex.needsUpdate = true; }
+    m.position.set(x, y, z); m.scale.set(sx, 1, 1); mat.opacity = a;
+  };
+  return o;
+}
+const rowText = (r, name, col) => (g, W_, H_) => {
+  g.textBaseline = 'middle'; g.textAlign = 'left';
+  g.fillStyle = '#9c948c'; g.font = `700 ${Math.round(H_ * 0.4)}px Mono`; g.fillText('#' + uid(r), W_ * 0.035, H_ * 0.53);
+  g.fillStyle = col; g.font = `800 ${Math.round(H_ * 0.5)}px Mono`; g.fillText(name + '@mail.com', W_ * 0.225, H_ * 0.53);
+  g.fillStyle = '#9c948c'; g.font = `700 ${Math.round(H_ * 0.42)}px Inter`; g.fillText(cap1(name), W_ * 0.73, H_ * 0.53);
+};
+const laneText = (txt, col) => (g, W_, H_) => {
+  g.textBaseline = 'middle'; g.textAlign = 'center'; g.fillStyle = col; g.font = `800 ${Math.round(H_ * 0.42)}px Mono`; g.fillText(txt, W_ / 2, H_ * 0.53);
+};
+const TLB = {}; [...Array(16).keys(), SAM].forEach((r) => (TLB[r] = lbl3(TW - 6, RD - 3)));
+const NEWLB = lbl3(TW - 6, RD - 3);
+const LLB = {}; for (const r in NAME) LLB[r] = lbl3(IW - 6, RD - 3);
+const INSLB = [lbl3(IW - 6, RD - 3), lbl3(IW - 6, RD - 3), lbl3(IW - 6, RD - 3)];
+const HEAD = lbl3(TW, 14);
+
+// section letters beside the email lane (drawn on the first frame, once the fonts are in)
+const GLY = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map((ch) => {
+  const c = document.createElement('canvas'); c.width = c.height = 128; const tx = new TH.CanvasTexture(c); tx.colorSpace = TH.SRGBColorSpace;
+  const s = new TH.Sprite(new TH.SpriteMaterial({ map: tx, transparent: true, depthWrite: false, toneMapped: false })); s.visible = false; scene.add(s);
+  return { s, c, tx, ch };
+});
+let glyDrawn = false;
+function drawGlyphs() {
+  for (const G of GLY) { const g = G.c.getContext('2d'); g.clearRect(0, 0, 128, 128); g.fillStyle = '#fff'; g.font = '900 100px Inter'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(G.ch, 64, 70); G.tx.needsUpdate = true; }
+  glyDrawn = true;
+}
+
+/* ---------------- scanner bars, beams, brackets */
+const TX_BAR = (() => {
+  const c = document.createElement('canvas'); c.width = 4; c.height = 64; const g = c.getContext('2d'), gr = g.createLinearGradient(0, 0, 0, 64);
+  gr.addColorStop(0, 'rgba(255,255,255,0)'); gr.addColorStop(0.4, 'rgba(255,255,255,0.3)'); gr.addColorStop(0.5, 'rgba(255,255,255,1)'); gr.addColorStop(0.6, 'rgba(255,255,255,0.3)'); gr.addColorStop(1, 'rgba(255,255,255,0)');
+  g.fillStyle = gr; g.fillRect(0, 0, 4, 64); const tx = new TH.CanvasTexture(c); tx.colorSpace = TH.SRGBColorSpace; return tx;
+})();
+const BARS = [...Array(30)].map(() => {
+  const m = new TH.Mesh(new TH.PlaneGeometry(1, 1), new TH.MeshBasicMaterial({ map: TX_BAR, transparent: true, blending: TH.AdditiveBlending, depthWrite: false, toneMapped: false }));
+  m.visible = false; m.renderOrder = 2; scene.add(m); return m;
+});
+let barI = 0;
+function bar(x, y, w, col, a) {
+  if (barI >= BARS.length || a < 0.01) return; const m = BARS[barI++];
+  m.visible = true; m.position.set(x, y, RH + 2); m.scale.set(w, 34, 1); m.material.color.set(col).multiplyScalar(1.4 * a);
+}
+function beam() {
+  const mk = (w, o) => { const l = new TH.Line2(new TH.LineGeometry(), lineMat(OK, w, o)); l.renderOrder = 4; l.visible = false; scene.add(l); return l; };
+  const b = { core: mk(2.6, {}), glow: mk(12, { add: true, op: 0.25 }) };
+  b.set = (pts, q, col, a) => {
+    const on = a > 0.01 && q > 0.002; b.core.visible = b.glow.visible = on; if (!on) return;
+    const flat = sub(pts, q).flat();
+    for (const l of [b.core, b.glow]) { l.geometry.dispose(); l.geometry = new TH.LineGeometry(); l.geometry.setPositions(flat); l.material.color.set(col); }
+    b.core.material.opacity = a; b.glow.material.opacity = 0.3 * a;
+  };
+  return b;
+}
+const BEAMS = [...Array(8)].map(beam), BRK = beam();
+const arc = (a, b, h, n = 30) => [...Array(n + 1)].map((_, i) => { const q = i / n, p = lerp3(a, b, q); p[2] += h * 4 * q * (1 - q); return p; });
+const box2 = (x0, x1, y0, y1, z) => [[x0, y0, z], [x1, y0, z], [x1, y1, z], [x0, y1, z], [x0, y0, z]];
+
+/* ---------------- where things sit */
+const qShuf = (r, t) => ep(t, T.order - 0.08 + rnd(r, 13) * 0.16, T.order + 0.42 + rnd(r, 13) * 0.16, ease.inOut);
+const tableSlot = (r, t) => (r < 16 ? lerp(r, SHUF[r], qShuf(r, t)) : r);
+const liftZ = (r, t) => (r < 16 ? Math.sin(Math.PI * qShuf(r, t)) * (14 + 34 * rnd(r, 12)) : 0);
+const laneTop = (j) => [IX, rowY(j), RH + 1];
+const rowTop = (r, t) => [colX(0), rowY(tableSlot(r, t)), RH + 1 + liftZ(r, t)];
+// email lane: chip r → {x, y, z, w, a (0 = hidden), state}
+function laneE(r, t) {
+  if (t < LIFT - 0.4) {                                    // the hook: index exists (sorted), then burns away
+    const j = SORT[r], s = Math.abs(j - SAMJ) * 0.004, qd = ep(t, T.line1 + 0.05 + s, T.line1 + 0.55 + s);
+    if (qd >= 1) return null;
+    return { x: IX, y: rowY(j), z: 0, w: IW, h: RH * (1 - qd), dead: qd, j };
+  }
+  const p1 = r < 16 ? SHUF[r] : r, fs = LIFT + p1 * 0.0035, qf = ep(t, fs, fs + 0.7, ease.inOut);
+  if (qf <= 0) return null;
+  const sd = rnd(r, 7) * 0.25, qs = ep(t, T.sorted - 0.05 + sd, T.sorted + 0.55 + sd, ease.inOut);
+  const j = lerp(p1, SORT[r], qs) + (SORT[r] >= INSJ ? qIns(t) : 0);
+  return { x: lerp(colX(0) - 25, IX, qf), y: rowY(j), z: 70 * Math.sin(Math.PI * qf) + (10 + 40 * rnd(r, 14)) * Math.sin(Math.PI * qs),
+    w: lerp(70, IW, qf), h: RH, fly: qf < 1 || (qs > 0 && qs < 1), j: SORT[r] };
+}
+// name / city lanes (the catch)
+const sideRise = (t, j, k) => ep(t, T.every3 - 0.1 + k * 0.15 + j * 0.002, T.every3 + 0.35 + k * 0.15 + j * 0.002, ease.back);
+const sideSink = (t, j) => ep(t, T.everything + j * 0.0015, T.everything + 0.5 + j * 0.0015);
+
+/* ---------------- the world, frame by frame */
+function scanState(c, t) {
+  if (t > T.every1 - 0.05 && t < T.users2 - 0.3) {
+    const y = 3480 + rnd(c, 3) * 640 + (t - T.every1) * 250;
+    return { ys: [y], lo: y - 1100, hi: y, col: CO.RED, hex: RED, a: 1 - ep(t, T.users2 - 0.75, T.users2 - 0.3) };
+  }
+  if (t < SC0 - 0.05 || t > T.that2 + 0.3) return null;
+  const a = 1 - ep(t, T.that2 - 0.25, T.that2 + 0.3);
+  if (t > T.every2 - 0.05) {
+    const L = rowY(NR); return { ys: [0, 1, 2].map((k) => L * (((t - T.every2) * 0.55 + k / 3 + rnd(c, 4)) % 1)), lo: -1, hi: 1e9, col: CO.RED, hex: RED, a };
+  }
+  const f = scanRows(t) - c * NR;
+  if (f <= 0 && c > 0) return null;
+  if (f >= NR) return { ys: [], lo: -1, hi: 1e9, col: CO.AMB, hex: AMB, a };
+  const y = t < SC1 ? rowY(Math.floor(f) + ep(f % 1, 0, 0.35)) : rowY(f);
+  return { ys: [y], lo: -1, hi: y - PY * 0.5, col: CO.AMB, hex: AMB, a };
+}
+
+function world(t) {
+  if (!glyDrawn) drawGlyphs();
+  barI = 0; BARS.forEach((m) => (m.visible = false));
+  const thru = (pts, t0, dur, col, size = 1) => { const q = (t - t0) / dur; if (q > -0.02 && q < 1.1) return orb(pts, clamp(q), col, clamp(q / 0.08) * (1 - clamp((q - 1) / 0.1)), size); };
+  const look = (t > T.because - 0.2 && t < T.like2 + 0.1) ? 0.55 : 1;    // dim everything else during the lookup
+  const samHit = (t > T.ms - 0.05 && t < T.del + 0.05) || (t > T.lands + 0.4 && t < T.catch_ - 0.1);
+  const fadeIn = ep(t, 0, 0.5);
+
+  // ---- the table
+  for (let c = 0; c < TC; c++) {
+    const st = scanState(c, t);
+    if (st) for (const y of st.ys) bar(colX(c), y, TW + 30, st.hex, st.a * (st.hex === AMB ? 0.45 : 1));   // amber scanner kept soft so the row text reads
+    for (let r = 0; r < NR; r++) {
+      const i = c * NR + r; let x = colX(c), y = rowY(r);
+      let z = 0;
+      if (c === 0 && r < 16) { y = rowY(tableSlot(r, t)); z = liftZ(r, t); }
+      let k = (c ? 0.42 : 0.55) * look * fadeIn, col = tint(CO.O, k);
+      if (st) {
+        if (st.ys.some((sy) => Math.abs(y - sy) < PY * 0.55)) col = tint(CO.O, k, CO.AMB, 0.7 * st.a).multiplyScalar(1 + 0.6 * st.a);   // lit, but the email stays readable
+        else if (y > st.lo && y < st.hi) col = tint(CO.O, k, st.col, st.a).multiplyScalar(1 + 0.5 * st.a);
+      }
+      if (c === 0 && r === SAM && samHit) col = tint(CO.OK, 2.4 + 2 * pulse(t, t < 10 ? T.ms : T.lands + 0.4));
+      if (c === 0 && t > LIFT && t < T.sorted) { const p1 = r < 16 ? SHUF[r] : r; col.multiplyScalar(1 + 1.5 * pulse(t, LIFT + p1 * 0.0035, 5) * (t > LIFT + p1 * 0.0035 ? 1 : 0)); }
+      put(TBL, i, x, y, z, TW, RD, RH, col);
+    }
+  }
+  // the new user (the catch)
+  const qn = ease.back(prog(t, T.saving - 0.1, T.saving + 0.3)), newOn = t > T.saving - 0.1;
+  if (newOn) put(TBL, TC * NR, colX(0), -PY, 90 * (1 - Math.min(1, qn)), TW, RD, RH, tint(CO.AMB, 1.2 + 2 * pulse(t, T.saving + 0.2), CO.O, 0.55 * ep(t, T.dbs - 0.2, T.dbs + 0.4)));
+  else hide(TBL, TC * NR);
+  done(TBL);
+  NEWLB.set('new', rowText(9001, 'aria', WH), colX(0), -PY, 90 * (1 - Math.min(1, qn)) + RH + 0.4, newOn ? 1 : 0);
+  if (t > T.saving + 0.3) ripple(t, T.saving + 0.25, colX(0), -PY, 1, AMB, 120, 0.7);
+
+  // table labels: near rows during the table scene, sam's row when found
+  const nearA = Math.max(ep(t, T.users2 - 0.2, T.users2 + 0.4) * (1 - ep(t, T.catch_ + 0.5, T.catch_ + 1)), window01(t, T.dbs, T.ifv + 0.2, 0.4));
+  for (const r in TLB) {
+    const rr = +r, [x, y, z] = rowTop(rr, t);
+    let a = 0, colTxt = WH;
+    if (rr === SAM) a = samHit ? 1 : 0, colTxt = OK;
+    else {
+      a = nearA * ep(t, T.users2 - 0.2 + tableSlot(rr, t) * 0.04, T.users2 + 0.1 + tableSlot(rr, t) * 0.04);
+      const st = scanState(0, t); if (st && st.col === CO.AMB && y < st.hi) colTxt = '#77706A';
+    }
+    TLB[r].set(rr + colTxt, rowText(rr, NAME[rr], colTxt), x, y, z + 0.4, a);
+  }
+  HEAD.set('head', (g, W_, H_) => {
+    g.textBaseline = 'middle'; g.fillStyle = '#9c948c'; g.font = `800 ${Math.round(H_ * 0.5)}px Mono`;
+    g.fillText('ID·PK', W_ * 0.035, H_ * 0.55); g.fillText('EMAIL', W_ * 0.225, H_ * 0.55); g.fillText('NAME', W_ * 0.73, H_ * 0.55);
+  }, colX(0), -PY * 1.05, 0.6, ep(t, T.users2, T.users2 + 0.4) * (1 - ep(t, T.that2 - 0.2, T.that2 + 0.2)));
+
+  // ---- the email index lane
+  const green = ep(t, T.so - 0.05, T.so + 0.4) * (1 - ep(t, T.dbs - 0.1, T.dbs + 0.3)) + ep(t, T.search2 - 0.05, T.search2 + 0.4);
+  for (let r = 0; r < NR; r++) {
+    const L = laneE(r, t);
+    if (!L) { hide(LE, r); if (LLB[r]) LLB[r].m.visible = false; continue; }
+    let col;
+    if (L.dead !== undefined) col = tint(CO.O, 0.9, CO.RED, L.dead * 3).multiplyScalar(1 + 1.5 * Math.sin(Math.PI * L.dead));
+    else if (L.fly) col = tint(CO.O2, 1.5);
+    else col = tint(CO.O, 0.85, CO.OK, green);
+    if (L.j === SAMJ && t > T.finds + 0.3 && t < T.line1) col = tint(CO.OK, 2.6);
+    if (t > T.because - 0.2 && t < T.like2 + 0.1) {
+      const lo = t < T.narrows ? 162 : t < T.hops ? 162 : 163, hi = t < T.narrows ? 170 : t < T.hops ? 164 : 163, inB = t > T.S - 0.05 && L.j >= lo && L.j <= hi;
+      col = L.j === SAMJ && t > T.hops ? tint(CO.OK, 2.8) : inB ? tint(CO.O2, 1.6) : tint(CO.O, 0.4);
+    }
+    if (t > T.space - 0.1 && t < T.saving) col.lerp(_c2.copy(CO.AMB).multiplyScalar(1.6), 0.8 * pulse(t, T.space, 2.5));
+    put(LE, r, L.x, L.y, L.z, L.w, RD, L.h, col);
+    if (LLB[r]) {
+      const n = NAME[r], hot = (n === 'sam' && ((t > T.hops && t < T.like2 + 0.1) || (t > T.finds + 0.3 && t < T.line1)));
+      LLB[r].set(n + hot, laneText(n + '@mail.com', hot ? OK : WH), L.x, L.y, L.z + L.h + 0.4, L.dead !== undefined ? 1 - clamp(L.dead * 3) : 1, L.w / IW);
+    }
+  }
+  // inserted entries: email, name, city
+  const insOn = t > INS + 0.2;
+  [[LE, IX, 'aria@mail.com'], [LN, NX, 'Aria'], [LC, CX, 'Austin']].forEach(([M, x, txt], k) => {
+    const sink = k ? sideSink(t, INSJ) : 0, a = insOn ? ep(t, INS + 0.2 + k * 0.12, INS + 0.45 + k * 0.12) * (1 - sink) : 0;
+    if (a <= 0.01) { hide(M, NR); INSLB[k].m.visible = false; return; }
+    const col = k && t > T.everything ? tint(CO.RED, 1.2) : tint(CO.AMB, (1.6 + 2.5 * pulse(t, INS + 0.25 + k * 0.12)) * (1 - 0.6 * window01(t, T.dbs, T.search2, 0.3)), CO.OK, k ? 0 : green);
+    put(M, NR, x, rowY(INSJ), 0, IW, RD, RH * a, col);
+    INSLB[k].set(txt, laneText(txt, WH), x, rowY(INSJ), RH * a + 0.4, a);
+  });
+  done(LE);
+  // name and city lanes
+  [[LN, NX], [LC, CX]].forEach(([M, x], k) => {
+    for (let j = 0; j < NR; j++) {
+      const up = sideRise(t, j, k + 1), sk = sideSink(t, j), h = RH * up * (1 - sk);
+      if (h < 0.02 || t > T.dbs) { hide(M, j); continue; }
+      const col = t > T.everything ? tint(CO.O, 0.8, CO.RED, sk * 3) : tint(CO.O, 0.8 + 1.4 * pulse(t, T.space, 2.5));
+      put(M, j, x, rowY(j + (j >= INSJ ? qIns(t, k + 1) : 0)), 0, IW, RD, h, col);
+    }
+    done(M);
+  });
+  // section letters
+  const gA = t < LIFT ? 1 - ep(t, T.line1 + 0.1, T.line1 + 0.5) : ep(t, T.sorted + 0.45, T.sorted + 0.85);
+  GLY.forEach((G, L) => {
+    const j = L * 9 + 4, hot = L === 18 && t > T.S - 0.05 && t < T.like2 + 0.1;
+    G.s.visible = gA > 0.01; if (!G.s.visible) return;
+    G.s.position.set(IX - IW / 2 - 34, rowY(j + (j >= INSJ ? qIns(t) : 0)), 26);
+    const k = hot ? 2.2 + 2 * pulse(t, T.S) : 0.85 * look;
+    G.s.material.color.copy(hot ? CO.O2 : CO.O).multiplyScalar(k); G.s.material.opacity = gA;
+    const s = hot ? 64 : 46; G.s.scale.set(s, s, 1);
+  });
+
+  // ---- beams and orbs
+  BEAMS.forEach((b) => b.set([[0, 0, 0], [0, 0, 1]], 0, OK, 0)); BRK.set([[0, 0, 0], [0, 0, 1]], 0, OK, 0);
+  // hook: the login goes through the index to sam's row
+  const hookIn = [[IX + 60, 3700, 380], [IX, 4300, 160], laneTop(SAMJ)];
+  thru(hookIn, T.finds - 0.05, 0.4, O2, 1.2);
+  const toRow = arc(laneTop(SAMJ), rowTop(SAM, t), 70);
+  BEAMS[0].set(toRow, ep(t, T.finds + 0.32, T.finds + 0.6), OK, 1 - ep(t, T.del - 0.2, T.del + 0.1));
+  thru(toRow, T.finds + 0.32, 0.3, OK, 1.1);
+  if (t > T.ms - 0.05) { ripple(t, T.ms - 0.05, colX(0), rowY(SAM), RH + 1, OK, 140, 0.8); sparks(t, T.ms - 0.05, colX(0), rowY(SAM), RH + 2, OK, 26, 3, 120, 0.7); }
+  // the burn: sparks off the lane where the camera looks
+  if (t > T.line1) for (let k = 0; k < 4; k++) sparks(t, T.line1 + 0.1 + k * 0.08, IX, rowY(SAMJ - 6 + k * 5), RH, RED, 18, 11 + k, 110, 0.7);
+  // pointers: each entry → its row
+  ['abby', 'ana', 'ben', 'cara', 'dev', 'adam'].forEach((n, k) => {
+    const r = NEAR.indexOf(n), a = 1 - ep(t, T.because - 0.4, T.because - 0.1);
+    if (t < T.points - 0.1 || a <= 0) return;
+    const pts = arc([IX + IW / 2, rowY(SLOT[n]), RH + 1], [colX(0) - TW / 2 + 40, rowY(SHUF[r]), RH + 1], 22, 20);
+    BEAMS[1 + k].set(pts, ep(t, T.points + k * 0.1, T.points + 0.4 + k * 0.1), O2, a);
+  });
+  // lookup: not from the top; jump to S; narrow; land
+  if (t > T.never - 0.1 && t < T.jumps + 0.1) {
+    const a = ep(t, T.never - 0.1, T.never + 0.1) * (1 - ep(t, T.jumps - 0.1, T.jumps + 0.1));
+    bar(IX, rowY(prog(t, T.never - 0.1, T.never + 0.5) * 2), IW + 30, t > T.never + 0.25 ? RED : GR, a);
+  }
+  thru(arc(laneTop(0), laneTop(166), 260, 40), T.jumps - 0.02, 0.42, O2, 1.3);
+  thru(arc(laneTop(166), laneTop(163.5), 40, 16), T.narrows, 0.35, AMB, 1);
+  thru(arc(laneTop(163.5), laneTop(SAMJ), 22, 12), T.hops - 0.05, 0.3, OK, 1);
+  if (t > T.S - 0.08 && t < T.like2 + 0.1) {
+    const q2 = ep(t, T.narrows, T.narrows + 0.3, ease.inOut), q3 = ep(t, T.hops - 0.05, T.hops + 0.25, ease.inOut);
+    const lo = lerp(lerp(162, 162, q2), 163, q3), hi = lerp(lerp(170, 164, q2), 163, q3);
+    const col = t > T.hops ? OK : AMB, a = ep(t, T.S - 0.08, T.S + 0.1) * (1 - ep(t, T.lands + 0.6, T.like2 + 0.1));
+    BRK.set(box2(IX - IW / 2 - 9, IX + IW / 2 + 9, rowY(lo) - RD / 2 - 7, rowY(hi) + RD / 2 + 7, RH + 1.5), 1, col, a);
+  }
+  if (t > T.S - 0.05) ripple(t, T.S - 0.05, IX, rowY(166), RH + 1, O2, 160, 0.7);
+  // primary key: box just the ID column while the voice says it
+  if (t > T.id - 0.2 && t < T.search2) BRK.set(box2(colX(0) - TW / 2 - 4, colX(0) - TW / 2 + TW * 0.2, rowY(-1.6), rowY(26), RH + 1.5), ep(t, T.id - 0.2, T.id + 0.3), O2, 1 - ep(t, T.search2 - 0.3, T.search2));
+  if (t > T.hops) ripple(t, T.hops, IX, rowY(SAMJ), RH + 1, OK, 90, 0.6);
+  const toRow2 = arc(laneTop(SAMJ), rowTop(SAM, t), 90);
+  BEAMS[7].set(toRow2, ep(t, T.lands - 0.05, T.lands + 0.4), OK, 1 - ep(t, T.like2 - 0.2, T.like2 + 0.3));
+  thru(toRow2, T.lands - 0.05, 0.45, OK, 1.2);
+  if (t > T.lands + 0.4) { ripple(t, T.lands + 0.4, colX(0), rowY(SAM), RH + 1, OK, 150, 0.8); sparks(t, T.lands + 0.4, colX(0), rowY(SAM), RH + 2, OK, 28, 5, 130, 0.8); }
+  // the catch: the new user travels into every index
+  [[IX, AMB], [NX, RED], [CX, RED]].forEach(([x, col], k) => thru(arc([colX(0) - TW / 2, -PY, RH + 2], [x, rowY(INSJ), RH + 2], 110 + k * 30), T.slower - 0.25 + k * 0.12, 0.55, col, 0.9));
+  [IX, NX, CX].forEach((x, k) => { if (t > INS + 0.25 + k * 0.12) ripple(t, INS + 0.25 + k * 0.12, x, rowY(INSJ), RH + 1, k ? RED : AMB, 90, 0.6); });
+  if (t > T.everything) [NX, CX].forEach((x, k) => sparks(t, T.everything + k * 0.1, x, rowY(10), RH, RED, 22, 21 + k, 120, 0.8));
+}
+
+/* ---------------- world tags */
+const tg = (key, html, style, wp, t, a, b, dy = 0) => { const e = tag(key, html, style, wp, t, a, b, dy); if (P(...wp)[2] > 1) e.style.display = 'none'; return e; };
+function tags(t) {
+  const big = (c) => `font-size:15px;padding:9px 13px;letter-spacing:1px;border-color:${c}`;
+  const sp = (c, s) => `<span style="color:${c}">${s}</span>`;
+  const samW = [colX(0), rowY(SAM), RH + 4];
+  tg('found0', sp(OK, '✓ FOUND · 4 ms'), big(OK), samW, t, T.ms, T.del - 0.05, -56);
+  tg('hkI', sp(O2, 'INDEX'), `border-color:${O2}88`, [IX - IW / 2 - 40, rowY(161.5), RH], t, T.finds - 0.2, T.del);   // between R and S, clear of the login card
+  tg('hkT', sp(GR, 'TABLE'), '', [colX(1), rowY(160), RH], t, T.finds - 0.2, T.del, -24);
+  // table
+  tg('users', sp(WH, 'ONE TABLE · <b>users</b>'), '', [colX(0) - TW / 2 - 64, rowY(13), 0], t, T.users2, T.byDef + 0.3);
+  tg('row1', sp(O2, '1 ROW = 1 USER'), `border-color:${O2}88`, [colX(0) - TW / 2 - 72, rowY(3), 0], t, T.row1 - 0.05, T.order - 0.1);
+  tg('noorder', sp(AMB, 'NO ORDER'), big(AMB), [colX(0) - TW / 2 - 64, rowY(8), 0], t, T.order, T.byDef + 0.5);
+  const cntW = lerp3([colX(0) - TW / 2 - 70, rowY(Math.min(scanRows(t), 14)), 0], [colX(2.5), rowY(150), 0], ep(t, T.finds2 - 0.3, T.m100));
+  const cnt = tg('cnt', sp(t > T.read - 0.1 ? RED : AMB, 'ROWS READ: <b style="color:inherit">' + rowsRead(t).toLocaleString('en-US') + '</b>'), big(t > T.read - 0.1 ? RED : AMB), cntW, t, T.reads, T.that2 - 0.15);
+  const evr = tg('every', sp(RED, '× EVERY LOGIN'), big(RED), [colX(2.5), rowY(150), 0], t, T.every2, T.that2 - 0.15, 48);
+  // pinned on screen just under the query.sql window, so it never slides behind it
+  const one = tg('one', sp(WH, 'ALL ONE TABLE: <b>users</b>'), '', [colX(2.5), rowY(150), 0], t, T.m100 - 0.3, T.that2 - 0.15);
+  cnt.style.left = '150px'; cnt.style.top = '272px'; evr.style.left = '150px'; evr.style.top = '318px'; one.style.left = '150px'; one.style.top = '364px';
+  // index
+  tg('idx', sp(O2, t < T.column ? 'INDEX' : 'INDEX · <b>email</b>'), `border-color:${O2}`, [IX - IW / 2 - 70, rowY(9.5), 0], t, T.index1 + 0.15, T.because - 0.1);
+  tg('sorted', sp(OK, 'SORTED · A → Z'), big(OK), [IX - IW / 2 - 70, rowY(14), 0], t, T.sorted + 0.15, T.because - 0.1);
+  tg('ptr', sp(O2, 'EACH ENTRY → ITS ROW'), `border-color:${O2}88`, [IX - IW / 2 - 70, rowY(5), 0], t, T.points, T.because - 0.1);
+  // lookup
+  tg('top', sp(RED, '✕ NOT FROM THE TOP'), big(RED), [IX, rowY(1), RH], t, T.never + 0.2, T.jumps + 0.05, -40);
+  const hop = t < T.narrows ? 1 : t < T.hops ? 2 : 3;
+  tg('hop', sp(hop === 3 ? OK : AMB, ['', 'HOP 1 · S SECTION', 'HOP 2 · sa…', 'HOP 3 · sam@'][hop]), big(hop === 3 ? OK : AMB), [IX - IW / 2 - 50, rowY(t < T.narrows ? 166 : 163.5), 0], t, T.S - 0.05, T.lands - 0.05, -30);
+  tg('found', sp(OK, '✓ sam@mail.com'), big(OK), samW, t, T.exact, T.like2 + 0.2, -62);
+  tg('vs', sp(OK, '3 HOPS · NOT 100,000,000 ROWS'), `border-color:${OK}88`, samW, t, T.row5 - 0.05, T.like2 + 0.2, 80);
+  // catch
+  tg('ixE', sp(t > T.so ? OK : O2, 'INDEX · <b style="color:inherit">email</b>'), `border-color:${t > T.so ? OK : O2}`, [IX, -PY * 1.6, 0], t, T.every3, T.dbs - 0.2, -8);
+  tg('ixN', sp(t > T.everything ? RED : O2, 'INDEX · <b style="color:inherit">name</b>'), `border-color:${t > T.everything ? RED : O2}`, [NX, -PY * 1.6, 0], t, T.every3 + 0.15, T.everything + 0.6, 24);   // staggered: the lanes sit close in the wide shot
+  tg('ixC', sp(t > T.everything ? RED : O2, 'INDEX · <b style="color:inherit">city</b>'), `border-color:${t > T.everything ? RED : O2}`, [CX, -PY * 1.6, 0], t, T.every3 + 0.3, T.everything + 0.6, -8);
+  tg('space', sp(AMB, 'EACH INDEX TAKES EXTRA SPACE'), big(AMB), [NX, rowY(16), 0], t, T.space, T.saving + 0.3);
+  tg('newu', sp(AMB, '+ NEW USER'), big(AMB), [colX(0), -PY, RH], t, T.saving + 0.15, T.each3, 36);
+  [[IX, 'aria@mail.com', AMB], [NX, 'Aria', RED], [CX, 'Austin', RED]].forEach(([x, txt, c], k) => tg('insT' + k, sp(c, '+ ' + txt), `border-color:${c}`, [x, rowY(INSJ), RH], t, INS + 0.25 + k * 0.12, T.so - 0.05, 30 + (k === 1 ? 26 : 0)));   // what each index has to write
+  tg('upd', sp(RED, '1 SAVE = 1 ROW + 3 INDEX UPDATES'), big(RED), [NX, rowY(16), 0], t, T.each3, T.so - 0.05);
+  tg('keep', sp(OK, '✓ YOU SEARCH BY EMAIL'), big(OK), [IX, rowY(14), 0], t, T.search1 - 0.1, T.dbs - 0.15);
+  tg('idt', sp('#1A0D05', '<b style="color:inherit">ID = PRIMARY KEY → GETS ITS OWN INDEX</b>'), big(O2) + `;background:${O2};box-shadow:0 0 22px ${O2}88`, [colX(0) - TW / 2 - 90, rowY(-3), RH], t, T.id - 0.15, T.search2 - 0.2);   // solid, under the ID column
+  tg('drop', sp(RED, '✕ NEVER SEARCHED'), big(RED), [(NX + CX) / 2, rowY(14), 0], t, T.everything, T.dbs - 0.15, 46);
+}
+
+/* ---------------- reel config */
+const svgPg = `<svg width="46" height="46" viewBox="0 0 100 100" fill="none" stroke="#6FA8DC" stroke-width="7" stroke-linejoin="round"><ellipse cx="50" cy="24" rx="32" ry="12"/><path d="M18 24 V76 C18 83 32 88 50 88 C68 88 82 83 82 76 V24 M18 50 C18 57 32 62 50 62 C68 62 82 57 82 50"/></svg>`;
+const svgMy = `<svg width="46" height="46" viewBox="0 0 100 100" fill="none" stroke="#F5A623" stroke-width="7" stroke-linejoin="round"><ellipse cx="50" cy="24" rx="32" ry="12"/><path d="M18 24 V76 C18 83 32 88 50 88 C68 88 82 83 82 76 V24"/><path d="M36 54 L50 68 L64 54"/></svg>`;
+const REEL = {
+  shots: [], world, tags, wbw: true,
+  code: [
+    [T.byDef - 0.1, T.that2 - 0.15, 'query.sql', 'no index', [[0, 'SCANNING', AMB], [T.read - 0.1, 'SLOW', RED]],
+      [['SELECT * FROM users'], ["WHERE email = 'sam@mail.com';"]],
+      [[T.reads, 2, 'row by row', 'amb'], [T.read - 0.1, 2, '100M rows', 'bad']]],
+    [T.that2 - 0.1, T.because - 0.15, 'schema.sql', 'the one line', [[0, 'BUILDING', AMB], [T.index1 + 0.1, 'INDEXED', OK]],
+      [['CREATE INDEX users_email_idx ON users (email);']], [[T.index1 + 0.1, 1, '✓ built', 'good']], 'type'],
+    [T.search2 - 0.15, T.ifv - 0.1, 'schema.sql', 'make sure', [[0, 'INDEXED', OK]],
+      [['CREATE INDEX users_email_idx ON users (email);']], [[T.make, 1, '✓', 'good']]],
+  ],
+  hl: /\b(SELECT|FROM|WHERE|CREATE|INDEX|ON|users|email)\b/g,
+  tools: [
+    { a: T.postgres - 0.1, b: T.search2 - 0.2, svg: svgPg, name: 'PostgreSQL', sub: 'AUTO-INDEXES THE PRIMARY KEY', top: 150 },
+    { a: T.mysql - 0.1, b: T.search2 - 0.2, svg: svgMy, name: 'MySQL', sub: 'AUTO-INDEXES THE PRIMARY KEY', top: 262 },
+  ],
+  slams: [],
+  bad: ['seconds', 'slower', 'space', 'login', 'logins'],
+  good: ['milliseconds', 'index', 'sorted', 'skip', 'make', 'what'],
+  tiles: [['⌕', 'DATABASE<br>INDEXING'], ['≋', 'SERVER-SENT<br>EVENTS'], ['⇆', 'LONG<br>POLLING']],
+  end: T.ifv - 0.15, follow: T.follow,
+  cover: { k: 'DATABASE INDEXING', t: '100M ROWS.<br>3 HOPS.', at: T.hops + 0.4, zoom: 1, dy: 0 },
+  flash: (t) => 0.07 * pulse(t, T.line1, 7) + 0.07 * pulse(t, T.every2, 6),
+};
+</script>
+<script src="../_ember/overlay.js"></script>
+<script>
+/* ---------------- bloom: scene → half-float target, bright pass, three blur levels, composite to the canvas */
+const RT = (w, h, s = 0) => new TH.WebGLRenderTarget(w, h, { type: TH.HalfFloatType, samples: s, depthBuffer: s > 0 });
+const rtMain = RT(1080, 1920, 4), BL = [[RT(540, 960), RT(540, 960)], [RT(270, 480), RT(270, 480)], [RT(135, 240), RT(135, 240)]];
+const fsCam = new TH.OrthographicCamera(-1, 1, 1, -1, 0, 1), fsScene = new TH.Scene(), fsQuad = new TH.Mesh(new TH.PlaneGeometry(2, 2));
+fsQuad.frustumCulled = false; fsScene.add(fsQuad);
+const VS = 'varying vec2 vUv; void main() { vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }';
+const shm = (fs, u) => new TH.ShaderMaterial({ uniforms: u, vertexShader: VS, fragmentShader: fs, depthTest: false, depthWrite: false });
+const mBright = shm(`uniform sampler2D tex; uniform float th; varying vec2 vUv;
+void main() { vec3 c = texture2D(tex, vUv).rgb; float l = max(c.r, max(c.g, c.b)); gl_FragColor = vec4(c * smoothstep(th, th + 0.4, l), 1.0); }`,
+  { tex: { value: null }, th: { value: 0.8 } });
+const mBlur = shm(`uniform sampler2D tex; uniform vec2 dir; varying vec2 vUv;
+void main() {
+  vec3 c = texture2D(tex, vUv).rgb * 0.2270270270;
+  c += (texture2D(tex, vUv + dir * 1.3846153846).rgb + texture2D(tex, vUv - dir * 1.3846153846).rgb) * 0.3162162162;
+  c += (texture2D(tex, vUv + dir * 3.2307692308).rgb + texture2D(tex, vUv - dir * 3.2307692308).rgb) * 0.0702702703;
+  gl_FragColor = vec4(c, 1.0);
+}`, { tex: { value: null }, dir: { value: new TH.Vector2() } });
+const mComp = shm(`uniform sampler2D base, b1, b2, b3; uniform float k1, k2, k3; varying vec2 vUv;
+void main() {
+  vec3 c = texture2D(base, vUv).rgb + texture2D(b1, vUv).rgb * k1 + texture2D(b2, vUv).rgb * k2 + texture2D(b3, vUv).rgb * k3;
+  c = c / (1.0 + max(c - 1.0, 0.0) * 0.6);
+  gl_FragColor = vec4(c, 1.0);
+  #include <colorspace_fragment>
+}`, { base: { value: rtMain.texture }, b1: { value: BL[0][0].texture }, b2: { value: BL[1][1].texture }, b3: { value: BL[2][1].texture }, k1: { value: 0.5 }, k2: { value: 0.65 }, k3: { value: 0.8 } });
+function pass(mat, dst) { fsQuad.material = mat; renderer.setRenderTarget(dst); renderer.render(fsScene, fsCam); }
+function blur(src, dst, dx, dy) { mBlur.uniforms.tex.value = src.texture; mBlur.uniforms.dir.value.set(dx / src.width, dy / src.height); pass(mBlur, dst); }
+function bloom() {
+  mBright.uniforms.tex.value = rtMain.texture; pass(mBright, BL[0][0]);
+  blur(BL[0][0], BL[0][1], 1, 0); blur(BL[0][1], BL[0][0], 0, 1);
+  blur(BL[0][0], BL[1][0], 1, 0); blur(BL[1][0], BL[1][1], 0, 1);
+  blur(BL[1][1], BL[2][0], 1, 0); blur(BL[2][0], BL[2][1], 0, 1);
+  pass(mComp, null);
+}
+
+/* ---------------- hook and book cards */
+const stg = $('stage'), before = $('prof');
+const mk = (html) => { const w = document.createElement('div'); w.innerHTML = html.trim(); const n = w.firstChild; stg.insertBefore(n, before); return n; };
+const LG = mk(`<div id="lg"><div class="h"><i></i>myapp.com</div><div class="t">Log in</div><div class="f"><span id="lgE"></span><span class="caret" id="lgC"></span></div><div class="b"><div id="lgB">Log in</div><div id="lgS"></div></div></div>`);
+const LN_ = mk(`<div id="ln"><div class="tb"><i></i><i></i><i></i><b>psql</b><span id="lnS"></span></div><div class="cd"><span id="lnT"></span><div id="lnX"></div></div></div>`);
+const BOOK = [['Apple', 12], ['Bread', 87], ['Cheese', 133], ['Pasta', 212], ['Rice', 298], ['Soup', 341], ['Tea', 412]], BI = 5;
+const BK = mk(`<div id="bk"><div class="hd">Index<span>COOKBOOK</span></div>${BOOK.map(([w, p], i) => `<div class="e" id="bk${i}">${w}<span class="d"></span><span class="p">${p}</span></div>`).join('')}<div id="bkP">FIND <span>→</span> <b>PAGE 341</b></div></div>`);
+if (/cover/.test(location.hash)) { const s = document.createElement('style'); s.textContent = '#lg, #ln, #bk { display: none !important; }'; document.head.appendChild(s); }
+const DROP = 'DROP INDEX users_email_idx;';
+function hookDom(t) {
+  const p = popIn(t, 0.05, T.users2 - 0.15); vis(LG, p.a, `translateY(${p.y}px) scale(${p.s})`);
+  if (p.a > 0.001) {
+    const n = Math.floor(clamp((t - 0.3) * 15, 0, 12)); setH('lgE', 'sam@mail.com'.slice(0, n));
+    $('lgC').style.opacity = n < 12 || Math.floor(t * 2.5) % 2 ? 1 : 0;
+    const press = window01(t, 1.42, 1.62, 0.07) + window01(t, T.every1 - 0.08, T.every1 + 0.12, 0.07);
+    $('lgB').style.transform = `scale(${1 - 0.07 * press})`;
+    let s = '', c = WH;
+    if (t > 1.45 && t < T.ms) { s = '·'.repeat(1 + Math.floor(t * 8) % 3); c = AMB; }
+    else if (t >= T.ms && t < T.every1 - 0.05) { s = '✓ 4 ms'; c = OK; }
+    else if (t >= T.every1 - 0.05) { s = '◴◷◶◵'[Math.floor(t * 6) % 4] + ' ' + Math.max(0, t - T.every1).toFixed(1) + ' s'; c = t > T.seconds - 0.05 ? RED : AMB; }
+    setH('lgS', s); $('lgS').style.color = c;
+    $('lgS').style.transform = `scale(${1 + 0.25 * pulse(t, T.ms, 6) + 0.2 * pulse(t, T.seconds, 6)})`;
+  }
+  const a1 = popIn(t, T.del - 0.15, T.every1 + 0.3), a2 = popIn(t, T.whats - 0.12, T.users2 - 0.15), on2 = a2.a > 0.001, a = on2 ? a2 : a1;
+  vis(LN_, a.a, `translateY(${a.y}px) scale(${a.s})`);
+  if (a.a > 0.001) {
+    const n = on2 ? DROP.length : Math.floor(clamp((t - T.del + 0.1) * 40, 0, DROP.length));   // typed as the voice says it
+    const ix = `<span style="color:${on2 ? AMB : '#ff8a6a'}">INDEX</span>`;
+    setH('lnT', `<span style="color:${on2 ? '#8d8478' : '#f0d8cc'}">${DROP.slice(0, n).replace('INDEX', ix)}</span>`);
+    $('lnT').style.opacity = on2 ? 1 : 1 - 0.35 * ep(t, T.line1 + 0.3, T.line1 + 0.6);
+    $('lnX').style.width = '0px';
+    setH('lnS', on2 ? '● ?' : t > T.line1 + 0.2 ? '● DROPPED' : '');
+    $('lnS').style.color = on2 ? AMB : RED;
+    LN_.style.borderColor = on2 ? 'rgba(255,195,77,0.5)' : t > T.line1 ? 'rgba(255,70,50,0.6)' : '';
+  }
+}
+function bookDom(t) {
+  const p = popIn(t, T.like2 - 0.05, T.catch_ - 0.15); vis(BK, p.a, `translateY(${p.y}px) scale(${p.s})`);
+  if (p.a <= 0.001) return;
+  const hit = t > T.find - 0.05, sk = ep(t, T.skip - 0.05, T.skip + 0.3);
+  BOOK.forEach((_, i) => {
+    const e = $('bk' + i); e.className = 'e' + (hit && i === BI ? ' on' : '');
+    e.style.opacity = i === BI ? 1 : 1 - 0.75 * sk; e.style.filter = i === BI || sk < 0.01 ? 'none' : `blur(${2.5 * sk}px)`;
+  });
+  const pp = popIn(t, T.page - 0.05, T.catch_ + 1); vis($('bkP'), pp.a, `translateY(${pp.y}px)`);
+}
+function clampTags() {
+  for (const k in LB) {
+    const e = LB[k]; if (e.style.display === 'none') continue;
+    const w = e.offsetWidth, x = parseFloat(e.style.left), y = clamp(parseFloat(e.style.top), 124, 668);
+    const right = y > 450 ? 540 - 70 : 540 - 14;
+    e.style.left = clamp(x, 14 + w / 2, right - w / 2) + 'px'; e.style.top = y + 'px';
+  }
+}
+
+window.render = (t) => {
+  shoot(t);
+  orbsReset(); sparksReset(); ringsReset();
+  REEL.world(t);
+  sparksFlush(); updateEmbers(t);
+  renderer.setRenderTarget(rtMain); renderer.render(scene, pcam);
+  bloom();
+  REEL.tags(t); clampTags();
+  card(t); tools(t);
+  hookDom(t); bookDom(t);
+  $('dim').style.opacity = Math.max(0.55 * ep(t, REEL.end, REEL.end + 0.6), 0.5 * window01(t, T.like2 - 0.1, T.catch_ - 0.05, 0.3));
+  $('flash').style.opacity = REEL.flash(t);
+  caps(t);
+  profile(t);
+  if (t < 2.3) { const m = ep(t, 0.85, 1.35, ease.inOut); cursorAt(lerp(330, 152, m), lerp(380, 250, m), ep(t, 0.7, 0.9) * (1 - ep(t, 1.9, 2.2)), window01(t, 1.42, 1.6, 0.05)); }
+};
+</script>
+<script src="../_ember/play.js"></script>
+</body>
+</html>

@@ -1,0 +1,85 @@
+{
+ "c1": {
+  "kind": "page",
+  "url": "localhost:3000/checkout",
+  "accent": "#e8590c",
+  "title": "Cleo's Shop",
+  "body": [
+   ""
+  ],
+  "big": {
+   "text": "Order placed!",
+   "color": "#2f9e44"
+  }
+ },
+ "c2": {
+  "kind": "code",
+  "title": "checkout.js",
+  "lines": [
+   "try {",
+   "  const res = await fetch(",
+   "    \"/api/order\",",
+   "    { method: \"POST\" });",
+   "  showConfetti();",
+   "} catch (err) {",
+   "  showBigRedError(err);",
+   "}"
+  ],
+  "hi": [
+   4
+  ]
+ },
+ "c3": {
+  "kind": "term",
+  "title": "Network",
+  "lines": [
+   "$ POST /api/order",
+   "! 500 Internal Server Error",
+   "",
+   "fetch resolved: yes",
+   "catch ran: no"
+  ],
+  "hi": [
+   1
+  ]
+ },
+ "c4": {
+  "kind": "code",
+  "title": "checkout.js",
+  "lines": [
+   "try {",
+   "  const res = await fetch(",
+   "    \"/api/order\",",
+   "    { method: \"POST\" });",
+   "  if (!res.ok)",
+   "    throw new Error(res.status);",
+   "  showConfetti();",
+   "} catch (err) {",
+   "  showBigRedError(err);",
+   "}"
+  ],
+  "ok": [
+   4,
+   5
+  ]
+ },
+ "c5": {
+  "kind": "page",
+  "url": "localhost:3000/checkout",
+  "accent": "#e8590c",
+  "title": "Cleo's Shop",
+  "body": [
+   ""
+  ],
+  "big": {
+   "text": "Order failed (500)",
+   "color": "#e03131"
+  }
+ },
+ "p1": {
+  "kind": "phone",
+  "app": "Slack",
+  "title": "Sam (Support)",
+  "body": "30 customers got confetti but no order??"
+ }
+}

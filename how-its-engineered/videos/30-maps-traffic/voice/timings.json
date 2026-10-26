@@ -1,0 +1,74 @@
+[
+ {
+  "li": 0,
+  "pi": 0,
+  "say": "Google Maps says there's a jam three kilometres ahead. There's no camera on that road. So who told it?",
+  "show": "Google Maps says there's a *jam* three kilometres ahead. There's *no camera* on that road. So [who told it?]",
+  "start": 0.0,
+  "end": 4.4
+ },
+ {
+  "li": 1,
+  "pi": 0,
+  "say": "The cars did. Or rather, the phones inside them.",
+  "show": "The cars did. Or rather, the [phones inside them.]",
+  "start": 4.84,
+  "end": 6.74
+ },
+ {
+  "li": 2,
+  "pi": 0,
+  "say": "Phones navigating with Google Maps can share where they are and how fast they're moving. Maps combines them, like dots moving along each road.",
+  "show": "Phones navigating with Google Maps can share where they are and *how fast* they're moving. Maps combines them, like [dots moving along each road.]",
+  "start": 7.16,
+  "end": 12.38
+ },
+ {
+  "li": 3,
+  "pi": 0,
+  "say": "When lots of dots on one road slow right down, Maps marks that stretch red.",
+  "show": "When lots of dots on one road *slow right down,* Maps marks that stretch [red.]",
+  "start": 12.78,
+  "end": 15.94
+ },
+ {
+  "li": 4,
+  "pi": 0,
+  "say": "It mixes that with how the road usually behaves at this hour, predicts how long each route will take, and can send you around the jam.",
+  "show": "It mixes that with how the road *usually* behaves at this hour, predicts how long each route will take, and can [send you around the jam.]",
+  "start": 16.4,
+  "end": 21.14
+ },
+ {
+  "li": 5,
+  "pi": 0,
+  "say": "In twenty twenty, an artist in Berlin put ninety-nine phones in a little red wagon and slowly walked them down an empty street.",
+  "show": "In 2020, an artist in Berlin put *99 phones* in a little *red wagon* and slowly walked them down an [empty street.]",
+  "start": 21.88,
+  "end": 26.74
+ },
+ {
+  "li": 5,
+  "pi": 1,
+  "say": "Google Maps turned that empty street red. A traffic jam made of phones, not cars.",
+  "show": "Google Maps turned that empty street *red.* A traffic jam made of [phones, not cars.]",
+  "start": 27.12,
+  "end": 30.76
+ },
+ {
+  "li": 6,
+  "pi": 0,
+  "say": "So Google isn't watching the road. The phones on it are drawing the map, and when you're stuck in traffic, you might be one of the dots.",
+  "show": "So Google isn't watching the road. The phones on it are *drawing the map,* and when you're stuck in traffic, [you might be one of the dots.]",
+  "start": 31.4,
+  "end": 36.68
+ },
+ {
+  "li": 6,
+  "pi": 1,
+  "say": "Follow for how everyday tech really works.",
+  "show": "Follow for how [everyday tech] really works.",
+  "start": 37.18,
+  "end": 38.64
+ }
+]

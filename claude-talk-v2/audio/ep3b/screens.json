@@ -1,0 +1,69 @@
+{
+ "r1": {
+  "kind": "code",
+  "title": "App.jsx",
+  "lines": [
+   "export default function App() {",
+   "  console.log(\"here\");",
+   "  const [items, setItems] = useState([]);",
+   "  console.log(\"here 2\");",
+   "  console.log(\"WHY\");",
+   "  console.log(\"ok this works??\");",
+   "  return <List items={items} />;",
+   "}"
+  ],
+  "ok": [
+   6
+  ]
+ },
+ "r2": {
+  "kind": "term",
+  "title": "localhost:5173",
+  "lines": [
+   "! Failed to compile.",
+   "",
+   "! TypeError:",
+   "! Cannot read properties",
+   "! of undefined",
+   "",
+   "! at TaskList.jsx:9"
+  ],
+  "bg": "#4a0e12"
+ },
+ "r3": {
+  "kind": "term",
+  "title": "Terminal",
+  "lines": [
+   "$ git log --oneline",
+   "",
+   "a41c2f0  initial commit",
+   "         (3 hours ago)"
+  ],
+  "hi": [
+   2,
+   3
+  ]
+ },
+ "r4": {
+  "kind": "term",
+  "title": "Claude Code",
+  "lines": [
+   "* > /rewind",
+   "",
+   "* \u276f Restore code",
+   "",
+   "+ Code restored.",
+   "+ Compiled successfully."
+  ]
+ },
+ "r5": {
+  "kind": "term",
+  "title": "Terminal",
+  "lines": [
+   "$ git commit",
+   "  -m \"do not touch\"",
+   "",
+   "+ committed."
+  ]
+ }
+}

@@ -1,0 +1,2 @@
+How to center a div in CSS: two hours of margin auto and position absolute, then two lines of CSS Grid with place-items center. Then the designer moved it.
+#CSS #CenterADiv #CSSGrid #FrontendDevelopment #ClaudeCode

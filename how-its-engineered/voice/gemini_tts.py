@@ -27,11 +27,13 @@ if not (reuse and raw.exists()):
     from google import genai
     from google.genai import types
     if '--vertex' in args:
-        # Vertex AI with gcloud application-default credentials: gemini-2.5-pro-tts, style given as a spoken-direction prefix
+        # Vertex AI with gcloud application-default credentials: gemini-3.8-flash-tts (only in the 'global' region).
+        # 3.x models read a spoken-direction prefix out loud and reject a system instruction, so the style goes in a [bracketed] tag.
         proj = os.environ.get('GOOGLE_CLOUD_PROJECT') or json.load(open(Path.home() / '.config/gcloud/application_default_credentials.json'))['quota_project_id']
-        vc = genai.Client(vertexai=True, project=proj, location=os.environ.get('GOOGLE_CLOUD_LOCATION', 'us-central1'),
+        vc = genai.Client(vertexai=True, project=proj, location=os.environ.get('GOOGLE_CLOUD_LOCATION', 'global'),
                           http_options=types.HttpOptions(retry_options=types.HttpRetryOptions(attempts=1), timeout=300000))
-        r = vc.models.generate_content(model=os.environ.get('TTS_MODEL', 'gemini-2.5-pro-tts'), contents=f'Read this aloud as a {STYLE}:\n\n{TEXT}',
+        model = os.environ.get('TTS_MODEL', 'gemini-3.8-flash-tts'); g3 = model.startswith('gemini-3')
+        r = vc.models.generate_content(model=model, contents=f'[{STYLE}] {TEXT}' if g3 else f'Read this aloud as a {STYLE}:\n\n{TEXT}',
             config=types.GenerateContentConfig(response_modalities=['AUDIO'], speech_config=types.SpeechConfig(
                 voice_config=types.VoiceConfig(prebuilt_voice_config=types.PrebuiltVoiceConfig(voice_name=voice)))))
         import wave
@@ -49,6 +51,10 @@ if not (reuse and raw.exists()):
       )
       raw.write_bytes(base64.b64decode(r.output_audio.data))
       print('generated', raw)
+    if '--tempo' in args:  # speed the take up (pitch kept) before alignment, so timings match what plays
+        sped = out / 'raw_tempo.wav'
+        subprocess.run(['ffmpeg', '-loglevel', 'error', '-y', '-i', str(raw), '-af', f"atempo={args[args.index('--tempo') + 1]}", str(sped)], check=True)
+        sped.replace(raw)
 
 # ---- align phrases with whisper word timestamps (separate python env) ----
 WHISPER_PY = os.environ.get('WHISPER_PY') or str(Path.home() / 'Developer/reel-builder/.whisper/bin/python')

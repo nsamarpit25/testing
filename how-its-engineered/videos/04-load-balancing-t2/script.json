@@ -1,0 +1,47 @@
+{
+ "topic": "Load balancing",
+ "lines": [
+  [
+   {
+    "say": "You paid for ten servers. Nine sit idle. One is drowning in requests.",
+    "show": "You paid for ten servers. Nine sit idle. One is drowning in requests."
+   }
+  ],
+  [
+   {
+    "say": "They all run copies of the same app. What is missing is a traffic director.",
+    "show": "They all run copies of the same app. What is missing is a traffic director."
+   }
+  ],
+  [
+   {
+    "say": "A load balancer decides which server gets each request, like each page load.",
+    "show": "A load balancer decides which server gets each request, like each page load."
+   }
+  ],
+  [
+   {
+    "say": "Round robin takes turns: one, two, three, then back to one.",
+    "show": "Round robin takes turns: one, two, three, then back to one."
+   }
+  ],
+  [
+   {
+    "say": "Another rule, least connections, picks the server with the fewest open connections. Different requests can take different amounts of time.",
+    "show": "Another rule, least connections, picks the server with the fewest open connections. Different requests can take different amounts of time."
+   }
+  ],
+  [
+   {
+    "say": "With health checks enabled, probes test each server. After enough failed checks, an unhealthy server gets skipped.",
+    "show": "With health checks enabled, probes test each server. After enough failed checks, an unhealthy server gets skipped."
+   }
+  ],
+  [
+   {
+    "say": "Add servers behind it when you need capacity. Your users keep the same address. Spare machines only help when traffic can reach them.",
+    "show": "Add servers behind it when you need capacity. Your users keep the same address. Spare machines only help when traffic can reach them."
+   }
+  ]
+ ]
+}

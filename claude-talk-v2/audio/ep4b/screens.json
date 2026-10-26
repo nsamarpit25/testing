@@ -1,0 +1,169 @@
+{
+ "f1": {
+  "kind": "page",
+  "url": "console.clouddb.io/usage",
+  "accent": "#2b6cb0",
+  "title": "Database usage",
+  "body": [
+   "Last 3 minutes"
+  ],
+  "big": {
+   "text": "40,213 reads",
+   "color": "#2f9e44"
+  }
+ },
+ "f2": {
+  "kind": "term",
+  "title": "Network",
+  "lines": [
+   "GET  /api/tasks   200   12 ms",
+   "GET  /api/tasks   200   11 ms",
+   "GET  /api/tasks   200   12 ms",
+   "GET  /api/tasks   200   13 ms",
+   "GET  /api/tasks   200   11 ms",
+   "",
+   "! 41,880 requests"
+  ]
+ },
+ "f3": {
+  "kind": "code",
+  "title": "TaskList.jsx",
+  "lines": [
+   "useEffect(() => {",
+   "  fetchTasks().then(setTasks);",
+   "}, [tasks]);"
+  ],
+  "hi": [
+   2
+  ]
+ },
+ "f4": {
+  "kind": "code",
+  "title": "TaskList.jsx",
+  "lines": [
+   "useEffect(() => {",
+   "  fetchTasks().then(setTasks);",
+   "}, []);"
+  ],
+  "ok": [
+   2
+  ]
+ },
+ "f5": {
+  "kind": "page",
+  "url": "console.clouddb.io/usage",
+  "accent": "#c0392b",
+  "title": "Database usage",
+  "body": [
+   "50,000 / 50,000 reads  (free plan)"
+  ],
+  "big": {
+   "text": "Daily read limit reached",
+   "color": "#e03131"
+  }
+ },
+ "f2a": {
+  "kind": "term",
+  "title": "Network",
+  "lines": [
+   "GET  /api/tasks   200   12 ms",
+   "GET  /api/tasks   200   11 ms",
+   "GET  /api/tasks   200   12 ms",
+   "GET  /api/tasks   200   13 ms",
+   "GET  /api/tasks   200   11 ms",
+   "",
+   "! 38,200 requests"
+  ]
+ },
+ "f2b": {
+  "kind": "term",
+  "title": "Network",
+  "lines": [
+   "GET  /api/tasks   200   11 ms",
+   "GET  /api/tasks   200   12 ms",
+   "GET  /api/tasks   200   13 ms",
+   "GET  /api/tasks   200   11 ms",
+   "GET  /api/tasks   200   12 ms",
+   "",
+   "! 39,477 requests"
+  ]
+ },
+ "f2c": {
+  "kind": "term",
+  "title": "Network",
+  "lines": [
+   "GET  /api/tasks   200   12 ms",
+   "GET  /api/tasks   200   13 ms",
+   "GET  /api/tasks   200   11 ms",
+   "GET  /api/tasks   200   12 ms",
+   "GET  /api/tasks   200   14 ms",
+   "",
+   "! 40,828 requests"
+  ]
+ },
+ "f2d": {
+  "kind": "term",
+  "title": "Network",
+  "lines": [
+   "GET  /api/tasks   200   13 ms",
+   "GET  /api/tasks   200   11 ms",
+   "GET  /api/tasks   200   12 ms",
+   "GET  /api/tasks   200   14 ms",
+   "GET  /api/tasks   200   11 ms",
+   "",
+   "! 42,253 requests"
+  ]
+ },
+ "f2e": {
+  "kind": "term",
+  "title": "Network",
+  "lines": [
+   "GET  /api/tasks   200   11 ms",
+   "GET  /api/tasks   200   12 ms",
+   "GET  /api/tasks   200   14 ms",
+   "GET  /api/tasks   200   11 ms",
+   "GET  /api/tasks   200   12 ms",
+   "",
+   "! 43,752 requests"
+  ]
+ },
+ "f2f": {
+  "kind": "term",
+  "title": "Network",
+  "lines": [
+   "GET  /api/tasks   200   12 ms",
+   "GET  /api/tasks   200   14 ms",
+   "GET  /api/tasks   200   11 ms",
+   "GET  /api/tasks   200   12 ms",
+   "GET  /api/tasks   200   13 ms",
+   "",
+   "! 45,325 requests"
+  ]
+ },
+ "f2g": {
+  "kind": "term",
+  "title": "Network",
+  "lines": [
+   "GET  /api/tasks   200   14 ms",
+   "GET  /api/tasks   200   11 ms",
+   "GET  /api/tasks   200   12 ms",
+   "GET  /api/tasks   200   13 ms",
+   "GET  /api/tasks   200   12 ms",
+   "",
+   "! 46,972 requests"
+  ]
+ },
+ "f2h": {
+  "kind": "term",
+  "title": "Network",
+  "lines": [
+   "GET  /api/tasks   200   11 ms",
+   "GET  /api/tasks   200   12 ms",
+   "GET  /api/tasks   200   13 ms",
+   "GET  /api/tasks   200   12 ms",
+   "GET  /api/tasks   200   11 ms",
+   "",
+   "! 48,693 requests"
+  ]
+ }
+}

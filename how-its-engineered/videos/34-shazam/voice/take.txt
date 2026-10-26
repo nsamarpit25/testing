@@ -1,0 +1,1 @@
+t1 from /mnt/ssd/render/vo/34-shazam/t1; gap cuts [(15.83, 0.25)]; tail cut at 45.40s (orig 45.72) + 60ms fade

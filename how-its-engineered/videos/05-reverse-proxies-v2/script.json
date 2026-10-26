@@ -1,0 +1,69 @@
+{
+ "topic": "Reverse proxies",
+ "lines": [
+  [
+   {
+    "say": "Your app runs on ten servers.",
+    "show": "Your app runs on *10 servers.*"
+   },
+   {
+    "say": "Last night, bots scanned the whole internet looking for them.",
+    "show": "Last night, bots scanned the whole internet [looking for them.]"
+   },
+   {
+    "say": "All they could reach was one machine, and it wasn't any of your servers.",
+    "show": "All they could reach was *one machine,* and it wasn't any of your servers."
+   }
+  ],
+  [
+   {
+    "say": "That machine is a reverse proxy: a middleman that every request hits first.",
+    "show": "That machine is a [reverse proxy:] a middleman that every request hits first."
+   }
+  ],
+  [
+   {
+    "say": "Like a restaurant. You never walk into the kitchen. The waiter takes your order and brings the food back.",
+    "show": "Like a *restaurant.* You never walk into the kitchen. The *waiter* takes your order and brings the food back."
+   }
+  ],
+  [
+   {
+    "say": "Your servers stay private, with no public address. Only the proxy faces the internet.",
+    "show": "Your servers stay *private,* with no public address. Only the proxy [faces the internet.]"
+   }
+  ],
+  [
+   {
+    "say": "And this waiter does more than carry plates.",
+    "show": "And this waiter does more than carry plates."
+   },
+   {
+    "say": "It keeps popular pages ready, so many requests never reach your servers.",
+    "show": "It keeps popular pages ready, so many requests [never reach your servers.]"
+   },
+   {
+    "say": "And it reads the address: slash API goes to these servers, images go to those.",
+    "show": "And it reads the address: */api* goes to these servers, *images* go to those."
+   }
+  ],
+  [
+   {
+    "say": "Engine X and Cloudflare do this for millions of websites.",
+    "show": "*NGINX* and *Cloudflare* do this for millions of websites."
+   }
+  ],
+  [
+   {
+    "say": "A normal proxy hides you from the website. A reverse proxy hides the servers from you.",
+    "show": "A normal proxy hides *you* from the website. A reverse proxy hides [the servers] from you."
+   }
+  ],
+  [
+   {
+    "say": "If you're a vibe coder, follow for the system design your AI skipped.",
+    "show": "If you're a vibe coder, follow for the system design your AI [skipped.]"
+   }
+  ]
+ ]
+}

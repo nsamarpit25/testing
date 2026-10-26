@@ -1,0 +1,73 @@
+{
+ "prompt": "AUDIO PROFILE\nCleo: a young woman software developer in her mid twenties. Soft, natural, conversational voice. Real and understated, never cartoonish.\nClaude: a young man's voice. Calm, warm and gently dry-witted, never theatrical. Few words.\n\nTHE SCENE, END TO END\nEvening at her desk. Cleo sees forty thousand reads on her cloud database dashboard and thinks her app went viral, but she hasn't deployed it. Claude, a small AI companion on her desk, shows her it's her own page on localhost stuck in an infinite fetch loop.\n\nLINE BY LINE\n1. Cleo, thrilled, bouncing.\n2. Claude, gentle, careful.\n3. Cleo, confused.\n4. Claude, calm.\n5. Cleo, small, slowly.\n6. Claude, dry.\n7. Cleo, defensive.\n8. Claude, simple.\n9. Cleo, alarmed, fast.\n10. Claude, patient, explaining.\n11. Cleo, proud and defensive.\n12. Claude, deadpan.\n13. Cleo, panicked.\n14. Claude, calm.\n15. Cleo, relieved sigh.\n16. Cleo, reading it slowly, deflating.\n17. Cleo, small, hopeful.\n18. Claude, kind, dry.\n19. Cleo, wry, a sad little laugh.\n\nDIRECTOR'S NOTES\nA natural, conversational pace, like two friends at a desk; not rushed, not slow. Let the jokes land with a short beat before the dry lines. Leave a short beat at every [medium pause] and at every \"...\"; never read the bracketed tags aloud. Speak every word of the dialogue exactly as written, nothing added.",
+ "turns": [
+  [
+   "Cleo",
+   "Claude! Forty thousand database reads in three minutes. We're going viral!"
+  ],
+  [
+   "Claude",
+   "Cleo... you haven't deployed it yet."
+  ],
+  [
+   "Cleo",
+   "Then who's reading it?"
+  ],
+  [
+   "Claude",
+   "Your app on localhost. Every read came from this desk."
+  ],
+  [
+   "Cleo",
+   "...From me?"
+  ],
+  [
+   "Claude",
+   "From you. You're flooding your own database."
+  ],
+  [
+   "Cleo",
+   "I'm not even touching anything! The page is just sitting there."
+  ],
+  [
+   "Claude",
+   "Look at the Network tab."
+  ],
+  [
+   "Cleo",
+   "Why is it counting like a slot machine?"
+  ],
+  [
+   "Claude",
+   "Your useEffect loads the tasks, updates the list, sees a new list... and loads again."
+  ],
+  [
+   "Cleo",
+   "I added tasks to the dependency array. To be responsive!"
+  ],
+  [
+   "Claude",
+   "Very responsive. Forever."
+  ],
+  [
+   "Cleo",
+   "Make it stop! Make it stop!"
+  ],
+  [
+   "Claude",
+   "Done. The fetch loop is gone."
+  ],
+  [
+   "Cleo",
+   "At least it didn't cost anything. [medium pause] \"Daily read limit reached.\" [medium pause] Claude... can you rewind the database too?"
+  ],
+  [
+   "Claude",
+   "I can rewind my edits. Not the calendar."
+  ],
+  [
+   "Cleo",
+   "I finally went viral... and my only fan was me."
+  ]
+ ]
+}

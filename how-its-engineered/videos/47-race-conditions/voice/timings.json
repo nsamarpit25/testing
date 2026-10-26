@@ -1,0 +1,82 @@
+[
+ {
+  "li": 0,
+  "pi": 0,
+  "say": "Your post is at nine hundred likes. A hundred more arrive in the same second, and the counter stops at nine hundred and twelve. Where did the other eighty-eight go?",
+  "show": "Your post is at *900* likes. A hundred more arrive in the same second, and the counter stops at [912.] Where did the other 88 go?",
+  "start": 0.0,
+  "end": 6.86
+ },
+ {
+  "li": 1,
+  "pi": 0,
+  "say": "Each like runs three steps: read the count, add one, write it back.",
+  "show": "Each like runs three steps: *read* the count, *add one,* *write* it back.",
+  "start": 7.46,
+  "end": 10.54
+ },
+ {
+  "li": 2,
+  "pi": 0,
+  "say": "Two likes arrive together. Both read nine hundred. Both add one. Both write nine hundred and one.",
+  "show": "Two likes arrive together. Both read *900.* Both add one. Both write [901.]",
+  "start": 11.06,
+  "end": 14.16
+ },
+ {
+  "li": 3,
+  "pi": 0,
+  "say": "Two likes, but the count only went up by one. That's a race condition: two requests overlap, and one overwrites the other.",
+  "show": "Two likes, but the count only went up by [one.] That's a *race condition:* two requests overlap, and [one overwrites the other.]",
+  "start": 15.42,
+  "end": 21.28
+ },
+ {
+  "li": 4,
+  "pi": 0,
+  "say": "It hides in testing, because one person tapping never overlaps. It shows up under real traffic.",
+  "show": "It hides in testing, because one person tapping never overlaps. It shows up under [real traffic.]",
+  "start": 21.82,
+  "end": 26.08
+ },
+ {
+  "li": 5,
+  "pi": 0,
+  "say": "Like two people updating a tally on a whiteboard at the same time: whoever writes last erases the other's work.",
+  "show": "Like two people updating a tally on a *whiteboard* at the same time: [whoever writes last] erases the other's work.",
+  "start": 26.24,
+  "end": 30.68
+ },
+ {
+  "li": 6,
+  "pi": 0,
+  "say": "The fix: make read, add and write one step that can't be split.",
+  "show": "The fix: make read, add and write *one step* that [can't be split.]",
+  "start": 31.34,
+  "end": 34.74
+ },
+ {
+  "li": 7,
+  "pi": 0,
+  "say": "Engineers call this an atomic update. In SQL, set likes equals likes plus one, in a single statement. In Redis, the increment command does the same.",
+  "show": "Engineers call this an *atomic* update. In SQL, *SET likes = likes + 1,* in a single statement. In Redis, *INCR* does the same.",
+  "start": 35.24,
+  "end": 42.26
+ },
+ {
+  "li": 8,
+  "pi": 0,
+  "say": "When it's more than a counter, like checking stock and then selling, wrap the steps in a transaction with a lock.",
+  "show": "When it's more than a counter, like checking stock and then selling, wrap the steps in a *transaction* with a *lock.*",
+  "start": 42.82,
+  "end": 46.98
+ },
+ {
+  "li": 9,
+  "pi": 0,
+  "say": "If you're a vibe coder, follow for the system design your AI skipped.",
+  "show": "If you're a vibe coder, follow for the system design your AI [skipped.]",
+  "start": 47.58,
+  "end": 50.04
+ }
+]

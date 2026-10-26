@@ -1,0 +1,51 @@
+{
+ "topic": "Caching",
+ "lines": [
+  [
+   {
+    "say": "Your app takes two seconds to load its data. But the second time you open the page, it's almost instant.",
+    "show": "Your app takes *two seconds* to load its data. But the second time you open the page, it's *almost instant.*"
+   },
+   {
+    "say": "What changed?",
+    "show": "[What changed?]"
+   }
+  ],
+  [
+   {
+    "say": "The first time, the server gets the answer from the database, where your data is stored, and waits. Then it saves a copy in a faster store: a cache.",
+    "show": "The first time, the server gets the answer from the *database,* where your data is stored, and waits. Then it saves a copy in a faster store: a [cache.]"
+   }
+  ],
+  [
+   {
+    "say": "Next time, it checks the cache first. Copy found? That's a cache hit, and there's no trip to the database.",
+    "show": "Next time, it checks the cache first. Copy found? That's a [cache hit,] and there's *no trip to the database.*"
+   }
+  ],
+  [
+   {
+    "say": "Like a sticky note on your desk, instead of walking to the filing room every time.",
+    "show": "Like a *sticky note* on your desk, instead of walking to the [filing room] every time."
+   }
+  ],
+  [
+   {
+    "say": "One catch. A copied price can go out of date. So developers set copies to expire, or clear them when the price changes.",
+    "show": "One catch. A copied price can go [out of date.] So developers set copies to *expire,* or *clear them* when the price changes."
+   }
+  ],
+  [
+   {
+    "say": "Redis is a cache many apps use, and your browser keeps its own cache too.",
+    "show": "*Redis* is a cache many apps use, and your *browser* keeps its own cache too."
+   }
+  ],
+  [
+   {
+    "say": "If you're a vibe coder, follow for the system design your AI skipped.",
+    "show": "If you're a vibe coder, follow for the system design your AI [skipped.]"
+   }
+  ]
+ ]
+}

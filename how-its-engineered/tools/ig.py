@@ -6,12 +6,15 @@
   python3 tools/ig.py refresh                    # extend the 60-day token
   python3 tools/ig.py post VIDEO --cover PNG --caption TXT --yes
   python3 tools/ig.py post VIDEO ... --trial manual|auto --yes   # trial reel: non-followers only at first
+  python3 tools/ig.py post VIDEO --video-url URL --cover-url URL ...   # files already public, no S3
 
 The token is IG_HOWITSENGINEERED_TOKEN in ~/.instagram_tokens (chmod 600) and is never printed.
 Instagram fetches the video and cover from a URL, so `post` stages them in a private
-S3 bucket (presigned links valid 1 h, files auto-deleted after 1 day).
+S3 bucket (presigned links valid 1 h). They're deleted as soon as Instagram has processed
+the video; the bucket's 1-day expiry is only a fallback.
 """
-import argparse, json, os, subprocess, sys, time, urllib.error, urllib.parse, urllib.request
+import argparse, json, os, re, subprocess, sys, time, urllib.error, urllib.parse, urllib.request
+from datetime import datetime
 from pathlib import Path
 
 API = "https://graph.instagram.com/v26.0"
@@ -99,12 +102,25 @@ def cmd_refresh(a):
     print(f"Token refreshed, valid for {d.get('expires_in', 0) // 86400} more days.")
 
 
+# keys in the environment (e.g. from .env) win; otherwise use the named profile
+AWS = ["aws", "--region", REGION] + ([] if os.environ.get("AWS_ACCESS_KEY_ID") else ["--profile", PROFILE])
+STAGED = []  # S3 keys uploaded by this run, deleted once Instagram has fetched them
+
+
 def stage(path):
     key = f"{int(time.time())}-{Path(path).name}"
-    aws = ["aws", "--profile", PROFILE, "--region", REGION]
-    subprocess.run(aws + ["s3", "cp", str(path), f"s3://{BUCKET}/{key}", "--only-show-errors"], check=True)
-    return subprocess.run(aws + ["s3", "presign", f"s3://{BUCKET}/{key}", "--expires-in", "3600"],
+    subprocess.run(AWS + ["s3", "cp", str(path), f"s3://{BUCKET}/{key}", "--only-show-errors"], check=True)
+    STAGED.append(key)
+    return subprocess.run(AWS + ["s3", "presign", f"s3://{BUCKET}/{key}", "--expires-in", "3600"],
                           check=True, capture_output=True, text=True).stdout.strip()
+
+
+def unstage():
+    for key in STAGED:
+        subprocess.run(AWS + ["s3", "rm", f"s3://{BUCKET}/{key}", "--only-show-errors"], check=True)
+    if STAGED:
+        print(f"deleted {len(STAGED)} staged file(s) from S3")
+    STAGED.clear()
 
 
 def cmd_post(a):
@@ -112,22 +128,54 @@ def cmd_post(a):
     if not a.yes:
         sys.exit("Refusing to post without --yes.")
     uid = me()["user_id"]
-    params = {"media_type": "REELS", "video_url": stage(a.video), "caption": caption, "share_to_feed": "true"}
-    if a.cover:
-        params["cover_url"] = stage(a.cover)
+    is_variant = bool(a.trial and re.search(r'-t\d+\.mp4$', a.video))
+    if is_variant:
+        recent = call("GET", f"{uid}/media", {"fields": "caption,permalink", "limit": 100})["data"]
+        duplicate = next((m for m in recent if m.get("caption", "").strip() == caption), None)
+        if duplicate:
+            print("Already published; skipping duplicate:", duplicate["permalink"], flush=True)
+            return
+    params = {"media_type": "REELS", "caption": caption, "share_to_feed": "true"}
+    if a.video_url:  # already hosted somewhere public (e.g. a temporary tunnel), so skip S3
+        params["video_url"] = a.video_url
+        if a.cover_url:
+            params["cover_url"] = a.cover_url
+    else:
+        params["video_url"] = stage(a.video)
+        if a.cover:
+            params["cover_url"] = stage(a.cover)
     if a.trial:  # trial reel: shown to non-followers first; graduate in the app (manual) or on performance (auto)
         params["trial_params"] = json.dumps({"graduation_strategy": {"manual": "MANUAL", "auto": "SS_PERFORMANCE"}[a.trial]})
-    cid = call("POST", f"{uid}/media", params)["id"]
+    try:
+        cid = call("POST", f"{uid}/media", params)["id"]
+    except RuntimeError:
+        unstage()
+        raise
     print("container", cid, "- waiting for Instagram to process the video")
     for _ in range(60):
         st = call("GET", cid, {"fields": "status_code,status"})
         if st["status_code"] == "FINISHED":
+            unstage()  # Instagram has its copy now
             break
         if st["status_code"] in ("ERROR", "EXPIRED"):
+            unstage()
             sys.exit(f"Processing failed: {st}")
         time.sleep(10)
     else:
+        # Instagram may still be downloading, so the staged files stay; the bucket expires them after 1 day.
         sys.exit("Still processing after 10 min; re-run publish later with the container id.")
+    if is_variant:
+        # Compare actual publication times, not scheduler start times. Recheck
+        # after waiting because another HIE post may have gone live meanwhile.
+        while True:
+            recent = call("GET", f"{uid}/media", {"fields": "timestamp", "limit": 10})["data"]
+            latest = max((datetime.strptime(m["timestamp"], "%Y-%m-%dT%H:%M:%S%z").timestamp()
+                          for m in recent), default=0)
+            delay = latest + 20 * 60 + 5 - time.time()
+            if delay <= 0:
+                break
+            print(f"Publication spacing: waiting {delay:.0f}s after latest HIE post", flush=True)
+            time.sleep(min(delay, 60))
     mid = call("POST", f"{uid}/media_publish", {"creation_id": cid})["id"]
     print("published:", call("GET", mid, {"fields": "permalink"})["permalink"])
 
@@ -139,6 +187,8 @@ s = sub.add_parser("stats"); s.add_argument("--n", type=int, default=10); s.add_
 sub.add_parser("refresh").set_defaults(f=cmd_refresh)
 s = sub.add_parser("post"); s.add_argument("video"); s.add_argument("--cover"); s.add_argument("--caption", required=True)
 s.add_argument("--trial", choices=["manual", "auto"])
+s.add_argument("--video-url", help="public URL of the video; skips S3 staging")
+s.add_argument("--cover-url", help="public URL of the cover, used with --video-url")
 s.add_argument("--yes", action="store_true"); s.set_defaults(f=cmd_post)
 a = p.parse_args()
 try:

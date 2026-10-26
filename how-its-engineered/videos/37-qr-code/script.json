@@ -1,0 +1,21 @@
+{
+ "topic": "How Your Phone Reads a QR Code",
+ "lines": [
+  [{"say": "Smudge part of a QR code, and your phone can still read it. But on a busy menu, how does it even spot the code?",
+    "show": "Smudge part of a *QR code,* and your phone can still read it. But on a busy menu, how does it even [spot the code?]"}],
+  [{"say": "Its tiny dark and light squares are ones and zeros, spelling out something like a web address.",
+    "show": "Its tiny *dark and light squares* are [ones and zeros,] spelling out something like a web address."}],
+  [{"say": "First, the camera hunts for the three big corner squares. They show where the code is, and how it's turned. But how does it pick them out from everything else on the menu?",
+    "show": "First, the camera hunts for the three *corner squares.* They show where the code is, and how it's turned. But how does it [pick them out] from everything else on the menu?"}],
+  [{"say": "Then it straightens the grid, as if seen from straight above, and reads each square.",
+    "show": "Then it *straightens the grid,* as if seen from straight above, and [reads each square.]"}],
+  [{"say": "Some squares are backup, so smudged data can be rebuilt, up to about thirty percent on the strongest setting. But damage a corner square, and the scan can fail.",
+    "show": "Some squares are *backup,* so smudged data [can be rebuilt,] up to about 30% on the strongest setting. But damage a corner square, and the scan can fail."}],
+  [{"say": "In nineteen ninety-four, Masahiro Hara's team at Denso released the QR code, its grid inspired by the game Go. They studied flyers, magazines and boxes, then gave those corner squares the black-and-white stripe widths least common in print.",
+    "show": "In *1994,* Masahiro Hara's team at Denso released the QR code, its grid inspired by the game Go. They studied flyers, magazines and boxes, then gave those *corner squares* [the black-and-white stripe widths] least common in print."}],
+  [{"say": "So the trick to standing out on a busy menu came from studying everything else printed around it.",
+    "show": "So the trick to *standing out* on a busy menu came from [studying everything else] printed around it."},
+   {"say": "Follow for how everyday tech really works.",
+    "show": "Follow for how [everyday tech] really works."}]
+ ]
+}

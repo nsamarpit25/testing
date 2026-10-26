@@ -1,0 +1,71 @@
+{
+  "topic": "Pessimistic locking",
+  "lines": [
+    [
+      {
+        "say": "One concert ticket left. Two fans tap Buy at the same moment. One of them gets put on hold. On purpose.",
+        "show": "*One concert ticket* left. Two fans tap Buy at the same moment. One of them gets [put on hold.] On purpose."
+      }
+    ],
+    [
+      {
+        "say": "Pessimistic locking expects a clash. So before a checkout reads the row, it locks it.",
+        "show": "*Pessimistic locking* expects a clash. So before a checkout reads the row, it [locks it.]"
+      }
+    ],
+    [
+      {
+        "say": "Checkout A gets the lock first, and reads: one left.",
+        "show": "Checkout A gets the *lock* first, and reads: *one left.*"
+      }
+    ],
+    [
+      {
+        "say": "Checkout B tries to lock the same row, and has to wait until A is done.",
+        "show": "Checkout B tries to lock the same row, and has to [wait] until A is done."
+      }
+    ],
+    [
+      {
+        "say": "A sells the ticket, sets the stock to zero, and commits, which saves the change and releases the lock.",
+        "show": "A sells the ticket, sets the stock to *zero,* and *commits,* which saves the change and [releases the lock.]"
+      }
+    ],
+    [
+      {
+        "say": "Now B gets the row, reads zero left, and shows sold out. No double sale, and nothing to retry.",
+        "show": "Now B gets the row, reads *zero left,* and shows sold out. *No double sale,* and nothing to retry."
+      }
+    ],
+    [
+      {
+        "say": "Like a library book: while it's checked out, the next person waits until it comes back.",
+        "show": "Like a *library book:* while it's checked out, the next person [waits] until it comes back."
+      }
+    ],
+    [
+      {
+        "say": "In SQL, that's SELECT FOR UPDATE inside a transaction. Postgres and MySQL both support it.",
+        "show": "In SQL, that's *SELECT FOR UPDATE* inside a transaction. *Postgres* and *MySQL* both support it."
+      }
+    ],
+    [
+      {
+        "say": "The cost is waiting. Hold a lock too long and requests pile up behind it, so keep transactions short.",
+        "show": "The cost is [waiting.] Hold a lock too long and [requests pile up] behind it, so keep transactions *short.*"
+      }
+    ],
+    [
+      {
+        "say": "Use it when clashes are common, like a ticket drop. When they're rare, optimistic locking is cheaper.",
+        "show": "Use it when clashes are *common,* like a ticket drop. When they're rare, *optimistic locking* is cheaper."
+      }
+    ],
+    [
+      {
+        "say": "If you're a vibe coder, follow for the system design your AI skipped.",
+        "show": "If you're a vibe coder, follow for the system design your AI [skipped.]"
+      }
+    ]
+  ]
+}

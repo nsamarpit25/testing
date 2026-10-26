@@ -1,0 +1,364 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- 08 Docker, remade in the 21 ember style. World: laptop and server joined by a road; the env stacks beside each;
+     the box assembling in front of the laptop; a shipping lane (truck, ship, train) to the left; the pipeline
+     Dockerfile → image → container in front; at the end a container lands on laptop, server and cloud.
+     Beats come from voice/words.json via at(). Shared pieces live in ../_ember/. -->
+<link rel="stylesheet" href="../_ember/fonts.css">
+<link rel="stylesheet" href="../_ember/reel.css">
+</head>
+<body>
+<div id="stage">
+  <div id="world">
+    <canvas id="cv" width="1080" height="1920"></canvas>
+    <div class="layer" id="lbls"></div>
+  </div>
+</div>
+<script src="../../tools/lib.js"></script>
+<script src="voice/words.js"></script>
+<script src="../_ember/three.js"></script>
+<script src="../_ember/world.js"></script>
+<script src="../_ember/base.js"></script>
+<script>
+const ICE = '#BFE9FF', BLUE = '#8FD3FF';
+const addIcon = (k, d) => { ICON[k] = d; P2[k] = new Path2D(d); };
+addIcon('truck', 'M8 30 H60 V68 H8 Z M60 42 H80 L92 56 V68 H60 Z M26 80 m-8 0 a8 8 0 1 0 16 0 a8 8 0 1 0 -16 0 M76 80 m-8 0 a8 8 0 1 0 16 0 a8 8 0 1 0 -16 0');
+addIcon('ship', 'M8 60 H92 L80 84 H20 Z M26 60 V42 H74 V60 M40 42 V28 H60 V42');
+addIcon('train', 'M26 12 H74 Q84 12 84 22 V68 Q84 76 76 76 H24 Q16 76 16 68 V22 Q16 12 26 12 Z M16 44 H84 M32 60 h1 M68 60 h1 M30 76 L20 90 M70 76 L80 90');
+addIcon('cloud', 'M28 74 H74 Q90 74 90 58 Q90 44 76 42 Q74 24 56 24 Q42 24 36 36 Q20 34 16 48 Q10 62 22 72 Z');
+
+/* ---------------- beats */
+const T = {
+  perfectly: at('perfectly'), server1: at('server'), later: at('later'), crashed: at('crashed'), same: at('same'), nobody: at('nobody'),
+  older: at('older'), missing: at('missing'), library1: at('library'), docker: at('docker'), dont: at("don't"), code4: at('code', 3),
+  plus: at('plus'), everything: at('everything'), sealed: at('sealed'), box1: at('box'), shipping: at('shipping'),
+  truck: at('truck'), ship3: at('ship', 3), train: at('train'), inside1: at('inside'), exactly: at('exactly'),
+  list: at('list'), builds: at('builds'), image1: at('image'), code6: at('library', 2) + 0.35, python2: at('python', 2), library2: at('library', 2), frozen: at('frozen'),
+  run: at('run'), container2: at('container', 2), running: at('running'),
+  laptop2: at('laptop', 2), server3: at('server', 3), cloud: at('cloud'), identical: at('identical'), ifv: at('if'), follow: at('follow'),
+};
+const CUT = { SAME: T.same - 0.1, ENV: T.older - 0.9, DK: T.docker - 0.1, BOX: T.dont - 0.1, LANE: T.shipping - 0.35, PIPE: T.list - 0.25, RUN: T.run - 0.05, FIN: T.laptop2 - 0.2, END: T.ifv - 0.15 };
+
+/* ---------------- layout */
+const LAP = [-170, -30], SRV = [170, -30], CLD = [0, 190];
+const BXC = [LAP[0], LAP[1] - 120];
+const PADS = [-370, -500, -630].map((x) => [x, BXC[1]]);
+const DOC = [-135, -190], IMG = [0, -190], CR = [138, -190];
+
+/* ---------------- camera */
+const WIDE = { f: [-15, -50, 40], s: 1.05, a: -0.42, e: 0.58, sy: 600 };
+const SHOTS = [
+  { t: 0, d: 0, f: [LAP[0], LAP[1], 40], s: 3.0, a: -0.32, e: 0.36, sy: 560 },
+  { t: T.server1 - 1.3, d: 1.3, ...WIDE },
+  { t: T.crashed - 0.25, d: 0.45, f: [SRV[0], SRV[1], 70], s: 2.5, a: -0.46, e: 0.45, sy: 600 },
+  { t: CUT.SAME, d: 0.9, ...WIDE },
+  { t: CUT.ENV, d: 1.0, f: [-15, -80, 30], s: 1.05, a: -0.42, e: 0.6, sy: 640 },
+  { t: CUT.DK, d: 1.0, ...WIDE, sy: 650 },
+  { t: CUT.BOX, d: 1.0, f: [BXC[0], BXC[1] + 20, 34], s: 2.5, a: -0.4, e: 0.5, sy: 580 },
+  { t: CUT.LANE, d: 1.1, f: [PADS[1][0] + 20, PADS[1][1], 36], s: 1.3, a: -0.4, e: 0.52, sy: 580 },
+  { t: T.inside1 - 0.2, d: 0.8, f: [PADS[2][0], PADS[2][1], 34], s: 2.6, a: -0.4, e: 0.62, sy: 580 },
+  { t: CUT.PIPE, d: 1.1, f: [0, -190, 30], s: 1.28, a: -0.42, e: 0.58, sy: 600 },
+  { t: T.image1 - 0.3, d: 0.9, f: [0, -190, 36], s: 1.38, a: -0.42, e: 0.55, sy: 590 },
+  { t: CUT.RUN, d: 1.0, f: [15, -190, 34], s: 1.38, a: -0.42, e: 0.55, sy: 600 },
+  { t: CUT.FIN, d: 1.0, f: [-25, 0, 50], s: 1.12, a: -0.42, e: 0.62, sy: 580 },
+  { t: CUT.END, d: 2.0, f: [-25, 0, 50], s: 0.9, a: -0.42, e: 0.62, sy: 620 },
+];
+// t2 remake: every shot re-angled (azimuth, elevation, zoom) so no frame matches the original
+const REANGLE = [[0.18, 0.08, 0.92], [-0.14, -0.05, 0.85], [-0.1, 0.06, 0.9], [-0.06, 0.05, 0.84], [0.16, -0.06, 0.95], [-0.2, 0.06, 0.96],
+  [0.18, -0.04, 0.95], [0.05, 0.06, 0.82], [0.2, 0.05, 0.95], [0.1, -0.05, 0.86], [0.1, 0.06, 0.86], [0.1, 0.04, 0.86], [0.18, 0.05, 0.95], [-0.16, 0.08, 0.92]];
+SHOTS.forEach((s, i) => { const r = REANGLE[i % REANGLE.length]; s.a += r[0]; s.e = Math.min(1.0, Math.max(0.3, s.e + r[1])); s.s *= r[2]; });
+const KICKS = [[T.perfectly, 0.03], [T.crashed, 0.08], [T.same, 0.03], [T.missing, 0.05], [T.docker, 0.05], [T.box1 + 0.05, 0.07], [T.truck, 0.03], [T.ship3, 0.03], [T.train, 0.03],
+  [T.exactly, 0.04], [T.builds, 0.04], [T.frozen, 0.06], [T.container2, 0.05], [T.laptop2 + 0.3, 0.03], [T.server3 + 0.3, 0.04], [T.cloud + 0.3, 0.03], [T.identical, 0.06]];
+const SHAKES = [[T.crashed, 6, 0.45], [T.missing + 0.1, 3, 0.3], [T.box1 + 0.05, 3, 0.3]];
+
+/* ---------------- colours over time */
+const KL = [[0, O], [T.perfectly, OK], [T.server1 + 0.2, O], [CUT.FIN, O], [T.laptop2 + 0.35, OK]];
+const KS = [[0, O], [T.crashed, RED], [CUT.SAME + 1.5, '#a8402f'], [T.server3 + 0.35, OK]];
+
+/* ---------------- build the world */
+const lapBase = emberBox(LAP[0], LAP[1], 104, 68, 6, O);
+const lapScr = emberBox(LAP[0], LAP[1] + 32, 104, 4, 70, O, { z: 6 });
+const lapFace = decal(96, 62, 'front', 6); lapFace.m.position.set(LAP[0], LAP[1] + 29.7, 6 + 35);
+const srv = emberBox(SRV[0], SRV[1], 76, 76, 124, O);
+const srvFace = decal(76, 124, 'front', 5, srv.g); srvFace.m.position.set(0, -38.3, 62);
+const cldB = emberBox(CLD[0], CLD[1], 96, 96, 46, O);
+const cldFace = decal(96, 46, 'front', 6, cldB.g); cldFace.m.position.set(0, -48.3, 23);
+const rLS = road([[LAP[0] + 54, LAP[1], 0], [SRV[0] - 40, SRV[1], 0]], O);
+const rCL = road([[0, LAP[1], 0], [0, CLD[1] - 50, 0]], O);
+const poolL = pool(LAP[0], LAP[1], 120, O), poolS = pool(SRV[0], SRV[1], 120, O), poolC = pool(CLD[0], CLD[1], 120, O);
+[[LAP, 104, 68], [SRV, 76, 76], [CLD, 96, 96]].forEach(([p, w, d]) => blob(p[0], p[1], w, d));
+
+// env stacks: what each machine has installed
+const ENVL = [LAP[0], LAP[1] - 92], ENVS = [SRV[0], SRV[1] - 92];
+const slabs = {
+  pyL: emberBox(ENVL[0], ENVL[1], 78, 42, 13, OK), pdL: emberBox(ENVL[0], ENVL[1], 78, 42, 13, OK, { z: 16 }),
+  pyS: emberBox(ENVS[0], ENVS[1], 78, 42, 13, AMB), pdS: emberBox(ENVS[0], ENVS[1], 78, 42, 13, RED, { z: 16 }),
+};
+
+// the three things your app needs: code, Python, a library
+function cube(col, txt) {
+  const c = emberBox(0, 0, 26, 26, 26, col);
+  const tp = decal(24, 24, 'top', 8, c.g); tp.m.position.set(0, 0, 26.3);
+  tp.draw((g, W_, H_) => { g.fillStyle = col; g.font = '800 64px Mono'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.shadowColor = col; g.shadowBlur = 14; g.fillText(txt, W_ / 2, H_ / 2 + 4); });
+  return c;
+}
+const CB = [cube(O2, '</>'), cube(AMB, 'Py'), cube(BLUE, '{}')];
+const CUBE_COL = [O2, AMB, BLUE];
+// the shipping container: a ribbed box that drops over the cubes
+const BOX = emberBox(0, 0, 124, 50, 52, O);
+BOX.mesh.material.transparent = true; BOX.mesh.material.needsUpdate = true;
+function ribs(g, W_, H_, col) {
+  g.strokeStyle = col; g.globalAlpha = 0.55; g.lineWidth = 4;
+  for (let x = 18; x < W_ - 10; x += 22) { g.beginPath(); g.moveTo(x, 14); g.lineTo(x, H_ - 14); g.stroke(); }
+  g.globalAlpha = 1;
+}
+const boxF = decal(124, 52, 'front', 5, BOX.g); boxF.m.position.set(0, -25.3, 26);
+const boxR = decal(50, 52, 'right', 5, BOX.g); boxR.m.position.set(62.3, 0, 26);
+const poolB = pool(0, 0, 130, O);
+// lane pads: truck, ship, train
+const PADO = PADS.map((p, i) => {
+  const b = emberBox(p[0], p[1], 120, 76, 8, O);
+  const ic = decal(70, 50, 'top', 6); ic.m.position.set(p[0], p[1] - 78, 0.4);
+  const pl = pool(p[0], p[1], 110, O);
+  return { b, ic, pl, name: ['truck', 'ship', 'train'][i] };
+});
+const rLane = road([[BXC[0] - 70, BXC[1], 0], [PADS[2][0] - 70, BXC[1], 0]], O);
+
+// pipeline: Dockerfile page → image (three frozen layers) → container
+const doc = emberBox(DOC[0], DOC[1], 74, 6, 94, O);
+const docF = decal(68, 88, 'front', 6, doc.g); docF.m.position.set(0, -3.3, 47);
+const LAY = [['Py', AMB, 0], ['{}', BLUE, 16], ['</>', O2, 32]].map(([txt, col, z]) => {
+  const s = emberBox(IMG[0], IMG[1], 80, 54, 13, col, { z });
+  const f = decal(80, 13, 'front', 6, s.g); f.m.position.set(0, -27.3, 6.5);
+  return { s, f, txt, col, z };
+});
+const shell = emberBox(IMG[0], IMG[1], 96, 70, 56, ICE, { z: -2 });
+const runC = emberBox(CR[0], CR[1], 110, 50, 52, OK);
+const runF = decal(110, 52, 'front', 6, runC.g); runF.m.position.set(0, -25.3, 26);
+const rPipe = road([[DOC[0] + 40, DOC[1], 0], [CR[0] - 58, CR[1], 0]], O);
+const slotI = emberBox(IMG[0], IMG[1], 104, 78, 3, DIM), slotR = emberBox(CR[0], CR[1], 124, 66, 3, DIM);
+const poolI = pool(IMG[0], IMG[1], 120, ICE), poolR = pool(CR[0], CR[1], 120, OK), poolD = pool(DOC[0], DOC[1], 90, O);
+// finale: one small container lands on each machine
+const MINI = [0, 1, 2].map(() => { const b = emberBox(0, 0, 66, 30, 30, OK); const f = decal(66, 30, 'front', 6, b.g); f.m.position.set(0, -15.3, 15); return { b, f }; });
+
+/* ---------------- canvas faces */
+function lapScreen(g, W_, H_, t, col) {
+  g.fillStyle = '#0f0d0c'; rrect(g, 0, 0, W_, H_, 14); g.fill();
+  g.fillStyle = GR; g.font = '600 20px Mono'; g.fillText('app.py', 22, 36);
+  const L = [['import ', 'pandas'], ['df = pandas.read_csv(', '…'], ['print(df.sum())', '']];
+  L.forEach(([a, b], i) => { g.fillStyle = '#d9d2ca'; g.font = '600 22px Mono'; g.fillText(a, 22, 82 + i * 38); g.fillStyle = O2; g.fillText(b, 22 + g.measureText(a).width, 82 + i * 38); });
+  const ok = t > T.perfectly - 0.1;
+  g.fillStyle = ok ? OK + '22' : 'rgba(255,255,255,0.04)'; rrect(g, 18, H_ - 90, W_ - 36, 62, 12); g.fill();
+  g.strokeStyle = ok ? OK : '#3d3833'; g.lineWidth = 3; rrect(g, 18, H_ - 90, W_ - 36, 62, 12); g.stroke();
+  g.fillStyle = ok ? OK : GR; g.font = '800 26px Mono'; g.fillText(ok ? '✓ 12 / 12 TESTS PASS' : 'running tests…', 36, H_ - 50);
+}
+function srvDraw(g, W_, H_, col, t, crashed) {
+  g.fillStyle = col; g.font = '800 46px Mono'; g.textAlign = 'center'; g.shadowColor = col; g.shadowBlur = 14;
+  g.fillText(crashed ? 'DOWN' : 'SERVER', W_ / 2, 78); g.shadowBlur = 0;
+  for (let i = 0; i < 6; i++) {
+    const y = 120 + i * 78;
+    g.strokeStyle = col + '88'; g.lineWidth = 4; rrect(g, 40, y, W_ - 80, 48, 8); g.stroke();
+    for (let k = 0; k < 6; k++) { g.fillStyle = col + '33'; g.fillRect(64 + k * 34, y + 18, 22, 12); }
+    const on = crashed ? Math.sin(t * 9 + i) > 0.6 : (Math.floor(t * 4 + i * 1.7) % 3) === 0;
+    g.beginPath(); g.arc(W_ - 72, y + 24, 9, 0, Math.PI * 2); g.fillStyle = on ? col : col + '44'; g.shadowColor = col; g.shadowBlur = on ? 14 : 0; g.fill(); g.shadowBlur = 0;
+  }
+  g.textAlign = 'left';
+}
+function cloudDraw(g, W_, H_, col) { icon(g, 'cloud', W_ / 2, H_ / 2, H_ * 0.9, col, 9, 12); }
+function docDraw(g, W_, H_, t) {
+  g.fillStyle = '#0f0d0c'; rrect(g, 0, 0, W_, H_, 14); g.fill();
+  g.fillStyle = O; g.font = '800 36px Mono'; g.fillText('Dockerfile', 26, 60);
+  const n = clamp((t - CUT.PIPE - 0.3) / 2.2) * 4;
+  for (let i = 0; i < 4; i++) { const k = clamp(n - i); g.fillStyle = [AMB, BLUE, O2, GR][i]; g.globalAlpha = 0.25 + 0.75 * k; g.fillRect(26, 100 + i * 70, (W_ - 80) * (0.5 + 0.5 * k) * [0.8, 1, 0.75, 0.9][i], 26); }
+  g.globalAlpha = 1;
+}
+function runDraw(g, W_, H_, t, col, label) {
+  g.fillStyle = col; g.font = '800 40px Mono'; g.textAlign = 'left'; g.shadowColor = col; g.shadowBlur = 12;
+  g.beginPath(); g.arc(46, H_ / 2, 14 + 3 * Math.sin(t * 8), 0, Math.PI * 2); g.fill();
+  g.fillText(label, 78, H_ / 2 + 14);
+  for (let k = 0; k < 6; k++) { const h = 16 + 30 * Math.abs(Math.sin(t * 6 + k * 1.3)); g.fillRect(W_ - 200 + k * 30, H_ / 2 + 30 - h, 18, h); }
+  g.shadowBlur = 0;
+}
+
+/* ---------------- the world, frame by frame */
+function world(t) {
+  // machines
+  const lc = colAt(KL, t), sc = colAt(KS, t), crashed = t > T.crashed && t < T.server3 + 0.35;
+  const mOp = 1 - 0.75 * window01(t, CUT.PIPE, CUT.FIN + 0.1, 0.5);
+  lapBase.setLook(lc, 1 + 2 * pulse(t, lastKey(KL, t)), mOp); lapScr.setLook(lc, 1 + 2 * pulse(t, lastKey(KL, t)), mOp); lapFace.m.material.opacity = mOp; srvFace.m.material.opacity = mOp;
+  lapFace.draw((g, W_, H_) => lapScreen(g, W_, H_, t, lc));
+  const shk = Math.sin((t - T.crashed) * 70) * 3 * window01(t, T.crashed, T.crashed + 0.5, 0.05);
+  srv.g.position.x = SRV[0] + shk;
+  srv.setLook(sc, 1 + 2.5 * pulse(t, lastKey(KS, t)), mOp);
+  srvFace.draw((g, W_, H_) => srvDraw(g, W_, H_, sc, t, crashed));
+  poolL.set(lc, 0.5 + 0.5 * pulse(t, lastKey(KL, t), 2)); poolS.set(sc, 0.5 + 0.6 * pulse(t, lastKey(KS, t), 2));
+  const cldA = ease.back(prog(t, T.cloud - 0.45, T.cloud - 0.05));
+  cldB.g.visible = cldA > 0.01; cldB.g.scale.set(1, 1, Math.max(0.01, cldA)); cldB.setLook(t > T.cloud + 0.35 ? OK : O, 1 + 2 * pulse(t, T.cloud + 0.35));
+  if (cldA > 0.01) cldFace.draw((g, W_, H_) => cloudDraw(g, W_, H_, t > T.cloud + 0.35 ? OK : O));
+  poolC.set(t > T.cloud + 0.35 ? OK : O, 0.6 * cldA);
+  rLS.set(1, mixHex(lc, sc, 0.5), 1, t);
+  rCL.set(ep(t, T.cloud - 0.6, T.cloud - 0.1), t > T.cloud + 0.35 ? OK : O, 1, t);
+  // the upload: one orb from laptop to server
+  const up = (t - (T.server1 - 0.3)) / 1.2;
+  if (up > 0 && up < 1.1) orb([[LAP[0] + 54, LAP[1], 6], [SRV[0] - 40, SRV[1], 6]], clamp(up), O, clamp(up / 0.1) * (1 - clamp((up - 1) / 0.1)));
+  sparks(t, T.crashed, SRV[0], SRV[1] - 30, 90, RED, 30, 3, 180, 0.9);
+  ripple(t, T.crashed, SRV[0], SRV[1], 1, RED, 110, 0.8);
+
+  // env stacks
+  const envA = window01(t, CUT.ENV + 0.4, CUT.DK + 0.4, 0.35);
+  const pyIn = ease.back(prog(t, T.older - 0.25, T.older + 0.2)), pdIn = ease.back(prog(t, T.missing - 0.3, T.missing + 0.15));
+  const flick = 0.35 + 0.65 * Math.abs(Math.sin(t * 7.3) * Math.sin(t * 3.1 + 1));
+  [['pyL', pyIn, OK, 1], ['pyS', pyIn, AMB, 1], ['pdL', pdIn, OK, 1], ['pdS', pdIn, RED, flick * 0.55]].forEach(([k, q, col, op]) => {
+    const s = slabs[k]; s.g.visible = envA * q > 0.01; s.g.scale.set(Math.max(0.01, q), Math.max(0.01, q), Math.max(0.01, q)); s.setLook(col, 1.2 + 2 * pulse(t, T.missing), envA * op);
+  });
+
+  // cubes + box: assembly → lane → hidden
+  const boxOn = window01(t, CUT.BOX + 0.3, CUT.PIPE + 0.1, 0.3);
+  const cIn = [T.code4 - 0.35, T.plus - 0.15, T.everything - 0.05].map((a) => ease.back(prog(t, a, a + 0.4)));
+  // container position: in front of the laptop, then along the lane, hopping pad to pad
+  let bx = BXC[0], bz = 0;
+  const hop = (a, b, x0, x1) => { const q = prog(t, a, b); if (q > 0) { bx = lerp(x0, x1, ease.inOut(q)); bz = q < 1 ? 46 * Math.sin(Math.PI * q) : 0; } };
+  hop(T.shipping - 0.2, T.truck - 0.05, BXC[0], PADS[0][0]); hop(T.truck + 0.12, T.ship3 - 0.02, PADS[0][0], PADS[1][0]); hop(T.ship3 + 0.1, T.train - 0.02, PADS[1][0], PADS[2][0]);
+  const drop = ease.out(prog(t, T.sealed - 0.15, T.box1 + 0.02));
+  const boxZ = t < T.box1 + 0.02 ? (1 - drop) * 230 : bz;
+  const walls = 1 - 0.8 * ep(t, T.inside1 - 0.1, T.inside1 + 0.35);
+  const boxCol = t > T.exactly - 0.05 ? OK : O;
+  BOX.g.visible = boxOn > 0.01 && drop > 0.01; BOX.g.position.set(bx, BXC[1], boxZ);
+  BOX.setLook(boxCol, 1 + 2 * pulse(t, T.box1) + 2 * pulse(t, T.exactly), boxOn * clamp(drop * 3));
+  BOX.mesh.material.transparent = true; BOX.mesh.material.opacity = boxOn * walls * clamp(drop * 3); BOX.mesh.material.depthWrite = walls > 0.9;
+  boxF.m.visible = boxR.m.visible = BOX.g.visible;
+  boxF.draw((g, W_, H_) => ribs(g, W_, H_, boxCol)); boxR.draw((g, W_, H_) => ribs(g, W_, H_, boxCol));
+  boxF.m.material.opacity = boxR.m.material.opacity = boxOn * walls;
+  poolB.m.position.set(bx, BXC[1], 0.3); poolB.L.position.set(bx, BXC[1], 40); poolB.set(boxCol, 0.6 * boxOn * clamp(drop * 3));
+  CB.forEach((c, i) => {
+    const s = Math.max(0.01, cIn[i]) * boxOn;
+    // before the box lands: the code cube comes up out of the laptop, the other two pop up beside it
+    const from = i === 0 ? [LAP[0], LAP[1] - 10, 30] : [BXC[0] + (i - 1) * 38, BXC[1], 60];
+    const q = ease.inOut(prog(t, [T.code4 - 0.35, T.plus - 0.15, T.everything - 0.05][i], [T.code4 - 0.35, T.plus - 0.15, T.everything - 0.05][i] + 0.55));
+    const x = lerp(from[0], BXC[0] + (i - 1) * 38, q) + (bx - BXC[0]), y = lerp(from[1], BXC[1], q), z = lerp(from[2], 2, q) + bz;
+    c.g.visible = s > 0.02; c.g.position.set(x, y, z); c.g.scale.set(s, s, s);
+    c.setLook(t > T.exactly - 0.05 ? OK : CUBE_COL[i], 1.2 + 2 * pulse(t, T.exactly), 1);
+  });
+  // lane
+  const laneA = window01(t, CUT.LANE - 0.3, CUT.PIPE + 0.1, 0.4);
+  rLane.set(laneA > 0.01 ? 1 : 0, O, laneA, t);
+  const arr = [T.truck, T.ship3, T.train];
+  PADO.forEach((p, i) => {
+    const lit = t > arr[i] - 0.05, col = t > T.exactly - 0.05 && i === 2 ? OK : lit ? O2 : DIM;
+    p.b.g.visible = laneA > 0.01; p.b.setLook(col, 1 + 2 * pulse(t, arr[i]), laneA);
+    p.ic.m.visible = laneA > 0.01; p.ic.draw((g, W_, H_) => icon(g, p.name, W_ / 2, H_ / 2, H_ * 0.95, col, 8, lit ? 10 : 0));
+    p.ic.m.material.opacity = laneA;
+    p.pl.set(col, laneA * (lit ? 0.5 + 0.5 * pulse(t, arr[i], 2) : 0.15));
+    ripple(t, arr[i], p.b.g.position.x, p.b.g.position.y, 9, O2, 70, 0.6);
+  });
+  sparks(t, T.exactly - 0.05, PADS[2][0], PADS[2][1], 40, OK, 20, 7, 130, 0.7);
+
+  // pipeline
+  const pipeA = window01(t, CUT.PIPE + 0.2, CUT.FIN + 0.2, 0.4);
+  const dIn = ease.back(prog(t, CUT.PIPE + 0.2, CUT.PIPE + 0.7));
+  doc.g.visible = pipeA * dIn > 0.01; doc.g.scale.set(1, 1, Math.max(0.01, dIn)); doc.setLook(O, 1 + 1.5 * pulse(t, T.list), pipeA);
+  docF.m.visible = doc.g.visible; docF.draw((g, W_, H_) => docDraw(g, W_, H_, t)); docF.m.material.opacity = pipeA;
+  poolD.set(O, 0.45 * pipeA * dIn);
+  rPipe.set(ep(t, T.builds - 0.3, T.builds + 0.4) * 0.5 + ep(t, T.run, T.run + 0.5) * 0.5, O, pipeA, t);
+  slotI.g.visible = slotR.g.visible = pipeA > 0.01;
+  slotI.setLook(t > T.builds - 0.1 ? (t > T.frozen - 0.05 ? ICE : AMB) : DIM, 1 + 2 * pulse(t, T.builds), pipeA); slotR.setLook(t > T.run + 0.5 ? OK : DIM, 1 + 2 * pulse(t, T.run + 0.5), pipeA);
+  const frozen = t > T.frozen - 0.05;
+  [T.python2, T.library2, T.code6].forEach((a, i) => {
+    const L = LAY[i], q = ease.out(prog(t, a - 0.3, a + 0.05));
+    L.s.g.visible = q > 0.01 && pipeA > 0.01; L.s.g.position.z = L.z + (1 - q) * 90;
+    const col = frozen ? ICE : L.col;
+    L.s.setLook(col, 1.2 + 2 * pulse(t, a + 0.05) + 2 * pulse(t, T.frozen), clamp(q * 3) * pipeA);
+    L.f.m.visible = L.s.g.visible; L.f.draw((g, W_, H_) => { g.fillStyle = col; g.font = '800 54px Mono'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(['PYTHON 3.12', 'PANDAS', 'APP.PY'][i], W_ / 2, H_ / 2 + 3); });
+    L.f.m.material.opacity = pipeA;
+  });
+  const shA = ep(t, T.frozen - 0.1, T.frozen + 0.35) * pipeA;
+  shell.g.visible = shA > 0.01; shell.setLook(ICE, 1.5 + 3 * pulse(t, T.frozen), shA * 0.8); shell.mesh.visible = false;
+  poolI.set(frozen ? ICE : O, pipeA * (0.2 + 0.6 * ep(t, T.code6 - 0.4, T.code6) + 0.6 * pulse(t, T.frozen, 2)));
+  sparks(t, T.frozen, IMG[0], IMG[1], 30, ICE, 24, 11, 120, 0.8);
+  // packets: page → image on "builds", image → container on "run"
+  const pk = (a, b, t0, dur, col) => { const q = (t - t0) / dur; if (q > -0.02 && q < 1.1) orb([[a[0], a[1], 8], [b[0], b[1], 8]], clamp(q), col, clamp(q / 0.1) * (1 - clamp((q - 1) / 0.1))); };
+  pk([DOC[0] + 40, DOC[1]], [IMG[0] - 44, IMG[1]], T.builds - 0.1, 0.7, O);
+  pk([IMG[0] + 44, IMG[1]], [CR[0] - 58, CR[1]], T.run + 0.05, 0.7, ICE);
+  const rIn = ease.back(prog(t, T.run + 0.6, T.run + 1.05));
+  runC.g.visible = rIn > 0.01 && pipeA > 0.01; runC.g.scale.set(Math.max(0.01, rIn), Math.max(0.01, rIn), Math.max(0.01, rIn));
+  runC.setLook(OK, 1.2 + 2 * pulse(t, T.container2) + 0.6 * (0.5 + 0.5 * Math.sin(t * 6)), pipeA);
+  runF.m.visible = runC.g.visible; runF.draw((g, W_, H_) => runDraw(g, W_, H_, t, OK, t > T.container2 - 0.1 ? 'RUNNING' : 'START')); runF.m.material.opacity = pipeA;
+  poolR.set(OK, pipeA * rIn * (0.5 + 0.3 * Math.sin(t * 6)));
+  ripple(t, T.container2, CR[0], CR[1], 1, OK, 100, 0.8);
+
+  // finale: a container lands on laptop, server, cloud
+  const spots = [[LAP[0], LAP[1] - 78, 0, T.laptop2], [SRV[0], SRV[1], 124, T.server3], [CLD[0], CLD[1], 46, T.cloud]];
+  MINI.forEach((m, i) => {
+    const [x, y, z, a] = spots[i], q = ease.out(prog(t, a - 0.1, a + 0.3));
+    m.b.g.visible = q > 0.01; m.b.g.position.set(x + (i === 1 ? shk : 0), y, z + (1 - q) * 170);
+    const hi = 2 * pulse(t, a + 0.3) + 2.5 * pulse(t, T.identical);
+    m.b.setLook(OK, 1.2 + hi, clamp(q * 3)); m.f.m.visible = m.b.g.visible;
+    m.f.draw((g, W_, H_) => runDraw(g, W_, H_, t + i, OK, 'APP'));
+    sparks(t, a + 0.3, x, y, z, OK, 14, 30 + i, 110, 0.6);
+    ripple(t, a + 0.3, x, y, z + 0.5, OK, 70, 0.7);
+  });
+}
+
+/* ---------------- world tags */
+function tags(t) {
+  const top = (p, z) => [p[0], p[1], z];
+  tag('pass', `<span style="color:${OK}">✓ WORKS ON MY LAPTOP</span>`, `border-color:${OK}88`, top(LAP, 110), t, T.perfectly + 0.1, T.server1 - 0.2);
+  tag('clock', t < T.later - 0.05 ? '<b>5:00 PM</b> · UPLOAD' : `<span style="color:${RED}">5:01 PM</span>`, t < T.later - 0.05 ? '' : `border-color:${RED}88`, [0, LAP[1] - 20, 30], t, T.server1 - 0.3, T.crashed + 0.6, 0);
+  tag('crash', `<span style="color:${RED}">✕ CRASHED</span>`, `border-color:${RED}88`, top(SRV, 150), t, T.crashed, CUT.ENV - 0.1);
+  tag('sameL', '<b>app.py</b>', '', top(LAP, 110), t, T.same + 0.05, CUT.ENV - 0.1);
+  tag('sameS', '<b>app.py</b> · SAME', '', top(SRV, 150), t, T.same + 0.2, CUT.ENV - 0.1);
+  tag('envL', 'YOUR <b>LAPTOP</b>', '', top(LAP, 110), t, CUT.ENV + 0.3, CUT.DK);
+  tag('envS', 'THE <b>SERVER</b>', '', top(SRV, 150), t, CUT.ENV + 0.4, CUT.DK);
+  tag('pyL', `<span style="color:${OK}">PYTHON 3.12</span>`, `border-color:${OK}88;font-size:14px`, [ENVL[0] + 58, ENVL[1], 6], t, T.older - 0.05, CUT.DK, 0);
+  tag('pyS', `<span style="color:${AMB}">PYTHON 3.8 · OLDER</span>`, `border-color:${AMB}88;font-size:14px`, [ENVS[0] - 62, ENVS[1] - 30, 6], t, T.older + 0.1, CUT.DK, 0);
+  tag('pdL', `<span style="color:${OK}">PANDAS ✓</span>`, `border-color:${OK}88;font-size:14px`, [ENVL[0] + 58, ENVL[1], 30], t, T.missing - 0.05, CUT.DK, -8);
+  tag('pdS', `<span style="color:${RED}">PANDAS ✕ MISSING</span>`, `border-color:${RED}88;font-size:14px`, [ENVS[0] - 62, ENVS[1] - 30, 30], t, T.missing + 0.05, CUT.DK, -8);
+  const cubeTag = (i, html, a) => { const c = CB[i].g.position; tag('cb' + i, html, `border-color:${CUBE_COL[i]}88;color:${CUBE_COL[i]};font-size:13px`, [c.x, c.y, c.z + 34], t, a, T.sealed + 0.25, -8 - 36 * (i % 2)); };
+  cubeTag(0, 'YOUR CODE', T.code4 + 0.2); cubeTag(1, 'PYTHON 3.12', T.plus + 0.3); cubeTag(2, 'LIBRARY', T.everything + 0.35);
+  tag('sealed', '<b>ONE BOX</b> · SEALED', '', [BXC[0], BXC[1], 120], t, T.box1 + 0.1, CUT.LANE - 0.05, -70);
+  ['TRUCK', 'SHIP', 'TRAIN'].forEach((n, i) => tag('pad' + i, `<b>${n}</b>`, '', [PADS[i][0], PADS[i][1] - 110, 0], t, CUT.LANE + 0.2 + i * 0.1, CUT.PIPE - 0.1, 0));
+  tag('same2', `<span style="color:${OK}">✓ SAME INSIDE</span>`, `border-color:${OK}88`, [PADS[2][0], PADS[2][1], 110], t, T.exactly, CUT.PIPE - 0.1);
+  const stp = (k, n, nm, col, act, p, z) => tag(k, act ? `<span style="color:${col}">${n}</span> ${nm}` : `<span style="color:#6b645e">${n} ${nm}</span>`, (act ? `border-color:${col}88;` : 'border-color:rgba(156,148,140,0.3);') + 'font-size:13px', [p[0], p[1], z], t, CUT.PIPE + 0.5, CUT.FIN);
+  stp('s1', 1, 'DOCKERFILE', O, t < T.builds + 0.6, DOC, 130);
+  stp('s2', 2, t > T.frozen - 0.05 ? 'IMAGE · FROZEN' : 'IMAGE', t > T.frozen - 0.05 ? ICE : AMB, t > T.builds - 0.1 && t < T.run + 0.6, IMG, 92);
+  stp('s3', 3, 'CONTAINER', OK, t > T.run + 0.6, CR, 92);
+  tag('fL', `<span style="color:${OK}">LAPTOP ✓</span>`, `border-color:${OK}88`, [LAP[0], LAP[1], 120], t, T.laptop2 + 0.3, CUT.END + 0.2);
+  tag('fS', `<span style="color:${OK}">SERVER ✓</span>`, `border-color:${OK}88`, [SRV[0], SRV[1], 190], t, T.server3 + 0.3, CUT.END + 0.2);
+  tag('fC', `<span style="color:${OK}">CLOUD ✓</span>`, `border-color:${OK}88`, [CLD[0], CLD[1], 110], t, T.cloud + 0.3, CUT.END + 0.2);
+}
+
+/* ---------------- reel config */
+const REEL = {
+  shots: SHOTS, kicks: KICKS, shakes: SHAKES, world, tags,
+  code: [
+    [T.server1 - 0.4, CUT.ENV - 0.1, 'server', 'terminal', [[0, 'UPLOADING', AMB], [T.later, 'STARTING', AMB], [T.crashed, 'CRASHED', RED], [T.nobody, '0 CHANGES', AMB]],
+      [['$ copy app.py → server'], ['$ python app.py'], ["ModuleNotFoundError: 'pandas'", T.crashed - 0.05], ['$ git diff', T.nobody - 0.1]],
+      [[T.server1 - 0.1, 1, '✓ copied', 'good'], [T.later, 2, 'starting…', 'run'], [T.crashed, 3, '✕', 'bad'], [T.nobody, 4, '0 lines changed', 'amb']]],
+    [CUT.ENV + 0.3, CUT.DK - 0.1, 'laptop vs server', 'check', [[0, 'COMPARING', AMB], [T.missing, 'MISMATCH', RED]],
+      [['python --version'], ['   laptop   3.12'], ['   server   3.8'], ['import pandas', T.missing - 0.4], ['   server   not installed', T.missing]],
+      [[T.older - 0.1, 2, '✓', 'good'], [T.older + 0.15, 3, 'older', 'amb'], [T.missing + 0.05, 5, '✕ missing', 'bad']]],
+    [CUT.PIPE + 0.1, CUT.RUN - 0.1, 'Dockerfile', 'the recipe', [[0, 'WRITING', AMB], [T.builds, 'BUILDING', AMB], [T.frozen, 'IMAGE READY', OK]],
+      [['FROM python:3.12'], ['RUN pip install pandas'], ['COPY app.py /app/'], ['CMD python /app/app.py']],
+      [[T.python2, 1, '✓ layer', 'good'], [T.library2, 2, '✓ layer', 'good'], [T.code6, 3, '✓ layer', 'good'], [T.frozen, 4, '✓ image', 'good']], 'type'],
+    [CUT.RUN, T.container2 - 0.15, 'terminal', 'run', [[0, 'STARTING', AMB]], [['$ docker run my-app']], [[T.run + 0.3, 1, 'starting…', 'run']]],
+  ],
+  hl: /\b(FROM|RUN|COPY|CMD|import|python|docker|run)\b/g,
+  slams: [
+    { a: T.docker - 0.1, b: CUT.BOX + 0.45, text: 'docker', sub: 'YOUR CODE + EVERYTHING IT NEEDS', size: 86 },
+    { a: T.container2 - 0.1, b: T.running + 1.05, text: 'container', sub: 'AN IMAGE, RUNNING', size: 74 },
+  ],
+  bad: ['crashed', 'missing', 'library', 'older', 'line'],
+  good: ['perfectly', 'identical', 'same', 'together', 'container', 'dockerfile', 'everything'],
+  tiles: [['▣', 'DOCKER'], ['⎈', 'KUBER-<br>NETES'], ['◐', 'CANARY<br>RELEASES']],
+  end: CUT.END, follow: T.follow,
+  wbw: true,
+  cover: { k: 'DOCKER', t: 'SAME CODE.<br>NEW CRASH.', at: T.crashed + 0.35, zoom: 1, dy: 0 },
+  flash: (t) => 0.24 * pulse(t, T.crashed, 7) + 0.1 * pulse(t, T.missing, 7),
+};
+</script>
+<script src="../_ember/overlay.js"></script>
+<script src="../_ember/play.js"></script>
+</body>
+</html>

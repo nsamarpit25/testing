@@ -1,0 +1,412 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- 31 Partitioning. A perspective three.js world with bloom (own camera + post pass).
+     World: the orders table is one long glowing slab on a database platform, receding from the camera, with row lines on
+     top. Hook: it grows from day one (a short block) to three years (a billion rows) and a full-table scan crawls along all
+     of it. A laser cuts it into 36 monthly partitions (gaps open); a dashed outline says the app still sees one table.
+     Code card: PARTITION BY RANGE (created_at). A query for last week lights only the newest month and the other 35 go
+     dark. Filing-cabinet card (pull the March folder). Old data: DELETE eats rows slowly, then the oldest partition drops
+     through the floor in one step. Costs: a query without the date sweeps every partition; thousands of tiny slivers.
+     Last: partitions sit on one database, shards fly out to other servers. A stat strip on top (rows · query · partitions).
+     Beats come from voice/words.json. -->
+<link rel="stylesheet" href="../_ember/fonts.css">
+<link rel="stylesheet" href="../_ember/reel.css">
+<style>
+#cap { top: 728px !important; }
+#cap .box { background: linear-gradient(90deg, transparent, rgba(8,7,6,0.82) 16%, rgba(8,7,6,0.82) 84%, transparent); }
+#ed { top: 192px !important; }
+.lbl { background: rgba(12,11,10,0.95); }
+#st { position: absolute; left: 40px; right: 40px; top: 116px; height: 64px; opacity: 0; display: flex; box-sizing: border-box;
+  background: rgba(14,12,11,0.95); border: 1px solid rgba(255,176,112,0.3); border-radius: 12px; box-shadow: 0 14px 34px rgba(0,0,0,0.6); }
+#st .c { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; border-left: 1px solid rgba(255,255,255,0.07); }
+#st .c:first-child { border-left: 0; }
+#st .k { font: 800 10px/1 Mono; letter-spacing: 1.4px; color: #9c948c; }
+#st .n { font: 900 19px/1 Mono; letter-spacing: -0.5px; font-variant-numeric: tabular-nums; margin-top: 7px; color: #F2EEE8; }
+.cd2 { position: absolute; left: 40px; right: 40px; top: 196px; opacity: 0; background: rgba(16,14,12,0.96); border: 1px solid rgba(255,195,77,0.4); border-radius: 14px; box-shadow: 0 20px 50px rgba(0,0,0,0.7); overflow: hidden; }
+#fc { padding: 14px 16px 12px; }
+#fc .h { font: italic 400 30px/1 Instrument; color: #efe6d8; margin-bottom: 4px; }
+#fcS { display: block; width: 100%; height: 230px; }
+#fcL { margin-top: 2px; font: 800 12px/1 Mono; letter-spacing: 1.2px; text-align: center; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="world">
+    <canvas id="cv" width="1080" height="1920"></canvas>
+    <div class="layer" id="lbls"></div>
+  </div>
+</div>
+<script src="../../tools/lib.js"></script>
+<script src="voice/words.js"></script>
+<script src="../_ember/three.js"></script>
+<script src="../_ember/world.js"></script>
+<script src="../_ember/base.js"></script>
+<script>
+for (let i = 0; i < 24; i++) ORBS.push({ core: orbSprite(9), glow: orbSprite(34), trail: [0, 1, 2, 3, 4].map(() => orbSprite(10)) });
+const RD = '#6FC3FF', PU = '#C792FF', WR = AMB;
+
+/* ---------------- beats */
+const T = {
+  fast: at('fast'), day: at('day'), three: at('three'), billion: at('billion'), asking: at('asking'), slow: at('slow'),
+  l1: line(1).start, splits: at('splits'), smaller: at('smaller'), partitions: at('partitions'), same: at('same'), app: at('app'), sees: at('sees'),
+  l2: line(2).start, key: at('key'), row: at('row'), date: at('date'), month: at('month'),
+  l3: line(3).start, ask: at('ask'), knows: at('knows'), months: at('months'), skips: at('skips'), less: at('less'),
+  l4: line(4).start, filing: at('filing'), march: at('march'), march2: at('march', 2), whole: at('whole'),
+  l5: line(5).start, easy: at('easy'), instead: at('instead'), deleting: at('deleting'), remove: at('remove'), oldest: at('oldest'), step: at('step'),
+  l6: line(6).start, query: at('query'), date2: at('date', 2), every: at('every'), pick: at('pick'), search: at('search'), thousands: at('thousands'),
+  l7: line(7).start, sharding: at('sharding'), inside2: at('inside', 2), shards: at('shards'), servers: at('servers'),
+  ifv: line(8).start, follow: at('follow'),
+};
+
+/* ---------------- layout: Z up. The table runs along +y: newest month near the camera, oldest far away */
+const NM = 36, SEG = 35, LEN = NM * SEG, YFAR = LEN, W = 190, H = 64, BZ = 10;   // 36 months, Nov 2023 … Oct 2026
+const GAP = 9;
+const MON = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+const label = (i) => { const m = (10 + i) % 12, y = 23 + Math.floor((10 + i) / 12); return MON[m] + ' ' + y; };   // i = 0 → NOV 23
+const segY = (i) => YFAR - (i + 0.5) * SEG;
+const APX = -250, APY = 420, APW = 130, APD = 80, APH = 46;
+const appTop = [APX, APY, APH + 6];
+function arc(a, b, h, n = 24) { return [...Array(n + 1)].map((_, i) => { const q = i / n; return [lerp(a[0], b[0], q), lerp(a[1], b[1], q), lerp(a[2], b[2], q) + h * 4 * q * (1 - q)]; }); }
+const segTop = (i) => [0, segY(i), BZ + H + 4];
+const PATH = [...Array(NM)].map((_, i) => arc(appTop, segTop(i), 140 + i * 4));
+const PATHR = PATH.map((p) => p.slice().reverse());
+const SIDE = [[-300, RD], [300, PU]];   // the two shard servers at the end
+
+/* ---------------- state of each partition */
+const cut = (t) => ep(t, T.smaller - 0.2, T.smaller + 0.6, ease.inOut);       // gaps open
+const grown = (t) => ep(t, T.day - 0.2, T.billion + 0.3, (x) => ease.inOut(x));  // the table grows from 1 month to 36
+const dropK = (t) => ep(t, T.remove, T.remove + 0.7, ease.in);                   // the oldest partition falls
+const tiny = (t) => ep(t, T.thousands - 0.4, T.thousands - 0.1) * (1 - ep(t, T.l7 - 0.4, T.l7 - 0.1));
+const shardMove = (i, t) => (i % 3 === 0 ? 0 : ep(t, T.shards - 0.1 + (i % 7) * 0.05, T.shards + 0.6 + (i % 7) * 0.05, ease.inOut));
+function segBox(i, t) {   // → {x, y, z, len, a}
+  const L = lerp(SEG, SEG - GAP, cut(t));
+  let x = 0, y = segY(i), z = BZ, a = 1;
+  if (i === 0) { const d = dropK(t); z -= d * 140; a = 1 - d; }
+  const sm = shardMove(i, t); if (sm > 0) { x = lerp(0, SIDE[(i % 3) - 1][0], sm); z += Math.sin(Math.PI * sm) * 90; }
+  return { x, y, z, len: L, a };
+}
+
+/* ---------------- camera */
+const pcam = new TH.PerspectiveCamera(44, 540 / 960, 5, 20000); pcam.up.set(0, 0, 1);
+const WIDE = { p: [300, -1300, 1150], l: [-30, 420, 0], f: 36 };
+const SHOTS = [
+  { t: 0, p: [250, -300, 800], l: [-30, 1000, 0], f: 36 },
+  { t: 0.01, d: 4.2, ...WIDE, e: ease.inOut },
+  { t: T.easy - 0.6, d: 1.1, p: [260, 450, 700], l: [0, 1225, 0], f: 40 },   // the oldest month, below the code card
+  { t: T.l6 - 0.2, d: 1.0, ...WIDE },
+  { t: T.l7 - 0.1, d: 1.2, p: [0, -1500, 1500], l: [0, 520, 0], f: 40 },
+];
+const KICKS = [[T.slow, 0.04], [T.splits, 0.03], [T.smaller, 0.04], [T.skips, 0.04], [T.remove + 0.5, 0.05], [T.every, 0.03], [T.thousands, 0.04], [T.shards, 0.03]];
+const SHAKES = [[T.slow, 4, 0.3], [T.remove + 0.6, 5, 0.35]];
+const _rv = new TH.Vector3();
+function shoot(t) {
+  let p = SHOTS[0].p.slice(), l = SHOTS[0].l.slice(), f = SHOTS[0].f;
+  for (let i = 1; i < SHOTS.length; i++) {
+    const k = SHOTS[i]; if (t < k.t) break;
+    const q = k.d ? (k.e || ease.inOut)(prog(t, k.t, k.t + k.d)) : 1;
+    p = p.map((v, j) => lerp(v, k.p[j], q)); l = l.map((v, j) => lerp(v, k.l[j], q)); f = lerp(f, k.f, q);
+  }
+  let kick = 0;
+  for (const [t0, amp] of KICKS) { const dt = t - t0; if (dt > 0 && dt < 1.2) kick += amp * (dt < 0.05 ? dt / 0.05 : Math.exp(-(dt - 0.05) * 6)); }
+  let sx = 0, sy = 0;
+  for (const [t0, amp, dur] of SHAKES) { const dt = t - t0; if (dt > 0 && dt < dur) { const k = amp * (1 - dt / dur); sx += k * Math.sin(t * 91); sy += k * Math.cos(t * 67); } }
+  pcam.position.set(p[0] + 6 * Math.sin(t * 0.37), p[1] + 6 * Math.cos(t * 0.29), p[2] + 4 * Math.sin(t * 0.23));
+  pcam.lookAt(l[0] + sx, l[1], l[2] + sy);
+  pcam.fov = f * (1 - kick); pcam.updateProjectionMatrix(); pcam.updateMatrixWorld();
+  cam.f = l;
+  _rv.setFromMatrixColumn(pcam.matrixWorld, 0); const n = Math.hypot(_rv.x, _rv.y) || 1; camRight = [_rv.x / n, _rv.y / n, 0];
+  const d = Math.hypot(p[0] - l[0], p[1] - l[1], p[2] - l[2]);
+  scene.fog.near = d * 1.1; scene.fog.far = d * 3.6;
+}
+const _pv = new TH.Vector3();
+P = function (x, y, z) { _pv.set(x, y, z).project(pcam); return [(_pv.x + 1) * 270, (1 - _pv.y) * 480, _pv.z]; };
+
+/* ---------------- the stage */
+floor.scale.set(2.2, 2.2, 1); floor.position.set(0, 1500, -0.5);
+const APP = emberBox(APX, APY, APW, APD, APH, O2);
+const POOLA = pool(APX, APY, 170, O2);
+const DBP = emberBox(0, LEN / 2, W + 90, LEN + 70, BZ, O);
+const POOLD = [0.15, 0.5, 0.85].map((k) => pool(0, LEN * k, 300, O));
+const MONO = emberBox(0, LEN / 2, W, LEN, H, O, { z: BZ });
+const SEGS = [...Array(NM)].map((_, i) => emberBox(0, segY(i), W, SEG, H, O, { z: BZ }));
+const VIEW = emberBox(0, LEN / 2, W + 26, LEN + 26, H + 20, WH, { lw: 1.4, z: BZ });   // the one table the app sees
+const SCAN = emberBox(0, 0, W + 30, 5, H + 30, RED, { lw: 2.4, z: BZ - 4 });
+const SIDES = SIDE.map(([x, c]) => emberBox(x, LEN / 2, W + 70, LEN + 40, BZ, c));
+const SIDEP = SIDE.map(([x, c]) => pool(x, LEN / 2, 360, c));
+const ROWL = (() => {   // three row lines on top of every partition
+  const n = NM * 3, geo = new TH.BufferGeometry();
+  geo.setAttribute('position', new TH.Float32BufferAttribute(new Float32Array(n * 6), 3));
+  geo.setAttribute('color', new TH.Float32BufferAttribute(new Float32Array(n * 6), 3));
+  const m = new TH.LineSegments(geo, new TH.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.9, toneMapped: false, fog: true }));
+  m.frustumCulled = false; scene.add(m); return m;
+})();
+const SLIV = (() => {   // thousands of tiny partitions: thin slivers with glowing borders
+  const c = document.createElement('canvas'); c.width = c.height = 64; const g = c.getContext('2d');
+  g.fillStyle = 'rgb(14,14,14)'; g.fillRect(0, 0, 64, 64); g.strokeStyle = '#fff'; g.lineWidth = 5; g.strokeRect(3, 3, 58, 58);
+  const tx = new TH.CanvasTexture(c); tx.colorSpace = TH.SRGBColorSpace;
+  const m = new TH.InstancedMesh(new TH.BoxGeometry(W, 1, H).translate(0, 0, H / 2), new TH.MeshBasicMaterial({ map: tx, toneMapped: false, fog: true }), NM * 3);
+  m.instanceMatrix.setUsage(TH.DynamicDrawUsage); m.setColorAt(0, new TH.Color()); m.instanceColor.setUsage(TH.DynamicDrawUsage); m.frustumCulled = false; scene.add(m);
+  return m;
+})();
+const _o = new TH.Object3D(), _c = new TH.Color();
+
+/* ---------------- traffic */
+const FLY = 0.6;
+const REQ = [];
+(() => {
+  for (let k = 0; k < 6; k++) REQ.push({ s: T.key + 0.1 + k * 0.6, d: NM - 1, kind: 'w' });   // new orders land in this month
+  REQ.push({ s: T.ask - 0.1, d: NM - 1, kind: 'q', ret: true });
+  REQ.push({ s: T.query - 0.1, d: Math.round(NM / 2), kind: 'q2' });
+})();
+
+/* ---------------- the world, frame by frame */
+const segCol = (i, t) => {   // colour + glow of partition i
+  let c = O, g = 1.2;
+  if (t < T.smaller - 0.1 && t > T.asking && t < T.l1) c = mixHex(O, RED, 0.5);
+  if (t > T.months - 0.1 && t < T.l4 - 0.2) { const k = ep(t, T.months - 0.1, T.months + 0.3); c = i === NM - 1 ? mixHex(O, OK, k) : mixHex(O, DIM, ep(t, T.skips - 0.15, T.skips + 0.25) * 0.85); g = i === NM - 1 ? 1.2 + k : 1.2 - 0.8 * ep(t, T.skips - 0.15, T.skips + 0.25); }
+  if (t > T.month - 0.1 && t < T.l3) c = mixHex(O, O2, pulse(t, T.month - 0.1 + i * 0.035, 6) * 1.2);
+  if (i === 0 && t > T.l5 && t < T.remove + 0.8) { c = mixHex(O, RED, ep(t, T.deleting - 0.2, T.deleting + 0.2) * (0.6 + 0.4 * Math.sin(t * 10) ** 2)); g = 1.8; }
+  if (t > T.date2 - 0.1 && t < T.pick) { const s0 = T.date2 + 0.1 + (NM - 1 - i) * 0.03; c = t > s0 ? mixHex(O, RED, 0.7 * Math.exp(-(t - s0) * 1.2) + 0.2) : O; }
+  if (t > T.inside2 - 0.2 && t < T.shards - 0.1) c = mixHex(O, OK, 0.5 * ep(t, T.inside2 - 0.2, T.inside2 + 0.3));
+  if (t > T.shards - 0.1 && i % 3) c = mixHex(c, SIDE[(i % 3) - 1][1], shardMove(i, t));
+  return [c, g];
+};
+function world(t) {
+  const fadeIn = ep(t, 0, 0.5), k = cut(t), gr = grown(t), tn = tiny(t);
+  const appA = fadeIn * (1 - ep(t, T.shards - 0.7, T.shards - 0.25));   // gone before the shard servers land
+  APP.setLook(O2, 1, appA); POOLA.set(O2, 0.4 * appA);
+  const dbCol = t > T.same - 0.2 && t < T.l2 ? mixHex(O, OK, 0.6 * window01(t, T.same - 0.2, T.l2, 0.3)) : t > T.inside2 - 0.2 && t < T.ifv ? mixHex(O, OK, 0.5) : O;
+  DBP.setLook(dbCol, 1.4, fadeIn); POOLD.forEach((p) => p.set(dbCol, 0.32 * fadeIn));
+  // the one table: grows from one month to three years, then hands over to the 36 partitions
+  const len = lerp(SEG, LEN, gr), mono = t < T.splits + 0.6;
+  MONO.g.scale.y = len / LEN; MONO.g.position.y = YFAR - len / 2;
+  MONO.setLook(t > T.asking && t < T.l1 + 0.6 ? mixHex(O, RED, 0.5 + 0.3 * Math.sin(t * 8) ** 2) : O, 1.3, mono ? 1 : 0);
+  for (let i = 0; i < NM; i++) {
+    const b = segBox(i, t), S = SEGS[i], on = !mono && tn < 0.5;
+    S.g.position.set(b.x, b.y, b.z); S.g.scale.y = b.len / SEG;
+    const [c, g] = segCol(i, t); S.setLook(c, g, on ? b.a : 0);
+  }
+  // the dashed view of one table (the app still sees one)
+  const va = ep(t, T.app - 0.1, T.app + 0.3) * (1 - ep(t, T.l2 + 0.4, T.l2 + 0.9));
+  VIEW.setLook(WH, 0.6, va * (0.45 + 0.25 * Math.sin(t * 5))); VIEW.mesh.visible = false;
+  // row lines
+  const pos = ROWL.geometry.attributes.position.array, col = ROWL.geometry.attributes.color.array;
+  for (let i = 0; i < NM; i++) {
+    const b = segBox(i, t), [cc] = segCol(i, t); _c.set(cc).multiplyScalar(0.55);
+    let vis = mono ? YFAR - (i + 1) * SEG >= YFAR - len - 1 : tn < 0.5 && b.a > 0.05;
+    for (let r = 0; r < 3; r++) {
+      const j = (i * 3 + r) * 6, y = b.y + (r - 1) * b.len * 0.28, z = vis ? b.z + H + 0.6 : -999;
+      pos.set([b.x - W / 2 + 10, y, z, b.x + W / 2 - 10, y, z], j);
+      col.set([_c.r, _c.g, _c.b, _c.r, _c.g, _c.b], j);
+    }
+  }
+  ROWL.geometry.attributes.position.needsUpdate = true; ROWL.geometry.attributes.color.needsUpdate = true;
+  // thousands of tiny partitions
+  for (let i = 0; i < NM; i++) for (let s = 0; s < 3; s++) {
+    const id = i * 3 + s, b = segBox(i, t), on = tn > 0.02 && b.a > 0.05;
+    _o.position.set(b.x, b.y + (s - 1) * (SEG - GAP) / 3 * (1 + 0.3 * tn), on ? b.z : -999);
+    _o.scale.set(1, (SEG - GAP) / 3 * 0.3, 0.8); _o.rotation.set(0, 0, 0); _o.updateMatrix(); SLIV.setMatrixAt(id, _o.matrix);
+    _c.set(mixHex(O, RED, 0.5 + 0.5 * Math.sin(t * 9 + id) ** 2)).multiplyScalar(0.55 * tn); SLIV.setColorAt(id, _c);
+  }
+  SLIV.instanceMatrix.needsUpdate = true; SLIV.instanceColor.needsUpdate = true;
+  // the scan frame: a full-table scan in the hook, one month for last week, every partition without the date
+  let sa = 0, sy = 0, sc = RED;
+  if (t > T.asking - 0.1 && t < T.l1 - 0.1) { const q = prog(t, T.asking, T.l1 - 0.2); sy = lerp(0, LEN, ease.inOut(q)); sa = window01(t, T.asking - 0.1, T.l1 - 0.1, 0.2); }
+  if (t > T.knows - 0.2 && t < T.l4 - 0.2) { sy = segY(NM - 1) + Math.sin(t * 4) * 8; sa = window01(t, T.knows - 0.2, T.l4 - 0.2, 0.2); sc = OK; }
+  if (t > T.date2 && t < T.pick) { const q = prog(t, T.date2 + 0.1, T.date2 + 0.1 + NM * 0.03 + 0.2); sy = lerp(0, LEN - SEG, q); sa = window01(t, T.date2, T.pick, 0.2); }
+  SCAN.g.position.set(0, sy, BZ - 4); SCAN.setLook(sc, 2, sa * fadeIn); SCAN.mesh.visible = false;
+  // shard servers
+  SIDES.forEach((s, j) => { const a = ep(t, T.shards - 0.4, T.shards + 0.1); s.setLook(SIDE[j][1], 1.4, a); SIDEP[j].set(SIDE[j][1], 0.35 * a); });
+
+  // requests
+  for (const r of REQ) {
+    const q = prog(t, r.s, r.s + FLY), path = PATH[r.d];
+    if (q > 0 && q < 1) orb(path, ease.inOut(q), r.kind === 'w' ? WR : WH, 1, r.kind === 'w' ? 0.75 : 1.15);
+    const e = r.s + FLY;
+    if (r.kind === 'w') ripple(t, e, 0, segY(r.d), BZ + H + 3, WR, 100, 0.5);
+    if (r.kind === 'q') ripple(t, e, 0, segY(r.d), BZ + H + 3, OK, 130, 0.6);
+    if (r.ret) { const qr = prog(t, e + 0.7, e + 0.7 + FLY * 0.9); if (qr > 0 && qr < 1) orb(PATHR[r.d], ease.inOut(qr), OK, 0.9, 0.85); }
+  }
+  // the first full scan's query
+  { const q = prog(t, T.asking - 0.6, T.asking); if (q > 0 && q < 1) orb(PATH[NM - 1], ease.inOut(q), WH, 1, 1.1); }
+  // the slow delete: rows spark away from the oldest month, then it drops in one step
+  if (t > T.deleting && t < T.remove) for (let s = 0; s < 6; s++) sparks(t, T.deleting + s * 0.25, (rnd(s, 3) - 0.5) * W * 0.8, segY(0), BZ + H, RED, 6, 50 + s, 70, 0.5, 120);
+  if (t > T.remove + 0.5 && t < T.remove + 1.4) { ripple(t, T.remove + 0.55, 0, segY(0), BZ + 1, RED, 220, 0.9); sparks(t, T.remove + 0.55, 0, segY(0), BZ, mixHex(O, RED, 0.5), 30, 91, 260, 0.8, 200); }
+  if (t > T.splits && t < T.smaller + 0.4) { const q = prog(t, T.splits, T.smaller - 0.1); for (let s = 0; s < 2; s++) sparks(t, T.splits + 0.1 + s * 0.3, W / 2, lerp(0, LEN, q), BZ + H, WH, 8, 30 + s, 90, 0.4, 100); }
+}
+
+/* ---------------- world tags */
+const tg = (key, html, style, wp, t, a, b, dy = 0) => { const e = tag(key, html, style, wp, t, a, b, dy); if (P(...wp)[2] > 1) e.style.display = 'none'; return e; };
+function tags(t) {
+  const big = (c) => `font-size:15px;padding:9px 13px;letter-spacing:1px;border-color:${c}`;
+  const sm = (c) => `font-size:13px;padding:7px 11px;letter-spacing:1px;border-color:${c}`;
+  const sp = (c, s) => `<span style="color:${c}">${s}</span>`;
+  const appW = [APX, APY - APD / 2, 0], top = (i, e = 0) => { const b = segBox(i, t); return [b.x, b.y, b.z + H + 16 + e]; };
+  // hook
+  const monoEnd = [0, YFAR - lerp(SEG, LEN, grown(t)), BZ + H + 16];
+  tg('ap', sp(O2, 'YOUR APP'), sm(O2), [APX, APY, APH + 12], t, 2.0, T.asking - 0.2, -20);
+  tg('tb', sp(O2, 'ORDERS TABLE · DAY ONE'), big(O2), monoEnd, t, 0.3, T.three - 0.1, -30);
+  tg('yr', sp(RED, '3 YEARS · 1 BILLION ROWS'), big(RED), monoEnd, t, T.three - 0.05, T.asking - 0.2, -30);
+  tg('scan', sp(RED, 'LAST WEEK? SCAN IT ALL'), big(RED), appW, t, T.asking - 0.1, T.l1 - 0.1, 30);
+  // cut
+  tg('pt', sp(WH, '36 PARTITIONS · ONE PER MONTH'), big(WH), appW, t, T.partitions - 0.1, T.same - 0.15, 30);
+  tg('db', sp(OK, 'SAME DATABASE'), big(OK), [W / 2 + 45, segY(NM - 4), BZ], t, T.same - 0.1, T.l2 - 0.2, 26);
+  tg('one', sp(WH, 'YOUR APP STILL SEES ONE TABLE'), big(WH), appW, t, T.app - 0.1, T.l2 + 0.6, 30);
+  // the key
+  tg('m' + (NM - 1), sp(AMB, 'NEWEST: ' + label(NM - 1)), sm(AMB), top(NM - 1), t, T.date - 0.05, T.l4 - 0.2, -24);
+  tg('m0', sp(O2, 'OLDEST: ' + label(0)), sm(O2), top(0), t, T.l3 - 0.1, T.l4 - 0.2, -24);
+  tg('new', sp(WR, 'NEW ORDERS → OCT 26'), big(WR), appW, t, T.key + 0.3, T.l3 - 0.2, 30);
+  // last week
+  tg('q', sp(WH, 'ORDERS FROM LAST WEEK'), big(WH), appW, t, T.ask - 0.1, T.skips - 0.15, 30);
+  tg('sk', sp(GR, 'SKIPPED: THE OTHER 35'), big(GR), [0, segY(14), BZ + H + 20], t, T.skips - 0.1, T.l4 - 0.2, -26);
+  tg('less', sp(OK, 'READS ~28 M ROWS, NOT 1 B'), big(OK), appW, t, T.less - 0.1, T.l4 - 0.2, 30);
+  // drop the oldest
+  tg('old', sp(O2, 'OLDEST: ' + label(0)), big(O2), top(0), t, T.easy - 0.2, T.remove + 0.5, -24);
+  tg('drop', sp(OK, '✓ GONE IN ONE STEP'), big(OK), [0, segY(0), BZ + 30], t, T.remove + 0.6, T.l6 - 0.2, -30);
+  // costs
+  tg('q2', sp(WH, 'WHERE customer_id = 7'), big(WH), appW, t, T.query - 0.1, T.every - 0.1, 30);
+  tg('all', sp(RED, 'NO DATE → CHECKS EVERY PARTITION'), big(RED), appW, t, T.every - 0.1, T.pick - 0.1, 30);
+  tg('pk', sp(OK, 'KEY = WHAT YOU SEARCH BY'), big(OK), appW, t, T.pick - 0.05, T.thousands - 0.4, 30);
+  tg('tiny', sp(RED, '✕ THOUSANDS OF TINY ONES'), big(RED), appW, t, T.thousands - 0.4, T.l7 - 0.2, 30);
+  // not sharding
+  tg('ns', sp(WH, 'PARTITIONING ≠ SHARDING'), big(WH), appW, t, T.sharding - 0.15, T.inside2 - 0.25, 30);
+  tg('p1', sp(OK, 'PARTITIONS: ONE DATABASE'), big(OK), [W / 2 + 45, segY(NM - 6), BZ], t, T.inside2 - 0.2, T.shards - 0.2, 26);
+  tg('sh', sp(RD, 'SHARDS: MANY SERVERS'), big(RD), appW, t, T.shards - 0.05, T.ifv - 0.2, 30);
+}
+
+/* ---------------- reel config */
+const REEL = {
+  shots: [], world, tags,
+  code: [
+    [T.key - 0.35, T.l3 - 0.15, 'schema.sql', 'partition key', [[0, 'KEY = DATE', AMB], [T.month - 0.1, '36 PARTITIONS', OK]],
+      [['-- partition key: the order date'], ['CREATE TABLE orders (…)'], ['  PARTITION BY RANGE (created_at);'], ['-- one partition per month']],
+      [[T.date - 0.05, 3, 'key', 'amb'], [T.month - 0.05, 4, 'NOV 23 … OCT 26', 'good']]],
+    [T.instead - 0.3, T.l6 - 0.15, 'cleanup.sql', 'old data', [[0, 'SLOW', RED], [T.remove - 0.05, 'ONE STEP', OK]],
+      [['-- slow: millions of rows, one by one'], ['DELETE FROM orders WHERE …;'], ['-- fast: the whole month at once'], ['DROP TABLE orders_2023_11;']],
+      [[T.deleting, 2, 'slow', 'bad'], [T.remove - 0.05, 4, 'instant', 'good']]],
+  ],
+  hl: /\b(CREATE|TABLE|PARTITION|BY|RANGE|DELETE|FROM|WHERE|DROP)\b/g,
+  tools: [], slams: [],
+  bad: ['slow', 'billion', 'rows', 'millions', 'of', 'every', 'thousands'],
+  good: ['fast', 'one', 'table', 'date', 'month', 'less', 'data', 'folder', 'per', 'partitions', 'partition', 'key', 'skips', 'march', 'remove', 'easy', 'search', 'by', 'most', 'splits', 'newest'],
+  tiles: [['▤', 'PARTITIONING'], ['▦', 'SHARDING'], ['⧉', 'READ<br>REPLICAS']],
+  end: T.ifv - 0.15, follow: T.follow,
+  cover: { t: 'PARTITIONING', at: T.smaller + 0.9, zoom: 1, dy: 60 },
+  flash: (t) => 0.05 * pulse(t, T.slow, 7) + 0.05 * pulse(t, T.remove + 0.55, 6) + 0.04 * pulse(t, T.thousands, 6),
+};
+</script>
+<script src="../_ember/overlay.js"></script>
+<script>
+/* ---------------- bloom: scene → half-float target, bright pass, three blur levels, composite to the canvas */
+const RT = (w, h, s = 0) => new TH.WebGLRenderTarget(w, h, { type: TH.HalfFloatType, samples: s, depthBuffer: s > 0 });
+const rtMain = RT(1080, 1920, 4), BL = [[RT(540, 960), RT(540, 960)], [RT(270, 480), RT(270, 480)], [RT(135, 240), RT(135, 240)]];
+const fsCam = new TH.OrthographicCamera(-1, 1, 1, -1, 0, 1), fsScene = new TH.Scene(), fsQuad = new TH.Mesh(new TH.PlaneGeometry(2, 2));
+fsQuad.frustumCulled = false; fsScene.add(fsQuad);
+const VS = 'varying vec2 vUv; void main() { vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }';
+const shm = (fs, u) => new TH.ShaderMaterial({ uniforms: u, vertexShader: VS, fragmentShader: fs, depthTest: false, depthWrite: false });
+const mBright = shm(`uniform sampler2D tex; uniform float th; varying vec2 vUv;
+void main() { vec3 c = texture2D(tex, vUv).rgb; float l = max(c.r, max(c.g, c.b)); gl_FragColor = vec4(c * smoothstep(th, th + 0.4, l), 1.0); }`,
+  { tex: { value: null }, th: { value: 0.8 } });
+const mBlur = shm(`uniform sampler2D tex; uniform vec2 dir; varying vec2 vUv;
+void main() {
+  vec3 c = texture2D(tex, vUv).rgb * 0.2270270270;
+  c += (texture2D(tex, vUv + dir * 1.3846153846).rgb + texture2D(tex, vUv - dir * 1.3846153846).rgb) * 0.3162162162;
+  c += (texture2D(tex, vUv + dir * 3.2307692308).rgb + texture2D(tex, vUv - dir * 3.2307692308).rgb) * 0.0702702703;
+  gl_FragColor = vec4(c, 1.0);
+}`, { tex: { value: null }, dir: { value: new TH.Vector2() } });
+const mComp = shm(`uniform sampler2D base, b1, b2, b3; uniform float k1, k2, k3; varying vec2 vUv;
+void main() {
+  vec3 c = texture2D(base, vUv).rgb + texture2D(b1, vUv).rgb * k1 + texture2D(b2, vUv).rgb * k2 + texture2D(b3, vUv).rgb * k3;
+  c = c / (1.0 + max(c - 1.0, 0.0) * 0.6);
+  gl_FragColor = vec4(c, 1.0);
+  #include <colorspace_fragment>
+}`, { base: { value: rtMain.texture }, b1: { value: BL[0][0].texture }, b2: { value: BL[1][1].texture }, b3: { value: BL[2][1].texture }, k1: { value: 0.5 }, k2: { value: 0.65 }, k3: { value: 0.8 } });
+function pass(mat, dst) { fsQuad.material = mat; renderer.setRenderTarget(dst); renderer.render(fsScene, fsCam); }
+function blur(src, dst, dx, dy) { mBlur.uniforms.tex.value = src.texture; mBlur.uniforms.dir.value.set(dx / src.width, dy / src.height); pass(mBlur, dst); }
+function bloom() {
+  mBright.uniforms.tex.value = rtMain.texture; pass(mBright, BL[0][0]);
+  blur(BL[0][0], BL[0][1], 1, 0); blur(BL[0][1], BL[0][0], 0, 1);
+  blur(BL[0][0], BL[1][0], 1, 0); blur(BL[1][0], BL[1][1], 0, 1);
+  blur(BL[1][1], BL[2][0], 1, 0); blur(BL[2][0], BL[2][1], 0, 1);
+  pass(mComp, null);
+}
+
+/* ---------------- stat strip, filing-cabinet card */
+const stg = $('stage'), before = $('prof');
+const mk = (html) => { const w = document.createElement('div'); w.innerHTML = html.trim(); const n = w.firstChild; stg.insertBefore(n, before); return n; };
+const STAT = mk(`<div id="st"><div class="c"><div class="k">ROWS</div><div class="n" id="sR"></div></div><div class="c"><div class="k">LAST QUERY</div><div class="n" id="sQ"></div></div><div class="c"><div class="k">PARTITIONS</div><div class="n" id="sP"></div></div></div>`);
+const FC = mk(`<div id="fc" class="cd2"><div class="h">One folder per month</div><svg id="fcS" viewBox="0 0 460 230"></svg><div id="fcL"></div></div>`);
+if (/cover/.test(location.hash)) { const s = document.createElement('style'); s.textContent = '#st, .cd2 { display: none !important; }'; document.head.appendChild(s); }
+const FM = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+(() => {
+  const fold = FM.map((m, i) => { const x = 44 + i * 31, hot = i === 2;
+    return `<g id="fd${i}"><rect x="${x}" y="58" width="28" height="110" rx="3" fill="${hot ? '#2a2217' : '#1d1915'}" stroke="${hot ? '#FFC34D' : '#6b645e'}" stroke-width="2"/>
+    <text x="${x + 14}" y="76" text-anchor="middle" font-family="Mono" font-size="10" font-weight="800" fill="${hot ? '#FFC34D' : '#9c948c'}">${m}</text></g>`; }).join('');
+  $('fcS').innerHTML = `${fold}
+<rect x="30" y="128" width="400" height="92" rx="6" fill="#15130f" stroke="#FFB070" stroke-width="2.5"/>
+<rect x="200" y="168" width="60" height="10" rx="4" fill="#FFB070"/><text x="230" y="204" text-anchor="middle" font-family="Mono" font-size="11" font-weight="800" fill="#9c948c">ORDERS · 2026</text>
+<g id="rc" opacity="0"><rect x="150" y="14" width="96" height="104" rx="4" fill="#F2EEE8" stroke="#FFC34D" stroke-width="2"/><text x="198" y="36" text-anchor="middle" font-family="Mono" font-size="10" font-weight="800" fill="#15130f">RECEIPT</text>
+<line x1="162" y1="52" x2="234" y2="52" stroke="#9c948c" stroke-width="2"/><line x1="162" y1="66" x2="218" y2="66" stroke="#9c948c" stroke-width="2"/>
+<text x="198" y="100" text-anchor="middle" font-family="Mono" font-size="14" font-weight="900" fill="#FF6A1F">MAR 14</text></g>`;
+})();
+function fcDom(t) {
+  const p = popIn(t, T.l4 - 0.1, T.l5 - 0.1); vis(FC, p.a, `translateY(${p.y}px) scale(${p.s})`);
+  if (p.a <= 0.001) return;
+  const pull = ep(t, T.march - 0.3, T.march + 0.3, ease.out);
+  $('fd2').setAttribute('transform', `translate(0,${-pull * 44})`);
+  $('rc').setAttribute('opacity', ep(t, T.march2 + 0.2, T.march2 + 0.5));
+  $('rc').setAttribute('transform', `translate(0,${(1 - ep(t, T.march2 + 0.2, T.march2 + 0.6, ease.out)) * 20})`);
+  for (let i = 0; i < 12; i++) if (i !== 2) $('fd' + i).setAttribute('opacity', 1 - 0.5 * ep(t, T.whole - 0.3, T.whole + 0.1));
+  const ok = t > T.whole - 0.3;
+  setH('fcL', ok ? '✓ FOLDER = PARTITION · MONTH = KEY' : t > T.march - 0.3 ? 'OPEN ONLY THE MARCH FOLDER' : 'A CABINET, ONE FOLDER PER MONTH');
+  $('fcL').style.color = ok ? OK : AMB;
+}
+const fmt = (n) => (n >= 1e9 ? (n / 1e9).toFixed(n % 1e9 ? 2 : 0) + ' B' : n >= 1e6 ? Math.round(n / 1e6) + ' M' : Math.round(n).toLocaleString());
+function statDom(t) {
+  const p = popIn(t, 0.15, T.ifv - 0.15); vis(STAT, p.a, `translateY(${p.y}px) scale(${p.s})`);
+  if (p.a <= 0.001) return;
+  const g = grown(t), rows = t > T.remove + 0.5 ? 972e6 : Math.pow(10, lerp(3, 9, g));
+  setH('sR', fmt(rows));
+  let q = '0.01 s', qc = OK;
+  if (t > T.asking - 0.1) { const k = prog(t, T.asking - 0.1, T.slow + 0.2); q = (0.01 + 9.8 * k).toFixed(1) + ' s'; qc = k > 0.4 ? RED : AMB; }
+  if (t > T.skips - 0.1) { q = '0.2 s'; qc = OK; }
+  if (t > T.every - 0.2 && t < T.pick) { q = (0.2 + 7.6 * prog(t, T.every - 0.2, T.every + 0.8)).toFixed(1) + ' s'; qc = RED; }
+  if (t >= T.pick) { q = '0.2 s'; qc = OK; }
+  if (tiny(t) > 0.5) { q = '1.6 s'; qc = AMB; }
+  setH('sQ', q); $('sQ').style.color = qc;
+  let pn = '1 TABLE', pc = O2;
+  if (t > T.smaller - 0.1) { pn = '36'; pc = OK; }
+  if (t > T.remove + 0.5) pn = '35';
+  if (tiny(t) > 0.5) { pn = '4,000'; pc = RED; }
+  setH('sP', pn); $('sP').style.color = pc;
+}
+function clampTags() {
+  for (const k in LB) {
+    const e = LB[k]; if (e.style.display === 'none') continue;
+    const w = e.offsetWidth, x = parseFloat(e.style.left), y = clamp(parseFloat(e.style.top), 196, 668);
+    const right = y > 450 ? 540 - 70 : 540 - 14;
+    e.style.left = clamp(x, 14 + w / 2, right - w / 2) + 'px'; e.style.top = y + 'px';
+  }
+}
+
+window.render = (t) => {
+  shoot(t);
+  orbsReset(); sparksReset(); ringsReset();
+  REEL.world(t);
+  sparksFlush(); updateEmbers(t);
+  renderer.setRenderTarget(rtMain); renderer.render(scene, pcam);
+  bloom();
+  REEL.tags(t); clampTags();
+  card(t); tools(t);
+  statDom(t); fcDom(t);
+  $('dim').style.opacity = Math.max(0.55 * ep(t, REEL.end, REEL.end + 0.6), 0.6 * window01(t, T.l4 - 0.1, T.l5 - 0.05, 0.3));
+  $('flash').style.opacity = REEL.flash(t);
+  caps(t);
+  profile(t);
+};
+</script>
+<script src="../_ember/play.js"></script>
+</body>
+</html>

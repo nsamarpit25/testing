@@ -1,0 +1,180 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1080
+PlayResY: 1920
+WrapStyle: 0
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Cap,Arial,72,&H00FFFFFF,&H00FFFFFF,&H00303030,&H80000000,1,0,0,0,100,100,0,0,1,2.2,0,2,110,110,330,1
+Style: Handle,Arial,34,&H28FFFFFF,&H28FFFFFF,&H00000000,&H90000000,1,0,0,0,100,100,1,0,1,0,1.5,2,60,60,114,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:01.00,0:00:01.98,Cap,,0,0,0,,{\alpha&H00&\c&H0066D9FF&}Claude! {\alpha&HFF&}Forty {\alpha&HFF&}thousand {\alpha&HFF&}database
+Dialogue: 0,0:00:01.98,0:00:02.18,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Claude! {\alpha&H00&\c&H0066D9FF&}Forty {\alpha&HFF&}thousand {\alpha&HFF&}database
+Dialogue: 0,0:00:02.18,0:00:02.54,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Claude! {\alpha&H00&\c&HFFFFFF&}Forty {\alpha&H00&\c&H0066D9FF&}thousand {\alpha&HFF&}database
+Dialogue: 0,0:00:02.54,0:00:02.94,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Claude! {\alpha&H00&\c&HFFFFFF&}Forty {\alpha&H00&\c&HFFFFFF&}thousand {\alpha&H00&\c&H0066D9FF&}database
+Dialogue: 0,0:00:02.94,0:00:03.32,Cap,,0,0,0,,{\alpha&H00&\c&H0066D9FF&}reads {\alpha&HFF&}in {\alpha&HFF&}three {\alpha&HFF&}minutes.
+Dialogue: 0,0:00:03.32,0:00:03.56,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}reads {\alpha&H00&\c&H0066D9FF&}in {\alpha&HFF&}three {\alpha&HFF&}minutes.
+Dialogue: 0,0:00:03.56,0:00:03.86,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}reads {\alpha&H00&\c&HFFFFFF&}in {\alpha&H00&\c&H0066D9FF&}three {\alpha&HFF&}minutes.
+Dialogue: 0,0:00:03.86,0:00:04.28,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}reads {\alpha&H00&\c&HFFFFFF&}in {\alpha&H00&\c&HFFFFFF&}three {\alpha&H00&\c&H0066D9FF&}minutes.
+Dialogue: 0,0:00:04.28,0:00:04.66,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}reads {\alpha&H00&\c&HFFFFFF&}in {\alpha&H00&\c&HFFFFFF&}three {\alpha&H00&\c&HFFFFFF&}minutes.
+Dialogue: 0,0:00:04.66,0:00:04.78,Cap,,0,0,0,,{\alpha&H00&\c&H0066D9FF&}We're {\alpha&HFF&}going {\alpha&HFF&}viral!
+Dialogue: 0,0:00:04.78,0:00:05.02,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}We're {\alpha&H00&\c&H0066D9FF&}going {\alpha&HFF&}viral!
+Dialogue: 0,0:00:05.02,0:00:05.54,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}We're {\alpha&H00&\c&HFFFFFF&}going {\alpha&H00&\c&H0066D9FF&}viral!
+Dialogue: 0,0:00:05.54,0:00:06.22,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}We're {\alpha&H00&\c&HFFFFFF&}going {\alpha&H00&\c&HFFFFFF&}viral!
+Dialogue: 0,0:00:06.22,0:00:07.14,Cap,,0,0,0,,{\alpha&H00&\c&H005A9AFF&}Cleo... {\alpha&HFF&}you {\alpha&HFF&}haven't {\alpha&HFF&}deployed {\alpha&HFF&}it {\alpha&HFF&}yet.
+Dialogue: 0,0:00:07.14,0:00:07.30,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Cleo... {\alpha&H00&\c&H005A9AFF&}you {\alpha&HFF&}haven't {\alpha&HFF&}deployed {\alpha&HFF&}it {\alpha&HFF&}yet.
+Dialogue: 0,0:00:07.30,0:00:07.76,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Cleo... {\alpha&H00&\c&HFFFFFF&}you {\alpha&H00&\c&H005A9AFF&}haven't {\alpha&HFF&}deployed {\alpha&HFF&}it {\alpha&HFF&}yet.
+Dialogue: 0,0:00:07.76,0:00:08.04,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Cleo... {\alpha&H00&\c&HFFFFFF&}you {\alpha&H00&\c&HFFFFFF&}haven't {\alpha&H00&\c&H005A9AFF&}deployed {\alpha&HFF&}it {\alpha&HFF&}yet.
+Dialogue: 0,0:00:08.04,0:00:08.20,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Cleo... {\alpha&H00&\c&HFFFFFF&}you {\alpha&H00&\c&HFFFFFF&}haven't {\alpha&H00&\c&HFFFFFF&}deployed {\alpha&H00&\c&H005A9AFF&}it {\alpha&HFF&}yet.
+Dialogue: 0,0:00:08.20,0:00:08.38,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Cleo... {\alpha&H00&\c&HFFFFFF&}you {\alpha&H00&\c&HFFFFFF&}haven't {\alpha&H00&\c&HFFFFFF&}deployed {\alpha&H00&\c&HFFFFFF&}it {\alpha&H00&\c&H005A9AFF&}yet.
+Dialogue: 0,0:00:08.38,0:00:08.87,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Cleo... {\alpha&H00&\c&HFFFFFF&}you {\alpha&H00&\c&HFFFFFF&}haven't {\alpha&H00&\c&HFFFFFF&}deployed {\alpha&H00&\c&HFFFFFF&}it {\alpha&H00&\c&HFFFFFF&}yet.
+Dialogue: 0,0:00:08.87,0:00:09.04,Cap,,0,0,0,,{\alpha&H00&\c&H0066D9FF&}Then {\alpha&HFF&}who's {\alpha&HFF&}reading {\alpha&HFF&}it?
+Dialogue: 0,0:00:09.04,0:00:09.45,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Then {\alpha&H00&\c&H0066D9FF&}who's {\alpha&HFF&}reading {\alpha&HFF&}it?
+Dialogue: 0,0:00:09.45,0:00:09.71,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Then {\alpha&H00&\c&HFFFFFF&}who's {\alpha&H00&\c&H0066D9FF&}reading {\alpha&HFF&}it?
+Dialogue: 0,0:00:09.71,0:00:09.93,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Then {\alpha&H00&\c&HFFFFFF&}who's {\alpha&H00&\c&HFFFFFF&}reading {\alpha&H00&\c&H0066D9FF&}it?
+Dialogue: 0,0:00:09.93,0:00:10.41,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Then {\alpha&H00&\c&HFFFFFF&}who's {\alpha&H00&\c&HFFFFFF&}reading {\alpha&H00&\c&HFFFFFF&}it?
+Dialogue: 0,0:00:10.41,0:00:10.65,Cap,,0,0,0,,{\alpha&H00&\c&H005A9AFF&}Your {\alpha&HFF&}app {\alpha&HFF&}on {\alpha&HFF&}localhost.
+Dialogue: 0,0:00:10.65,0:00:10.87,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Your {\alpha&H00&\c&H005A9AFF&}app {\alpha&HFF&}on {\alpha&HFF&}localhost.
+Dialogue: 0,0:00:10.87,0:00:11.07,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Your {\alpha&H00&\c&HFFFFFF&}app {\alpha&H00&\c&H005A9AFF&}on {\alpha&HFF&}localhost.
+Dialogue: 0,0:00:11.07,0:00:11.69,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Your {\alpha&H00&\c&HFFFFFF&}app {\alpha&H00&\c&HFFFFFF&}on {\alpha&H00&\c&H005A9AFF&}localhost.
+Dialogue: 0,0:00:11.69,0:00:11.99,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Your {\alpha&H00&\c&HFFFFFF&}app {\alpha&H00&\c&HFFFFFF&}on {\alpha&H00&\c&HFFFFFF&}localhost.
+Dialogue: 0,0:00:11.99,0:00:12.19,Cap,,0,0,0,,{\alpha&H00&\c&H005A9AFF&}Every {\alpha&HFF&}read {\alpha&HFF&}came {\alpha&HFF&}from {\alpha&HFF&}this {\alpha&HFF&}desk.
+Dialogue: 0,0:00:12.19,0:00:12.39,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Every {\alpha&H00&\c&H005A9AFF&}read {\alpha&HFF&}came {\alpha&HFF&}from {\alpha&HFF&}this {\alpha&HFF&}desk.
+Dialogue: 0,0:00:12.39,0:00:12.59,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Every {\alpha&H00&\c&HFFFFFF&}read {\alpha&H00&\c&H005A9AFF&}came {\alpha&HFF&}from {\alpha&HFF&}this {\alpha&HFF&}desk.
+Dialogue: 0,0:00:12.59,0:00:12.85,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Every {\alpha&H00&\c&HFFFFFF&}read {\alpha&H00&\c&HFFFFFF&}came {\alpha&H00&\c&H005A9AFF&}from {\alpha&HFF&}this {\alpha&HFF&}desk.
+Dialogue: 0,0:00:12.85,0:00:12.99,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Every {\alpha&H00&\c&HFFFFFF&}read {\alpha&H00&\c&HFFFFFF&}came {\alpha&H00&\c&HFFFFFF&}from {\alpha&H00&\c&H005A9AFF&}this {\alpha&HFF&}desk.
+Dialogue: 0,0:00:12.99,0:00:13.23,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Every {\alpha&H00&\c&HFFFFFF&}read {\alpha&H00&\c&HFFFFFF&}came {\alpha&H00&\c&HFFFFFF&}from {\alpha&H00&\c&HFFFFFF&}this {\alpha&H00&\c&H005A9AFF&}desk.
+Dialogue: 0,0:00:13.23,0:00:13.58,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Every {\alpha&H00&\c&HFFFFFF&}read {\alpha&H00&\c&HFFFFFF&}came {\alpha&H00&\c&HFFFFFF&}from {\alpha&H00&\c&HFFFFFF&}this {\alpha&H00&\c&HFFFFFF&}desk.
+Dialogue: 0,0:00:14.11,0:00:14.51,Cap,,0,0,0,,{\alpha&H00&\c&H0066D9FF&}...From {\alpha&HFF&}me?
+Dialogue: 0,0:00:14.51,0:00:14.95,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}...From {\alpha&H00&\c&H0066D9FF&}me?
+Dialogue: 0,0:00:14.95,0:00:15.63,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}...From {\alpha&H00&\c&HFFFFFF&}me?
+Dialogue: 0,0:00:15.63,0:00:15.87,Cap,,0,0,0,,{\alpha&H00&\c&H005A9AFF&}From {\alpha&HFF&}you.
+Dialogue: 0,0:00:15.87,0:00:16.21,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}From {\alpha&H00&\c&H005A9AFF&}you.
+Dialogue: 0,0:00:16.21,0:00:16.59,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}From {\alpha&H00&\c&HFFFFFF&}you.
+Dialogue: 0,0:00:16.59,0:00:16.85,Cap,,0,0,0,,{\alpha&H00&\c&H005A9AFF&}You're {\alpha&HFF&}flooding {\alpha&HFF&}your {\alpha&HFF&}own {\alpha&HFF&}database.
+Dialogue: 0,0:00:16.85,0:00:17.09,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}You're {\alpha&H00&\c&H005A9AFF&}flooding {\alpha&HFF&}your {\alpha&HFF&}own {\alpha&HFF&}database.
+Dialogue: 0,0:00:17.09,0:00:17.31,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}You're {\alpha&H00&\c&HFFFFFF&}flooding {\alpha&H00&\c&H005A9AFF&}your {\alpha&HFF&}own {\alpha&HFF&}database.
+Dialogue: 0,0:00:17.31,0:00:17.43,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}You're {\alpha&H00&\c&HFFFFFF&}flooding {\alpha&H00&\c&HFFFFFF&}your {\alpha&H00&\c&H005A9AFF&}own {\alpha&HFF&}database.
+Dialogue: 0,0:00:17.43,0:00:17.73,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}You're {\alpha&H00&\c&HFFFFFF&}flooding {\alpha&H00&\c&HFFFFFF&}your {\alpha&H00&\c&HFFFFFF&}own {\alpha&H00&\c&H005A9AFF&}database.
+Dialogue: 0,0:00:17.73,0:00:18.47,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}You're {\alpha&H00&\c&HFFFFFF&}flooding {\alpha&H00&\c&HFFFFFF&}your {\alpha&H00&\c&HFFFFFF&}own {\alpha&H00&\c&HFFFFFF&}database.
+Dialogue: 0,0:00:18.47,0:00:18.73,Cap,,0,0,0,,{\alpha&H00&\c&H0066D9FF&}I'm {\alpha&HFF&}not {\alpha&HFF&}even {\alpha&HFF&}touching {\alpha&HFF&}anything!
+Dialogue: 0,0:00:18.73,0:00:18.85,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}I'm {\alpha&H00&\c&H0066D9FF&}not {\alpha&HFF&}even {\alpha&HFF&}touching {\alpha&HFF&}anything!
+Dialogue: 0,0:00:18.85,0:00:19.03,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}I'm {\alpha&H00&\c&HFFFFFF&}not {\alpha&H00&\c&H0066D9FF&}even {\alpha&HFF&}touching {\alpha&HFF&}anything!
+Dialogue: 0,0:00:19.03,0:00:19.43,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}I'm {\alpha&H00&\c&HFFFFFF&}not {\alpha&H00&\c&HFFFFFF&}even {\alpha&H00&\c&H0066D9FF&}touching {\alpha&HFF&}anything!
+Dialogue: 0,0:00:19.43,0:00:19.91,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}I'm {\alpha&H00&\c&HFFFFFF&}not {\alpha&H00&\c&HFFFFFF&}even {\alpha&H00&\c&HFFFFFF&}touching {\alpha&H00&\c&H0066D9FF&}anything!
+Dialogue: 0,0:00:19.91,0:00:20.21,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}I'm {\alpha&H00&\c&HFFFFFF&}not {\alpha&H00&\c&HFFFFFF&}even {\alpha&H00&\c&HFFFFFF&}touching {\alpha&H00&\c&HFFFFFF&}anything!
+Dialogue: 0,0:00:20.21,0:00:20.31,Cap,,0,0,0,,{\alpha&H00&\c&H0066D9FF&}The {\alpha&HFF&}page {\alpha&HFF&}is {\alpha&HFF&}just {\alpha&HFF&}sitting {\alpha&HFF&}there.
+Dialogue: 0,0:00:20.31,0:00:20.53,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}The {\alpha&H00&\c&H0066D9FF&}page {\alpha&HFF&}is {\alpha&HFF&}just {\alpha&HFF&}sitting {\alpha&HFF&}there.
+Dialogue: 0,0:00:20.53,0:00:20.69,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}The {\alpha&H00&\c&HFFFFFF&}page {\alpha&H00&\c&H0066D9FF&}is {\alpha&HFF&}just {\alpha&HFF&}sitting {\alpha&HFF&}there.
+Dialogue: 0,0:00:20.69,0:00:20.83,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}The {\alpha&H00&\c&HFFFFFF&}page {\alpha&H00&\c&HFFFFFF&}is {\alpha&H00&\c&H0066D9FF&}just {\alpha&HFF&}sitting {\alpha&HFF&}there.
+Dialogue: 0,0:00:20.83,0:00:21.11,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}The {\alpha&H00&\c&HFFFFFF&}page {\alpha&H00&\c&HFFFFFF&}is {\alpha&H00&\c&HFFFFFF&}just {\alpha&H00&\c&H0066D9FF&}sitting {\alpha&HFF&}there.
+Dialogue: 0,0:00:21.11,0:00:21.41,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}The {\alpha&H00&\c&HFFFFFF&}page {\alpha&H00&\c&HFFFFFF&}is {\alpha&H00&\c&HFFFFFF&}just {\alpha&H00&\c&HFFFFFF&}sitting {\alpha&H00&\c&H0066D9FF&}there.
+Dialogue: 0,0:00:21.41,0:00:21.99,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}The {\alpha&H00&\c&HFFFFFF&}page {\alpha&H00&\c&HFFFFFF&}is {\alpha&H00&\c&HFFFFFF&}just {\alpha&H00&\c&HFFFFFF&}sitting {\alpha&H00&\c&HFFFFFF&}there.
+Dialogue: 0,0:00:21.99,0:00:22.27,Cap,,0,0,0,,{\alpha&H00&\c&H005A9AFF&}Look {\alpha&HFF&}at {\alpha&HFF&}the {\alpha&HFF&}Network {\alpha&HFF&}tab.
+Dialogue: 0,0:00:22.27,0:00:22.47,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Look {\alpha&H00&\c&H005A9AFF&}at {\alpha&HFF&}the {\alpha&HFF&}Network {\alpha&HFF&}tab.
+Dialogue: 0,0:00:22.47,0:00:22.59,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Look {\alpha&H00&\c&HFFFFFF&}at {\alpha&H00&\c&H005A9AFF&}the {\alpha&HFF&}Network {\alpha&HFF&}tab.
+Dialogue: 0,0:00:22.59,0:00:22.91,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Look {\alpha&H00&\c&HFFFFFF&}at {\alpha&H00&\c&HFFFFFF&}the {\alpha&H00&\c&H005A9AFF&}Network {\alpha&HFF&}tab.
+Dialogue: 0,0:00:22.91,0:00:23.21,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Look {\alpha&H00&\c&HFFFFFF&}at {\alpha&H00&\c&HFFFFFF&}the {\alpha&H00&\c&HFFFFFF&}Network {\alpha&H00&\c&H005A9AFF&}tab.
+Dialogue: 0,0:00:23.21,0:00:23.97,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Look {\alpha&H00&\c&HFFFFFF&}at {\alpha&H00&\c&HFFFFFF&}the {\alpha&H00&\c&HFFFFFF&}Network {\alpha&H00&\c&HFFFFFF&}tab.
+Dialogue: 0,0:00:23.97,0:00:24.35,Cap,,0,0,0,,{\alpha&H00&\c&H0066D9FF&}Why {\alpha&HFF&}is {\alpha&HFF&}it {\alpha&HFF&}counting {\alpha&HFF&}like {\alpha&HFF&}a
+Dialogue: 0,0:00:24.35,0:00:24.57,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Why {\alpha&H00&\c&H0066D9FF&}is {\alpha&HFF&}it {\alpha&HFF&}counting {\alpha&HFF&}like {\alpha&HFF&}a
+Dialogue: 0,0:00:24.57,0:00:24.67,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Why {\alpha&H00&\c&HFFFFFF&}is {\alpha&H00&\c&H0066D9FF&}it {\alpha&HFF&}counting {\alpha&HFF&}like {\alpha&HFF&}a
+Dialogue: 0,0:00:24.67,0:00:25.01,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Why {\alpha&H00&\c&HFFFFFF&}is {\alpha&H00&\c&HFFFFFF&}it {\alpha&H00&\c&H0066D9FF&}counting {\alpha&HFF&}like {\alpha&HFF&}a
+Dialogue: 0,0:00:25.01,0:00:25.25,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Why {\alpha&H00&\c&HFFFFFF&}is {\alpha&H00&\c&HFFFFFF&}it {\alpha&H00&\c&HFFFFFF&}counting {\alpha&H00&\c&H0066D9FF&}like {\alpha&HFF&}a
+Dialogue: 0,0:00:25.25,0:00:25.41,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Why {\alpha&H00&\c&HFFFFFF&}is {\alpha&H00&\c&HFFFFFF&}it {\alpha&H00&\c&HFFFFFF&}counting {\alpha&H00&\c&HFFFFFF&}like {\alpha&H00&\c&H0066D9FF&}a
+Dialogue: 0,0:00:25.41,0:00:25.67,Cap,,0,0,0,,{\alpha&H00&\c&H0066D9FF&}slot {\alpha&HFF&}machine?
+Dialogue: 0,0:00:25.67,0:00:25.99,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}slot {\alpha&H00&\c&H0066D9FF&}machine?
+Dialogue: 0,0:00:25.99,0:00:26.69,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}slot {\alpha&H00&\c&HFFFFFF&}machine?
+Dialogue: 0,0:00:26.69,0:00:26.95,Cap,,0,0,0,,{\alpha&H00&\c&H005A9AFF&}Your {\alpha&HFF&}useEffect {\alpha&HFF&}loads {\alpha&HFF&}the {\alpha&HFF&}tasks,
+Dialogue: 0,0:00:26.95,0:00:27.61,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Your {\alpha&H00&\c&H005A9AFF&}useEffect {\alpha&HFF&}loads {\alpha&HFF&}the {\alpha&HFF&}tasks,
+Dialogue: 0,0:00:27.61,0:00:28.01,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Your {\alpha&H00&\c&HFFFFFF&}useEffect {\alpha&H00&\c&H005A9AFF&}loads {\alpha&HFF&}the {\alpha&HFF&}tasks,
+Dialogue: 0,0:00:28.01,0:00:28.27,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Your {\alpha&H00&\c&HFFFFFF&}useEffect {\alpha&H00&\c&HFFFFFF&}loads {\alpha&H00&\c&H005A9AFF&}the {\alpha&HFF&}tasks,
+Dialogue: 0,0:00:28.27,0:00:28.79,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Your {\alpha&H00&\c&HFFFFFF&}useEffect {\alpha&H00&\c&HFFFFFF&}loads {\alpha&H00&\c&HFFFFFF&}the {\alpha&H00&\c&H005A9AFF&}tasks,
+Dialogue: 0,0:00:28.79,0:00:29.03,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Your {\alpha&H00&\c&HFFFFFF&}useEffect {\alpha&H00&\c&HFFFFFF&}loads {\alpha&H00&\c&HFFFFFF&}the {\alpha&H00&\c&HFFFFFF&}tasks,
+Dialogue: 0,0:00:29.03,0:00:29.39,Cap,,0,0,0,,{\alpha&H00&\c&H005A9AFF&}updates {\alpha&HFF&}the {\alpha&HFF&}list,
+Dialogue: 0,0:00:29.39,0:00:29.61,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}updates {\alpha&H00&\c&H005A9AFF&}the {\alpha&HFF&}list,
+Dialogue: 0,0:00:29.61,0:00:30.01,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}updates {\alpha&H00&\c&HFFFFFF&}the {\alpha&H00&\c&H005A9AFF&}list,
+Dialogue: 0,0:00:30.01,0:00:30.27,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}updates {\alpha&H00&\c&HFFFFFF&}the {\alpha&H00&\c&HFFFFFF&}list,
+Dialogue: 0,0:00:30.27,0:00:30.47,Cap,,0,0,0,,{\alpha&H00&\c&H005A9AFF&}sees {\alpha&HFF&}a {\alpha&HFF&}new {\alpha&HFF&}list...
+Dialogue: 0,0:00:30.47,0:00:30.61,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}sees {\alpha&H00&\c&H005A9AFF&}a {\alpha&HFF&}new {\alpha&HFF&}list...
+Dialogue: 0,0:00:30.61,0:00:30.77,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}sees {\alpha&H00&\c&HFFFFFF&}a {\alpha&H00&\c&H005A9AFF&}new {\alpha&HFF&}list...
+Dialogue: 0,0:00:30.77,0:00:31.45,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}sees {\alpha&H00&\c&HFFFFFF&}a {\alpha&H00&\c&HFFFFFF&}new {\alpha&H00&\c&H005A9AFF&}list...
+Dialogue: 0,0:00:31.45,0:00:31.73,Cap,,0,0,0,,{\alpha&H00&\c&H005A9AFF&}and {\alpha&HFF&}loads {\alpha&HFF&}again.
+Dialogue: 0,0:00:31.73,0:00:32.17,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}and {\alpha&H00&\c&H005A9AFF&}loads {\alpha&HFF&}again.
+Dialogue: 0,0:00:32.17,0:00:32.49,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}and {\alpha&H00&\c&HFFFFFF&}loads {\alpha&H00&\c&H005A9AFF&}again.
+Dialogue: 0,0:00:32.49,0:00:33.06,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}and {\alpha&H00&\c&HFFFFFF&}loads {\alpha&H00&\c&HFFFFFF&}again.
+Dialogue: 0,0:00:33.06,0:00:33.24,Cap,,0,0,0,,{\alpha&H00&\c&H0066D9FF&}I {\alpha&HFF&}added {\alpha&HFF&}tasks {\alpha&HFF&}to {\alpha&HFF&}the {\alpha&HFF&}dependency
+Dialogue: 0,0:00:33.24,0:00:33.54,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}I {\alpha&H00&\c&H0066D9FF&}added {\alpha&HFF&}tasks {\alpha&HFF&}to {\alpha&HFF&}the {\alpha&HFF&}dependency
+Dialogue: 0,0:00:33.54,0:00:34.16,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}I {\alpha&H00&\c&HFFFFFF&}added {\alpha&H00&\c&H0066D9FF&}tasks {\alpha&HFF&}to {\alpha&HFF&}the {\alpha&HFF&}dependency
+Dialogue: 0,0:00:34.16,0:00:34.50,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}I {\alpha&H00&\c&HFFFFFF&}added {\alpha&H00&\c&HFFFFFF&}tasks {\alpha&H00&\c&H0066D9FF&}to {\alpha&HFF&}the {\alpha&HFF&}dependency
+Dialogue: 0,0:00:34.50,0:00:34.62,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}I {\alpha&H00&\c&HFFFFFF&}added {\alpha&H00&\c&HFFFFFF&}tasks {\alpha&H00&\c&HFFFFFF&}to {\alpha&H00&\c&H0066D9FF&}the {\alpha&HFF&}dependency
+Dialogue: 0,0:00:34.62,0:00:35.08,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}I {\alpha&H00&\c&HFFFFFF&}added {\alpha&H00&\c&HFFFFFF&}tasks {\alpha&H00&\c&HFFFFFF&}to {\alpha&H00&\c&HFFFFFF&}the {\alpha&H00&\c&H0066D9FF&}dependency
+Dialogue: 0,0:00:35.08,0:00:35.78,Cap,,0,0,0,,{\alpha&H00&\c&H0066D9FF&}array. {\alpha&HFF&}To {\alpha&HFF&}be {\alpha&HFF&}responsive!
+Dialogue: 0,0:00:35.78,0:00:35.86,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}array. {\alpha&H00&\c&H0066D9FF&}To {\alpha&HFF&}be {\alpha&HFF&}responsive!
+Dialogue: 0,0:00:35.86,0:00:36.02,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}array. {\alpha&H00&\c&HFFFFFF&}To {\alpha&H00&\c&H0066D9FF&}be {\alpha&HFF&}responsive!
+Dialogue: 0,0:00:36.02,0:00:36.54,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}array. {\alpha&H00&\c&HFFFFFF&}To {\alpha&H00&\c&HFFFFFF&}be {\alpha&H00&\c&H0066D9FF&}responsive!
+Dialogue: 0,0:00:36.54,0:00:37.22,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}array. {\alpha&H00&\c&HFFFFFF&}To {\alpha&H00&\c&HFFFFFF&}be {\alpha&H00&\c&HFFFFFF&}responsive!
+Dialogue: 0,0:00:37.22,0:00:37.60,Cap,,0,0,0,,{\alpha&H00&\c&H005A9AFF&}Very {\alpha&HFF&}responsive. {\alpha&HFF&}Forever.
+Dialogue: 0,0:00:37.60,0:00:38.44,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Very {\alpha&H00&\c&H005A9AFF&}responsive. {\alpha&HFF&}Forever.
+Dialogue: 0,0:00:38.44,0:00:38.66,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Very {\alpha&H00&\c&HFFFFFF&}responsive. {\alpha&H00&\c&H005A9AFF&}Forever.
+Dialogue: 0,0:00:38.66,0:00:39.31,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Very {\alpha&H00&\c&HFFFFFF&}responsive. {\alpha&H00&\c&HFFFFFF&}Forever.
+Dialogue: 0,0:00:39.31,0:00:39.57,Cap,,0,0,0,,{\alpha&H00&\c&H0066D9FF&}Make {\alpha&HFF&}it {\alpha&HFF&}stop!
+Dialogue: 0,0:00:39.57,0:00:39.71,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Make {\alpha&H00&\c&H0066D9FF&}it {\alpha&HFF&}stop!
+Dialogue: 0,0:00:39.71,0:00:39.95,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Make {\alpha&H00&\c&HFFFFFF&}it {\alpha&H00&\c&H0066D9FF&}stop!
+Dialogue: 0,0:00:39.95,0:00:40.19,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Make {\alpha&H00&\c&HFFFFFF&}it {\alpha&H00&\c&HFFFFFF&}stop!
+Dialogue: 0,0:00:40.19,0:00:40.25,Cap,,0,0,0,,{\alpha&H00&\c&H0066D9FF&}Make {\alpha&HFF&}it {\alpha&HFF&}stop!
+Dialogue: 0,0:00:40.25,0:00:40.41,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Make {\alpha&H00&\c&H0066D9FF&}it {\alpha&HFF&}stop!
+Dialogue: 0,0:00:40.41,0:00:40.63,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Make {\alpha&H00&\c&HFFFFFF&}it {\alpha&H00&\c&H0066D9FF&}stop!
+Dialogue: 0,0:00:40.63,0:00:41.25,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Make {\alpha&H00&\c&HFFFFFF&}it {\alpha&H00&\c&HFFFFFF&}stop!
+Dialogue: 0,0:00:41.25,0:00:41.95,Cap,,0,0,0,,{\alpha&H00&\c&H005A9AFF&}Done. {\alpha&HFF&}The {\alpha&HFF&}fetch {\alpha&HFF&}loop {\alpha&HFF&}is {\alpha&HFF&}gone.
+Dialogue: 0,0:00:41.95,0:00:42.05,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Done. {\alpha&H00&\c&H005A9AFF&}The {\alpha&HFF&}fetch {\alpha&HFF&}loop {\alpha&HFF&}is {\alpha&HFF&}gone.
+Dialogue: 0,0:00:42.05,0:00:42.27,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Done. {\alpha&H00&\c&HFFFFFF&}The {\alpha&H00&\c&H005A9AFF&}fetch {\alpha&HFF&}loop {\alpha&HFF&}is {\alpha&HFF&}gone.
+Dialogue: 0,0:00:42.27,0:00:42.49,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Done. {\alpha&H00&\c&HFFFFFF&}The {\alpha&H00&\c&HFFFFFF&}fetch {\alpha&H00&\c&H005A9AFF&}loop {\alpha&HFF&}is {\alpha&HFF&}gone.
+Dialogue: 0,0:00:42.49,0:00:42.67,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Done. {\alpha&H00&\c&HFFFFFF&}The {\alpha&H00&\c&HFFFFFF&}fetch {\alpha&H00&\c&HFFFFFF&}loop {\alpha&H00&\c&H005A9AFF&}is {\alpha&HFF&}gone.
+Dialogue: 0,0:00:42.67,0:00:42.85,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Done. {\alpha&H00&\c&HFFFFFF&}The {\alpha&H00&\c&HFFFFFF&}fetch {\alpha&H00&\c&HFFFFFF&}loop {\alpha&H00&\c&HFFFFFF&}is {\alpha&H00&\c&H005A9AFF&}gone.
+Dialogue: 0,0:00:42.85,0:00:43.39,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Done. {\alpha&H00&\c&HFFFFFF&}The {\alpha&H00&\c&HFFFFFF&}fetch {\alpha&H00&\c&HFFFFFF&}loop {\alpha&H00&\c&HFFFFFF&}is {\alpha&H00&\c&HFFFFFF&}gone.
+Dialogue: 0,0:00:43.39,0:00:43.59,Cap,,0,0,0,,{\alpha&H00&\c&H0066D9FF&}At {\alpha&HFF&}least {\alpha&HFF&}it {\alpha&HFF&}didn't {\alpha&HFF&}cost {\alpha&HFF&}anything.
+Dialogue: 0,0:00:43.59,0:00:43.85,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}At {\alpha&H00&\c&H0066D9FF&}least {\alpha&HFF&}it {\alpha&HFF&}didn't {\alpha&HFF&}cost {\alpha&HFF&}anything.
+Dialogue: 0,0:00:43.85,0:00:44.05,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}At {\alpha&H00&\c&HFFFFFF&}least {\alpha&H00&\c&H0066D9FF&}it {\alpha&HFF&}didn't {\alpha&HFF&}cost {\alpha&HFF&}anything.
+Dialogue: 0,0:00:44.05,0:00:44.41,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}At {\alpha&H00&\c&HFFFFFF&}least {\alpha&H00&\c&HFFFFFF&}it {\alpha&H00&\c&H0066D9FF&}didn't {\alpha&HFF&}cost {\alpha&HFF&}anything.
+Dialogue: 0,0:00:44.41,0:00:44.61,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}At {\alpha&H00&\c&HFFFFFF&}least {\alpha&H00&\c&HFFFFFF&}it {\alpha&H00&\c&HFFFFFF&}didn't {\alpha&H00&\c&H0066D9FF&}cost {\alpha&HFF&}anything.
+Dialogue: 0,0:00:44.61,0:00:45.07,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}At {\alpha&H00&\c&HFFFFFF&}least {\alpha&H00&\c&HFFFFFF&}it {\alpha&H00&\c&HFFFFFF&}didn't {\alpha&H00&\c&HFFFFFF&}cost {\alpha&H00&\c&H0066D9FF&}anything.
+Dialogue: 0,0:00:45.07,0:00:45.42,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}At {\alpha&H00&\c&HFFFFFF&}least {\alpha&H00&\c&HFFFFFF&}it {\alpha&H00&\c&HFFFFFF&}didn't {\alpha&H00&\c&HFFFFFF&}cost {\alpha&H00&\c&HFFFFFF&}anything.
+Dialogue: 0,0:00:46.29,0:00:46.93,Cap,,0,0,0,,{\alpha&H00&\c&H0066D9FF&}"Daily {\alpha&HFF&}read {\alpha&HFF&}limit {\alpha&HFF&}reached."
+Dialogue: 0,0:00:46.93,0:00:47.27,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}"Daily {\alpha&H00&\c&H0066D9FF&}read {\alpha&HFF&}limit {\alpha&HFF&}reached."
+Dialogue: 0,0:00:47.27,0:00:47.63,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}"Daily {\alpha&H00&\c&HFFFFFF&}read {\alpha&H00&\c&H0066D9FF&}limit {\alpha&HFF&}reached."
+Dialogue: 0,0:00:47.63,0:00:48.27,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}"Daily {\alpha&H00&\c&HFFFFFF&}read {\alpha&H00&\c&HFFFFFF&}limit {\alpha&H00&\c&H0066D9FF&}reached."
+Dialogue: 0,0:00:48.27,0:00:48.92,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}"Daily {\alpha&H00&\c&HFFFFFF&}read {\alpha&H00&\c&HFFFFFF&}limit {\alpha&H00&\c&HFFFFFF&}reached."
+Dialogue: 0,0:00:50.92,0:00:51.48,Cap,,0,0,0,,{\alpha&H00&\c&H0066D9FF&}Claude... {\alpha&HFF&}can {\alpha&HFF&}you {\alpha&HFF&}rewind {\alpha&HFF&}the {\alpha&HFF&}database {\alpha&HFF&}too?
+Dialogue: 0,0:00:51.48,0:00:51.62,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Claude... {\alpha&H00&\c&H0066D9FF&}can {\alpha&HFF&}you {\alpha&HFF&}rewind {\alpha&HFF&}the {\alpha&HFF&}database {\alpha&HFF&}too?
+Dialogue: 0,0:00:51.62,0:00:51.80,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Claude... {\alpha&H00&\c&HFFFFFF&}can {\alpha&H00&\c&H0066D9FF&}you {\alpha&HFF&}rewind {\alpha&HFF&}the {\alpha&HFF&}database {\alpha&HFF&}too?
+Dialogue: 0,0:00:51.80,0:00:52.20,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Claude... {\alpha&H00&\c&HFFFFFF&}can {\alpha&H00&\c&HFFFFFF&}you {\alpha&H00&\c&H0066D9FF&}rewind {\alpha&HFF&}the {\alpha&HFF&}database {\alpha&HFF&}too?
+Dialogue: 0,0:00:52.20,0:00:52.38,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Claude... {\alpha&H00&\c&HFFFFFF&}can {\alpha&H00&\c&HFFFFFF&}you {\alpha&H00&\c&HFFFFFF&}rewind {\alpha&H00&\c&H0066D9FF&}the {\alpha&HFF&}database {\alpha&HFF&}too?
+Dialogue: 0,0:00:52.38,0:00:52.72,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Claude... {\alpha&H00&\c&HFFFFFF&}can {\alpha&H00&\c&HFFFFFF&}you {\alpha&H00&\c&HFFFFFF&}rewind {\alpha&H00&\c&HFFFFFF&}the {\alpha&H00&\c&H0066D9FF&}database {\alpha&HFF&}too?
+Dialogue: 0,0:00:52.72,0:00:53.10,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Claude... {\alpha&H00&\c&HFFFFFF&}can {\alpha&H00&\c&HFFFFFF&}you {\alpha&H00&\c&HFFFFFF&}rewind {\alpha&H00&\c&HFFFFFF&}the {\alpha&H00&\c&HFFFFFF&}database {\alpha&H00&\c&H0066D9FF&}too?
+Dialogue: 0,0:00:53.10,0:00:53.79,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Claude... {\alpha&H00&\c&HFFFFFF&}can {\alpha&H00&\c&HFFFFFF&}you {\alpha&H00&\c&HFFFFFF&}rewind {\alpha&H00&\c&HFFFFFF&}the {\alpha&H00&\c&HFFFFFF&}database {\alpha&H00&\c&HFFFFFF&}too?
+Dialogue: 0,0:00:53.79,0:00:53.99,Cap,,0,0,0,,{\alpha&H00&\c&H005A9AFF&}I {\alpha&HFF&}can {\alpha&HFF&}rewind {\alpha&HFF&}my {\alpha&HFF&}edits.
+Dialogue: 0,0:00:53.99,0:00:54.19,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}I {\alpha&H00&\c&H005A9AFF&}can {\alpha&HFF&}rewind {\alpha&HFF&}my {\alpha&HFF&}edits.
+Dialogue: 0,0:00:54.19,0:00:54.49,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}I {\alpha&H00&\c&HFFFFFF&}can {\alpha&H00&\c&H005A9AFF&}rewind {\alpha&HFF&}my {\alpha&HFF&}edits.
+Dialogue: 0,0:00:54.49,0:00:54.63,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}I {\alpha&H00&\c&HFFFFFF&}can {\alpha&H00&\c&HFFFFFF&}rewind {\alpha&H00&\c&H005A9AFF&}my {\alpha&HFF&}edits.
+Dialogue: 0,0:00:54.63,0:00:54.99,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}I {\alpha&H00&\c&HFFFFFF&}can {\alpha&H00&\c&HFFFFFF&}rewind {\alpha&H00&\c&HFFFFFF&}my {\alpha&H00&\c&H005A9AFF&}edits.
+Dialogue: 0,0:00:54.99,0:00:55.33,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}I {\alpha&H00&\c&HFFFFFF&}can {\alpha&H00&\c&HFFFFFF&}rewind {\alpha&H00&\c&HFFFFFF&}my {\alpha&H00&\c&HFFFFFF&}edits.
+Dialogue: 0,0:00:55.33,0:00:55.51,Cap,,0,0,0,,{\alpha&H00&\c&H005A9AFF&}Not {\alpha&HFF&}the {\alpha&HFF&}calendar.
+Dialogue: 0,0:00:55.51,0:00:55.69,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Not {\alpha&H00&\c&H005A9AFF&}the {\alpha&HFF&}calendar.
+Dialogue: 0,0:00:55.69,0:00:55.93,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Not {\alpha&H00&\c&HFFFFFF&}the {\alpha&H00&\c&H005A9AFF&}calendar.
+Dialogue: 0,0:00:55.93,0:00:56.28,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}Not {\alpha&H00&\c&HFFFFFF&}the {\alpha&H00&\c&HFFFFFF&}calendar.
+Dialogue: 0,0:00:56.90,0:00:57.12,Cap,,0,0,0,,{\alpha&H00&\c&H0066D9FF&}I {\alpha&HFF&}finally {\alpha&HFF&}went {\alpha&HFF&}viral...
+Dialogue: 0,0:00:57.12,0:00:57.68,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}I {\alpha&H00&\c&H0066D9FF&}finally {\alpha&HFF&}went {\alpha&HFF&}viral...
+Dialogue: 0,0:00:57.68,0:00:57.94,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}I {\alpha&H00&\c&HFFFFFF&}finally {\alpha&H00&\c&H0066D9FF&}went {\alpha&HFF&}viral...
+Dialogue: 0,0:00:57.94,0:00:58.68,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}I {\alpha&H00&\c&HFFFFFF&}finally {\alpha&H00&\c&HFFFFFF&}went {\alpha&H00&\c&H0066D9FF&}viral...
+Dialogue: 0,0:00:58.68,0:00:58.78,Cap,,0,0,0,,{\alpha&H00&\c&H0066D9FF&}and {\alpha&HFF&}my {\alpha&HFF&}only {\alpha&HFF&}fan {\alpha&HFF&}was {\alpha&HFF&}me.
+Dialogue: 0,0:00:58.78,0:00:58.96,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}and {\alpha&H00&\c&H0066D9FF&}my {\alpha&HFF&}only {\alpha&HFF&}fan {\alpha&HFF&}was {\alpha&HFF&}me.
+Dialogue: 0,0:00:58.96,0:00:59.38,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}and {\alpha&H00&\c&HFFFFFF&}my {\alpha&H00&\c&H0066D9FF&}only {\alpha&HFF&}fan {\alpha&HFF&}was {\alpha&HFF&}me.
+Dialogue: 0,0:00:59.38,0:00:59.74,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}and {\alpha&H00&\c&HFFFFFF&}my {\alpha&H00&\c&HFFFFFF&}only {\alpha&H00&\c&H0066D9FF&}fan {\alpha&HFF&}was {\alpha&HFF&}me.
+Dialogue: 0,0:00:59.74,0:00:59.98,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}and {\alpha&H00&\c&HFFFFFF&}my {\alpha&H00&\c&HFFFFFF&}only {\alpha&H00&\c&HFFFFFF&}fan {\alpha&H00&\c&H0066D9FF&}was {\alpha&HFF&}me.
+Dialogue: 0,0:00:59.98,0:01:00.28,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}and {\alpha&H00&\c&HFFFFFF&}my {\alpha&H00&\c&HFFFFFF&}only {\alpha&H00&\c&HFFFFFF&}fan {\alpha&H00&\c&HFFFFFF&}was {\alpha&H00&\c&H0066D9FF&}me.
+Dialogue: 0,0:01:00.28,0:01:00.63,Cap,,0,0,0,,{\alpha&H00&\c&HFFFFFF&}and {\alpha&H00&\c&HFFFFFF&}my {\alpha&H00&\c&HFFFFFF&}only {\alpha&H00&\c&HFFFFFF&}fan {\alpha&H00&\c&HFFFFFF&}was {\alpha&H00&\c&HFFFFFF&}me.
+Dialogue: 1,0:00:00.00,0:01:02.60,Handle,,0,0,0,,@talkingagents

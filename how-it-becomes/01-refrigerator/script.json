@@ -1,0 +1,22 @@
+{"topic": "How a block of ice becomes a refrigerator",
+ "lines": [
+  {"say": "This is a block of ice. It keeps your food cold."},
+  {"say": "But it melts all over your kitchen floor."},
+  {"say": "So you put it in a wooden box, lined with tin, with a tray to catch the water."},
+  {"say": "This is an icebox."},
+  {"say": "But every few days the ice is gone, and the iceman has to bring you more."},
+  {"say": "So you swap the ice for a liquid that boils at minus twenty-six degrees."},
+  {"say": "You run it through thin pipes inside the box. As it boils, it soaks up the heat from your food."},
+  {"say": "But now the pipes are full of warm gas."},
+  {"say": "So you add a compressor, that squeezes the gas until it's hotter than your kitchen."},
+  {"say": "It flows through coils on the back and dumps that heat into the room. That's why the back of your fridge is warm."},
+  {"say": "Now it's a liquid again. It squeezes through a tube thinner than spaghetti, the pressure drops, and it's freezing cold again."},
+  {"say": "But the compressor never stops, and your milk turns to ice."},
+  {"say": "So you add a thermostat, that switches it off when it's cold enough."},
+  {"say": "But cold air leaks out around the door."},
+  {"say": "So you add a rubber seal with a magnet inside."},
+  {"say": "But frost builds up on the cold pipes."},
+  {"say": "So a little heater melts it, and the water drips into a tray on the hot compressor, where it dries up."},
+  {"say": "Add some shelves, and a light that turns on when you open the door."},
+  {"say": "Congratulations. You have built a refrigerator.", "gap": 0.6}
+ ]}

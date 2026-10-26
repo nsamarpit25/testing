@@ -1,0 +1,57 @@
+{
+ "topic": "WebSockets",
+ "lines": [
+  [
+   {
+    "say": "Your friend hit send, and it popped up on your phone instantly.",
+    "show": "Your friend hit send, and it popped up on your phone *instantly.*"
+   },
+   {
+    "say": "You never refreshed. So how did your app know?",
+    "show": "You never refreshed. So [how did your app know?]"
+   }
+  ],
+  [
+   {
+    "say": "Normally, your app asks the server a question, and the server answers. Want an update? Ask again.",
+    "show": "Normally, your app *asks* the server a question, and the server *answers.* Want an update? [Ask again.]"
+   }
+  ],
+  [
+   {
+    "say": "In that setup, the server only speaks when asked.",
+    "show": "In that setup, the server only speaks *when asked.*"
+   }
+  ],
+  [
+   {
+    "say": "A WebSocket keeps a line open between them, like a phone call nobody hangs up.",
+    "show": "A [WebSocket] keeps a line open between them, like a *phone call* nobody hangs up."
+   }
+  ],
+  [
+   {
+    "say": "Now either side can talk any time. When your friend's message reaches the server, it sends it straight down the line to you.",
+    "show": "Now *either side* can talk any time. When your friend's message reaches the server, it sends it [straight down the line] to you."
+   }
+  ],
+  [
+   {
+    "say": "One catch. Every open line uses server memory, and if the connection breaks, your app has to reconnect.",
+    "show": "One catch. Every open line uses *server memory,* and if the connection breaks, your app has to [reconnect.]"
+   }
+  ],
+  [
+   {
+    "say": "Discord uses WebSockets for live updates, and modern browsers support them.",
+    "show": "*Discord* uses WebSockets for live updates, and modern *browsers* support them."
+   }
+  ],
+  [
+   {
+    "say": "If you're a vibe coder, follow for the system design your AI skipped.",
+    "show": "If you're a vibe coder, follow for the system design your AI [skipped.]"
+   }
+  ]
+ ]
+}

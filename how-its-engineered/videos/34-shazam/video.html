@@ -1,0 +1,476 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- 34 Shazam, solid low-poly dioramas (kit.js + scenes.js + shazam.js). Story: a noisy café, a speaker, your phone
+     names the song in seconds. The sound becomes a map (pitch up, time across) of glowing bars; louder glows brighter;
+     only the brightest point per patch survives: stars. Café noise adds and hides a few; enough survive. Pairs of stars
+     become tiny codes, the codes the recording's fingerprint. A hall of millions of fingerprints; your stars slide
+     along one song until they line up. 2002 in Britain: no app, dial 2580, hold the phone to the speaker, get a text.
+     Twist: it knows one exact recording, not the tune, so humming finds nothing. Beats come from voice/words.js. -->
+<link rel="stylesheet" href="../_ember/fonts.css">
+<link rel="stylesheet" href="lib/reel.css">
+<style>
+#stage { background: #0b0a09; }
+#vig { background: radial-gradient(120% 82% at 50% 44%, rgba(8,6,4,0) 52%, rgba(8,6,4,0.72) 100%); }
+#hud { pointer-events: none; }
+.hc { position: absolute; left: 0; top: 0; display: none; padding: 9px 15px 10px 17px; border-radius: 10px; background: linear-gradient(180deg, rgba(36,33,31,0.93), rgba(19,17,16,0.93)); border: 1px solid rgba(255,255,255,0.075); box-shadow: 0 12px 30px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06); white-space: nowrap; transform-origin: 0 0; }
+.hc::before { content: ''; position: absolute; left: 7px; top: 10px; bottom: 10px; width: 3px; border-radius: 2px; background: var(--c); box-shadow: 0 0 8px var(--cg); }
+.hc .k { font: 650 9.5px/1 Inter; letter-spacing: 1.5px; color: var(--c); text-transform: uppercase; }
+.hc .v { font: 750 19px/1.05 Inter; letter-spacing: -0.3px; margin-top: 6px; color: #f5f4f3; }
+.hc.big .v { font-size: 24px; }
+.hp { position: absolute; left: 0; top: 0; display: none; font: 600 11px/1 Inter; padding: 6px 10px 6px 9px; border-radius: 20px; background: rgba(24,22,20,0.9); border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 6px 16px rgba(0,0,0,0.4); color: #e6e3e0; white-space: nowrap; transform-origin: 0 0; }
+.hp::before { content: ''; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--c); margin-right: 6px; vertical-align: 1px; }
+.hp.hot { border-color: var(--cg); }
+.hp.code { font: 650 10.5px/1 Mono; letter-spacing: 0.4px; }
+#cap .box { left: 50%; right: auto; transform: translateX(-50%); padding: 0 10px; background: none; }
+#cap .box::before, #cap .box::after { content: ''; position: absolute; width: 8px; height: 8px; border: 1.6px solid #ff6a1f; }
+#cap .box::before { left: -2px; top: -4px; border-width: 1.6px 0 0 1.6px; }
+#cap .box::after { right: -2px; bottom: -4px; border-width: 0 1.6px 1.6px 0; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="world">
+    <canvas id="cv" width="1080" height="1920"></canvas>
+    <div class="layer" id="lbls"></div>
+  </div>
+</div>
+<script src="../../tools/lib.js"></script>
+<script src="voice/words.js"></script>
+<script src="lib/three.js"></script>
+<script src="../_ember/world.js"></script>
+<script src="lib/base.js"></script>
+<script src="kit.js"></script>
+<script src="scenes.js"></script>
+<script src="shazam.js"></script>
+<script>
+for (let i = 0; i < 24; i++) { const m = new TH.Mesh(new TH.RingGeometry(0.9, 1, 96), new TH.MeshBasicMaterial({ color: 0xffffff, transparent: true, blending: TH.AdditiveBlending, depthWrite: false, toneMapped: false, side: TH.DoubleSide })); m.visible = false; scene.add(m); RINGS.push(m); }
+// Signals: crisp thin rings that open out from a source, and thin lines that draw themselves with a bright head.
+const RING_TX = ctex(512, 512, (g, w, h) => {
+  const gr = g.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, w / 2);
+  gr.addColorStop(0, 'rgba(255,255,255,0)'); gr.addColorStop(0.8, 'rgba(255,255,255,0.025)'); gr.addColorStop(0.985, 'rgba(255,255,255,0.06)'); gr.addColorStop(1, 'rgba(255,255,255,0)');
+  g.fillStyle = gr; g.fillRect(0, 0, w, h);
+  g.strokeStyle = '#ffffff'; g.lineWidth = 3.2; g.beginPath(); g.arc(w / 2, h / 2, w / 2 - 6, 0, 7); g.stroke();
+});
+const RING_G = new TH.PlaneGeometry(2, 2);
+for (const m of RINGS) { m.geometry = RING_G; m.material.map = RING_TX; m.material.needsUpdate = true; }
+// o: 'v' stands the ring up facing the camera side (-y), for sound coming off a wall
+function ripple(t, t0, x, y, z, col, maxR, dur = 0.9, o = {}) {
+  const p = prog(t, t0, t0 + dur); if (p <= 0 || p >= 1 || ringI >= RINGS.length) return;
+  const m = RINGS[ringI++], r = maxR * (0.1 + 0.9 * ease.out(p));
+  m.visible = true; m.position.set(x, y, z); m.scale.set(r, r, 1); m.rotation.set(o.v ? Math.PI / 2 : 0, 0, 0); m.material.color.set(col); m.material.opacity = (o.a ?? 0.85) * Math.pow(1 - p, 1.3) * Math.min(1, p * 12);
+}
+const LMAX = 10, LINKS = [];
+const dotSprite = () => { const sp = new TH.Sprite(new TH.SpriteMaterial({ map: TX_ORB, transparent: true, blending: TH.AdditiveBlending, depthWrite: false, depthTest: false, toneMapped: false })); sp.visible = false; sp.renderOrder = 6; scene.add(sp); return sp; };
+for (let i = 0; i < 10; i++) {
+  const geo = new TH.LineGeometry(); geo.setPositions(new Array(LMAX * 3).fill(0).map((_, k) => k));
+  const core = new TH.Line2(geo, lineMat(O, 3.4)), halo = new TH.Line2(geo, lineMat(O, 11, { add: true, op: 0.16 }));
+  core.renderOrder = 5; halo.renderOrder = 4;
+  for (const l of [core, halo]) { l.frustumCulled = false; l.visible = false; scene.add(l); }
+  LINKS.push({ geo, core, halo, head: dotSprite(), end: dotSprite() });
+}
+let linkI = 0;
+function linksReset() { linkI = 0; for (const L of LINKS) L.core.visible = L.halo.visible = L.head.visible = L.end.visible = false; }
+function subLine(pts, q0, q1) {
+  const d = [0]; for (let i = 1; i < pts.length; i++) d.push(d[i - 1] + Math.hypot(...[0, 1, 2].map((j) => pts[i][j] - pts[i - 1][j])));
+  const L = d[d.length - 1], at_ = (u) => { let i = 1; while (i < pts.length - 1 && d[i] < u) i++; const k = (u - d[i - 1]) / Math.max(1e-6, d[i] - d[i - 1]); return [0, 1, 2].map((j) => lerp(pts[i - 1][j], pts[i][j], clamp(k))); };
+  const u0 = q0 * L, u1 = q1 * L, out = [at_(u0)];
+  for (let i = 1; i < pts.length - 1; i++) if (d[i] > u0 && d[i] < u1) out.push(pts[i]);
+  out.push(at_(u1)); return out;
+}
+// link(t, pts, t0, dur, t1, col): draws on along pts over [t0, t0+dur], holds, fades out at t1. o.travel: the tail follows
+function link(t, pts, t0, dur, t1, col, o = {}) {
+  if (t < t0 || t > t1 || linkI >= LINKS.length) return null;
+  const L = LINKS[linkI++], q = ease.inOut(prog(t, t0, t0 + dur)), q0 = o.travel ? ease.inOut(prog(t, t0 + dur * 0.35, t0 + dur * 1.25)) : 0;
+  const a = (o.a ?? 1) * (1 - ep(t, t1 - 0.25, t1)) * (o.travel ? 1 - ep(t, t0 + dur * 1.05, t0 + dur * 1.25) : 1);
+  if (q <= 0.001 || a <= 0.01) return null;
+  const part = subLine(pts, q0, q).slice(0, LMAX), arr = L.geo.attributes.instanceStart.data.array;
+  for (let i = 0; i < part.length - 1; i++) arr.set([...part[i], ...part[i + 1]], i * 6);
+  L.geo.attributes.instanceStart.data.needsUpdate = true; L.geo.instanceCount = part.length - 1;
+  for (const [l, k] of [[L.core, 1], [L.halo, 0.16]]) { l.visible = true; l.material.color.set(col); l.material.opacity = a * k; }
+  const tip = part[part.length - 1], px = 1 / cam.s;
+  if (q < 0.999 || o.travel) { L.head.visible = true; L.head.position.set(...tip); L.head.material.color.set(mixHex(col, '#ffffff', 0.5)); L.head.material.opacity = a; L.head.scale.set(16 * px, 16 * px, 1); }
+  if (q >= 0.999 && !o.travel && !o.noEnd) { const k = ease.out(prog(t, t0 + dur, t0 + dur + 0.25)); L.end.visible = true; L.end.position.set(...tip); L.end.material.color.set(col); L.end.material.opacity = a * (0.6 + 0.4 * (1 - k)); L.end.scale.set((10 + 14 * (1 - k)) * px, (10 + 14 * (1 - k)) * px, 1); }
+  return tip;
+}
+
+/* ---------------- beats */
+const T = {
+  tiny: at('tiny'), noisy: at('noisy'), cafe: at('cafe'), shazam: at('shazam'), names: at('names'), seconds: at('seconds'), how: at('how'),
+  first: at('first'), turns: at('turns'), map: at('map'), low: at('low'), high: at('high'), time: at('time'), across: at('across'),
+  louder: at('louder'), glow: at('glow'), keeps: at('keeps'), brightest: at('brightest'), patch: at('patch'), they: at('they'), stars: at('stars'), night: at('night'),
+  cafe2: at('cafe', 2), adds: at('adds'), extra: at('extra'), hides: at('hides'), enough: at('enough'), survives: at('survives'),
+  draws: at('draws'), lines: at('lines'), pairs: at('pairs'), turning: at('turning'), codes: at('codes'), together: at('together'), fingerprint: at('fingerprint'),
+  shazam3: at('shazam', 3), millions: at('millions'), looks: at('looks'), line: at('line'), yours: at('yours'),
+  when: at('when'), britain: at('britain'), y2002: at('2002'), no: at('no'), app: at('app'), dialed: at('dialed'), d2580: at('2580'), held: at('held'), speaker: at('speaker'), got: at('got'), name: at('name'), text: at('text'),
+  so: at('so'), isnt: at("isn't"), tune: at('tune'), its: at("it's"), exact: at('exact'), recording: at('recording'), thats: at("that's"), humming: at('humming'), wont: at("won't"), follow: at('follow'),
+};
+const CUT = { CAFE: 0, HERO: T.shazam - 0.12, LAB: T.first - 0.12, RELIEF: T.louder - 0.12, FRONT: T.they - 0.12, NOISE: T.cafe2 - 0.12,
+  PAIRS: T.draws - 0.12, FP: T.together - 0.15, DB: T.shazam3 - 0.12, MATCH: T.looks - 0.12, PUB: T.when - 0.12, OLDPH: T.dialed - 0.15,
+  HOLD: T.held - 0.1, SMS: T.got - 0.1, TWIST: T.so - 0.1, HUMC: T.thats - 0.1, END: T.follow - 0.15 };
+
+/* ---------------- build */
+const F = buildCafe(), ST = buildPhones(), LW = buildLab(), DB = buildDB(), PB = buildPub(), HM = buildHum();
+PB.spk.mouth = PB.spk.mouth.map((v, j) => v + (Z.OLD[j] || 0));   // the pub speaker's mouth in world coords
+const HOLO = { note: [0, 1, 2].map(() => holo(ICO.note, 60, O)), mail: holo(ICO.mail, 26, OK), mail2: holo(ICO.mail, 30, OK), x: holo(ICO.x, 120, RED), xs: [...HIDDEN].map(() => holo(ICO.x, 34, '#bdb7b1')) };
+const SONG = { t: 'Orange Hours', a: 'Mira Vale' };
+const LAB0 = Z.LAB, wallC = (i, j, dy = -80) => { const [x, z] = LW.cell(i, j); return [LAB0[0] + x, LAB0[1] + dy, z]; };
+const DBP = (i, j, dy = 0) => { const p = DB.at(i, j); return [Z.DB[0] + p[0], Z.DB[1] + p[1] + dy, p[2]]; };
+
+/* ---------------- phone screens */
+const UI = { card: '#1f1d1c', tile: '#2c2a28', tx: '#f5f4f3', tx2: '#a39e99', tx3: '#6f6a66' };
+const uiSpace = (g, W, H) => { const k = W / 600; g.scale(k, k); return H / k; };
+function rr(g, x, y, w, h, r, fill, stroke, lw = 2) { g.beginPath(); g.roundRect(x, y, w, h, r); if (fill) { g.fillStyle = fill; g.fill(); } if (stroke) { g.strokeStyle = stroke; g.lineWidth = lw; g.stroke(); } }
+function dot(g, x, y, r, fill) { g.beginPath(); g.arc(x, y, r, 0, 7); g.fillStyle = fill; g.fill(); }
+function tx(g, s, x, y, font, col, al = 'left', bl = 'alphabetic') { g.font = font; g.fillStyle = col; g.textAlign = al; g.textBaseline = bl; g.fillText(s, x, y); }
+function statusBar(g, W, col = UI.tx) {
+  tx(g, '9:41', 104, 68, '650 31px Inter', col, 'center');
+  for (let k = 0; k < 4; k++) rr(g, W - 198 + k * 10, 70 - 10 - k * 5, 7, 10 + k * 5, 2, col);
+  g.strokeStyle = col; g.lineCap = 'round'; g.lineWidth = 4.5; for (const r of [9, 17]) { g.beginPath(); g.arc(W - 132, 70, r, -Math.PI * 0.74, -Math.PI * 0.26); g.stroke(); } dot(g, W - 132, 68, 3.5, col);
+  rr(g, W - 104, 47, 48, 24, 8, null, 'rgba(245,244,243,0.5)', 2.5); rr(g, W - 100, 51, 34, 16, 4, col); rr(g, W - 53, 55, 4, 8, 2, 'rgba(245,244,243,0.5)');
+}
+// five rounded bars: the "listening" glyph
+function waveGlyph(g, x, y, s, col, t = 0, live = 0) {
+  [0.42, 0.7, 1, 0.7, 0.42].forEach((h, k) => { const hh = s * h * (1 - live * 0.45 * (0.5 + 0.5 * Math.sin(t * 11 + k * 1.7))); rr(g, x + (k - 2) * s * 0.22 - s * 0.06, y - hh / 2, s * 0.12, hh, s * 0.06, col); });
+}
+function albumArt(g, x, y, s) {
+  const gr = g.createLinearGradient(x, y, x + s, y + s); gr.addColorStop(0, '#ffb070'); gr.addColorStop(0.55, '#ff6a1f'); gr.addColorStop(1, '#5a1d0b');
+  rr(g, x, y, s, s, 26, gr);
+  g.save(); g.beginPath(); g.roundRect(x, y, s, s, 26); g.clip();
+  for (let k = 0; k < 6; k++) { g.strokeStyle = `rgba(255,240,226,${0.5 - k * 0.07})`; g.lineWidth = 6; g.beginPath(); g.arc(x + s * 0.3, y + s * 0.72, s * (0.18 + k * 0.13), 0, 7); g.stroke(); }
+  dot(g, x + s * 0.72, y + s * 0.3, s * 0.12, '#fff3e6');
+  g.restore();
+}
+function shazamScreen(g, W0, H0, mode, t) {
+  const H = uiSpace(g, W0, H0), W = 600;
+  const bg = g.createLinearGradient(0, 0, 0, H); bg.addColorStop(0, '#2a1a12'); bg.addColorStop(0.5, '#151110'); bg.addColorStop(1, '#0c0a09'); g.fillStyle = bg; g.fillRect(0, 0, W, H);
+  statusBar(g, W);
+  if (mode === 'listen') {
+    const cy_ = H * 0.42, pk = 0.5 + 0.5 * Math.sin(t * 7);
+    const glo = g.createRadialGradient(W / 2, cy_, 20, W / 2, cy_, 380); glo.addColorStop(0, 'rgba(255,106,31,0.35)'); glo.addColorStop(1, 'rgba(255,106,31,0)'); g.fillStyle = glo; g.fillRect(0, 0, W, H);
+    for (let k = 0; k < 3; k++) { const r = ((t * 0.9 + k / 3) % 1); g.strokeStyle = `rgba(255,140,70,${0.55 * (1 - r)})`; g.lineWidth = 4; g.beginPath(); g.arc(W / 2, cy_, 160 + r * 150, 0, 7); g.stroke(); }
+    g.save(); g.shadowColor = 'rgba(255,106,31,0.7)'; g.shadowBlur = 50; dot(g, W / 2, cy_, 150 + 6 * pk, O); g.restore();
+    dot(g, W / 2, cy_, 132 + 6 * pk, '#ff7a33');
+    waveGlyph(g, W / 2, cy_, 150, '#fff', t, 1);
+    tx(g, 'Listening for music', W / 2, H * 0.15, '750 40px Inter', UI.tx, 'center');
+    tx(g, 'Hold your phone near the sound', W / 2, H * 0.15 + 46, '550 26px Inter', UI.tx2, 'center');
+    // a live level meter along the bottom
+    for (let k = 0; k < 26; k++) { const h = 14 + 70 * Math.abs(Math.sin(t * 9 + k * 0.8) * Math.sin(t * 3.1 + k * 0.33)); rr(g, 46 + k * 20, H * 0.76 - h / 2, 10, h, 5, k % 5 === 0 ? '#ffd2a8' : 'rgba(255,106,31,0.8)'); }
+    tx(g, 'Café noise detected', W / 2, H * 0.86, '600 25px Inter', UI.tx3, 'center');
+  } else {
+    const s = 360, x = (W - s) / 2, y = H * 0.12, q = ease.back(clamp((t - T.seconds) / 0.35));
+    g.save(); g.translate(W / 2, y + s / 2); g.scale(0.85 + 0.15 * q, 0.85 + 0.15 * q); g.translate(-W / 2, -(y + s / 2));
+    g.save(); g.shadowColor = 'rgba(255,106,31,0.5)'; g.shadowBlur = 50; albumArt(g, x, y, s); g.restore(); g.restore();
+    tx(g, SONG.t, W / 2, y + s + 80, '800 50px Inter', UI.tx, 'center');
+    tx(g, SONG.a, W / 2, y + s + 126, '650 32px Inter', O, 'center');
+    rr(g, W / 2 - 150, y + s + 160, 300, 56, 28, UI.tile); tx(g, '✓  Found in 3.1 s', W / 2, y + s + 197, '650 25px Inter', UI.tx, 'center');
+    rr(g, 50, H - 230, W - 100, 92, 46, O); tx(g, 'Play full song', W / 2, H - 172, '700 31px Inter', '#fff', 'center');
+    rr(g, W / 2 - 110, H - 34, 220, 10, 5, UI.tx);
+  }
+}
+// the 2002 phone: a green-grey LCD with chunky dark pixels
+function lcd(g, W0, H0, mode, t) {
+  const H = uiSpace(g, W0, H0), W = 600, ink = '#1d2716', bg = '#a3b582';
+  g.fillStyle = bg; g.fillRect(0, 0, W, H);
+  const sh = g.createLinearGradient(0, 0, W, H); sh.addColorStop(0, 'rgba(255,255,255,0.12)'); sh.addColorStop(1, 'rgba(0,0,0,0.12)'); g.fillStyle = sh; g.fillRect(0, 0, W, H);
+  for (let k = 0; k < 4; k++) g.fillRect(0, 0, 0, 0);
+  g.fillStyle = ink; for (let k = 0; k < 4; k++) g.fillRect(28 + k * 16, 70 - k * 12, 10, 12 + k * 12);
+  g.fillRect(W - 96, 40, 62, 30); g.fillStyle = bg; g.fillRect(W - 92, 44, 54, 22); g.fillStyle = ink; g.fillRect(W - 90, 46, 34, 18); g.fillRect(W - 34, 48, 6, 14);
+  const F_ = (sz, w = 700) => `${w} ${sz}px Mono`;
+  if (mode === 'dial') {
+    const n = [0, 1, 2, 3].filter((k) => t >= T.d2580 + k * 0.17).length, s = '2580'.slice(0, n);
+    tx(g, s + (Math.floor(t * 3) % 2 && n < 4 ? '_' : ''), W - 40, 300, F_(150), ink, 'right');
+    tx(g, 'Call', 40, H - 34, F_(44), ink); tx(g, 'Clear', W - 40, H - 34, F_(44), ink, 'right');
+  }
+  if (mode === 'call') {
+    tx(g, 'Calling', W / 2, 170, F_(54), ink, 'center'); tx(g, '2580', W / 2, 280, F_(110), ink, 'center');
+    const s = Math.max(0, Math.floor((t - T.d2580 - 0.7) * 1)); tx(g, '00:' + String(Math.min(59, s + 3)).padStart(2, '0'), W / 2, 360, F_(44), ink, 'center');
+    for (let k = 0; k < 9; k++) { const h = 10 + 40 * Math.abs(Math.sin(t * 8 + k)); g.fillRect(150 + k * 34, 430 - h, 20, h); }
+  }
+  if (mode === 'sms' || mode === 'read') {
+    if (mode === 'sms') {
+      const bl = Math.floor(t * 4) % 2;
+      g.strokeStyle = ink; g.lineWidth = 12; g.strokeRect(190, 110, 220, 150); g.beginPath(); g.moveTo(190, 110); g.lineTo(300, 200); g.lineTo(410, 110); g.stroke();
+      if (bl) g.fillRect(420, 96, 26, 26);
+      tx(g, '1 message', W / 2, 340, F_(56), ink, 'center'); tx(g, 'received', W / 2, 400, F_(56), ink, 'center');
+      tx(g, 'Read', W / 2, H - 34, F_(44), ink, 'center');
+    } else {
+      tx(g, 'From: 2580', 30, 150, F_(40, 600), ink); g.fillRect(30, 168, W - 60, 6);
+      tx(g, SONG.t, 30, 250, F_(62), ink); tx(g, 'by ' + SONG.a, 30, 330, F_(54), ink);
+      tx(g, 'Options', 30, H - 34, F_(44), ink); tx(g, 'Back', W - 30, H - 34, F_(44), ink, 'right');
+    }
+  }
+}
+const paintHero = (t, mode) => ST.yours.s.draw(mode + Math.floor(t * 20), (g, W, H) => shazamScreen(g, W, H, mode, t));
+const paintOld = (t, mode) => ST.old.s.draw(mode + Math.floor(t * 12), (g, W, H) => lcd(g, W, H, mode, t));
+const paintMini = (t, mode) => PB.mini.s.draw(mode + Math.floor(t * 6), (g, W, H) => lcd(g, W, H, mode, t));
+
+/* ---------------- camera */
+const CUTS = [];
+const cut = (t, f, s, o = {}) => CUTS.push({ t, f, s, ...o });
+const yp = ST.yours.top, op = ST.old.top, ZH = HM.z + HM.h / 2;
+const PAIRC = (() => { let x = 0, z = 0; PAIRS.forEach(([a, b]) => { for (const k of [a, b]) { const w = wallC(PEAKS[k].i, PEAKS[k].j); x += w[0]; z += w[2]; } }); return [x / (PAIRS.length * 2), LAB0[1], z / (PAIRS.length * 2)]; })();
+cut(CUT.CAFE, wz('CAFE', 90, 70, 110), 0.56, { push: 1.1, sy: 450 });
+cut(CUT.HERO, [yp[0], yp[1], yp[2] + 4], 3.3, { e: 0.3, push: 1.06, sy: 440 });
+cut(CUT.LAB, wz('LAB', 0, 0, Z0 + NY * CW / 2 - 40), 0.44, { a: -0.22, e: 0.14, push: 1.06, sy: 420 });
+cut(CUT.RELIEF, wz('LAB', 160, 0, Z0 + NY * CW / 2), 0.62, { a: -0.62, e: 0.34, push: 1.08, sy: 430 });
+cut(CUT.FRONT, wz('LAB', 0, 0, Z0 + NY * CW / 2), 0.47, { a: -0.1, e: 0.08, push: 1.06, sy: 430 });
+cut(CUT.NOISE, wz('LAB', 0, 0, Z0 + NY * CW / 2), 0.47, { a: 0.08, e: 0.1, push: 1.05, sy: 430 });
+cut(CUT.PAIRS, PAIRC, 0.95, { a: -0.18, e: 0.12, push: 1.06, sy: 420 });
+cut(CUT.FP, wz('LAB', 0, 0, Z0 + NY * CW / 2 + 70), 0.42, { a: -0.12, e: 0.14, push: 1.04, sy: 420 });
+cut(CUT.DB, wz('DB', 200, 900, 160), 0.22, { a: -0.55, e: 0.32, pan: [-500, 0, 0], sy: 470 });
+cut(CUT.MATCH, [Z.DB[0], Z.DB[1] + DB.py, DB.pz + DB.ph / 2], 0.6, { a: -0.08, e: 0.16, push: 1.04, sy: 420 });
+cut(CUT.PUB, wz('OLD', 20, 60, 120), 0.5, { push: 1.08, sy: 460 });
+cut(CUT.OLDPH, [op[0], op[1], op[2] + 2], 4.1, { e: 0.3, push: 1.05, sy: 430 });
+cut(CUT.HOLD, wz('OLD', 30, 380 - 150, 190), 1.05, { a: -0.5, e: 0.32, push: 1.06, sy: 470 });
+cut(CUT.SMS, [op[0], op[1], op[2] + 2], 4.1, { e: 0.3, push: 1.05, sy: 430 });
+cut(CUT.TWIST, [Z.HUM[0] + HM.ax, Z.HUM[1], ZH], 0.74, { a: -0.12, e: 0.14, push: 1.05, sy: 420 });
+cut(CUT.HUMC, [Z.HUM[0] + 60, Z.HUM[1], ZH], 0.3, { a: -0.16, e: 0.16, push: 1.04, sy: 430 });
+const SHOTS = [];
+CUTS.forEach((c, i) => {
+  const nx = CUTS[i + 1] ? CUTS[i + 1].t : DURATION + 1, k = { t: c.t, d: 0, f: c.f, s: c.s, a: c.a ?? -0.7, e: c.e ?? 0.6, sy: c.sy ?? 450 };
+  const pv = CUTS[i - 1], near = pv && Math.hypot(c.f[0] - pv.f[0], c.f[1] - pv.f[1]) < 1500 && !c.cut;
+  if (near) { k.d = Math.min(0.55, (nx - c.t) * 0.4); k.ez = ease.inOut; k.g = true; }
+  SHOTS.push(k);
+  SHOTS.push({ t: c.t + 0.001, d: nx - c.t, ez: (x) => x, f: c.pan ? c.f.map((v, j) => v + c.pan[j]) : c.f, s: c.s * (c.push || 1), a: k.a + (c.da || 0), e: k.e, sy: k.sy });
+});
+const inShot = (t, a, b) => t >= a && t < b;
+
+/* ---------------- the world, frame by frame */
+const PING_P = 1.5;
+const glowAt = (t, s) => Math.exp(-Math.pow((t - s - 0.1) / 0.2, 2));
+function pings(t, t0, t1, p, col, R, dur = 1.8, period = PING_P, o = {}) {
+  if (t < t0 || t > t1 + dur) return 0;
+  let hit = 0;
+  for (let s = t0 + Math.floor((t - t0) / period) * period; s >= t0 && s > t - dur; s -= period) { if (s <= t1) { ripple(t, s, p[0], p[1], p[2], col, R, dur, o); hit = Math.max(hit, glowAt(t, s)); } }
+  return hit;
+}
+const screenLit = (m, k) => m.color.setRGB(0.6 + 1.9 * k, 0.5 + 0.75 * k, 0.42 + 0.22 * k);
+// the sweep that maps the sound: column i appears as the head passes
+const SW0 = T.turns, SW1 = T.across + 0.45, colT = (i) => lerp(SW0, SW1, i / NX);
+const captured = (k) => !HIDDEN.has(k);
+function talkPose(p, t, ph) { p.pose('sit'); p.shR.rotation.y = -0.45 - 0.3 * Math.max(0, Math.sin(t * 2.6 + ph)); p.elR.rotation.y = -1.2; p.shL.rotation.y = -0.15; p.head.rotation.z = 0.18 * Math.sin(t * 1.7 + ph); p.head.rotation.y = 0.08 * Math.sin(t * 3.1 + ph); }
+function world(t) {
+  linksReset();
+  cam3(t, SHOTS);
+  /* café */
+  const inCafe = inShot(t, CUT.CAFE, CUT.HERO);
+  F.g.visible = inCafe;
+  F.talk.forEach((w, k) => {
+    talkPose(w.p, t, w.ph);
+    if (inCafe) { const hp = wpos(w.p.head); pings(t, 0.15 + k * 0.23, CUT.HERO, [hp[0], hp[1], hp[2] + 14], GR, 42, 0.9, 0.75 + 0.07 * k, { a: 0.6 }); }
+  });
+  F.you.pose('sit'); F.you.shR.rotation.set(0.15, -1.05 - 0.25 * ep(t, T.tiny, T.noisy, ease.inOut), 0); F.you.elR.rotation.y = -0.75; F.you.head.rotation.y = -0.1;
+  screenLit(F.you.screen, 0.6 + 0.4 * pulse(t, T.shazam - 0.3, 2));
+  if (inCafe) {
+    const sm = F.spk.mouth, s2 = F.spk2.mouth;
+    pings(t, 0.05, CUT.HERO, [sm[0], sm[1], sm[2]], O, 150, 1.1, 0.42, { v: true });
+    pings(t, 0.25, CUT.HERO, [s2[0] + 22, s2[1], s2[2]], O, 120, 1.1, 0.42);
+    F.cups.forEach((c, k) => { const tk = 0.45 + k * 0.33; if (k < 6) { const p = wpos(c); ripple(t, tk, p[0], p[1], p[2] + 9, '#e6e3e0', 26, 0.5, { a: 0.7 }); sparks(t, tk, p[0], p[1], p[2] + 10, '#ffffff', 5, k + 3, 70, 0.4, 120); } });
+    const ph = F.youPhone();
+    link(t, [[sm[0], sm[1] - 10, sm[2]], [sm[0] - 20, ph[1] + 40, ph[2] + 40], ph], T.noisy - 0.2, 0.55, CUT.HERO, O, { travel: false });
+    HOLO.note.forEach((n, k) => { const a0 = 0.2 + k * 0.6, q = ((t - a0) % 1.8) / 1.8; n.show([sm[0] - 30 + 40 * k, sm[1] - 40, sm[2] + 40 + 140 * q], t > a0 ? 0.9 * Math.sin(Math.PI * q) : 0, 0.8); });
+    F.spk.led.emissiveIntensity = 2 + 2 * Math.sin(t * 9);
+  } else HOLO.note.forEach((n) => n.show([0, 0, 0], 0));
+  /* hero phone */
+  if (inShot(t, CUT.HERO, CUT.LAB)) {
+    paintHero(t, t < T.seconds - 0.05 ? 'listen' : 'found');
+    pings(t, CUT.HERO + 0.1, T.seconds - 0.2, [yp[0], yp[1], 37], O, 85, 1.0, 0.5);
+    ripple(t, T.seconds - 0.05, yp[0], yp[1], 37, OK, 100, 0.9);
+  }
+  ST.under.material.opacity = 0.05 + 0.1 * pulse(t, T.seconds - 0.05, 2);
+  /* the spectrogram wall */
+  const inLab = inShot(t, CUT.LAB, CUT.DB);
+  LW.g.visible = inLab;
+  HOLO.xs.forEach((x) => x.show([0, 0, 0], 0));
+  if (inLab) {
+    const L = ep(t, T.louder, T.louder + 0.7, ease.inOut), sink = ep(t, T.brightest - 0.1, T.patch + 0.3, ease.inOut), sky = ep(t, T.they - 0.25, T.stars + 0.1, ease.inOut);
+    for (let i = 0; i < NX; i++) {
+      const gq = ep(t, colT(i), colT(i) + 0.35), hot = Math.exp(-Math.pow((t - colT(i) - 0.1) / 0.15, 2));
+      for (let j = 0; j < NY; j++) {
+        const a = amp(i, j), pk = ISPEAK.has(i * NY + j);
+        let k = Math.pow(a, lerp(1.1, 2.0, L)) * lerp(1.0, 2.1, L) + 0.6 * hot * a;
+        let d = a * lerp(34, 70, L) * gq;
+        if (!pk) { k *= 1 - 0.93 * sink; d *= 1 - 0.95 * sink; }
+        k *= 1 - 0.94 * sky; d *= 1 - 0.95 * sky;
+        LW.set(i, j, d, ampCol(a), k * gq + 0.035 * gq);
+      }
+    }
+    LW.flush();
+    LW.headM.opacity = 0.8 * window01(t, SW0 - 0.1, SW1 + 0.1, 0.15); LW.head.position.x = -NX * CW / 2 + NX * CW * prog(t, SW0, SW1);
+    LW.gridM.opacity = 0.42 * window01(t, T.keeps - 0.15, T.they + 0.2, 0.3);
+    // stars: the surviving peaks, then café noise: a few grey extras pop in, some real ones fade
+    LW.stars.begin();
+    PEAKS.forEach((p, k) => {
+      const [x, y, z] = wallC(p.i, p.j);
+      let a = Math.max(ep(t, T.brightest + 0.1 + 0.012 * k, T.brightest + 0.4 + 0.012 * k) * (0.35 + 0.65 * sky), 0);
+      const hid = HIDDEN.has(k) ? ep(t, T.hides + 0.04 * (k % 5), T.hides + 0.35 + 0.04 * (k % 5)) : 0;
+      a *= (0.75 + 0.25 * Math.sin(t * 4 + k * 2.1)) * (1 - 0.88 * hid) * (1 + 0.6 * pulse(t, T.survives, 3));
+      LW.stars.add(x, y, z, hid > 0.5 ? '#8a8580' : mixHex('#ffd2a8', '#ffffff', p.a - 0.4), a);
+      if (HIDDEN.has(k) && inShot(t, CUT.NOISE, CUT.PAIRS)) HOLO.xs[[...HIDDEN].indexOf(k)].show([x, y - 6, z], 0.8 * hid, 1);
+    });
+    NOISE.forEach((n, k) => {
+      const [x, y, z] = wallC(n.i, n.j), a0 = T.adds + 0.09 * k;
+      LW.stars.add(x, y, z, '#a7a29d', ep(t, a0, a0 + 0.2) * 0.75);
+      if (inShot(t, CUT.NOISE, CUT.PAIRS)) ripple(t, a0, x, y, z, GR, 40, 0.6, { v: true, a: 0.7 });
+    });
+    LW.stars.end();
+    // pairs → lines → codes → the strip
+    PAIRS.forEach(([a, b], k) => {
+      const A = wallC(PEAKS[a].i, PEAKS[a].j, -84), B = wallC(PEAKS[b].i, PEAKS[b].j, -84), t0 = T.lines + k * 0.22;
+      link(t, [A, B], t0, 0.4, T.together + 0.55, k % 3 === 2 ? O2 : O, { noEnd: true });
+      const mid = [(A[0] + B[0]) / 2, A[1], (A[2] + B[2]) / 2], tl = T.together + 0.1 + k * 0.08;
+      if (t > tl) link(t, [mid, [mid[0], mid[1], LW.fpz]], tl, 0.4, CUT.DB, O, { travel: true });
+    });
+    const fq = ep(t, T.together + 0.3, T.fingerprint + 0.3, ease.inOut);
+    LW.fpM.opacity = fq > 0 ? 1 : 0; LW.fp.scale.x = Math.max(0.001, fq); LW.fp.position.x = -NX * CW / 2 * (1 - fq);
+    if (t > T.fingerprint) ripple(t, T.fingerprint + 0.1, LAB0[0], LAB0[1] - 70, LW.fpz, O, 520, 1.0, { v: true });
+  }
+  /* the database */
+  const inDB = inShot(t, CUT.DB, CUT.PUB);
+  DB.g.visible = inDB;
+  if (inDB) {
+    DB.scanM.opacity = 0.75;
+    DB.scan.forEach((s, r) => { s.position.x = -1700 + (((t + r * 0.7) * 2100) % 3400); });
+    const off = lerp(0, NX, ep(t, T.looks - 0.05, T.line + 0.2, ease.inOut)), lock = ep(t, T.line + 0.2, T.line + 0.45), wa = ep(t, CUT.MATCH, CUT.MATCH + 0.3);
+    DB.winM.opacity = wa; DB.win.position.x = -DB.pw / 2 + (off + NX / 2) * DB.cs;
+    DB.stars.begin();
+    DB.song.forEach((s, k) => { const p = DBP(s.i, s.j); DB.stars.add(...p, s.mine ? mixHex('#8a8580', O, lock) : '#7d7873', (0.55 + (s.mine ? 0.9 * lock : 0)) * wa); });
+    PEAKS.forEach((p, k) => { if (captured(k)) DB.stars.add(...DBP(p.i + off, p.j, -10), '#ffd2a8', wa * (1 + 0.6 * pulse(t, T.line + 0.4, 3))); });
+    NOISE.forEach((n) => DB.stars.add(...DBP(n.i + off, n.j, -10), '#a7a29d', 0.7 * wa));
+    DB.stars.end();
+    if (lock > 0) { const c = DBP(NX * 1.5, NY / 2, -20); ripple(t, T.line + 0.4, c[0], c[1], c[2], OK, 420, 1.1, { v: true }); }
+  }
+  /* 2002: the pub, the old phone */
+  const inPub = inShot(t, CUT.PUB, CUT.OLDPH) || inShot(t, CUT.HOLD, CUT.SMS);
+  PB.g.visible = inPub;
+  if (inPub) {
+    PB.mates.forEach((m, k) => talkPose(m, t, k * 2));
+    const up = ep(t, T.held - 0.15, T.held + 0.45, ease.inOut), Y = PB.you;
+    Y.pose('stand'); Y.shR.rotation.set(0.28 * (1 - up), lerp(-0.55, -2.55, up), 0); Y.elR.rotation.y = lerp(-1.15, -0.25, up); Y.head.rotation.y = lerp(0.32, -0.35, up);
+    const sm = PB.spk.mouth, mp = wpos(PB.mini.g);
+    pings(t, CUT.PUB + 0.1, CUT.SMS, [sm[0], sm[1], sm[2]], O, 140, 1.1, 0.45, { v: true });
+    if (inShot(t, CUT.HOLD, CUT.SMS)) {
+      link(t, [[sm[0], sm[1] - 10, sm[2] - 20], mp], T.held + 0.35, 0.35, CUT.SMS, O);
+      link(t, [mp, [mp[0] - 200, mp[1] - 300, mp[2] + 900]], T.speaker + 0.1, 0.6, CUT.SMS, O, { travel: true });
+      const mq = ep(t, T.got - 0.6, T.got - 0.1, ease.in);
+      HOLO.mail2.show([mp[0], mp[1] - 20, mp[2] + 30 + 400 * (1 - mq)], t > T.got - 0.6 ? 1 : 0, 1);
+    } else HOLO.mail2.show([0, 0, 0], 0);
+    paintMini(t, t < T.dialed ? 'dial' : 'call');
+  } else HOLO.mail2.show([0, 0, 0], 0);
+  if (inShot(t, CUT.OLDPH, CUT.HOLD)) {
+    paintOld(t, t < T.d2580 + 0.75 ? 'dial' : 'call');
+    [1, 4, 7, 10].forEach((ki, k) => { const tk = T.d2580 + k * 0.17, pr = window01(t, tk - 0.02, tk + 0.14, 0.05); ST.old.ph.keys[ki].position.z = ST.old.ph.T / 2 + 0.08 * 8 - 1.0 * pr; if (t > tk) ripple(t, tk, op[0], op[1], 37, '#b9d08a', 55, 0.6); });
+  } else ST.old.ph.keys.forEach((k) => (k.position.z = ST.old.ph.T / 2 + 0.08 * 8));
+  if (inShot(t, CUT.SMS, CUT.TWIST)) {
+    paintOld(t, t < T.name ? 'sms' : 'read');
+    HOLO.mail.show([op[0], op[1], op[2] + 62 + 2 * Math.sin(t * 3) + 60 * (1 - ep(t, CUT.SMS, T.got + 0.2, ease.out))], ep(t, CUT.SMS, CUT.SMS + 0.2) * (1 - ep(t, T.name + 0.2, T.name + 0.5)), 1);
+    ripple(t, T.got + 0.1, op[0], op[1], 37, OK, 60, 0.9);
+    ripple(t, T.name, op[0], op[1], 37, OK, 70, 0.9);
+  } else HOLO.mail.show([0, 0, 0], 0);
+  ST.under2.material.opacity = 0.04 + 0.12 * (pulse(t, T.got, 2) + pulse(t, T.d2580 + 0.6, 2));
+  /* the twist: the recording vs a hummed tune */
+  const inHum = t >= CUT.TWIST;
+  HM.g.visible = inHum;
+  if (inHum) {
+    const rec = ep(t, T.its - 0.1, T.recording + 0.2), hb = ep(t, T.humming - 0.1, T.humming + 0.5);
+    HM.stars.begin();
+    PEAKS.forEach((p, k) => HM.stars.add(...HM.at(HM.ax, p.i, p.j), mixHex('#ffd2a8', '#ffffff', p.a - 0.4), (0.7 + 0.5 * rec) * (0.85 + 0.15 * Math.sin(t * 4 + k)) * ep(t, CUT.TWIST, CUT.TWIST + 0.3)));
+    HM.hum.forEach((h, k) => HM.stars.add(...HM.at(HM.bx, h.i, h.j), '#d9d4cf', hb * ep(t, T.humming + k * 0.04, T.humming + 0.2 + k * 0.04) * 0.9));
+    HM.stars.end();
+    // "the tune": the melody drawn over the recording's stars as one white line, which the stars don't follow
+    const mel = []; for (let i = 0; i < NX; i += 4) mel.push(HM.at(HM.ax, i + 1.5, MEL[Math.floor(i / 4) % MEL.length] * 0.62 + 2));
+    link(t, mel.slice(0, 10), T.isnt - 0.1, 0.8, T.its + 0.1, '#e6e3e0', { noEnd: true, a: 0.85 });
+    if (rec > 0) ripple(t, T.recording, Z.HUM[0] + HM.ax, Z.HUM[1] - 30, ZH, O, 420, 1.1, { v: true });
+    // the hummer: rings from the head, the hum lands on panel B, then the match attempts fail in red
+    const G = HM.guy; G.pose('talk', t * 2); G.head.rotation.y = -0.1 + 0.05 * Math.sin(t * 5);
+    const hp = wpos(G.head);
+    pings(t, T.thats, DURATION, [hp[0] - 20, hp[1], hp[2] + 12], '#d9d4cf', 60, 0.9, 0.45, { v: true, a: 0.7 });
+    [[3, 0], [9, 2], [15, 5]].forEach(([a, b], k) => {
+      const pa = PEAKS[Math.min(PEAKS.length - 1, a * 2)], hh = HM.hum[Math.min(HM.hum.length - 1, b * 2)];
+      link(t, [HM.at(HM.bx, hh.i, hh.j), HM.at(HM.ax, pa.i, pa.j)], T.wont - 0.25 + k * 0.12, 0.35, DURATION, RED, { a: 0.8 });
+    });
+    HOLO.x.show([Z.HUM[0] + HM.bx, Z.HUM[1] - 40, ZH], ep(t, T.wont + 0.05, T.wont + 0.3), 0.7 + 0.3 * ease.back(prog(t, T.wont + 0.05, T.wont + 0.4)));
+  } else HOLO.x.show([0, 0, 0], 0);
+}
+
+/* ---------------- HUD */
+const K = (k, v, c, o) => ({ k, v, c, ...o });
+function tags(t) {
+  hud.begin();
+  const H = (key, o) => hud.card(key, o, t), CH = (key, o) => hud.chip(key, o, t), CD = (key, o) => hud.chip(key, { ...o, s: `<span style="font:650 10.5px/1 Mono;letter-spacing:0.4px">${o.s}</span>` }, t);
+  // the café
+  const sm = F.spk.mouth, ph = F.youPhone();
+  H('c0', K('In the café', 'Music + chatter', O, { w: sm, x: 290, y: 170, a: 0.25, b: CUT.HERO }));
+  CH('cn', { s: 'Chatter', w: wpos(F.talk[0].p.head), x: -40, y: -60, rel: true, a: T.noisy - 0.1, b: CUT.HERO, c: GR });
+  CH('cc', { s: 'Clink', w: wpos(F.cups[2]), x: 30, y: 20, rel: true, a: T.noisy + 0.1, b: CUT.HERO, c: GR });
+  CH('cy', { s: 'Your phone', w: ph, x: -60, y: 50, rel: true, a: T.tiny - 0.1, b: CUT.HERO, hot: true, c: O });
+  // the hero phone
+  const clock = Math.min(3.1, Math.max(0, (t - CUT.HERO) * 3.1 / (T.seconds - CUT.HERO)));
+  H('clk', K(t < T.seconds - 0.05 ? 'Listening' : 'Song found', t < T.seconds - 0.05 ? clock.toFixed(1) + ' s' : 'in 3.1 s ✓', t < T.seconds - 0.05 ? AMB : OK, { w: [yp[0], yp[1], yp[2] + 60], x: 300, y: 170, a: CUT.HERO + 0.15, b: CUT.LAB, big: t >= T.seconds - 0.05 }));
+  H('how', K('Clip heard', 'A few seconds', WH, { x: 24, y: 160, a: T.how - 0.1, b: CUT.LAB }));
+  // the map
+  const c00 = wallC(0, 0), c0N = wallC(0, NY - 1), cN0 = wallC(NX - 1, 0);
+  H('map', K('The sound as', 'A map', O, { x: 330, y: 140, a: T.map - 0.15, b: CUT.RELIEF }));
+  CH('lo', { s: 'Low notes', w: c00, x: 6, y: 28, rel: true, a: T.low - 0.05, b: CUT.RELIEF, c: O });
+  CH('hi', { s: 'High notes', w: c0N, x: 6, y: -44, rel: true, a: T.high - 0.05, b: CUT.RELIEF, c: O2 });
+  CH('tm', { s: 'Time →', w: cN0, x: -80, y: 28, rel: true, a: T.time - 0.05, b: CUT.RELIEF, c: WH });
+  H('loud', K('Louder', 'Glows brighter', O, { x: 24, y: 160, a: T.louder - 0.05, b: CUT.FRONT }));
+  const pk0 = PEAKS[Math.floor(PEAKS.length * 0.55)];
+  H('patch', K('Each patch', 'Keeps 1 point', O2, { w: wallC(pk0.i, pk0.j), x: 300, y: 600, a: T.keeps - 0.05, b: CUT.FRONT }));
+  H('sky', K('The peaks', 'Like stars', WH, { x: 24, y: 160, a: T.stars - 0.1, b: CUT.NOISE, big: true }));
+  CH('nst', { s: 'Café noise', w: wallC(NOISE[2].i, NOISE[2].j), x: 16, y: -36, rel: true, a: T.adds + 0.3, b: CUT.PAIRS, c: GR });
+  const hk = [...HIDDEN][1] ?? 0;
+  CH('hid', { s: 'Hidden', w: wallC(PEAKS[hk].i, PEAKS[hk].j), x: 16, y: 18, rel: true, a: T.hides + 0.2, b: CUT.PAIRS, c: GR });
+  const kept = Math.round(100 * (PEAKS.length - HIDDEN.size) / PEAKS.length);
+  H('kept', K('Song stars kept', kept + '%', OK, { x: 24, y: 160, a: T.enough - 0.05, b: CUT.PAIRS, big: true }));
+  // pairs → codes → fingerprint
+  const hexs = ['3F·A1·+0.42s', 'B7·5C·+0.17s', '0E·D2·+0.29s', '9A·44·+0.36s'];
+  PAIRS.slice(0, 4).forEach(([a, b], k) => { const A = wallC(PEAKS[a].i, PEAKS[a].j), B = wallC(PEAKS[b].i, PEAKS[b].j); CD('cd' + k, { s: hexs[k], w: [(A[0] + B[0]) / 2, A[1], (A[2] + B[2]) / 2], x: -40, y: k % 2 ? 18 : -38, rel: true, a: T.turning + k * 0.25, b: T.together + 0.3, c: k % 2 ? O2 : O }); });
+  H('pair', K('Pitch · pitch · gap', 'Tiny code', O, { x: 24, y: 160, a: T.turning - 0.05, b: CUT.FP }));
+  H('fp', K("The recording's", 'Fingerprint', O, { w: [LAB0[0] + NX * CW * 0.3, LAB0[1] - 60, LW.fpz - 36], x: 290, y: 600, a: T.fingerprint - 0.15, b: CUT.DB, big: true }));
+  // the database
+  const n = Math.floor(lerp(1204881, 9871203, prog(t, CUT.DB, CUT.MATCH)));
+  H('db', K('Fingerprints', 'Millions of songs', O, { x: 24, y: 160, a: T.millions - 0.15, b: CUT.MATCH }));
+  CH('dbn', { s: 'Checking #' + n.toLocaleString('en-GB'), x: 24, y: 236, a: T.millions + 0.2, b: CUT.MATCH, c: AMB });
+  CH('yc', { s: 'Your clip', w: [Z.DB[0] + DB.win.position.x, Z.DB[1] + DB.py - 26, DB.pz + DB.ph], x: -36, y: -40, rel: true, a: CUT.MATCH + 0.3, b: CUT.PUB, hot: true, c: O });
+  H('match', K('Stars line up', 'Match ✓', OK, { x: 290, y: 590, a: T.line + 0.35, b: CUT.PUB, big: true }));
+  CH('song', { s: SONG.t + ' · ' + SONG.a, x: 290, y: 664, a: T.yours + 0.1, b: CUT.PUB, c: OK });
+  // 2002
+  H('noapp', K('No app', 'Just a phone call', AMB, { x: 24, y: 590, a: T.no - 0.1, b: CUT.OLDPH }));
+  CH('dial', { s: 'Dial 2580', w: [op[0], op[1], op[2] + 40], x: 70, y: -20, rel: true, a: T.d2580 - 0.05, b: CUT.HOLD, hot: true, c: '#b9d08a' });
+  CH('held', { s: 'Held up to the speaker', w: PB.spk.mouth, x: -60, y: -60, rel: true, a: T.held + 0.2, b: CUT.SMS, c: O });
+  H('sms', K('Text message', SONG.t, OK, { w: [op[0], op[1], op[2] + 40], x: 280, y: 180, a: T.text - 0.25, b: CUT.TWIST, big: true }));
+  // the twist
+  H('tune', K('The tune', 'Not this ✕', GR, { x: 24, y: 160, a: T.tune - 0.15, b: T.its + 0.05 }));
+  H('rec', K('One exact', 'Recording ✓', O, { x: 24, y: 160, a: T.exact - 0.15, b: CUT.HUMC, big: true }));
+  CH('ra', { s: 'The recording', x: 40, y: 236, a: CUT.HUMC + 0.2, b: CUT.END + 0.3, c: O });
+  CH('hb', { s: 'Humming', w: HM.at(HM.bx, NX - 2, NY - 1), x: -60, y: -40, rel: true, a: T.humming, b: CUT.END + 0.3, c: GR });
+  H('nom', K('Humming', 'No match ✕', RED, { x: 290, y: 590, a: T.wont + 0.1, b: CUT.END + 0.4, big: true }));
+  hud.end();
+}
+
+/* ---------------- reel config */
+const PHSVG = '<svg width="44" height="44" viewBox="0 0 44 44" fill="none" stroke="#ff6a1f" stroke-width="2.4" stroke-linejoin="round"><rect x="13" y="4" width="18" height="36" rx="4"/><rect x="16" y="8" width="12" height="9" rx="1"/><path d="M17 22h2M21 22h2M25 22h2M17 26h2M21 26h2M25 26h2M17 30h2M21 30h2M25 30h2"/><path d="M27 4V0"/></svg>';
+const REEL = {
+  shots: [{ t: 0, f: [0, 0, 0], s: 1, a: -0.7, e: 0.6, sy: 480 }], world, tags,
+  tools: [
+    { a: T.when - 0.05, b: CUT.OLDPH, svg: PHSVG, name: 'Shazam, 2002: no app', sub: 'DIAL 2580 · HOLD IT UP · GET A TEXT', src: 'SHAZAM UK LAUNCH · 19 AUG 2002' },
+  ],
+  bad: ['app', 'humming', 'tune'],
+  good: ['seconds', 'survives', 'fingerprint', 'yours', 'text', 'recording'],
+  tiles: [['◎', 'AIRTAGS'], ['⇄', 'LOAD<br>BALANCING'], ['⚡', 'CIRCUIT<br>BREAKERS']],
+  end: CUT.END, follow: T.follow,
+  cover: { k: 'HOW IT WORKS', t: 'SHAZAM', at: T.glow + 0.4, zoom: 0.95, dy: 40 },
+  flash: (t) => 0.05 * pulse(t, T.line + 0.4, 7),
+};
+</script>
+<script src="lib/overlay.js"></script>
+<script>
+{ const r0 = window.ready; window.ready = async () => { await r0(); ctexRedraw(); for (const d of [ST.yours.s, ST.old.s, PB.mini.s]) d._k = null; }; }
+if (/cover/.test(location.hash)) { const c = document.createElement('style'); c.textContent = '#hud { display: none !important; } #stage { background: #070707 !important; }'; document.head.appendChild(c); }
+</script>
+<script src="../_ember/play.js"></script>
+</body>
+</html>

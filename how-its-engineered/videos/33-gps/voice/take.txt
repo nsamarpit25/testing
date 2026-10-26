@@ -1,0 +1,1 @@
+t3 from /mnt/ssd/render/vo/33-gps/t3; gap cuts []; tail cut at 47.32s (orig 47.60) + 60ms fade

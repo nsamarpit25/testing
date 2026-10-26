@@ -1,0 +1,69 @@
+{
+ "prompt": "AUDIO PROFILE\nCleo: a young woman software developer in her mid twenties. Natural, expressive, conversational voice. Real, never cartoonish.\nClaude: a young man's voice. Calm, warm, perfectly deadpan and dry. Few words. He never raises his voice.\n\nTHE SCENE, END TO END\nLate evening in her room. Cleo's boss loved the presentation Claude made for her and wants her to walk the executives through her 'process' tomorrow morning. She panics, because her process was just asking Claude. Claude calmly lists her real contributions. Then the boss's attachment turns out to be a promotion to team lead, because what she did is exactly what managers do. A fast, funny office comedy.\n\nLINE BY LINE\n1. Cleo, nervous, a little guilty, quick.\n2. Claude, calm, simple, a hint of pride.\n3. Cleo, quick correction, slightly desperate, stressing the word we.\n4. Claude, calm and cooperative.\n5. Cleo, trying to sound confident and grand.\n6. Claude, calmly quoting her, the quote in a flat lazy tone.\n7. Cleo, defensive, trying again.\n8. Claude, calmly quoting her, the quote short and blunt.\n9. Cleo, last attempt, less sure.\n10. Claude, factual, a tiny pause before 'Eleven times.'\n11. Cleo, worried, faster, voice rising.\n12. Claude, calm, gently helpful.\n13. Cleo, shocked, then indignant on 'Based on what?'\n14. Claude, matter of fact, listing it simply.\n15. Cleo, slow realization, quiet, almost to herself.\n16. Claude, perfectly deadpan, the punchline, short.\n\nDIRECTOR'S NOTES\nSnappy comedy timing: short natural pauses between lines, never long. Cleo's energy builds line by line; Claude stays calm the whole time, and that contrast is the joke. The last line is dry and simple, no dramatic pause inside it. Never read bracketed tags aloud. Finish every line fully, including its last word; never clip a word. Speak every word of the dialogue exactly as written, nothing added.",
+ "turns": [
+  [
+   "Cleo",
+   "Claude, I have to explain your work."
+  ],
+  [
+   "Claude",
+   "The presentation I made? He called you a genius."
+  ],
+  [
+   "Cleo",
+   "We made. Please start saying \"we.\""
+  ],
+  [
+   "Claude",
+   "What should we tell him?"
+  ],
+  [
+   "Cleo",
+   "That I had a vision."
+  ],
+  [
+   "Claude",
+   "You said, \"Make something good.\""
+  ],
+  [
+   "Cleo",
+   "Then I gave detailed feedback."
+  ],
+  [
+   "Claude",
+   "You said, \"No. Less weird.\""
+  ],
+  [
+   "Cleo",
+   "And I kept the project moving."
+  ],
+  [
+   "Claude",
+   "You asked, \"Done yet?\" Eleven times."
+  ],
+  [
+   "Cleo",
+   "If he asks what I actually did, what do I say?"
+  ],
+  [
+   "Claude",
+   "He already wrote it down. Open the attachment."
+  ],
+  [
+   "Cleo",
+   "Team lead? Based on what?"
+  ],
+  [
+   "Claude",
+   "You assigned the work and kept asking if it was done."
+  ],
+  [
+   "Cleo",
+   "That's literally what my boss does."
+  ],
+  [
+   "Claude",
+   "Apparently, we're management now."
+  ]
+ ]
+}

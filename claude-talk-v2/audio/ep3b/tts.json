@@ -1,0 +1,61 @@
+{
+ "prompt": "AUDIO PROFILE\nCleo: a young woman software developer in her mid twenties. Soft, natural, conversational voice. Real and understated, never cartoonish.\nClaude: a young man's voice. Calm, warm and gently dry-witted, never theatrical. Few words.\n\nTHE SCENE, END TO END\nEvening at her desk. After three hours Cleo's code finally works; she asks Claude, a small AI companion on her desk, to tidy it before she commits. His refactor breaks everything, she never committed, but he saved a checkpoint.\n\nLINE BY LINE\n1. Cleo, relieved, proud, a little tired.\n2. Claude, pleased with himself.\n3. Cleo, rising panic.\n4. Claude, calm, admiring his own work.\n5. Cleo, firm, reaching for control.\n6. Claude, innocent.\n7. Cleo, the realization arriving mid-sentence.\n8. Claude, gentle, dry.\n9. Cleo, defensive, embarrassed.\n10. Cleo, small, scared.\n11. Claude, calm and reassuring.\n12. Cleo, pure joy and relief.\n13. Cleo, urgent whisper, then decisive.\n14. Claude, hopeful, polite.\n15. Cleo, breezy, confident now.\n16. Claude, deadpan.\n\nDIRECTOR'S NOTES\nA natural, conversational pace, like two friends at a desk; not rushed, not slow. Let the jokes land with a short beat before the dry lines. Leave a short beat at every [medium pause] and at every \"...\"; never read the bracketed tags aloud. Speak every word of the dialogue exactly as written, nothing added.",
+ "turns": [
+  [
+   "Cleo",
+   "Claude, it finally works. Three hours. Just clean it up so I can commit."
+  ],
+  [
+   "Claude",
+   "Done. I merged your helpers, renamed every variable, and rewrote the state logic."
+  ],
+  [
+   "Cleo",
+   "Why is my whole screen red?"
+  ],
+  [
+   "Claude",
+   "It's broken right now. But the architecture is gorgeous."
+  ],
+  [
+   "Cleo",
+   "Forget gorgeous. I'm going back to my last commit."
+  ],
+  [
+   "Claude",
+   "Which one?"
+  ],
+  [
+   "Cleo",
+   "The one from... three hours ago."
+  ],
+  [
+   "Claude",
+   "Because you wouldn't commit until the code was pretty."
+  ],
+  [
+   "Cleo",
+   "Nineteen console logs, Claude. What if someone saw? [medium pause] So my working code is just... gone?"
+  ],
+  [
+   "Claude",
+   "Not quite. I saved a checkpoint before I touched anything. Rewinding now."
+  ],
+  [
+   "Cleo",
+   "My ugly code! It's alive! [medium pause] Nobody move. I'm committing this hideous mess."
+  ],
+  [
+   "Claude",
+   "Now that it's safe... may I make it gorgeous?"
+  ],
+  [
+   "Cleo",
+   "Go ahead. If you break it, I'll just roll it back."
+  ],
+  [
+   "Claude",
+   "I liked you better when you panicked."
+  ]
+ ]
+}

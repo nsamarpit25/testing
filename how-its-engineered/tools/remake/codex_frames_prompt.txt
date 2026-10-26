@@ -1,0 +1,11 @@
+Attached is a contact sheet of an Instagram reel (one frame every 2.5 seconds, left to right, top to bottom) for @how.its.engineered, which teaches system design to complete beginners. The voiceover script is below.
+Review ONLY whether the visuals help a beginner understand the topic: is each idea shown clearly at the moment it is said, is anything confusing, cluttered, unreadable, cut off at the frame edge, or misleading? Ignore the general art style (dark, glowing orange 3D) which is intentional.
+Reply with VERDICT: PASS or FIX, then at most 5 numbered, concrete issues (which frame, what is wrong, the specific fix). Be brief.
+Your code worked perfectly on your laptop. At five PM, you put it on the server. One minute later, it crashed.
+Same code. Nobody changed a line.
+The server had an older Python, and it was missing a library your code needs.
+Docker fixes this. Don't ship just your code. Ship your code plus everything it needs, sealed in one box.
+Like a shipping container. Truck, ship, or train, what's inside arrives exactly the same.
+You list what goes in the box, in a file called a Dockerfile. Docker builds it into an image: your code, Python, every library, frozen together.
+Run that image, and you get a container: your app, running inside its box. Laptop, server, or cloud. The inside is identical.
+If you're a vibe coder, follow for the system design your AI skipped.

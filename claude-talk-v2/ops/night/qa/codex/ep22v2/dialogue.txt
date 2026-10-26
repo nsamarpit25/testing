@@ -1,0 +1,16 @@
+0.3-3.8s Cleo: Claude, my photos are charging me rent.
+4.1-5.8s Claude: Want the five-year-old explanation?
+6.1-9.3s Cleo: Yes. No computer words. First one loses.
+9.7-11.5s Claude: You have too many toys for your room.
+11.8-13.4s Cleo: And I'm not throwing any away.
+13.7-16.9s Claude: So a big company keeps them in its giant basement.
+17.2-19.6s Cleo: Then why is it called a cloud?
+20.0-22.6s Claude: Nobody pays monthly for a stranger's basement.
+22.9-25.2s Cleo: So I'm paying for a box?
+25.6-28.1s Claude: Yes. Your phone is the window.
+28.5-31.9s Cleo: So the cloud is just someone else's computer!
+32.2-34.1s Claude: You said computer. You lose.
+34.4-37.0s Cleo: Fine. What's even in my box?
+37.3-39.9s Claude: Twelve thousand screenshots of money-saving tips.
+40.2-42.1s Cleo: Those are going to make me rich.
+42.6-45.1s Claude: So far, they've made the basement rich.

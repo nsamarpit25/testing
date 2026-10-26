@@ -1,0 +1,98 @@
+[
+ {
+  "say": "This is a block of ice. It keeps your food cold.",
+  "start": 0.25,
+  "end": 4.127
+ },
+ {
+  "say": "But it melts all over your kitchen floor.",
+  "start": 4.347,
+  "end": 6.467
+ },
+ {
+  "say": "So you put it in a wooden box, lined with tin, with a tray to catch the water.",
+  "start": 6.687,
+  "end": 11.918
+ },
+ {
+  "say": "This is an icebox.",
+  "start": 12.138,
+  "end": 13.886
+ },
+ {
+  "say": "But every few days the ice is gone, and the iceman has to bring you more.",
+  "start": 14.106,
+  "end": 18.461
+ },
+ {
+  "say": "So you swap the ice for a liquid that boils at minus twenty-six degrees.",
+  "start": 18.681,
+  "end": 23.575
+ },
+ {
+  "say": "You run it through thin pipes inside the box. As it boils, it soaks up the heat from your food.",
+  "start": 23.795,
+  "end": 30.62
+ },
+ {
+  "say": "But now the pipes are full of warm gas.",
+  "start": 30.84,
+  "end": 34.355
+ },
+ {
+  "say": "So you add a compressor, that squeezes the gas until it's hotter than your kitchen.",
+  "start": 34.575,
+  "end": 38.935
+ },
+ {
+  "say": "It flows through coils on the back and dumps that heat into the room. That's why the back of your fridge is warm.",
+  "start": 39.155,
+  "end": 46.607
+ },
+ {
+  "say": "Now it's a liquid again. It squeezes through a tube thinner than spaghetti, the pressure drops, and it's freezing cold again.",
+  "start": 46.827,
+  "end": 53.321
+ },
+ {
+  "say": "But the compressor never stops, and your milk turns to ice.",
+  "start": 53.541,
+  "end": 57.42
+ },
+ {
+  "say": "So you add a thermostat, that switches it off when it's cold enough.",
+  "start": 57.64,
+  "end": 61.485
+ },
+ {
+  "say": "But cold air leaks out around the door.",
+  "start": 61.705,
+  "end": 64.489
+ },
+ {
+  "say": "So you add a rubber seal with a magnet inside.",
+  "start": 64.709,
+  "end": 67.298
+ },
+ {
+  "say": "But frost builds up on the cold pipes.",
+  "start": 67.518,
+  "end": 70.575
+ },
+ {
+  "say": "So a little heater melts it, and the water drips into a tray on the hot compressor, where it dries up.",
+  "start": 70.795,
+  "end": 76.745
+ },
+ {
+  "say": "Add some shelves, and a light that turns on when you open the door.",
+  "start": 76.965,
+  "end": 80.509
+ },
+ {
+  "say": "Congratulations. You have built a refrigerator.",
+  "gap": 0.6,
+  "start": 80.729,
+  "end": 83.963
+ }
+]

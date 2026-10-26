@@ -1,0 +1,66 @@
+[
+ {
+  "li": 0,
+  "pi": 0,
+  "say": "Smudge part of a QR code, and your phone can still read it. But on a busy menu, how does it even spot the code?",
+  "show": "Smudge part of a *QR code,* and your phone can still read it. But on a busy menu, how does it even [spot the code?]",
+  "start": 0.0,
+  "end": 5.66
+ },
+ {
+  "li": 1,
+  "pi": 0,
+  "say": "Its tiny dark and light squares are ones and zeros, spelling out something like a web address.",
+  "show": "Its tiny *dark and light squares* are [ones and zeros,] spelling out something like a web address.",
+  "start": 6.88,
+  "end": 10.52
+ },
+ {
+  "li": 2,
+  "pi": 0,
+  "say": "First, the camera hunts for the three big corner squares. They show where the code is, and how it's turned. But how does it pick them out from everything else on the menu?",
+  "show": "First, the camera hunts for the three *corner squares.* They show where the code is, and how it's turned. But how does it [pick them out] from everything else on the menu?",
+  "start": 11.4,
+  "end": 18.88
+ },
+ {
+  "li": 3,
+  "pi": 0,
+  "say": "Then it straightens the grid, as if seen from straight above, and reads each square.",
+  "show": "Then it *straightens the grid,* as if seen from straight above, and [reads each square.]",
+  "start": 19.74,
+  "end": 23.36
+ },
+ {
+  "li": 4,
+  "pi": 0,
+  "say": "Some squares are backup, so smudged data can be rebuilt, up to about thirty percent on the strongest setting. But damage a corner square, and the scan can fail.",
+  "show": "Some squares are *backup,* so smudged data [can be rebuilt,] up to about 30% on the strongest setting. But damage a corner square, and the scan can fail.",
+  "start": 24.24,
+  "end": 31.18
+ },
+ {
+  "li": 5,
+  "pi": 0,
+  "say": "In nineteen ninety-four, Masahiro Hara's team at Denso released the QR code, its grid inspired by the game Go. They studied flyers, magazines and boxes, then gave those corner squares the black-and-white stripe widths least common in print.",
+  "show": "In *1994,* Masahiro Hara's team at Denso released the QR code, its grid inspired by the game Go. They studied flyers, magazines and boxes, then gave those *corner squares* [the black-and-white stripe widths] least common in print.",
+  "start": 32.16,
+  "end": 43.72
+ },
+ {
+  "li": 6,
+  "pi": 0,
+  "say": "So the trick to standing out on a busy menu came from studying everything else printed around it.",
+  "show": "So the trick to *standing out* on a busy menu came from [studying everything else] printed around it.",
+  "start": 44.36,
+  "end": 48.56
+ },
+ {
+  "li": 6,
+  "pi": 1,
+  "say": "Follow for how everyday tech really works.",
+  "show": "Follow for how [everyday tech] really works.",
+  "start": 49.16,
+  "end": 50.86
+ }
+]

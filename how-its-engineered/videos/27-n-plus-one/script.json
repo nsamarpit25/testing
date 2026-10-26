@@ -1,0 +1,33 @@
+{
+ "topic": "N+1 queries",
+ "lines": [
+  [
+   {"say": "One page. 101 trips to your database, where your app keeps its data. Two trips would do.",
+    "show": "One page. [101 trips] to your database, where your app keeps its data. *Two trips* would do."}
+  ],
+  [
+   {"say": "Your code fetches 100 orders, then asks the database for each order's customer name, one at a time.",
+    "show": "Your code fetches 100 orders, then asks the database for each order's customer name, [one at a time.]"}
+  ],
+  [
+   {"say": "That's the N plus 1 problem. N is the number of orders, plus one request for the list.",
+    "show": "That's the [N+1 problem.] *N* is the number of orders, plus *one* request for the list."}
+  ],
+  [
+   {"say": "Like getting a shopping list, then making a separate trip to the shop for every item.",
+    "show": "Like getting a shopping list, then making a [separate trip] to the shop for *every item.*"}
+  ],
+  [
+   {"say": "The fix: ask for all the names together, in one request, or in the same request as the orders.",
+    "show": "The fix: ask for [all the names together,] in one request, or in the *same request* as the orders."}
+  ],
+  [
+   {"say": "Even AI-written code does this. So check how many database requests each page makes.",
+    "show": "Even *AI-written code* does this. So check [how many database requests] each page makes."}
+  ],
+  [
+   {"say": "If you're a vibe coder, follow for the system design your AI skipped.",
+    "show": "If you're a vibe coder, follow for the system design your AI [skipped.]"}
+  ]
+ ]
+}

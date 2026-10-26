@@ -1,0 +1,2 @@
+Sent a test email to all 40,000 customers by mistake? Cleo's script used the real mailing list instead of the test list, and "test test please ignore" got a better open rate than any marketing campaign.
+#WebDevelopment #Programming #EmailMarketing #DeveloperLife #Debugging

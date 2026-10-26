@@ -1,0 +1,47 @@
+{
+ "b1": {
+  "kind": "code",
+  "title": "tasks.js \u2014 merge conflict",
+  "lines": [
+   "<<<<<<< mine (Cleo)",
+   "  sortBy(\"date\");",
+   "=======",
+   "  sortBy(\"priority\");",
+   "  addFilters(); // Arjun",
+   ">>>>>>> theirs (Arjun)"
+  ],
+  "ok": [
+   1
+  ],
+  "hi": [
+   3,
+   4
+  ]
+ },
+ "b2": {
+  "kind": "term",
+  "title": "Terminal",
+  "lines": [
+   "$ git push",
+   "! rejected: remote has new commits",
+   "$ git push --force",
+   "+ forced update: main"
+  ]
+ },
+ "b3": {
+  "kind": "term",
+  "title": "Terminal",
+  "lines": [
+   "$ git reflog",
+   "* a41c9e Arjun's work",
+   "$ git cherry-pick a41c9e",
+   "+ restored: both versions"
+  ]
+ },
+ "p1": {
+  "kind": "phone",
+  "app": "Slack",
+  "title": "Arjun",
+  "body": "Who force pushed???"
+ }
+}

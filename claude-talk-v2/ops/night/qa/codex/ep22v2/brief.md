@@ -1,0 +1,27 @@
+You are the final reviewer for a vertical Instagram reel (1080x1920) on @talkingagents: a short 3D comedy where Cleo, a junior developer, talks to Claude, a small orange AI companion on her desk. The attached sheets are the COMPLETE video at 2 frames/second (yellow label = time in seconds), with burned-in word-by-word captions. Timed dialogue:
+
+0.3-3.8s Cleo: Claude, my photos are charging me rent.
+4.1-5.8s Claude: Want the five-year-old explanation?
+6.1-9.3s Cleo: Yes. No computer words. First one loses.
+9.7-11.5s Claude: You have too many toys for your room.
+11.8-13.4s Cleo: And I'm not throwing any away.
+13.7-16.9s Claude: So a big company keeps them in its giant basement.
+17.2-19.6s Cleo: Then why is it called a cloud?
+20.0-22.6s Claude: Nobody pays monthly for a stranger's basement.
+22.9-25.2s Cleo: So I'm paying for a box?
+25.6-28.1s Claude: Yes. Your phone is the window.
+28.5-31.9s Cleo: So the cloud is just someone else's computer!
+32.2-34.1s Claude: You said computer. You lose.
+34.4-37.0s Cleo: Fine. What's even in my box?
+37.3-39.9s Claude: Twelve thousand screenshots of money-saving tips.
+40.2-42.1s Cleo: Those are going to make me rich.
+42.6-45.1s Claude: So far, they've made the basement rich.
+
+Premise: You are the final quality reviewer for a 3D animated Instagram reel (@talkingagents): Cleo, a young woman at her desk, and Claude, a small orange AI companion on her desk. Comedy episode "Explain The Cloud Like I'm Five" (part 1 of an explain-like-I'm-five series): Cleo's phone says storage full, $2.99/month. Claude explains the cloud on a little whiteboard next to him, with a rule: no computer words, first one to say one loses. Cleo slips and says "computer". Then her cloud turns out to hold 12,000 screenshots of money-saving tips.
+
+Intended, not issues: morning light; the phone insert at the
+
+Review the whole video for anything that would hurt it on Instagram or look broken: wrong or missing captions vs dialogue, captions overlapping important content, unreadable, cropped or wrong screen content, screens that contradict the dialogue, shots that are too short (flash cuts), a character facing the wrong way, visual glitches, a weak opening (no hook TEXT overlay is allowed in the first scene; dialogue captions are fine), the ending (fade to black is intended), and whether the joke lands.
+Allowed by the channel owner, not issues: the small "@talkingagents" handle near the bottom on every frame; Cleo's hair falling over one eye (her design); a short silent beat before the first line; the blurred background in Claude's to-camera shots (shallow depth of field).
+
+Reply with a short list of concrete issues (time, what, fix) ranked by severity, then a final line exactly "VERDICT: PASS" (good to upload as is, minor nits only) or "VERDICT: FAIL" (must fix first).

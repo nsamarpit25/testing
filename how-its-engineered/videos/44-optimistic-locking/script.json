@@ -1,0 +1,71 @@
+{
+ "topic": "Optimistic locking",
+ "lines": [
+  [
+   {
+    "say": "Two people tap Buy on the last pair of sneakers at the same moment. Both checkouts read: one left. Who gets the shoes?",
+    "show": "Two people tap *Buy* on the *last pair* of sneakers at the same moment. Both checkouts read: *1 left.* [Who gets the shoes?]"
+   }
+  ],
+  [
+   {
+    "say": "Without a check, both orders go through, and the second save quietly overwrites the first. You sold one pair twice. That's a lost update.",
+    "show": "Without a check, *both orders* go through, and the second save quietly *overwrites* the first. You sold one pair [twice.] That's a [lost update.]"
+   }
+  ],
+  [
+   {
+    "say": "Optimistic locking fixes this. Every row gets a version number. Right now, the sneakers are version seven.",
+    "show": "[Optimistic locking] fixes this. Every row gets a *version number.* Right now, the sneakers are *version 7.*"
+   }
+  ],
+  [
+   {
+    "say": "Nobody locks anything while they shop. Each checkout just remembers: I read version seven.",
+    "show": "Nobody *locks* anything while they shop. Each checkout just remembers: I read [version 7.]"
+   }
+  ],
+  [
+   {
+    "say": "At save time, the database only updates the row if it's still version seven, and bumps it to eight.",
+    "show": "At *save time,* the database only updates the row if it's *still version 7,* and bumps it to [8.]"
+   }
+  ],
+  [
+   {
+    "say": "The first checkout wins. The second one's update matches zero rows, because the version moved on. Rejected.",
+    "show": "The first checkout [wins.] The second one's update matches *0 rows,* because the version *moved on.* [Rejected.]"
+   }
+  ],
+  [
+   {
+    "say": "So that checkout reloads, sees zero left, and shows sold out, instead of selling it twice.",
+    "show": "So that checkout *reloads,* sees *0 left,* and shows [sold out,] instead of selling it twice."
+   }
+  ],
+  [
+   {
+    "say": "Wikipedia does something similar. If someone changed the same lines after you opened the page, you get an edit conflict instead of wiping out their changes.",
+    "show": "*Wikipedia* does something similar. If someone changed the *same lines* after you opened the page, you get an [edit conflict] instead of wiping out their changes."
+   }
+  ],
+  [
+   {
+    "say": "It's built in. Java's JPA has a version field for it, and DynamoDB does it with conditional writes.",
+    "show": "It's built in. Java's *JPA* has a [version field] for it, and *DynamoDB* does it with [conditional writes.]"
+   }
+  ],
+  [
+   {
+    "say": "Use it when clashes are rare. If everyone fights over the same row, lock it up front instead.",
+    "show": "Use it when clashes are [rare.] If everyone fights over the *same row,* lock it [up front] instead."
+   }
+  ],
+  [
+   {
+    "say": "If you're a vibe coder, follow for the system design your AI skipped.",
+    "show": "If you're a vibe coder, follow for the system design your AI [skipped.]"
+   }
+  ]
+ ]
+}

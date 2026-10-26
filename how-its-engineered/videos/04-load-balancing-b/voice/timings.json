@@ -1,0 +1,90 @@
+[
+ {
+  "li": 0,
+  "pi": 0,
+  "say": "A hundred thousand people opened your app at once.",
+  "show": "*100,000 people* opened your app at once.",
+  "start": 0.0,
+  "end": 2.44
+ },
+ {
+  "li": 0,
+  "pi": 1,
+  "say": "It didn't even slow down. How?",
+  "show": "It [didn't even slow down.] How?",
+  "start": 2.58,
+  "end": 4.24
+ },
+ {
+  "li": 1,
+  "pi": 0,
+  "say": "One server would struggle with that. So you run ten copies of your app on ten servers.",
+  "show": "One server would [struggle] with that. So you run *10 copies* of your app on *10 servers.*",
+  "start": 4.66,
+  "end": 9.26
+ },
+ {
+  "li": 2,
+  "pi": 0,
+  "say": "But who decides which server gets each request, like each page load? A load balancer.",
+  "show": "But who decides which server gets each request, like each page load? A [load balancer.]",
+  "start": 9.58,
+  "end": 13.88
+ },
+ {
+  "li": 3,
+  "pi": 0,
+  "say": "Like a supermarket manager pointing you to the shortest checkout line.",
+  "show": "Like a *supermarket manager* pointing you to the [shortest checkout line.]",
+  "start": 14.16,
+  "end": 16.92
+ },
+ {
+  "li": 4,
+  "pi": 0,
+  "say": "The simplest rule is round robin: one, two, three, then back to one.",
+  "show": "The simplest rule is [round robin:] 1, 2, 3, then back to 1.",
+  "start": 17.32,
+  "end": 20.58
+ },
+ {
+  "li": 4,
+  "pi": 1,
+  "say": "A smarter one, least connections, picks the server with the fewest open connections.",
+  "show": "A smarter one, [least connections,] picks the server with the *fewest open connections.*",
+  "start": 20.9,
+  "end": 25.08
+ },
+ {
+  "li": 5,
+  "pi": 0,
+  "say": "It also pings every server every few seconds. If one stops answering, it gets skipped.",
+  "show": "It also *pings every server* every few seconds. If one stops answering, it [gets skipped.]",
+  "start": 25.34,
+  "end": 29.46
+ },
+ {
+  "li": 6,
+  "pi": 0,
+  "say": "Need more power? Add servers behind it. Users keep using the same address.",
+  "show": "Need more power? *Add servers* behind it. Users keep using [the same address.]",
+  "start": 29.46,
+  "end": 33.68
+ },
+ {
+  "li": 7,
+  "pi": 0,
+  "say": "AWS, NGINX and Cloudflare all do this.",
+  "show": "*AWS,* *NGINX* and *Cloudflare* all do this.",
+  "start": 34.02,
+  "end": 36.48
+ },
+ {
+  "li": 8,
+  "pi": 0,
+  "say": "If you're a vibe coder, follow for the system design your AI skipped.",
+  "show": "If you're a vibe coder, follow for the system design your AI [skipped.]",
+  "start": 36.82,
+  "end": 39.66
+ }
+]

@@ -1,0 +1,98 @@
+[
+ {
+  "li": 0,
+  "pi": 0,
+  "say": "Your AirTag says your bag is in another city. The AirTag didn't find it. A stranger's phone did.",
+  "show": "Your *AirTag* says your bag is in *another city.* The AirTag didn't find it. A [stranger's phone] did.",
+  "start": 0.0,
+  "end": 5.12
+ },
+ {
+  "li": 1,
+  "pi": 0,
+  "say": "An AirTag has no GPS. No SIM. No Wi-Fi. It talks over Bluetooth, on a coin battery.",
+  "show": "An AirTag has *no GPS.* No SIM. No Wi-Fi. It talks over *Bluetooth,* on a [coin battery.]",
+  "start": 5.84,
+  "end": 11.0
+ },
+ {
+  "li": 2,
+  "pi": 0,
+  "say": "Every few seconds, it whispers one thing: I'm here.",
+  "show": "Every few seconds, it *whispers* one thing: [I'm here.]",
+  "start": 11.62,
+  "end": 14.28
+ },
+ {
+  "li": 3,
+  "pi": 0,
+  "say": "Any iPhone walking past hears it. It adds its own location, locks it, and sends it to Apple.",
+  "show": "Any *iPhone* walking past hears it. It adds its *own location,* locks it, and [sends it to Apple.]",
+  "start": 15.06,
+  "end": 19.68
+ },
+ {
+  "li": 3,
+  "pi": 1,
+  "say": "The stranger never even knows.",
+  "show": "The stranger [never even knows.]",
+  "start": 20.34,
+  "end": 21.46
+ },
+ {
+  "li": 4,
+  "pi": 0,
+  "say": "Then your phone downloads that report, unlocks it, and there's your bag.",
+  "show": "Then *your phone* downloads that report, unlocks it, and [there's your bag.]",
+  "start": 22.0,
+  "end": 24.92
+ },
+ {
+  "li": 5,
+  "pi": 0,
+  "say": "Only your phone has the key. Apple can't read the location, and the stranger can't see whose tag it is.",
+  "show": "Only *your phone* has the key. Apple [can't read] the location, and the stranger can't see *whose tag* it is.",
+  "start": 25.58,
+  "end": 30.24
+ },
+ {
+  "li": 6,
+  "pi": 0,
+  "say": "Now repeat that across hundreds of millions of Apple devices. That's how a twenty-nine dollar disc shows up almost anywhere.",
+  "show": "Now repeat that across *hundreds of millions* of Apple devices. That's how a *$29 disc* shows up [almost anywhere.]",
+  "start": 30.84,
+  "end": 36.28
+ },
+ {
+  "li": 7,
+  "pi": 0,
+  "say": "In twenty twenty-three, an airline told one passenger her bag was safe. Her AirTag showed it at a random apartment complex, next to the dumpsters. The network found it before the airline did.",
+  "show": "In 2023, an *airline* told one passenger her bag was *safe.* Her AirTag showed it at a *random apartment complex,* next to the dumpsters. The *network* found it [before the airline did.]",
+  "start": 36.76,
+  "end": 45.28
+ },
+ {
+  "li": 8,
+  "pi": 0,
+  "say": "And if a stranger's AirTag travels with you, your phone warns you. iPhone or Android.",
+  "show": "And if a stranger's AirTag *travels with you,* your phone [warns you.] iPhone or Android.",
+  "start": 45.92,
+  "end": 49.72
+ },
+ {
+  "li": 9,
+  "pi": 0,
+  "say": "So that little disc isn't tracking anything. Everyone around it is.",
+  "show": "So that little disc *isn't tracking anything.* [Everyone around it is.]",
+  "start": 50.22,
+  "end": 53.2
+ },
+ {
+  "li": 9,
+  "pi": 1,
+  "say": "Follow for how everyday tech really works.",
+  "show": "Follow for how *everyday tech* really works.",
+  "start": 53.7,
+  "end": 55.36
+ }
+]

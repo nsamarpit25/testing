@@ -1,0 +1,208 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- 23 Long polling, in the ember style (same world as 22 WebSockets). World: your FRIEND's phone, a SERVER box and YOUR phone.
+     Hook: your app asks "any new messages?" and the server holds the question (a timer on its face runs to 0:30). Polling:
+     quick round trips that all come back "nothing new". Long polling: the question is held; the friend's message lands and is
+     answered at once, the app asks again; later the time limit hits and the server answers "nothing yet". Analogy beats
+     replay both: rapid "are we there yet" trips vs one held question. Beats come from voice/words.json via at(). -->
+<link rel="stylesheet" href="../_ember/fonts.css">
+<link rel="stylesheet" href="../_ember/reel.css">
+</head>
+<body>
+<div id="stage">
+  <div id="world">
+    <canvas id="cv" width="1080" height="1920"></canvas>
+    <div class="layer" id="lbls"></div>
+  </div>
+</div>
+<script src="../../tools/lib.js"></script>
+<script src="voice/words.js"></script>
+<script src="../_ember/three.js"></script>
+<script src="../_ember/world.js"></script>
+<script src="../_ember/base.js"></script>
+<script>
+for (let i = 0; i < 16; i++) ORBS.push({ core: orbSprite(9), glow: orbSprite(34), trail: [0, 1, 2, 3, 4].map(() => orbSprite(10)) });
+
+/* ---------------- beats */
+const T = {
+  asks1: at('asks'), any: at('any'), didnt: at('didnt'), seconds: at('seconds'), purpose: at('purpose'), why: at('why'),
+  without: at('without'), keeps: at('keeps'), nothing1: at('nothing'), wasted: at('wasted'), trips: at('trips'),
+  long: at('long'), polling: at('polling'), holds: at('holds'), question: at('question'), waits: at('waits'),
+  moment: at('moment'), arrives: at('arrives'), answers: at('answers'), shows: at('shows'), asks2: at('asks', 2), again: at('again'),
+  if1: at('if'), nothing2: at('nothing', 2), limit: at('limit'), answers2: at('answers', 2), yet: at('yet'), asks3: at('asks', 3),
+  like: at('like'), kid: at('kid'), minute: at('minute'), versus: at('versus'), once: at('once'), arrive: at('arrive'),
+  telegram: at('telegram'), plain: at('plain'), web: at('web'), ifv: at('if', 2), follow: at('follow'),
+};
+const CUT = { POLL: T.without - 0.2, LP: T.long - 0.3, LIKE: T.like - 0.2, TOOLS: T.telegram - 0.3, END: T.ifv - 0.15 };
+
+/* ---------------- layout */
+const FR = [-175, 20], SRV = [0, 40], YOU = [175, 20];
+const MID = [(SRV[0] + YOU[0]) / 2, 30, 20];
+const P_FS = [[FR[0] + 42, FR[1], 80], [SRV[0] - 55, SRV[1], 90]], P_SY = [[SRV[0] + 55, SRV[1], 90], [YOU[0] - 42, YOU[1], 80]];
+const P_YS = [...P_SY].reverse();
+const TRIP = 0.42;                                                                  // one way, in seconds
+const POLLS = [0, 1, 2, 3].map((k) => T.without + 0.05 + k * ((T.trips - T.without) / 3.4));   // plain polling: ask, "nothing new"
+const KIDS = [0, 1, 2, 3].map((k) => T.kid + k * ((T.minute + 0.2 - T.kid) / 4));            // "are we there yet" every minute
+const KTRIP = 0.2;
+// held questions: [from, to, clock(t) → seconds shown, how it ends]
+const ffwd = (a, b) => (t) => 30 * clamp((t - a) / (b - a));
+const HOLDS = [
+  [T.asks1 + TRIP, T.why + 0.4, ffwd(T.didnt, T.purpose), 'hold'],
+  [T.long + TRIP, T.answers, (t) => t - T.long - TRIP, 'answer'],
+  [T.asks2 + TRIP, T.answers2, ffwd(T.nothing2, T.answers2 - 0.1), 'limit'],
+  [T.asks3 + TRIP, T.like - 0.1, (t) => t - T.asks3 - TRIP, 'hold'],
+  [T.once + TRIP, T.arrive, (t) => t - T.once - TRIP, 'answer'],
+];
+const holdAt = (t) => HOLDS.find(([a, b]) => t >= a && t < b);
+const FSEND = T.moment - 0.45, FSEND2 = T.arrive - 0.5;                              // the friend's messages reach the server
+
+/* ---------------- camera */
+const CLOSE = { f: [112, 30, 60], s: 1.42, a: -0.42, e: 0.58, sy: 490 };
+const SHOTS = [
+  { t: 0, d: 0, ...CLOSE, a: -0.38, e: 0.56, s: 1.48 },
+  { t: CUT.POLL, d: 1.0, ...CLOSE, s: 1.36 },
+  { t: CUT.LP, d: 1.0, f: [28, 30, 60], s: 1.1, a: -0.42, e: 0.58, sy: 470 },
+  { t: CUT.LIKE, d: 1.0, ...CLOSE, s: 1.38 },
+  { t: CUT.TOOLS, d: 1.0, f: [0, 30, 60], s: 1.02, a: -0.42, e: 0.6, sy: 570 },
+  { t: CUT.END, d: 2.0, f: [0, 30, 60], s: 0.98, a: -0.42, e: 0.6, sy: 560 },
+];
+const KICKS = [[T.any, 0.03], [T.didnt, 0.04], [T.purpose, 0.04], [T.why, 0.03], [T.wasted, 0.04], [T.long, 0.05], [T.holds, 0.03],
+  [T.arrives, 0.03], [T.answers, 0.05], [T.asks2, 0.03], [T.limit, 0.04], [T.answers2, 0.04], [T.kid, 0.03], [T.once, 0.04], [T.arrive, 0.05], [T.telegram, 0.03]];
+const SHAKES = [[T.wasted, 2, 0.25]];
+
+/* ---------------- build the world */
+const label = (g, W_, H_, txt, col, size, y = H_ / 2) => { g.fillStyle = col; g.font = `800 ${size}px Mono`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.shadowColor = col; g.shadowBlur = 12; g.fillText(txt, W_ / 2, y); g.shadowBlur = 0; g.textAlign = 'left'; };
+const mk = (p, w, d, h, col, k = 6) => { const b = emberBox(p[0], p[1], w, d, h, col); const f = decal(w, h, 'front', k, b.g); f.m.position.set(0, -d / 2 - 0.3, h / 2); return { b, f, pl: pool(p[0], p[1], w * 1.3, col), p }; };
+const fr = mk(FR, 84, 18, 140, O, 5), you = mk(YOU, 84, 18, 140, O, 5), srv = mk(SRV, 110, 66, 150, O, 4);
+const rF = road(P_FS, O2), rY = road(P_SY, O2);
+
+function bubble(g, W_, txt, y, col, right) {
+  g.font = '800 50px Mono'; const w = Math.min(W_ - 36, g.measureText(txt).width + 36), x = right ? W_ - 18 - w : 18;
+  g.strokeStyle = col; g.lineWidth = 6; rrect(g, x, y, w, 84, 20); g.stroke();
+  g.fillStyle = col; g.textBaseline = 'middle'; g.fillText(txt, x + 18, y + 44);
+}
+function phoneDraw(g, W_, H_, col, title, msgs, status, stCol) {
+  g.strokeStyle = col + 'aa'; g.lineWidth = 6; rrect(g, 14, 14, W_ - 28, H_ - 28, 34); g.stroke();
+  label(g, W_, H_, title, col, 56, 80);
+  msgs.forEach((m, i) => bubble(g, W_, m[0], 150 + i * 108, m[1], m[2]));
+  if (status) label(g, W_, H_, status, stCol || col, 48, H_ - 80);
+}
+function srvDraw(g, W_, H_, col, secs, status, stCol) {
+  label(g, W_, H_, 'SERVER', col, 50, H_ * 0.12);
+  for (let k = 0; k < 3; k++) { const y = H_ * 0.23 + k * H_ * 0.12; g.strokeStyle = col + '88'; g.lineWidth = 4; rrect(g, 26, y, W_ - 52, H_ * 0.08, 6); g.stroke(); }
+  if (secs != null) {
+    const y = H_ * 0.6, w = W_ - 52, q = clamp(secs / 30), tc = q >= 1 ? RED : AMB;
+    g.fillStyle = tc + '33'; rrect(g, 26, y, w, 34, 8); g.fill(); g.fillStyle = tc; rrect(g, 26, y, Math.max(8, w * q), 34, 8); g.fill();
+    label(g, W_, H_, `⏳ 0:${String(Math.min(30, Math.floor(secs))).padStart(2, '0')}`, tc, 56, y + 84);
+  }
+  if (status) label(g, W_, H_, status, stCol || col, 38, H_ * 0.92);
+}
+
+// what your phone shows: a running list of bubbles, reset at each section
+function youMsgs(t) {
+  const ev = [];
+  if (t < CUT.POLL) { ev.push([T.asks1, 'new msgs?', O2, true]); }
+  else if (t < CUT.LP) POLLS.forEach((p) => { ev.push([p, 'new?', O2, true], [p + 2 * TRIP, 'nothing', GR, false]); });
+  else if (t < CUT.LIKE) ev.push([T.long, 'new?', O2, true], [T.answers + TRIP, 'on my way', OK, false], [T.asks2, 'new?', O2, true], [T.answers2 + TRIP, 'nothing yet', GR, false], [T.asks3, 'new?', O2, true]);
+  else ev.push([T.once, 'there yet?', O2, true], [T.arrive + TRIP, "we're here!", OK, false]);
+  return ev.filter((e) => t >= e[0]).map((e) => e.slice(1)).slice(-3);
+}
+
+/* ---------------- the world, frame by frame */
+function world(t) {
+  const thru = (pts, t0, dur, col, size = 1) => { const q = (t - t0) / dur; if (q > -0.02 && q < 1.1) orb(pts, clamp(q), col, clamp(q / 0.08) * (1 - clamp((q - 1) / 0.1)), size); };
+  const q0 = ease.back(prog(t, 0.05, 0.4));
+  const h = holdAt(t), secs = h ? h[2](t) : null;
+  const limitHit = t > T.answers2 - 0.15 && t < T.answers2 + 0.6;
+
+  // the friend's phone
+  const fCol = [FSEND, FSEND2].some((s) => t > s - 0.5 && t < s + 0.3) ? O2 : O;
+  fr.b.g.visible = q0 > 0.01; fr.b.g.scale.set(1, 1, Math.max(0.01, q0)); fr.b.setLook(fCol, 1.2 + 2 * Math.max(pulse(t, FSEND - 0.45), pulse(t, FSEND2 - 0.45)), 1);
+  const fMsgs = t > CUT.LIKE ? [] : t > FSEND - 0.5 ? [['on my way', O2, true]] : [];
+  fr.f.m.visible = fr.b.g.visible; fr.f.draw((g, W_, H_) => phoneDraw(g, W_, H_, fCol, 'FRIEND', fMsgs, t > FSEND - 0.5 && t < FSEND + 0.6 ? 'SENT' : '', OK)); fr.pl.set(fCol, 0.45 * q0);
+  rF.set(1, O2, 0.6 * Math.max(window01(t, FSEND - 0.7, FSEND + 0.4, 0.15), window01(t, FSEND2 - 0.7, FSEND2 + 0.4, 0.15)), t);
+  thru(P_FS, FSEND - 0.45, 0.45, O2); thru(P_FS, FSEND2 - 0.45, 0.45, O2);
+
+  // the server: holds the question, timer on its face
+  const sCol = limitHit ? RED : h ? mixHex(O, AMB, 0.45 + 0.35 * Math.sin(t * 6)) : O;
+  srv.b.g.visible = q0 > 0.01; srv.b.g.scale.set(1, 1, Math.max(0.01, q0));
+  srv.b.setLook(sCol, 1.2 + 2 * Math.max(pulse(t, T.answers), pulse(t, T.answers2), pulse(t, T.arrive), ...POLLS.map((p) => 0.5 * pulse(t, p + TRIP))), 1);
+  const sSt = limitHit ? 'TIME LIMIT' : h ? 'HOLDING' : t > CUT.POLL && t < CUT.LP ? 'NOTHING NEW' : '';
+  srv.f.m.visible = srv.b.g.visible; srv.f.draw((g, W_, H_) => srvDraw(g, W_, H_, sCol, limitHit ? 30 : secs, sSt, limitHit ? RED : h ? AMB : GR)); srv.pl.set(sCol, 0.5 * q0);
+  if (h) { const k = 0.6 + 0.4 * Math.sin(t * 7); orb([P_SY[0], P_SY[0]], 0, AMB, k, 0.9); }   // the held question, waiting at the server
+  if (limitHit) ripple(t, T.answers2 - 0.1, SRV[0], SRV[1], 2, RED, 120, 0.7);
+
+  // your phone + the line between
+  const yCol = t > T.answers + TRIP && t < T.answers + TRIP + 1 || t > T.arrive + TRIP ? mixHex(O, OK, 0.45) : O;
+  you.b.g.visible = q0 > 0.01; you.b.g.scale.set(1, 1, Math.max(0.01, q0));
+  you.b.setLook(yCol, 1.2 + 2 * Math.max(pulse(t, T.answers + TRIP), pulse(t, T.arrive + TRIP)), 1);
+  const ySt = h ? 'WAITING…' : t > CUT.POLL && t < CUT.LP ? `ASKED ×${POLLS.filter((p) => t >= p).length}` : t > CUT.LIKE && t < T.once ? `ASKED ×${KIDS.filter((p) => t >= p).length}` : '';
+  you.f.m.visible = you.b.g.visible; you.f.draw((g, W_, H_) => phoneDraw(g, W_, H_, yCol, 'YOU', youMsgs(t), ySt, h ? AMB : RED)); you.pl.set(yCol, 0.5 * q0);
+  const trips = [...POLLS.map((p) => [p, p + 2 * TRIP + 0.1]), ...KIDS.map((p) => [p, p + 2 * KTRIP + 0.05])];
+  const lineA = Math.max(h ? 0.75 : 0, ...trips.map(([a, b]) => window01(t, a - 0.05, b, 0.08)), window01(t, T.answers - 0.05, T.answers + TRIP + 0.2, 0.1), window01(t, T.answers2 - 0.05, T.answers2 + TRIP + 0.2, 0.1), window01(t, T.arrive - 0.05, T.arrive + TRIP + 0.2, 0.1));
+  rY.set(1, h ? AMB : O2, lineA, t);
+  // questions up, answers down
+  [T.asks1, T.long, T.asks2, T.asks3, T.once].forEach((a) => thru(P_YS, a, TRIP, O2));
+  POLLS.forEach((p) => { thru(P_YS, p, TRIP, O2, 0.8); thru(P_SY, p + TRIP + 0.05, TRIP, GR, 0.7); });
+  KIDS.forEach((p) => { thru(P_YS, p, KTRIP, O2, 0.7); thru(P_SY, p + KTRIP, KTRIP, GR, 0.6); });
+  thru(P_SY, T.answers, TRIP, OK); thru(P_SY, T.answers2, TRIP, GR, 0.8); thru(P_SY, T.arrive, TRIP, OK);
+  ripple(t, T.answers + TRIP, YOU[0], YOU[1], 2, OK, 110, 0.7); ripple(t, T.arrive + TRIP, YOU[0], YOU[1], 2, OK, 110, 0.7);
+  sparks(t, T.answers + TRIP, YOU[0], YOU[1], 150, OK, 12, 7, 100, 0.5); sparks(t, T.arrive + TRIP, YOU[0], YOU[1], 150, OK, 12, 9, 100, 0.5);
+}
+
+/* ---------------- world tags */
+function tags(t) {
+  const F_T = [FR[0], FR[1], 175], S_T = [SRV[0], SRV[1], 190], Y_T = [YOU[0], YOU[1], 175];
+  const big = (c) => `font-size:15px;padding:9px 13px;letter-spacing:1px;border-color:${c}`;
+  const n = POLLS.filter((p) => t >= p + 2 * TRIP).length;
+  tag('ask0', `<span style="color:${O2}">ANY NEW MESSAGES?</span>`, `border-color:${O2}88`, Y_T, t, T.asks1 + 0.1, T.didnt - 0.05);
+  tag('sil', `<span style="color:${AMB}">NO ANSWER…</span>`, big(AMB), S_T, t, T.didnt, T.purpose - 0.05);
+  tag('purp', `<span style="color:${AMB}">ON PURPOSE</span>`, big(AMB), S_T, t, T.purpose, CUT.POLL + 0.2);
+  tag('why', `<span style="color:${AMB}">WHY?</span>`, big(AMB), Y_T, t, T.why, CUT.POLL + 0.3);
+  tag('cnt', `<span style="color:${GR}">${n} ASKED · ${n} × NOTHING NEW</span>`, '', [SRV[0] + 45, SRV[1] - 40, 0], t, POLLS[0] + 2 * TRIP, CUT.LP + 0.2, 30);
+  tag('waste', `<span style="color:${RED}">WASTED TRIPS</span>`, big(RED), Y_T, t, T.wasted, CUT.LP + 0.2);
+  tag('held', `<span style="color:${AMB}">⏳ QUESTION HELD</span>`, big(AMB), S_T, t, T.holds, FSEND - 0.5);
+  tag('msg', `<span style="color:${O2}">NEW MESSAGE</span>`, `border-color:${O2}88`, [FR[0], FR[1] - 20, 0], t, FSEND - 0.5, T.asks2, 30);
+  tag('inst', `<span style="color:${OK}">ANSWERED RIGHT AWAY</span>`, big(OK), Y_T, t, T.answers + 0.1, T.asks2 - 0.05);
+  tag('again', `<span style="color:${O2}">ASKS AGAIN</span>`, `border-color:${O2}88`, MID, t, T.asks2, T.if1, 30);
+  tag('limit', `<span style="color:${AMB}">TIME LIMIT · 30 s</span>`, big(AMB), S_T, t, T.limit, T.answers2 + 0.3);
+  tag('yet', `<span style="color:${WH}">NOTHING YET → ASK AGAIN</span>`, '', Y_T, t, T.answers2 + 0.2, CUT.LIKE + 0.2);
+  tag('kid', `<span style="color:${RED}">ARE WE THERE YET? ×4</span>`, big(RED), Y_T, t, T.kid, T.versus - 0.05);
+  tag('one', `<span style="color:${OK}">ASK ONCE · ANSWER ON ARRIVAL</span>`, big(OK), MID, t, T.versus + 0.1, CUT.TOOLS + 0.4, 30);
+}
+
+/* ---------------- reel config */
+const svgPlane = `<svg width="46" height="46" viewBox="0 0 100 100" fill="none" stroke="#4FB3F0" stroke-width="7" stroke-linejoin="round"><path d="M10 48 L88 16 L72 86 L48 62 Z M48 62 L88 16 M48 62 L44 80 L58 70"/></svg>`;
+const svgWeb = `<svg width="46" height="46" viewBox="0 0 100 100" fill="none" stroke="#7CF29A" stroke-width="7" stroke-linejoin="round"><circle cx="50" cy="50" r="38"/><path d="M12 50 H88 M50 12 C30 32 30 68 50 88 M50 12 C70 32 70 68 50 88"/></svg>`;
+const REEL = {
+  shots: SHOTS, kicks: KICKS, shakes: SHAKES, world, tags,
+  code: [
+    [T.without - 0.1, T.long - 0.4, 'chat.js', 'polling', [[0, 'ASKING', AMB], [T.wasted, 'WASTED', RED]],
+      [['GET /messages  → []'], ['GET /messages  → []', POLLS[1]], ['GET /messages  → []', POLLS[2]], ['GET /messages  → []', POLLS[3]]],
+      [[POLLS[0] + 2 * TRIP, 1, 'nothing new', 'bad'], [POLLS[1] + 2 * TRIP, 2, 'nothing new', 'bad'], [POLLS[2] + 2 * TRIP, 3, 'nothing new', 'bad'], [POLLS[3] + 2 * TRIP, 4, 'nothing new', 'bad']]],
+    [T.long - 0.3, CUT.LIKE - 0.1, 'chat.js', 'long polling', [[0, 'WAITING', AMB], [T.answers, 'ANSWERED', OK], [T.asks2, 'WAITING', AMB], [T.answers2, 'TIME LIMIT', RED], [T.asks3, 'WAITING', AMB]],
+      [['GET /messages?wait=30'], ["← 200  ['on my way']", T.answers], ['GET /messages?wait=30', T.asks2], ['← 200  []   after 30 s', T.answers2], ['GET /messages?wait=30', T.asks3]],
+      [[T.long + TRIP, 1, '⏳ held', 'amb'], [T.answers, 2, '✓ shown', 'good'], [T.asks2 + TRIP, 3, '⏳ held', 'amb'], [T.answers2, 4, 'nothing yet', 'run'], [T.asks3 + TRIP, 5, '⏳ held', 'amb']], 'type'],
+  ],
+  hl: /\b(GET|wait|messages)\b/g,
+  tools: [
+    { a: T.telegram - 0.1, b: CUT.END, svg: svgPlane, name: 'Telegram Bot API', sub: 'getUpdates?timeout=30 · LONG POLLING', top: 150 },
+    { a: T.plain - 0.1, b: CUT.END, svg: svgWeb, name: 'Plain web requests', sub: 'NO SPECIAL CONNECTION NEEDED', top: 262 },
+  ],
+  slams: [
+    { a: T.long - 0.2, b: T.holds - 0.05, text: 'long polling', sub: 'THE SERVER WAITS TO ANSWER', size: 60 },
+  ],
+  bad: ['wasted', 'nothing'],
+  good: ['answers', 'once'],
+  tiles: [['⇆', 'LONG<br>POLLING'], ['⇄', 'WEB<br>SOCKETS'], ['⏰', 'CRON<br>JOBS']],
+  end: CUT.END, follow: T.follow,
+  cover: { t: 'LONG POLLING', at: T.answers + 0.5, zoom: 0.92, dy: 40 },
+  flash: (t) => 0.06 * pulse(t, T.answers, 7) + 0.07 * pulse(t, T.answers2, 7),
+};
+</script>
+<script src="../_ember/overlay.js"></script>
+<script src="../_ember/play.js"></script>
+</body>
+</html>

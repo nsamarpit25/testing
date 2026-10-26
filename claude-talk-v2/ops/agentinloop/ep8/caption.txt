@@ -1,0 +1,5 @@
+Reset my password eight times. "Check your inbox." Nothing. Not even spam. Claude opened the code and found a TODO from 2019: send the email. The button has been confidently lying for seven years 🙃
+
+What's the oldest TODO in your codebase?
+
+#webdev #techdebt #programming #aicomedy #developerhumor

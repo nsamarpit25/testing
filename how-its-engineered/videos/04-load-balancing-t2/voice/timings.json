@@ -1,0 +1,58 @@
+[
+ {
+  "li": 0,
+  "pi": 0,
+  "say": "You paid for ten servers. Nine sit idle. One is drowning in requests.",
+  "show": "You paid for ten servers. Nine sit idle. One is drowning in requests.",
+  "start": 0.0,
+  "end": 4.02
+ },
+ {
+  "li": 1,
+  "pi": 0,
+  "say": "They all run copies of the same app. What is missing is a traffic director.",
+  "show": "They all run copies of the same app. What is missing is a traffic director.",
+  "start": 4.32,
+  "end": 7.58
+ },
+ {
+  "li": 2,
+  "pi": 0,
+  "say": "A load balancer decides which server gets each request, like each page load.",
+  "show": "A load balancer decides which server gets each request, like each page load.",
+  "start": 8.2,
+  "end": 11.52
+ },
+ {
+  "li": 3,
+  "pi": 0,
+  "say": "Round robin takes turns: one, two, three, then back to one.",
+  "show": "Round robin takes turns: one, two, three, then back to one.",
+  "start": 12.02,
+  "end": 15.44
+ },
+ {
+  "li": 4,
+  "pi": 0,
+  "say": "Another rule, least connections, picks the server with the fewest open connections. Different requests can take different amounts of time.",
+  "show": "Another rule, least connections, picks the server with the fewest open connections. Different requests can take different amounts of time.",
+  "start": 15.94,
+  "end": 21.28
+ },
+ {
+  "li": 5,
+  "pi": 0,
+  "say": "With health checks enabled, probes test each server. After enough failed checks, an unhealthy server gets skipped.",
+  "show": "With health checks enabled, probes test each server. After enough failed checks, an unhealthy server gets skipped.",
+  "start": 21.92,
+  "end": 26.48
+ },
+ {
+  "li": 6,
+  "pi": 0,
+  "say": "Add servers behind it when you need capacity. Your users keep the same address. Spare machines only help when traffic can reach them.",
+  "show": "Add servers behind it when you need capacity. Your users keep the same address. Spare machines only help when traffic can reach them.",
+  "start": 26.48,
+  "end": 32.84
+ }
+]

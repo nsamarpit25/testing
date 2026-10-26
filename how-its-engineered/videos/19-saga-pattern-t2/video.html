@@ -1,0 +1,219 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- 19 Saga pattern, in the 21 ember style. World: your phone at the front; three booking programs in a row at the back
+     (FLIGHT, HOTEL, CAR), each with its own records box behind it. The hook books all three straight from the phone and
+     the car fails (flight stays paid). With the fix, a SAGA box (the travel agent) rises in the middle: it books the steps
+     in order, the car fails, and it runs the cleanups backwards (cancel hotel, cancel flight) and requests the refunds.
+     Beats come from voice/words.json via at(). Shared pieces live in ../_ember/. -->
+<link rel="stylesheet" href="../_ember/fonts.css">
+<link rel="stylesheet" href="../_ember/reel.css">
+</head>
+<body>
+<div id="stage">
+  <div id="world">
+    <canvas id="cv" width="1080" height="1920"></canvas>
+    <div class="layer" id="lbls"></div>
+  </div>
+</div>
+<script src="../../tools/lib.js"></script>
+<script src="voice/words.js"></script>
+<script src="../_ember/three.js"></script>
+<script src="../_ember/world.js"></script>
+<script>window.TAIL = 0.9;</script>
+<script src="../_ember/base.js"></script>
+<script>
+const addIcon = (k, d) => { ICON[k] = d; P2[k] = new Path2D(d); };
+addIcon('user', 'M50 18 a14 14 0 1 0 0.1 0 M24 84 Q24 56 50 56 Q76 56 76 84');
+addIcon('plane', 'M50 12 L56 40 L88 56 L88 64 L56 54 L54 76 L64 84 L64 90 L50 85 L36 90 L36 84 L46 76 L44 54 L12 64 L12 56 L44 40 Z');
+addIcon('bed', 'M14 74 V34 M14 60 H86 V74 M28 52 a7 7 0 1 0 0.1 0 M42 48 H76 Q86 48 86 60');
+addIcon('car', 'M14 66 V52 L28 34 H72 L86 52 V66 Z M30 72 a7 7 0 1 0 0.1 0 M70 72 a7 7 0 1 0 0.1 0 M26 52 H74');
+for (let i = 0; i < 12; i++) ORBS.push({ core: orbSprite(9), glow: orbSprite(34), trail: [0, 1, 2, 3, 4].map(() => orbSprite(10)) });
+
+/* ---------------- beats */
+const T = {
+  trip: at('flight') - 0.3, flight1: at('flight'), hotel1: at('hotel'), car1: at('car'), fails1: at('fails'), who: at('who'), paid: at('money'),
+  separate: at('separate'), own: at('own'), records: at('records'), shared: at('shared'), undo: at('undo'),
+  saga: at('saga'), runs: at('runs'), one: at('one'), cleanup: at('cleanup'), something: at('something'),
+  first: line(3).start, flight3: at('flight', 2), hotel2: at('hotel', 2), succeed: at('success'), car3: at('car', 2), fails3: at('fails', 3),
+  backwards: at('backwards'), cancel: at('cancel'), hotel3: at('hotel', 3), flight4: at('flight', 3), refunds: at('refunds'),
+  like: at('like'), travel: at('travel'), step2: at('undoing'), step3: at('trip'), reverse: at('reverse'),
+  these: at('these'), compensating: at('compensating'), write: at('write'), aws: at('aws'), saga3: at('saga', 3),
+  ifv: at('if'), follow: at('follow'),
+};
+const CUT = { SEP: T.separate - 0.2, SAGA: T.saga - 0.3, RUN: T.first - 0.2, BACK: T.backwards - 0.3, AGENT: T.like - 0.2, COMP: T.these - 0.2, TOOLS: T.aws - 0.3, END: T.ifv - 0.15 };
+
+/* ---------------- layout */
+const SV = [[-185, 110], [0, 110], [185, 110]], PH = [-40, -190], SG = [0, -45];
+const NAMES = ['FLIGHT', 'HOTEL', 'CAR'], ICONS = ['plane', 'bed', 'car'], PRICE = ['$420', '$180', '$60'];
+
+/* ---------------- camera */
+const WIDE = { f: [60, -10, 30], s: 0.92, a: -0.42, e: 0.62, sy: 540 };
+const SHOTS = [
+  { t: 0, d: 0, f: [25, 0, 40], s: 1.0, a: -0.38, e: 0.54, sy: 540 },
+  { t: CUT.SEP, d: 1.0, f: [60, 50, 30], s: 0.95, a: -0.42, e: 0.58, sy: 540 },
+  { t: CUT.SAGA, d: 1.0, ...WIDE },
+  { t: CUT.RUN, d: 1.0, ...WIDE, f: [60, 0, 30], s: 0.95 },
+  { t: CUT.BACK, d: 1.0, ...WIDE, f: [45, 0, 30], s: 0.97 },
+  { t: CUT.AGENT, d: 1.0, ...WIDE },
+  { t: CUT.COMP, d: 1.0, ...WIDE, s: 0.9, sy: 580 },
+  { t: CUT.TOOLS, d: 1.0, ...WIDE, s: 0.88, sy: 580 },
+  { t: CUT.END, d: 2.0, ...WIDE, s: 0.86, sy: 600 },
+];
+// t2 remake: every shot re-angled (azimuth, elevation, zoom) so no frame matches the original
+const REANGLE = [[-0.15, 0.06, 1.05], [0.14, -0.04, 1.04], [-0.13, 0.05, 1.06], [0.15, 0.04, 1.04], [-0.16, -0.05, 1.05], [0.12, 0.06, 1.06], [-0.14, 0.05, 1.04]];  // zoomed in so the scene fills more of the frame
+SHOTS.forEach((s, i) => { const r = REANGLE[i % REANGLE.length]; s.a += r[0]; s.e = Math.min(1.0, Math.max(0.3, s.e + r[1])); s.s *= r[2]; });
+
+const KICKS = [[T.flight1, 0.03], [T.hotel1, 0.03], [T.fails1, 0.06], [T.paid, 0.03], [T.shared, 0.04], [T.saga, 0.05], [T.cleanup, 0.03],
+  [T.flight3, 0.03], [T.hotel2, 0.03], [T.fails3, 0.06], [T.backwards, 0.04], [T.hotel3, 0.04], [T.flight4, 0.04], [T.refunds, 0.04], [T.travel, 0.03], [T.compensating, 0.04], [T.aws, 0.03]];
+const SHAKES = [[T.fails1, 3, 0.3], [T.fails3, 3, 0.3]];
+
+/* ---------------- each booking's state: '' idle, 'pend', 'ok', 'bad', 'undo'. The saga starts the story over. */
+const B = T.saga - 0.3;
+function stateAt(i, t) {
+  if (t < B) {
+    if (i === 0) return t >= T.flight1 + 0.05 ? 'ok' : '';
+    if (i === 1) return t >= T.hotel1 + 0.05 ? 'ok' : '';
+    return t >= T.fails1 ? 'bad' : t >= T.car1 + 0.05 ? 'pend' : '';
+  }
+  if (i === 0) return t >= T.flight4 + 0.3 ? 'undo' : t >= T.flight3 + 0.3 ? 'ok' : '';
+  if (i === 1) return t >= T.hotel3 + 0.1 ? 'undo' : t >= T.hotel2 + 0.35 ? 'ok' : '';
+  return t >= T.fails3 ? 'bad' : t >= T.car3 + 0.1 ? 'pend' : '';
+}
+const ST_COL = { '': DIM, pend: AMB, ok: OK, bad: RED, undo: AMB };
+const ST_TXT = { '': '—', pend: '…', ok: '✓ BOOKED', bad: '✗ FAILED', undo: '↺ CANCELLED' };
+
+/* ---------------- build the world */
+const sv = SV.map((p) => {
+  const b = emberBox(p[0], p[1], 136, 60, 98, O);
+  const f = decal(136, 98, 'front', 5, b.g); f.m.position.set(0, -30.3, 49);
+  const db = emberBox(p[0], p[1] + 70, 70, 34, 26, O);
+  return { b, f, db, pool: pool(p[0], p[1], 120, O), p };
+});
+const ph = emberBox(PH[0], PH[1], 44, 10, 78, O);
+const phF = decal(40, 72, 'front', 6, ph.g); phF.m.position.set(0, -5.3, 39);
+const poolP = pool(PH[0], PH[1], 90, O);
+const sg = emberBox(SG[0], SG[1], 120, 56, 62, AMB);
+const sgF = decal(120, 62, 'front', 5, sg.g); sgF.m.position.set(0, -28.3, 31);
+const poolG = pool(SG[0], SG[1], 130, AMB);
+const P_OUT = [PH[0], PH[1] + 8, 50], G_C = [SG[0], SG[1], 40], S_IN = SV.map((p) => [p[0], p[1] - 32, 45]);
+const rPS = SV.map((p, i) => road([[P_OUT[0], P_OUT[1], 0], [S_IN[i][0], S_IN[i][1], 0]], O));
+const rPG = road([[P_OUT[0], P_OUT[1], 0], [SG[0], SG[1] - 28, 0]], AMB);
+const rGS = SV.map((p, i) => road([[SG[0], SG[1] + 28, 0], [S_IN[i][0], S_IN[i][1], 0]], AMB));
+
+/* ---------------- canvas faces */
+const label = (g, W_, H_, txt, col, size, y = H_ / 2) => { g.fillStyle = col; g.font = `800 ${size}px Mono`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.shadowColor = col; g.shadowBlur = 12; g.fillText(txt, W_ / 2, y); g.shadowBlur = 0; g.textAlign = 'left'; };
+function svDraw(g, W_, H_, i, col, st) {
+  label(g, W_, H_, NAMES[i], col, 44, H_ * 0.17);
+  icon(g, ICONS[i], W_ / 2, H_ * 0.47, H_ * 0.4, col, 7, 8);
+  label(g, W_, H_, ST_TXT[st], ST_COL[st] === DIM ? col + '66' : ST_COL[st], st === 'undo' ? 36 : 42, H_ * 0.82);
+}
+function phoneDraw(g, W_, H_, col) { g.strokeStyle = col; g.lineWidth = 6; rrect(g, 14, 14, W_ - 28, H_ - 28, 22); g.stroke(); icon(g, 'user', W_ / 2, H_ / 2, W_ * 0.62, col, 8, 8); }
+function sgDraw(g, W_, H_, col, t) {
+  label(g, W_, H_, 'SAGA', col, 62, H_ * 0.28);
+  const back = t > T.backwards - 0.1;
+  label(g, W_, H_, back ? '3 ← 2 ← 1' : '1 → 2 → 3', back ? AMB : col + 'cc', 46, H_ * 0.7);
+}
+
+/* ---------------- the world, frame by frame */
+function world(t) {
+  const thru = (pts, t0, dur, col, size = 1) => { const q = (t - t0) / dur; if (q > -0.02 && q < 1.1) orb(pts, clamp(q), col, clamp(q / 0.08) * (1 - clamp((q - 1) / 0.1)), size); };
+  const inB = t >= B;
+  // booking programs + their own records
+  sv.forEach((s, i) => {
+    const q = ease.back(prog(t, 0.05 + i * 0.08, 0.4 + i * 0.08)), st = stateAt(i, t);
+    const col = st === 'bad' ? RED : st === 'ok' ? mixHex(O, OK, 0.55) : st === 'undo' ? AMB : O;
+    s.b.g.visible = q > 0.01; s.b.g.scale.set(1, 1, Math.max(0.01, q));
+    s.b.setLook(col, 1.2 + 2.5 * pulse(t, i === 2 ? T.fails1 : 99) + 2.5 * pulse(t, i === 2 ? T.fails3 : i === 1 ? T.hotel3 + 0.1 : T.flight4 + 0.3), 1);
+    s.f.m.visible = s.b.g.visible; s.f.draw((g, W_, H_) => svDraw(g, W_, H_, i, col, st));
+    s.pool.set(col, 0.45 * q);
+    const dq = ease.back(prog(t, T.own - 0.15 + i * 0.1, T.own + 0.2 + i * 0.1));
+    s.db.g.visible = dq > 0.01; s.db.g.scale.set(1, 1, Math.max(0.01, dq)); s.db.setLook(O2, 0.9 + 1.5 * pulse(t, T.records), 0.8);
+    ripple(t, i === 1 ? T.step2 : i === 0 ? T.step3 : 99, s.p[0], s.p[1], 2, AMB, 100, 0.6);
+  });
+  sparks(t, T.fails1, SV[2][0], SV[2][1] - 20, 80, RED, 26, 3, 170, 0.7);
+  sparks(t, T.fails3, SV[2][0], SV[2][1] - 20, 80, RED, 26, 4, 170, 0.7);
+  // phone
+  const pq = ease.back(prog(t, 0.1, 0.45));
+  ph.g.visible = pq > 0.01; ph.g.scale.set(1, 1, Math.max(0.01, pq)); ph.setLook(O, 1.2 + 2 * pulse(t, T.refunds + 0.3), 1);
+  phF.m.visible = ph.g.visible; phF.draw((g, W_, H_) => phoneDraw(g, W_, H_, O)); poolP.set(O, 0.4 * pq);
+  // hook: the phone books all three directly
+  const fadeA = 1 - ep(t, B - 0.3, B);
+  rPS.forEach((r, i) => r.set(ep(t, 0.4, 0.8), O, 0.45 * fadeA, t));
+  [T.flight1, T.hotel1, T.car1].forEach((w, i) => thru([P_OUT, S_IN[i]], w - 0.4, 0.4, O2, 0.85));
+  // the saga (travel agent) rises
+  const gq = ease.back(prog(t, T.saga - 0.25, T.saga + 0.15));
+  sg.g.visible = gq > 0.01; sg.g.scale.set(1, 1, Math.max(0.01, gq));
+  sg.setLook(AMB, 1.3 + 2.5 * pulse(t, T.saga) + 2 * pulse(t, T.backwards) + 1.5 * pulse(t, T.travel), 1);
+  sgF.m.visible = sg.g.visible; sgF.draw((g, W_, H_) => sgDraw(g, W_, H_, AMB, t)); poolG.set(AMB, 0.5 * gq);
+  rPG.set(ep(t, T.saga, T.saga + 0.4), AMB, 0.5, t);
+  rGS.forEach((r, i) => r.set(ep(t, T.saga + 0.1 * i, T.saga + 0.4 + 0.1 * i), AMB, 0.45, t));
+  if (inB) {
+    // steps in order
+    thru([P_OUT, G_C], T.first - 0.3, 0.35, O2, 0.85);
+    thru([G_C, S_IN[0]], T.flight3 - 0.1, 0.4, O2, 0.85);
+    thru([G_C, S_IN[1]], T.hotel2 - 0.05, 0.4, O2, 0.85);
+    thru([G_C, S_IN[2]], T.car3 - 0.3, 0.4, O2, 0.85);
+    thru([S_IN[2], G_C], T.fails3 + 0.05, 0.4, RED, 0.9);
+    // cleanups, backwards
+    thru([G_C, S_IN[1]], T.cancel - 0.25, 0.4, AMB, 1.0);
+    thru([G_C, S_IN[0]], T.flight4 - 0.15, 0.45, AMB, 1.0);
+    // refunds requested back to you
+    thru([S_IN[1], G_C, P_OUT], T.refunds - 0.35, 0.7, OK, 0.9);
+    thru([S_IN[0], G_C, P_OUT], T.refunds - 0.2, 0.7, OK, 0.9);
+    ripple(t, T.refunds + 0.4, PH[0], PH[1], 2, OK, 90, 0.7);
+  }
+}
+
+/* ---------------- world tags */
+function tags(t) {
+  const P_T = [PH[0], PH[1], 115], G_T = [SG[0], SG[1], 90], G_F = [SG[0] + 130, SG[1] - 70, 0], ST = SV.map((p) => [p[0], p[1], 130]);
+  tag('time', '<b>BOOKING A TRIP</b>', '', P_T, t, 0.2, T.who - 0.05);
+  tag('paid', `<span style="color:${RED}">FLIGHT PAID · NO CAR</span>`, `border-color:${RED}88`, ST[0], t, T.paid - 0.1, CUT.SEP + 0.2);
+  tag('who', `<span style="color:${AMB}">WHO REFUNDS YOU?</span>`, `font-size:15px;padding:9px 13px;letter-spacing:1px;border-color:${AMB}`, P_T, t, T.who, CUT.SEP + 0.2);
+  tag('sep', '<b>3 PROGRAMS</b> · 3 SETS OF RECORDS', '', [SV[1][0], SV[1][1] + 70, 70], t, T.records - 0.1, CUT.SAGA + 0.2, -10);
+  tag('noundo', `<span style="color:${RED}">✗ NO SHARED UNDO</span>`, `font-size:15px;padding:9px 13px;letter-spacing:1px;border-color:${RED}`, [SG[0], SG[1], 60], t, T.shared, CUT.SAGA - 0.15);
+  tag('order', `<span style="color:${AMB}">STEPS IN ORDER · 1 → 2 → 3</span>`, `border-color:${AMB}88`, G_T, t, T.runs, T.first - 0.05, -82);  // lifted clear of the SAGA box label
+  tag('plan', `<span style="color:${O2}">EVERY STEP HAS A CLEANUP</span>`, `border-color:${O}88`, G_T, t, T.cleanup, T.first - 0.05, -34);
+  tag('back', `<span style="color:${AMB}">CLEANING UP BACKWARDS</span>`, `font-size:15px;padding:9px 13px;letter-spacing:1px;border-color:${AMB}`, G_F, t, T.backwards, CUT.AGENT + 0.2);
+  tag('refund', `<span style="color:${OK}">REFUNDS REQUESTED</span>`, `border-color:${OK}88`, P_T, t, T.refunds + 0.3, T.travel - 0.1);
+  tag('agent', `<span style="color:${AMB}">SAGA = TRAVEL AGENT</span>`, `border-color:${AMB}88`, G_F, t, T.travel - 0.05, CUT.COMP + 0.2);
+  tag('rev', `<span style="color:${O2}">STEP BY STEP · IN REVERSE</span>`, `border-color:${O}88`, G_F, t, T.step2, CUT.COMP + 0.2, 36);
+}
+
+/* ---------------- reel config */
+const svgSF = `<svg width="46" height="46" viewBox="0 0 100 100" fill="none" stroke="#FF9900" stroke-width="7" stroke-linecap="round"><circle cx="50" cy="16" r="9"/><rect x="30" y="38" width="40" height="22" rx="6"/><circle cx="24" cy="84" r="9"/><circle cx="76" cy="84" r="9"/><path d="M50 25 V38 M42 60 L28 76 M58 60 L72 76"/></svg>`;
+const REEL = {
+  shots: SHOTS, kicks: KICKS, shakes: SHAKES, world, tags,
+  code: [
+    [T.trip - 0.3, CUT.SEP - 0.05, 'checkout', 'your trip', [[0, 'BOOKING', AMB], [T.fails1, 'HALF BOOKED', RED]],
+      [['book flight     $420'], ['book hotel      $180', T.hotel1 - 0.3], ['rent car        $60', T.car1 - 0.3]],
+      [[T.flight1 + 0.05, 1, '✓ paid', 'good'], [T.hotel1 + 0.05, 2, '✓ paid', 'good'], [T.fails1, 3, '✗ failed', 'bad'], [T.paid, 1, '✗ stuck paid', 'bad']]],
+    [T.cleanup - 0.25, T.like - 0.25, 'saga plan', 'step → its cleanup', [[0, 'PLAN', AMB], [T.fails3, 'FAILED', RED], [T.backwards, 'CLEANING UP', AMB], [T.refunds, 'UNDONE', OK]],
+      [['book flight  ↺ cancel flight'], ['book hotel   ↺ cancel hotel'], ['rent car     ↺ cancel car'], ['refunds → you', T.refunds - 0.1]],
+      [[T.flight3 + 0.3, 1, '✓', 'good'], [T.hotel2 + 0.35, 2, '✓', 'good'], [T.fails3, 3, '✗ failed', 'bad'], [T.hotel3 + 0.1, 2, '↺ undone', 'amb'], [T.flight4 + 0.3, 1, '↺ undone', 'amb'], [T.refunds + 0.1, 4, '✓', 'good']]],
+    [T.these - 0.15, T.aws - 0.2, 'compensating actions', 'you write these', [[0, 'CLEANUP', AMB]],
+      [['cancelHotel(booking)'], ['cancelFlight(booking)'], ['requestRefund(payment)']],
+      [[T.write, 1, 'yours', 'amb'], [T.write + 0.15, 2, 'yours', 'amb'], [T.write + 0.3, 3, 'yours', 'amb']], 'type'],
+  ],
+  hl: /\b(book|rent|cancel|refunds)\b/g,
+  tools: [
+    { a: T.aws - 0.1, b: CUT.END, svg: svgSF, name: 'AWS Step Functions', sub: 'RUNS EACH STEP + ITS CLEANUP', top: 150 },
+  ],
+  slams: [
+    { a: T.saga - 0.15, b: T.cleanup - 0.3, text: 'saga pattern', sub: 'STEPS IN ORDER, A CLEANUP FOR EACH', size: 62 },
+  ],
+  bad: ['fails', 'failed', 'money'],
+  good: ['refunds', 'succeed'],
+  tiles: [['↺', 'SAGA<br>PATTERN'], ['#', 'IDEM-<br>POTENCY'], ['♥', 'HEALTH<br>CHECKS']],
+  end: CUT.END, follow: T.follow,
+  wbw: true,
+  cover: { k: 'SAGA PATTERN', t: 'CAR FAILED.<br>WHO REFUNDS?', at: T.who + 0.4, zoom: 1, dy: 0 },
+  flash: (t) => 0.1 * pulse(t, T.fails1, 7) + 0.08 * pulse(t, T.fails3, 7),
+};
+</script>
+<script src="../_ember/overlay.js"></script>
+<script src="../_ember/play.js"></script>
+</body>
+</html>

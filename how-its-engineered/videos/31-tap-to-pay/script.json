@@ -1,0 +1,51 @@
+{
+ "topic": "How Tap to Pay Works",
+ "lines": [
+  [
+   {
+    "say": "Your bank card has no battery. So how does it talk to the card machine the moment you tap?",
+    "show": "Your bank card has *no battery.* So how does it [talk to the card machine] the moment you tap?"
+   }
+  ],
+  [
+   {
+    "say": "The machine powers the card, by making an invisible magnetic field that keeps changing.",
+    "show": "The *machine* powers the card, by making an invisible *magnetic field* that [keeps changing.]"
+   }
+  ],
+  [
+   {
+    "say": "Hidden around the edge of your card is a coil of wire. Bring it close, and that field creates just enough electricity in the coil to wake the chip.",
+    "show": "Hidden around the edge of your card is a *coil of wire.* Bring it close, and that field creates just enough electricity in the coil to [wake the chip.]"
+   }
+  ],
+  [
+   {
+    "say": "The chip answers through the same field. It doesn't just send your card number. It adds a one-time code that only works for this payment.",
+    "show": "The chip answers through the same field. It doesn't just send your card number. It adds a *one-time code* that [only works for this payment.]"
+   }
+  ],
+  [
+   {
+    "say": "Usually, the machine sends that to your bank, which checks the code and approves or declines, within seconds.",
+    "show": "Usually, the machine sends that to your *bank,* which checks the code and *approves* or declines, [within seconds.]"
+   }
+  ],
+  [
+   {
+    "say": "In twenty fourteen, London let people tap bank cards straight onto the Tube. But a gate can't wait for the bank. So it checks that the card is genuine right there, fast enough for you to keep walking. The bank checks the payment later.",
+    "show": "In 2014, London let people tap *bank cards* straight onto the *Tube.* But a gate can't wait for the bank. So it checks that the card is *genuine* right there, [fast enough for you to keep walking.] The bank checks the payment later."
+   }
+  ],
+  [
+   {
+    "say": "So before the machine can take your money, it has to give your card something first: electricity.",
+    "show": "So before the machine can take your money, it has to give your card something first: [electricity.]"
+   },
+   {
+    "say": "Follow for how everyday tech really works.",
+    "show": "Follow for how [everyday tech] really works."
+   }
+  ]
+ ]
+}

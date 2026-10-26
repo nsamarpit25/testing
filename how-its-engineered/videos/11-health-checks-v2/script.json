@@ -1,0 +1,32 @@
+{
+ "topic": "Health checks",
+ "lines": [
+  [
+   {"say": "Your app froze on Saturday night.", "show": "Your app [froze] on Saturday night."},
+   {"say": "Still running. Not answering anyone.", "show": "Still running. *Not answering anyone.*"},
+   {"say": "Thirty seconds later, something restarted it. How did it know?", "show": "30 seconds later, something [restarted it.] How did it know?"}
+  ],
+  [
+   {"say": "Here's the trap: running isn't the same as working. A frozen app doesn't crash, so a crash restart never kicks in.", "show": "Here's the trap: *running* isn't the same as *working.* A frozen app doesn't crash, so [a crash restart never kicks in.]"}
+  ],
+  [
+   {"say": "The fix is a health check: the system running your app keeps asking it, are you okay?", "show": "The fix is a [health check:] the system running your app keeps asking it, *are you okay?*"}
+  ],
+  [
+   {"say": "Like a nurse checking your pulse every few minutes.", "show": "Like a *nurse* checking your [pulse] every few minutes."}
+  ],
+  [
+   {"say": "Check one: are you alive? Every few seconds, it calls a health page on your app.", "show": "Check one: are you *alive?* Every few seconds, it calls a [health page] on your app."},
+   {"say": "Three missed answers in a row, the usual default, and it restarts the app.", "show": "*3 missed answers* in a row, the usual default, and it [restarts the app.]"}
+  ],
+  [
+   {"say": "Check two: are you ready? A new copy of your app that's still starting up says not yet, and user requests skip it until it's ready.", "show": "Check two: are you *ready?* A new copy of your app that's still starting up says *not yet,* and user requests [skip it] until it's ready."}
+  ],
+  [
+   {"say": "In Kubernetes, the tool that runs your app's copies, these are liveness and readiness probes.", "show": "In *Kubernetes,* the tool that runs your app's copies, these are [liveness] and [readiness] probes."}
+  ],
+  [
+   {"say": "If you're a vibe coder, follow for the system design your AI skipped.", "show": "If you're a vibe coder, follow for the system design your AI [skipped.]"}
+  ]
+ ]
+}

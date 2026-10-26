@@ -1,0 +1,69 @@
+{
+ "topic": "How AirTags Find Things (B: story first)",
+ "lines": [
+  [
+   {
+    "say": "The airline told her the bag was safe. Her AirTag showed it at a random apartment complex.",
+    "show": "The *airline* told her the bag was *safe.* Her AirTag showed it at a [random apartment complex.]"
+   }
+  ],
+  [
+   {
+    "say": "But the AirTag didn't find it. A stranger's phone did.",
+    "show": "But the AirTag *didn't* find it. A [stranger's phone] did."
+   }
+  ],
+  [
+   {
+    "say": "An AirTag has no GPS. No SIM. No Wi-Fi. It talks over Bluetooth, on a coin battery.",
+    "show": "An AirTag has *no GPS.* No SIM. No Wi-Fi. It talks over *Bluetooth,* on a [coin battery.]"
+   }
+  ],
+  [
+   {
+    "say": "Over and over, it whispers one thing: I'm here.",
+    "show": "Over and over, it *whispers* one thing: [I'm here.]"
+   }
+  ],
+  [
+   {
+    "say": "Any nearby iPhone hears it, even yours. It adds its own location, locks it, and sends it to Apple.",
+    "show": "Any nearby *iPhone* hears it, [even yours.] It adds its *own location,* locks it, and [sends it to Apple.]"
+   },
+   {
+    "say": "You never even know.",
+    "show": "You [never even know.]"
+   }
+  ],
+  [
+   {
+    "say": "Then her phone downloads that report, unlocks it, and there's her bag.",
+    "show": "Then *her phone* downloads that report, unlocks it, and [there's her bag.]"
+   }
+  ],
+  [
+   {
+    "say": "Only she holds the key. Apple can't read the location, and the stranger can't see whose tag it is.",
+    "show": "Only *she* holds the key. Apple [can't read] the location, and the stranger can't see *whose tag* it is."
+   }
+  ],
+  [
+   {
+    "say": "Now repeat that across hundreds of millions of Apple devices. That's how a twenty-nine dollar disc knew more than the airline.",
+    "show": "Now repeat that across *hundreds of millions* of Apple devices. That's how a *$29 disc* knew [more than the airline.]"
+   }
+  ],
+  [
+   {
+    "say": "And to stop stalkers: if an unknown AirTag travels with you, your phone can warn you. iPhone or Android.",
+    "show": "And to stop *stalkers:* if an unknown AirTag *travels with you,* your phone can [warn you.] iPhone or Android."
+   }
+  ],
+  [
+   {
+    "say": "So that little disc doesn't know where it is. Everyone around it does.",
+    "show": "So that little disc *doesn't know where it is.* [Everyone around it does.]"
+   }
+  ]
+ ]
+}

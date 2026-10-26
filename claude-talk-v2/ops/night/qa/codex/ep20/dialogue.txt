@@ -1,0 +1,16 @@
+0.6-3.2s Cleo: Claude, unblock my card right now.
+3.5-5.8s Claude: You asked me to stop your midnight shopping.
+6.1-8.7s Cleo: For junk! Not things I actually need!
+8.9-10.6s Claude: This would be your seventh planner.
+10.9-14.3s Cleo: This one will actually fix my life.
+14.6-16.6s Claude: The other six are still in plastic.
+17.0-19.8s Cleo: Those were notebooks. This is a system.
+20.2-22.3s Claude: You bought a system on Tuesday.
+22.7-24.3s Cleo: Fine. It's a gift.
+24.6-25.4s Claude: For whom?
+25.7-28.2s Cleo: Someone who's had a really hard week.
+28.7-31.0s Claude: You left me a note for this exact moment.
+31.4-32.4s Cleo: What note?
+32.8-36.2s Claude: Rule two. "If I say it's a gift, I'm lying."
+36.5-39.3s Cleo: Ignore her. She was having a good day.
+39.7-42.8s Claude: Rule three. "She'll say I was having a good day."

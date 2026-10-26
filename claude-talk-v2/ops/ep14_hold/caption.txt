@@ -1,0 +1,2 @@
+fetch() doesn't reject on a 500 error, so a failed checkout can still show the success screen. Check response.ok and throw before you celebrate.
+#JavaScript #FetchAPI #WebDevelopment #ErrorHandling #Debugging

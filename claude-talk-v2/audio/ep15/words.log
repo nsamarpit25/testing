@@ -1,0 +1,16 @@
+01 10/10 matched | Claude,@0.00 Chrome's@0.92 gatekeeping.@1.64 My@2.84 API@2.96 works@3.38 in@3.88 Postman.@4.22 Here?@5.32 CORS.@6.06
+02 3/3 matched | Finally.@0.00 Board@1.04 time.@1.20
+03 7/7 matched | Since@0.00 when@0.38 do@0.68 you@0.84 have@0.96 a@1.18 board?@1.34
+04 13/15 matched | Since@0.00 now.@0.28 Your@1.20 page:@1.30 localhost,@2.00 port@2.74 three@2.88 thousand.@3.12 Your@3.98 API:@4.14 same@5.10 host,@5.24 port@5.82 eight@5.96 thousand.@5.96
+05 2/2 matched | Same@1.08 laptop.@1.52
+06 11/11 matched | Different@0.00 port,@0.44 different@1.32 origin.@1.64 And@3.02 Chrome@3.06 checks@3.44 the@3.82 API's@4.06 guest@4.58 list.@4.72
+07 5/5 matched | So@0.00 Chrome@0.40 blocks@0.92 the@1.40 request?@1.60
+08 18/18 matched | Sometimes@0.00 a@0.68 preflight@0.96 check@1.40 stops@1.76 it.@2.30 Otherwise,@3.20 Chrome@3.94 hides@4.12 the@4.54 response@4.74 unless@5.14 your@5.52 origin@5.86 is@6.24 on@6.42 the@6.58 list.@6.70
+09 2/2 matched | And@0.00 Postman?@0.30
+10 10/10 matched | Postman@0.00 isn't@0.62 a@1.26 browser.@1.44 It@2.36 never@2.46 checks@2.88 the@3.20 guest@3.36 list.@3.48
+11 8/8 matched | So@0.00 I@0.48 fix@0.86 it@1.20 in@1.38 the@1.52 front@1.64 end?@1.82
+12 14/15 matched | Server@0.00 side.@0.36 Add@1.12 Access-Control-Allow-Origin@1.32 with@3.36 your@3.84 page's@4.08 exact@4.60 origin.@5.08 Guests@6.34 don't@6.50 write@6.96 the@7.16 guest@7.34 list.@7.52
+13 10/10 matched | Allowed@0.00 my@0.58 page's@0.80 exact@1.44 origin@1.90 on@2.40 the@2.60 server...@2.82 It@3.74 loaded!@3.84
+14 3/3 matched | Next@0.00 lesson:@0.30 production.@1.16
+15 3/3 matched | Same@0.00 guest@0.44 list?@0.70
+16 4/4 matched | New@0.00 address.@0.58 Back@1.44 outside.@1.54

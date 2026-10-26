@@ -1,0 +1,396 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- 45 Pessimistic locking (built on 44 Optimistic locking). Same kit: one database ROW (the last concert ticket #7, a glowing
+     record block with a live front panel: stock, lock owner) at the back, two phones in front (CHECKOUT A, CHECKOUT B). Both tap Buy.
+     A's lock request lands first: a padlock on the row, A reads "1 left". B's lock request stops short of the row and hovers, waiting.
+     A sells, stock 0, commits: saved, padlock opens. B's waiting request moves in, B holds the lock, reads 0, sold out. Then a
+     library-book card, a SELECT ... FOR UPDATE code card, a Postgres/MySQL tool card, a queue of waiting requests piling up and
+     draining once transactions are short, and a "common vs rare clashes" verdict. A "stock · lock · orders" HUD on top. -->
+<link rel="stylesheet" href="../_ember/fonts.css">
+<link rel="stylesheet" href="../_ember/reel.css">
+<style>
+#cap { top: 728px !important; }
+#cap .box { background: linear-gradient(90deg, transparent, rgba(8,7,6,0.82) 16%, rgba(8,7,6,0.82) 84%, transparent); }
+#ed { top: 196px !important; }
+#mt .n.lk { font-size: 20px; }
+.lbl { background: rgba(12,11,10,0.95); }
+#mt { position: absolute; left: 70px; right: 70px; top: 114px; height: 72px; opacity: 0; padding: 8px 14px; box-sizing: border-box; display: flex; align-items: center; justify-content: space-around;
+  background: rgba(14,12,11,0.95); border: 1px solid rgba(255,255,255,0.12); border-radius: 12px; box-shadow: 0 14px 34px rgba(0,0,0,0.6); }
+#mt .c { display: flex; flex-direction: column; align-items: center; min-width: 84px; }
+#mt .n { font: 800 22px/1 Inter; white-space: nowrap; }
+#mt .k { font: 800 9.5px/1 Mono; letter-spacing: 1px; margin-top: 6px; color: #9c948c; white-space: nowrap; }
+#mt .sep { width: 1px; height: 40px; background: rgba(255,255,255,0.08); }
+.cd2 { position: absolute; left: 40px; right: 40px; top: 196px; opacity: 0; background: rgba(16,14,12,0.96); border: 1px solid rgba(111,195,255,0.4); border-radius: 14px; box-shadow: 0 20px 50px rgba(0,0,0,0.7); overflow: hidden; padding: 14px 16px 12px; }
+.cd2 .h { font: italic 400 30px/1 Instrument; color: #efe6d8; margin-bottom: 4px; }
+.cd2 svg { display: block; width: 100%; height: 240px; }
+.cd2 .f { margin-top: 2px; font: 800 12px/1 Mono; letter-spacing: 1.2px; text-align: center; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="world">
+    <canvas id="cv" width="1080" height="1920"></canvas>
+    <div class="layer" id="lbls"></div>
+  </div>
+</div>
+<script src="../../tools/lib.js"></script>
+<script src="voice/words.js"></script>
+<script src="../_ember/three.js"></script>
+<script src="../_ember/world.js"></script>
+<script src="../_ember/base.js"></script>
+<script>
+for (let i = 0; i < 20; i++) ORBS.push({ core: orbSprite(9), glow: orbSprite(34), trail: [0, 1, 2, 3, 4].map(() => orbSprite(10)) });
+const RD = '#6FC3FF';
+
+/* ---------------- beats */
+const T = {
+  by: at('buy'), moment: at('moment'), hold: at('hold'),
+  l1: line(1).start, pess: at('pessimistic'), clash: at('clash'), locks1: at('locks'),
+  l2: line(2).start, alock: at('lock'), one2: at('one', 3),
+  l3: line(3).start, tries: at('tries'), lockb: at('lock', 2), wait: at('wait'),
+  l4: line(4).start, sells: at('sells'), zero: at('zero'), commits: at('commits'), saves: at('saves'), releases: at('releases'),
+  l5: line(5).start, bgets: at('gets', 3), zero2: at('zero', 2), soldout: at('sold'), double: at('double'),
+  l6: line(6).start, library: at('library'), checked: at('checked'), waits: at('waits'), back: at('back'),
+  l7: line(7).start, select: at('select'), transaction: at('transaction'), postgres: at('postgres'),
+  l8: line(8).start, cost: at('cost'), pile: at('pile'), short: at('short'),
+  l9: line(9).start, common: at('common'), rare: at('rare'),
+  ifv: line(10).start, follow: at('follow'),
+};
+// trips: [start] — everything else keys off these
+const FLY = 0.6;
+const LKA = T.alock - FLY + 0.05;                 // A's lock request lands on "lock"
+const LKB = T.lockb - FLY + 0.1;                  // B's lock request: stops short of the row and waits
+const WAIT_Q = 0.72;                             // how far along its path B's request waits
+const WA = T.sells - 0.1;                        // A's write (stock → 0)
+const BGO = T.releases + 0.25;                   // the lock opens → B's request moves in
+const R1 = T.one2 - FLY, R2 = T.zero2 - FLY;     // reads: A gets "1 left", B gets "0 left"
+const land = (s) => s + FLY;
+
+/* ---------------- state of the row, per time */
+const stockAt = (t) => (t < T.zero - 0.05 ? 1 : 0);
+const ordersAt = (t) => (t < T.zero - 0.05 ? 0 : 1);
+const lockAt = (t) => (t < land(LKA) ? '' : t < T.releases ? 'A' : t < BGO + 0.35 ? '' : t < T.soldout + 0.3 ? 'B' : '');
+
+/* ---------------- layout: Z up */
+const RX = 0, RY = 250, RW = 330, RDp = 120, RH = 120;     // the row
+const PH = [[-200, -230], [200, -230]], PW = 150, PD = 26, PHh = 250;   // the two phones
+const PC = [O2, RD], PN = ['A', 'B'];
+const rowTop = [RX, RY, RH + 8], phTop = (i) => [PH[i][0], PH[i][1], PHh + 10];
+const phMid = (i) => [PH[i][0], PH[i][1] + 10, PHh * 0.62];
+const rowFront = (i) => [RX + (i ? 70 : -70), RY - RDp / 2, RH * 0.6];
+function arc(a, b, h, n = 24) { return [...Array(n + 1)].map((_, i) => { const q = i / n; return [lerp(a[0], b[0], q), lerp(a[1], b[1], q), lerp(a[2], b[2], q) + h * 4 * q * (1 - q)]; }); }
+const pathUp = (i) => arc(phMid(i), rowFront(i), 150), pathDown = (i) => arc(rowFront(i), phMid(i), 150);
+
+/* ---------------- camera */
+const pcam = new TH.PerspectiveCamera(42, 540 / 960, 5, 20000); pcam.up.set(0, 0, 1);
+const SHOTS = [
+  { t: 0, p: [0, -1180, 1000], l: [0, 40, 90], f: 42 },
+  { t: 0.01, d: 6, p: [0, -1300, 1120], l: [0, 50, 80], f: 42, e: ease.out },
+  { t: T.l2 - 0.1, d: 1.2, p: [-80, -1260, 1130], l: [-40, 60, 80], f: 42 },
+  { t: T.l3 - 0.1, d: 1.2, p: [90, -1260, 1130], l: [40, 60, 80], f: 42 },
+  { t: T.l4 - 0.2, d: 1.2, p: [0, -1280, 1260], l: [0, 80, 40], f: 42 },
+  { t: T.l5 + 0.1, d: 1.2, p: [70, -1280, 1150], l: [0, 50, 80], f: 42 },
+  { t: T.l8 - 0.2, d: 1.2, p: [0, -1360, 1340], l: [0, 110, 30], f: 42 },
+];
+const KICKS = [[T.by, 0.03], [land(LKA), 0.04], [T.wait, 0.04], [T.zero, 0.03], [T.releases, 0.04], [T.soldout, 0.03], [T.pile, 0.04], [T.short, 0.03]];
+const SHAKES = [[T.wait, 3, 0.3]];
+const _rv = new TH.Vector3();
+function shoot(t) {
+  let p = SHOTS[0].p.slice(), l = SHOTS[0].l.slice(), f = SHOTS[0].f;
+  for (let i = 1; i < SHOTS.length; i++) {
+    const k = SHOTS[i]; if (t < k.t) break;
+    const q = k.d ? (k.e || ease.inOut)(prog(t, k.t, k.t + k.d)) : 1;
+    p = p.map((v, j) => lerp(v, k.p[j], q)); l = l.map((v, j) => lerp(v, k.l[j], q)); f = lerp(f, k.f, q);
+  }
+  let kick = 0;
+  for (const [t0, amp] of KICKS) { const dt = t - t0; if (dt > 0 && dt < 1.2) kick += amp * (dt < 0.05 ? dt / 0.05 : Math.exp(-(dt - 0.05) * 6)); }
+  let sx = 0, sy = 0;
+  for (const [t0, amp, dur] of SHAKES) { const dt = t - t0; if (dt > 0 && dt < dur) { const k = amp * (1 - dt / dur); sx += k * Math.sin(t * 91); sy += k * Math.cos(t * 67); } }
+  pcam.position.set(p[0] + 6 * Math.sin(t * 0.37), p[1] + 6 * Math.cos(t * 0.29), p[2] + 4 * Math.sin(t * 0.23));
+  pcam.lookAt(l[0] + sx, l[1], l[2] + sy);
+  pcam.fov = f * (1 - kick); pcam.updateProjectionMatrix(); pcam.updateMatrixWorld();
+  cam.f = l;
+  _rv.setFromMatrixColumn(pcam.matrixWorld, 0); const n = Math.hypot(_rv.x, _rv.y) || 1; camRight = [_rv.x / n, _rv.y / n, 0];
+  const d = Math.hypot(p[0] - l[0], p[1] - l[1], p[2] - l[2]);
+  scene.fog.near = d * 0.9; scene.fog.far = d * 3.4;
+}
+const _pv = new TH.Vector3();
+P = function (x, y, z) { _pv.set(x, y, z).project(pcam); return [(_pv.x + 1) * 270, (1 - _pv.y) * 480, _pv.z]; };
+
+/* ---------------- the stage */
+floor.scale.set(2.2, 2.2, 1); floor.position.set(0, 1500, -0.5);
+const ROW = emberBox(RX, RY, RW, RDp, RH, O), POOLR = pool(RX, RY, 260, O);
+const PHN = PH.map((p, i) => emberBox(p[0], p[1], PW, PD, PHh, PC[i], { lw: 2.2 }));
+const POOLP = PH.map((p, i) => pool(p[0], p[1], 170, PC[i]));
+const LINKS = PH.map((p) => road([[p[0], p[1] + 30, 0], [lerp(p[0], RX, 0.75), lerp(p[1], RY, 0.75) - 20, 0], [RX + Math.sign(p[0]) * 60, RY - RDp / 2 - 10, 0]], DIM));
+const DROW = decal(RW - 24, RH - 20, 'front', 6); DROW.m.position.set(RX, RY - RDp / 2 - 0.6, RH / 2);
+const DPH = PH.map((p) => { const d = decal(PW - 18, PHh - 26, 'front', 6); d.m.position.set(p[0], p[1] - PD / 2 - 0.6, PHh / 2); return d; });
+const TICKET = new Path2D('M6 32 L94 32 L94 44 Q85 44 85 53 Q85 62 94 62 L94 74 L6 74 L6 62 Q15 62 15 53 Q15 44 6 44 Z M32 36 L32 40 M32 46 L32 50 M32 56 L32 60 M32 66 L32 70 M44 46 L78 46 M44 58 L70 58');
+// padlock: open = shackle lifted and swung
+function padlock(g, x, y, s, col, open) {
+  g.save(); g.translate(x, y); g.scale(s, s); g.strokeStyle = col; g.fillStyle = col; g.lineWidth = 9; g.lineCap = 'round'; g.shadowColor = col; g.shadowBlur = 14;
+  g.beginPath(); if (open) { g.moveTo(-26, -6); g.lineTo(-26, -46); g.arc(4, -46, 30, Math.PI, 0); g.lineTo(34, -40); } else { g.moveTo(-26, -6); g.lineTo(-26, -40); g.arc(0, -40, 26, Math.PI, 0); g.lineTo(26, -6); } g.stroke();
+  rrect(g, -42, -10, 84, 70, 12); g.fill(); g.fillStyle = '#0d0c0b'; g.beginPath(); g.arc(0, 18, 9, 0, Math.PI * 2); g.fill(); g.fillRect(-4, 18, 8, 20);
+  g.restore();
+}
+function drawRow(stock, lk, glow, opening) {
+  const key = [stock, lk, glow, opening.toFixed(2)].join('|'); if (DROW._k === key) return; DROW._k = key;
+  DROW.draw((g, w, h) => {
+    g.fillStyle = 'rgba(14,12,10,0.92)'; rrect(g, 0, 0, w, h, 34); g.fill();
+    g.strokeStyle = glow; g.lineWidth = 8; rrect(g, 4, 4, w - 8, h - 8, 30); g.stroke();
+    g.save(); g.translate(50, 150); g.scale(3.6, 3.6); g.strokeStyle = O2; g.lineWidth = 2.6; g.lineJoin = 'round'; g.lineCap = 'round'; g.shadowColor = O; g.shadowBlur = 8; g.stroke(TICKET); g.restore();
+    g.textBaseline = 'middle';
+    g.fillStyle = '#9c948c'; g.font = '800 64px Mono'; g.fillText('TICKET #7', 50, 90);
+    g.fillStyle = '#F2EEE8'; g.font = '900 150px Inter';
+    g.fillText('STOCK', 470, 250); g.fillStyle = stock ? OK : RED; g.fillText(String(stock), 1080, 250);
+    if (lk || opening > 0) padlock(g, 1420, 250, 1.9, lk === 'B' ? RD : lk === 'A' ? O2 : AMB, !lk);
+    if (lk) { g.fillStyle = lk === 'A' ? O2 : RD; g.font = '900 104px Mono'; g.fillText('LOCKED BY ' + lk, 470, 440); }
+    else if (opening > 0) { g.fillStyle = AMB; g.font = '900 104px Mono'; g.fillText('UNLOCKED', 470, 440); }
+  });
+}
+// phone screens: 'buy' | 'locking' | 'held' | 'left1' | 'saving' | 'win' | 'wait' | 'left0' | 'out'
+function drawPhone(i, st, press, t) {
+  const spin = st === 'wait' ? Math.floor(t * 8) % 8 : 0;
+  const D = DPH[i], key = st + '|' + press.toFixed(2) + '|' + spin; if (D._k === key) return; D._k = key;
+  D.draw((g, w, h) => {
+    g.fillStyle = '#0d0c0b'; rrect(g, 0, 0, w, h, 40); g.fill();
+    g.strokeStyle = PC[i]; g.globalAlpha = 0.5; g.lineWidth = 5; rrect(g, 4, 4, w - 8, h - 8, 36); g.stroke(); g.globalAlpha = 1;
+    g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.fillStyle = '#9c948c'; g.font = '800 64px Mono'; g.fillText('CHECKOUT ' + PN[i], w / 2, 90);
+    g.save(); g.translate(w / 2 - 110, 160); g.scale(2.2, 2.2); g.strokeStyle = '#d9d2ca'; g.lineWidth = 3; g.lineJoin = 'round'; g.stroke(TICKET); g.restore();
+    const big = (txt, col, y = 520, s = 150) => { g.fillStyle = col; g.font = `900 ${s}px Inter`; g.shadowColor = col; g.shadowBlur = 18; g.fillText(txt, w / 2, y); g.shadowBlur = 0; };
+    const small = (txt, col, y = 670) => { g.fillStyle = col; g.font = '800 66px Mono'; g.fillText(txt, w / 2, y); };
+    const btn = (txt, col) => { const s = 1 - 0.08 * press; g.save(); g.translate(w / 2, 1100); g.scale(s, s); g.fillStyle = col; rrect(g, -260, -80, 520, 160, 40); g.fill(); g.fillStyle = '#0b0a09'; g.font = '900 80px Inter'; g.fillText(txt, 0, 4); g.restore(); };
+    if (st === 'buy') { big('$89', '#F2EEE8'); small('LAST TICKET', AMB); btn('BUY', PC[i]); }
+    if (st === 'locking') { big('🔒', PC[i], 500, 200); small('LOCKING ROW…', AMB, 720); }
+    if (st === 'held') { big('🔒', PC[i], 500, 200); small('LOCK HELD', PC[i], 720); }
+    if (st === 'left1') { big('1 LEFT', OK); small('LOCK HELD', PC[i]); }
+    if (st === 'saving') { big('1 LEFT', OK); small('SELLING…', AMB); }
+    if (st === 'win') { big('✓', OK, 500, 280); small('TICKET IS YOURS', OK, 720); }
+    if (st === 'wait') {
+      g.save(); g.translate(w / 2, 500); for (let k = 0; k < 8; k++) { g.globalAlpha = 0.15 + 0.85 * (((k - spin + 8) % 8) / 7); g.fillStyle = AMB; g.beginPath(); g.arc(110 * Math.cos(k * Math.PI / 4), 110 * Math.sin(k * Math.PI / 4), 22, 0, Math.PI * 2); g.fill(); } g.restore(); g.globalAlpha = 1;
+      small('WAITING FOR', AMB, 720); small('THE LOCK', AMB, 800);
+    }
+    if (st === 'left0') { big('0 LEFT', RED); small('READ AFTER A', AMB); }
+    if (st === 'out') { big('SOLD', RED, 450, 170); big('OUT', RED, 620, 170); small('NO DOUBLE SALE', OK, 780); }
+  });
+}
+function phoneState(i, t) {
+  if (t < (i ? LKB : LKA) - 0.4) return 'buy';
+  if (i === 0) {
+    if (t < land(LKA)) return 'locking';
+    if (t < land(R1)) return 'held';
+    if (t < WA) return 'left1';
+    if (t < T.commits) return 'saving';
+    return 'win';
+  }
+  if (t < LKB + FLY * WAIT_Q) return 'locking';
+  if (t < BGO + 0.35) return 'wait';
+  if (t < land(R2)) return 'held';
+  if (t < T.soldout - 0.1) return 'left0';
+  return 'out';
+}
+
+/* ---------------- the world, frame by frame */
+// requests piling up behind a held lock (the "cost" stretch): they queue in an arc in front of the row, then drain
+const QN = 9, QPOS = [...Array(QN)].map((_, k) => { const a = (-150 + k * 15) * Math.PI / 180; return [RX + 300 * Math.cos(a) * 1.25, RY - 40 + 210 * Math.sin(a), 30]; });
+const QFROM = QPOS.map((p) => [RX + (p[0] - RX) * 2.4, RY + (p[1] - RY) * 2.4 - 80, 30]);
+function world(t) {
+  const st = stockAt(t), lk = lockAt(t);
+  const rel = window01(t, T.releases - 0.05, BGO + 0.35, 0.05);
+  const pile = t > T.pile - 0.6 && t < T.l9;
+  const rc = lk === 'A' ? O2 : lk === 'B' ? RD : rel > 0 ? AMB : pile ? mixHex(O, RED, 0.35) : O;
+  ROW.setLook(rc, 1.1 + 0.8 * pulse(t, land(LKA), 4) + 0.7 * pulse(t, T.releases, 4) + 0.5 * pulse(t, BGO + 0.35, 4), ep(t, 0, 0.5));
+  POOLR.set(rc, 0.45 * ep(t, 0, 0.5));
+  drawRow(st, lk, lk === 'A' ? O2 : lk === 'B' ? RD : rel > 0 ? AMB : O, rel);
+  for (let i = 0; i < 2; i++) {
+    const a = ep(t, 0.1 + i * 0.1, 0.6 + i * 0.1), s = phoneState(i, t);
+    let c = PC[i];
+    if (s === 'wait') c = mixHex(PC[i], AMB, 0.6 + 0.4 * Math.sin(t * 6) ** 2); else if (s === 'win') c = mixHex(PC[i], OK, 0.6); else if (s === 'out' || s === 'left0') c = mixHex(RD, RED, 0.4);
+    PHN[i].setLook(c, 1 + 0.6 * pulse(t, T.by, 5), a); POOLP[i].set(c, 0.38 * a);
+    const press = window01(t, T.by + i * 0.12, T.by + i * 0.12 + 0.2, 0.06);
+    drawPhone(i, s, press, t);
+    DROW.m.material.opacity = ep(t, 0.2, 0.7); DPH[i].m.material.opacity = a;
+    LINKS[i].set(1, mixHex(PC[i], DIM, 0.5), 0.7 * ep(t, 0.4, 1.0), t);
+    if (t > T.by + i * 0.12 && t < T.by + i * 0.12 + 0.7) ripple(t, T.by + i * 0.12, PH[i][0], PH[i][1], 1, PC[i], 160, 0.7);
+  }
+  // A's lock request lands → padlock
+  { const q = prog(t, LKA, land(LKA)); if (q > 0 && q < 1) orb(pathUp(0), ease.inOut(q), O2, 1, 1); }
+  if (t > land(LKA) && t < land(LKA) + 0.8) { ripple(t, land(LKA), RX, RY, RH + 4, O2, 200, 0.7); sparks(t, land(LKA), RX, RY, RH + 10, O2, 16, 7, 150, 0.7, 180); }
+  // B's lock request: flies most of the way, then hovers in front of the row until the lock opens
+  { const q = prog(t, LKB, LKB + FLY * WAIT_Q);
+    if (t > LKB && t < BGO) orb(pathUp(1), Math.min(ease.out(q), 1) * WAIT_Q + (t > LKB + FLY * WAIT_Q ? 0.008 * Math.sin(t * 7) : 0), q < 1 ? RD : mixHex(RD, AMB, 0.7), 1, 1);
+    const qm = prog(t, BGO, BGO + 0.35); if (qm > 0 && qm < 1) orb(pathUp(1), WAIT_Q + (1 - WAIT_Q) * ease.inOut(qm), RD, 1, 1);
+    if (t > BGO + 0.35 && t < BGO + 1.0) ripple(t, BGO + 0.35, RX, RY, RH + 4, RD, 200, 0.7);
+    if (t > LKB + FLY * WAIT_Q && t < BGO) { const p = along(pathUp(1), WAIT_Q); ripple(t, LKB + FLY * WAIT_Q + Math.floor((t - LKB - FLY * WAIT_Q) / 0.8) * 0.8, p[0], p[1], p[2] - 30, AMB, 60, 0.8); } }
+  // reads: row → phone
+  for (const [s, i, col] of [[R1, 0, OK], [R2, 1, RED]]) {
+    const q = prog(t, s, s + FLY); if (q > 0 && q < 1) orb(pathDown(i), ease.inOut(q), col, 1, 0.8);
+    if (t > s + FLY && t < s + FLY + 0.6) ripple(t, s + FLY, PH[i][0], PH[i][1], 1, col, 120, 0.6);
+  }
+  // A's write lands (stock → 0), commit flash, padlock opens
+  { const q = prog(t, WA, WA + FLY); if (q > 0 && q < 1) orb(pathUp(0), ease.inOut(q), OK, 1, 1); }
+  if (t > T.commits && t < T.commits + 0.8) ripple(t, T.commits, RX, RY, RH + 4, OK, 220, 0.8);
+  if (t > T.releases && t < T.releases + 0.9) sparks(t, T.releases, RX, RY, RH + 10, AMB, 20, 15, 170, 0.8, 210);
+  if (t > T.soldout && t < T.soldout + 0.8) ripple(t, T.soldout, PH[1][0], PH[1][1], 1, OK, 180, 0.8);
+  // the cost: requests pile up in front of the locked row, then drain one by one once transactions are short
+  if (pile) QPOS.forEach((p, k) => {
+    const s = T.pile - 0.6 + k * 0.16, q = prog(t, s, s + 0.55); if (q <= 0) return;
+    const go = T.short + 0.1 + k * 0.13, qd = prog(t, go, go + 0.35);
+    if (qd >= 1) return;
+    const pos = qd > 0 ? [lerp(p[0], RX, ease.in(qd)), lerp(p[1], RY - RDp / 2, ease.in(qd)), lerp(p[2], RH * 0.6, ease.in(qd))] : q < 1 ? p.map((v, j) => lerp(QFROM[k][j], v, ease.out(q))) : [p[0], p[1], p[2] + 4 * Math.sin(t * 5 + k)];
+    orb([pos, pos], 0, qd > 0 ? OK : AMB, 0.9, 0.7);
+  });
+}
+
+/* ---------------- world tags */
+const tg = (key, html, style, wp, t, a, b, dy = 0) => { const e = tag(key, html, style, wp, t, a, b, dy); if (P(...wp)[2] > 1) e.style.display = 'none'; return e; };
+function tags(t) {
+  const big = (c) => `font-size:15px;padding:9px 13px;letter-spacing:1px;border-color:${c}`;
+  const sm = (c) => `font-size:13px;padding:7px 11px;letter-spacing:1px;border-color:${c}`;
+  const sp = (c, s) => `<span style="color:${c}">${s}</span>`;
+  const bot = [0, -360, 0], hd = (i) => phTop(i), rw = rowTop;
+  tg('lt', sp(AMB, 'THE LAST TICKET'), sm(AMB), rw, t, 0.7, T.moment - 0.1, -26);
+  tg('sm', sp(WH, 'SAME MOMENT'), big(WH), bot, t, T.moment - 0.1, T.hold - 0.15, 0);
+  tg('oh', sp(AMB, '⏸ ONE GETS PUT ON HOLD'), big(AMB), bot, t, T.hold - 0.15, T.l1 - 0.1, 0);
+  tg('pl', sp(O, 'PESSIMISTIC LOCKING'), big(O), bot, t, T.pess - 0.1, T.clash, 0);
+  tg('ec', sp(O2, 'EXPECT A CLASH → LOCK BEFORE READING'), big(O2), bot, t, T.clash, T.l2 - 0.1, 0);
+  tg('la', sp(O2, '🔒 A HOLDS THE LOCK'), sm(O2), rw, t, land(LKA), T.releases - 0.05, -28);
+  tg('r1', sp(OK, 'A READS: 1 LEFT'), sm(OK), hd(0), t, T.one2 - 0.1, WA, -24);
+  tg('wb', sp(AMB, '⏳ B WAITS'), sm(AMB), hd(1), t, T.wait - 0.1, BGO, -24);
+  tg('nb', sp(AMB, "B CAN'T LOCK IT UNTIL A IS DONE"), big(AMB), bot, t, T.wait - 0.1, T.l4 - 0.1, 0);
+  tg('sl', sp(OK, 'A SELLS · STOCK → 0'), big(OK), bot, t, T.sells - 0.1, T.commits - 0.1, 0);
+  tg('cm', sp(OK, '✓ COMMIT: CHANGE SAVED'), big(OK), bot, t, T.commits - 0.1, T.releases - 0.1, 0);
+  tg('rl', sp(AMB, '🔓 LOCK RELEASED'), big(AMB), bot, t, T.releases - 0.1, T.l5 - 0.1, 0);
+  tg('lb', sp(RD, '🔒 B HOLDS THE LOCK'), sm(RD), rw, t, BGO + 0.35, T.soldout, -28);
+  tg('z', sp(RED, 'B READS: 0 LEFT'), sm(RED), hd(1), t, T.zero2 - 0.1, T.soldout - 0.1, -24);
+  tg('so', sp(OK, '✓ SOLD ONCE · NOTHING TO RETRY'), big(OK), bot, t, T.double - 0.2, T.l6 - 0.1, 0);
+  tg('cw', sp(RED, 'THE COST: WAITING'), big(RED), bot, t, T.cost - 0.1, T.pile - 0.1, 0);
+  tg('pu', sp(RED, 'REQUESTS PILE UP BEHIND THE LOCK'), big(RED), bot, t, T.pile - 0.1, T.short - 0.1, 0);
+  tg('ks', sp(OK, '✓ SHORT TRANSACTIONS: THE LINE MOVES'), big(OK), bot, t, T.short - 0.1, T.l9 - 0.1, 0);
+  tg('cc', sp(OK, 'CLASHES COMMON → LOCK FIRST 🔒'), big(OK), bot, t, T.common - 0.2, T.rare - 0.1, 0);
+  tg('rr', sp(O2, 'CLASHES RARE → OPTIMISTIC (v7)'), big(O2), bot, t, T.rare - 0.1, T.ifv - 0.15, 0);
+}
+
+/* ---------------- reel config */
+const svgPg = `<svg width="46" height="46" viewBox="0 0 100 100" fill="none" stroke="#7CF29A" stroke-width="7" stroke-linejoin="round"><ellipse cx="50" cy="24" rx="30" ry="10"/><path d="M20 24 V76 Q20 86 50 86 Q80 86 80 76 V24 M20 50 Q20 60 50 60 Q80 60 80 50"/><path d="M42 62 V52 Q42 44 50 44 Q58 44 58 52 V62" stroke-width="6"/></svg>`;
+const REEL = {
+  shots: [], world, tags,
+  code: [
+    [T.l7 - 0.2, T.postgres - 0.2, 'checkout.sql', 'lock first', [[0, 'IN A TRANSACTION', AMB], [T.transaction - 0.1, 'LOCK HELD UNTIL COMMIT', OK]],
+      [['BEGIN;'], ['SELECT stock FROM tickets'], ['  WHERE id = 7 FOR UPDATE;'], ['UPDATE tickets SET stock = 0 WHERE id = 7;'], ['COMMIT;']],
+      [[T.select + 0.2, 3, '🔒 locked', 'amb'], [T.transaction, 5, '🔓 released', 'good']], 'type'],
+  ],
+  hl: /\b(BEGIN|SELECT|FROM|WHERE|FOR|UPDATE|SET|COMMIT)\b/g,
+  tools: [
+    { a: T.postgres - 0.15, b: T.l8 - 0.1, svg: svgPg, name: 'Postgres · MySQL', sub: 'SELECT … FOR UPDATE: A ROW-LEVEL LOCK', src: 'HELD UNTIL <span style="color:#7CF29A">COMMIT</span> OR <span style="color:#7CF29A">ROLLBACK</span>', top: 196 },
+  ],
+  slams: [],
+  bad: ['wait', 'waiting', 'hold', 'clash', 'pile', 'up', 'requests'],
+  good: ['pessimistic', 'locking', 'lock', 'locks', 'commits', 'releases', 'releasing', 'zero', 'left', 'double', 'sale', 'short', 'common', 'optimistic', 'skipped', 'library', 'book'],
+  tiles: [['🔒', 'PESSIMISTIC<br>LOCKING'], ['v7', 'OPTIMISTIC<br>LOCKING'], ['★', 'LEADER<br>ELECTION']],
+  end: T.ifv - 0.15, follow: T.follow,
+  cover: { t: 'PESSIMISTIC<br>LOCKING', at: T.wait + 0.5, zoom: 1, dy: 90 },
+  flash: (t) => 0.04 * pulse(t, land(LKA), 7) + 0.04 * pulse(t, T.wait, 6) + 0.05 * pulse(t, T.releases, 7),
+};
+</script>
+<script src="../_ember/overlay.js"></script>
+<script>
+/* ---------------- bloom: scene → half-float target, bright pass, three blur levels, composite to the canvas */
+const RT = (w, h, s = 0) => new TH.WebGLRenderTarget(w, h, { type: TH.HalfFloatType, samples: s, depthBuffer: s > 0 });
+const rtMain = RT(1080, 1920, 4), BL = [[RT(540, 960), RT(540, 960)], [RT(270, 480), RT(270, 480)], [RT(135, 240), RT(135, 240)]];
+const fsCam = new TH.OrthographicCamera(-1, 1, 1, -1, 0, 1), fsScene = new TH.Scene(), fsQuad = new TH.Mesh(new TH.PlaneGeometry(2, 2));
+fsQuad.frustumCulled = false; fsScene.add(fsQuad);
+const VS = 'varying vec2 vUv; void main() { vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }';
+const shm = (fs, u) => new TH.ShaderMaterial({ uniforms: u, vertexShader: VS, fragmentShader: fs, depthTest: false, depthWrite: false });
+const mBright = shm(`uniform sampler2D tex; uniform float th; varying vec2 vUv;
+void main() { vec3 c = texture2D(tex, vUv).rgb; float l = max(c.r, max(c.g, c.b)); gl_FragColor = vec4(c * smoothstep(th, th + 0.4, l), 1.0); }`,
+  { tex: { value: null }, th: { value: 0.8 } });
+const mBlur = shm(`uniform sampler2D tex; uniform vec2 dir; varying vec2 vUv;
+void main() {
+  vec3 c = texture2D(tex, vUv).rgb * 0.2270270270;
+  c += (texture2D(tex, vUv + dir * 1.3846153846).rgb + texture2D(tex, vUv - dir * 1.3846153846).rgb) * 0.3162162162;
+  c += (texture2D(tex, vUv + dir * 3.2307692308).rgb + texture2D(tex, vUv - dir * 3.2307692308).rgb) * 0.0702702703;
+  gl_FragColor = vec4(c, 1.0);
+}`, { tex: { value: null }, dir: { value: new TH.Vector2() } });
+const mComp = shm(`uniform sampler2D base, b1, b2, b3; uniform float k1, k2, k3; varying vec2 vUv;
+void main() {
+  vec3 c = texture2D(base, vUv).rgb + texture2D(b1, vUv).rgb * k1 + texture2D(b2, vUv).rgb * k2 + texture2D(b3, vUv).rgb * k3;
+  c = c / (1.0 + max(c - 1.0, 0.0) * 0.6);
+  gl_FragColor = vec4(c, 1.0);
+  #include <colorspace_fragment>
+}`, { base: { value: rtMain.texture }, b1: { value: BL[0][0].texture }, b2: { value: BL[1][1].texture }, b3: { value: BL[2][1].texture }, k1: { value: 0.5 }, k2: { value: 0.65 }, k3: { value: 0.8 } });
+function pass(mat, dst) { fsQuad.material = mat; renderer.setRenderTarget(dst); renderer.render(fsScene, fsCam); }
+function blur(src, dst, dx, dy) { mBlur.uniforms.tex.value = src.texture; mBlur.uniforms.dir.value.set(dx / src.width, dy / src.height); pass(mBlur, dst); }
+function bloom() {
+  mBright.uniforms.tex.value = rtMain.texture; pass(mBright, BL[0][0]);
+  blur(BL[0][0], BL[0][1], 1, 0); blur(BL[0][1], BL[0][0], 0, 1);
+  blur(BL[0][0], BL[1][0], 1, 0); blur(BL[1][0], BL[1][1], 0, 1);
+  blur(BL[1][1], BL[2][0], 1, 0); blur(BL[2][0], BL[2][1], 0, 1);
+  pass(mComp, null);
+}
+
+
+/* ---------------- HUD (stock · lock · orders), library card */
+const stg = $('stage'), before = $('prof');
+const mk = (html) => { const w = document.createElement('div'); w.innerHTML = html.trim(); const n = w.firstChild; stg.insertBefore(n, before); return n; };
+const MT = mk(`<div id="mt"><div class="c"><div class="n" id="hs"></div><div class="k">STOCK</div></div><div class="sep"></div><div class="c"><div class="n lk" id="hl"></div><div class="k">LOCK</div></div><div class="sep"></div><div class="c"><div class="n" id="ho"></div><div class="k">ORDERS</div></div></div>`);
+const LBK = mk(`<div id="lbk" class="cd2"><div class="h">The library's last copy</div><svg id="lbS" viewBox="0 0 460 240"></svg><div class="f" id="lbF"></div></div>`);
+if (/cover/.test(location.hash)) { const s = document.createElement('style'); s.textContent = '#mt, .cd2 { display: none !important; }'; document.head.appendChild(s); }
+(() => {
+  const who = (y, id, name, col) => `<g id="${id}" opacity="0"><circle cx="250" cy="${y}" r="16" fill="#15130f" stroke="${col}" stroke-width="3"/><text x="250" y="${y + 6}" text-anchor="middle" font-family="Inter" font-size="14" font-weight="900" fill="${col}">${name}</text>
+    <text id="${id}t" x="278" y="${y + 6}" font-family="Mono" font-size="13" font-weight="800" fill="${col}"></text></g>`;
+  $('lbS').innerHTML = `<g id="lbBook"><rect x="40" y="40" width="120" height="160" rx="8" fill="#15130f" stroke="#FFB070" stroke-width="3"/><rect x="40" y="40" width="18" height="160" rx="4" fill="rgba(255,176,112,0.25)"/>
+    <text x="108" y="104" text-anchor="middle" font-family="Instrument" font-style="italic" font-size="24" fill="#efe6d8">The</text><text x="108" y="132" text-anchor="middle" font-family="Instrument" font-style="italic" font-size="24" fill="#efe6d8">Book</text></g>
+    <g id="lbStamp" opacity="0"><rect x="52" y="150" width="96" height="30" rx="5" fill="none" stroke="#FF5A4A" stroke-width="3" transform="rotate(-8 100 165)"/><text x="100" y="171" text-anchor="middle" font-family="Mono" font-size="13" font-weight="800" fill="#FF5A4A" transform="rotate(-8 100 165)">CHECKED OUT</text></g>
+    ${who(90, 'lbA', 'YOU', '#FFB070')}${who(150, 'lbB', 'SAM', '#6FC3FF')}`;
+})();
+function lbDom(t) {
+  const p = popIn(t, T.l6 - 0.1, T.l7 - 0.15); vis(LBK, p.a, `translateY(${p.y}px) scale(${p.s})`);
+  if (p.a <= 0.001) return;
+  const back = t > T.back - 0.1;
+  $('lbStamp').setAttribute('opacity', back ? 0 : ep(t, T.checked - 0.15, T.checked + 0.05));
+  $('lbA').setAttribute('opacity', ep(t, T.l6, T.l6 + 0.2)); $('lbB').setAttribute('opacity', ep(t, T.waits - 0.2, T.waits));
+  setH('lbAt', back ? 'RETURNED IT ✓' : 'HAVE IT · CHECKED OUT');
+  setH('lbBt', back ? "SAM'S TURN NOW" : 'WAITS IN LINE…');
+  setH('lbF', back ? '🔓 BACK ON THE SHELF → NEXT IN LINE' : '🔒 ONE BORROWER AT A TIME');
+  $('lbF').style.color = back ? OK : AMB;
+}
+function hudDom(t) {
+  const p = popIn(t, 0.15, T.ifv - 0.15); vis(MT, p.a, `translateY(${p.y}px) scale(${p.s})`);
+  if (p.a <= 0.001) return;
+  const s = stockAt(t), lk = lockAt(t), o = ordersAt(t);
+  setH('hs', String(s)); $('hs').style.color = s ? OK : WH;
+  setH('hl', lk ? '🔒 ' + lk : t > land(LKA) ? '🔓' : '—'); $('hl').style.color = lk === 'A' ? O2 : lk === 'B' ? RD : t > land(LKA) ? AMB : GR;
+  setH('ho', String(o) + (o === 1 ? ' ✓' : '')); $('ho').style.color = o ? OK : WH;
+}
+function clampTags() {
+  for (const k in LB) {
+    const e = LB[k]; if (e.style.display === 'none') continue;
+    const w = e.offsetWidth, x = parseFloat(e.style.left), y = clamp(parseFloat(e.style.top), 200, 690);
+    const right = y > 450 ? 540 - 70 : 540 - 14;
+    e.style.left = clamp(x, 14 + w / 2, right - w / 2) + 'px'; e.style.top = y + 'px';
+  }
+}
+
+window.render = (t) => {
+  shoot(t);
+  orbsReset(); sparksReset(); ringsReset();
+  REEL.world(t);
+  sparksFlush(); updateEmbers(t);
+  renderer.setRenderTarget(rtMain); renderer.render(scene, pcam);
+  bloom();
+  REEL.tags(t); clampTags();
+  card(t); tools(t);
+  hudDom(t); lbDom(t);
+  $('dim').style.opacity = Math.max(0.55 * ep(t, REEL.end, REEL.end + 0.6), 0.6 * window01(t, T.l6 - 0.1, T.l7 - 0.1, 0.3));
+  $('flash').style.opacity = REEL.flash(t);
+  caps(t);
+  profile(t);
+};
+</script>
+<script src="../_ember/play.js"></script>
+</body>
+</html>

@@ -1,0 +1,416 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- 27 N+1 queries, v2. A perspective three.js world with bloom (own camera + post pass).
+     World: YOUR APP (a platform holding 100 order tiles) on the left, the DATABASE cylinder on the right, a road between.
+     Every database request is a courier: out amber, back green. A big TRIPS counter sits at the top the whole time, and a
+     WAIT tower behind the app grows one slab per trip. Hook: 101 trips race by, "needed: 2". Slow replay: one trip brings
+     back the 100 orders as a crate, then one trip per order fetches its customer; the tower climbs to 101 slabs.
+     Cards: N + 1, a waiter carrying one plate per trip vs a tray, the two-query fix (orders, then customers WHERE id IN),
+     eager loading in your ORM, and a query log (a few vs hundreds). Beats come from voice/words.json via at(). -->
+<link rel="stylesheet" href="../_ember/fonts.css">
+<link rel="stylesheet" href="../_ember/reel.css">
+<style>
+#cap { top: 728px !important; }
+#cap .box { background: linear-gradient(90deg, transparent, rgba(8,7,6,0.82) 16%, rgba(8,7,6,0.82) 84%, transparent); }
+#ed { top: 192px !important; }
+.lbl { background: rgba(12,11,10,0.95); }
+.tool > div:last-child { font-size: 12px !important; line-height: 1.4 !important; color: #d9d2ca !important; }
+#hud { position: absolute; left: 70px; right: 70px; top: 120px; height: 58px; opacity: 0; display: flex; align-items: center; gap: 12px; padding: 0 16px; box-sizing: border-box;
+  background: rgba(14,12,11,0.95); border: 1px solid rgba(255,176,112,0.35); border-radius: 12px; box-shadow: 0 14px 34px rgba(0,0,0,0.6); }
+#hud .k { font: 800 11px/1.25 Mono; letter-spacing: 1.4px; color: #9c948c; }
+#hudN { font: 900 36px/1 Mono; letter-spacing: -1px; margin-left: auto; font-variant-numeric: tabular-nums; }
+#hudG { font: 800 11px/1 Mono; letter-spacing: 1px; color: #0b0a09; background: #7CF29A; border-radius: 6px; padding: 7px 8px; }
+.cd2 { position: absolute; left: 40px; right: 40px; top: 192px; opacity: 0; background: rgba(16,14,12,0.96); border: 1px solid rgba(255,176,112,0.35); border-radius: 14px; box-shadow: 0 20px 50px rgba(0,0,0,0.7); }
+#eq { padding: 16px 18px 16px; text-align: center; }
+#eq .h { font: italic 400 58px/1 Instrument; letter-spacing: -1px; color: #FFB070; }
+#eq .row { display: flex; gap: 10px; margin-top: 12px; }
+#eq .b { flex: 1; border-radius: 10px; padding: 12px 8px; background: #1c1916; border: 1.5px solid #2c2722; }
+#eq .b .n { font: 900 30px/1 Mono; }
+#eq .b .s { font: 700 11px/1.3 Mono; letter-spacing: 1px; color: #9c948c; margin-top: 8px; }
+#eq .b.on1 { border-color: #7CF29A; box-shadow: 0 0 22px rgba(124,242,154,0.25); } #eq .b.on1 .n { color: #7CF29A; }
+#eq .b.on2 { border-color: #FF4632; box-shadow: 0 0 22px rgba(255,70,50,0.25); } #eq .b.on2 .n { color: #FF4632; }
+#eqT { margin-top: 12px; font: 800 13px/1 Mono; letter-spacing: 1.2px; color: #FF4632; }
+#wt { padding: 14px 16px 12px; }
+#wt .h { font: italic 400 30px/1 Instrument; color: #efe6d8; margin-bottom: 8px; }
+#wtS { display: block; width: 100%; height: 150px; }
+#wtL { margin-top: 6px; font: 800 12px/1 Mono; letter-spacing: 1.2px; text-align: center; }
+#lg2 { overflow: hidden; }
+#lg2 .tb { height: 26px; display: flex; align-items: center; gap: 5px; padding: 0 10px; border-bottom: 1px solid rgba(255,255,255,0.06); font: 600 10px/1 Mono; color: #9c948c; }
+#lg2 .tb i { width: 7px; height: 7px; border-radius: 50%; background: #2c2925; display: inline-block; }
+#lg2 .tb b { color: #FF6A1F; font-weight: 600; margin-left: 6px; }
+#lg2 .r { display: flex; align-items: center; height: 40px; padding: 0 14px; font: 700 14px/1 Mono; color: #d9d2ca; border-top: 1px solid rgba(255,255,255,0.04); }
+#lg2 .r .q { margin-left: auto; font-weight: 800; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="world">
+    <canvas id="cv" width="1080" height="1920"></canvas>
+    <div class="layer" id="lbls"></div>
+  </div>
+</div>
+<script src="../../tools/lib.js"></script>
+<script src="voice/words.js"></script>
+<script src="../_ember/three.js"></script>
+<script src="../_ember/world.js"></script>
+<script src="../_ember/base.js"></script>
+<script>
+for (let i = 0; i < 12; i++) ORBS.push({ core: orbSprite(9), glow: orbSprite(34), trail: [0, 1, 2, 3, 4].map(() => orbSprite(10)) });
+
+/* ---------------- beats */
+const T = {
+ t101:at('slow'),trips:at('trip'),database1:at('database'),two:line(0).end-0.1,
+ l1:line(1).start,asks:at('asks'),last:at('last'),orders1:at('orders',2),one1:at('one'),trip1:at('trip'),
+ l2:line(2).start,each:at('each'),back:at('back'),customer:at('customer'),one2:at('one',2),per:at('per'),hundred1:line(2).end-0.8,more1:at('more'),
+ l3:line(3).start,waits1:at('waits'),network:at('network'),database2:at('database',3),small:at('small'),add:at('add'),slow:at('slow',2),
+ l4:line(4).start,query1:at('query'),problem:at('problem'),list:at('list'),each3:at('each',2),n2:at('n'),orders4:at('orders',3),
+ l5:line(5).start,waiter:line(4).start,plates:line(4).start,instead:line(4).end,tray:line(4).end,
+ l6:line(5).start,get:at('get'),ask2:at('ask'),together:at('together'),query3:at('query',3),two2:at('two'),orm:at('orm'),eager:at('eager'),
+ l7:line(7).start,log:at('log'),few:at('few'),hundreds:at('hundreds'),
+ ifv:WORDS[WORDS.length-1][2]+0.4,follow:WORDS[WORDS.length-1][2]+1.3
+};
+
+/* ---------------- layout: Z up, the road runs along +x */
+const APX = -280, APW = 220, APD = 160, APH = 30;          // your app: a platform holding the order tiles
+const DBX = 300, DBR = 90, DBH = 150;                      // the database
+const TWX = APX, TWY = 150, TWS = 74, SLH = 3, SLG = 0.7;   // the wait tower: slab size, height, gap
+const NO = 100;                                            // orders
+const tileXY = (i) => [APX - 90 + (i % 10) * 20, -63 + Math.floor(i / 10) * 14];
+const NAMES = ['Ana', 'Raj', 'Leo', 'Mia', 'Sam'];
+const GO = arc0([APX + APW / 2 - 6, 0, APH + 6], [DBX - DBR + 8, 0, 70], 80), BACK = GO.slice().reverse();
+function arc0(a, b, h, n = 30) { return [...Array(n + 1)].map((_, i) => { const q = i / n, p = [lerp(a[0], b[0], q), lerp(a[1], b[1], q), lerp(a[2], b[2], q)]; p[2] += h * 4 * q * (1 - q); return p; }); }
+
+/* ---------------- the trips: [start, end, kind] kind 'list' | 'one' (customer k) | 'all' */
+function phase(listA, listB, perA, perB, shape) {
+  const tr = [[listA, listB, 'list', -1]];
+  if (perA !== null) for (let k = 0; k < NO; k++) {
+    const s = perA + (perB - perA) * shape(k / NO), e = perA + (perB - perA) * shape((k + 1) / NO);
+    tr.push([s, Math.max(e, s + 0.32), 'one', k, e]);       // drawn at least 0.32 s long; it counts as done at e
+  }
+  return tr;
+}
+const HOOK = phase(0.25, 0.7, 0.72, T.two - 0.3, (x) => Math.pow(x, 0.75));
+const SLOW = (() => {
+  const tr = [[T.asks - 0.05, T.orders1 + 0.05, 'list', -1]];
+  const a = T.each - 0.05, b = T.customer + 0.1;          // the first one, slowly, while the voice asks
+  tr.push([a, b, 'one', 0, b]);
+  const c = b + 0.05, d = T.more1 + 0.1;
+  for (let k = 1; k < NO; k++) { const s = c + (d - c) * Math.pow((k - 1) / 99, 0.62), e = c + (d - c) * Math.pow(k / 99, 0.62); tr.push([s, Math.max(e, s + 0.32), 'one', k, e]); }
+  return tr;
+})();
+const FIX = [[T.get - 0.05, T.get + 0.7, 'list', -1], [T.ask2, T.query3 + 0.05, 'all', -1]];
+const PH = [[0, T.l1 - 0.3, HOOK], [T.l1 - 0.3, T.l6 - 0.3, SLOW], [T.l6 - 0.3, 1e9, FIX]];
+const phaseAt = (t) => PH.find(([a, b]) => t >= a && t < b);
+const doneAt = (tr) => (tr[4] !== undefined ? tr[4] : tr[1]);
+function tripsDone(t) { const [, , tr] = phaseAt(t); return tr.reduce((n, x) => n + (t >= doneAt(x) ? (x[2] === 'all' ? 1 : 1) : 0), 0); }
+const tilesOn = (t) => { const [, , tr] = phaseAt(t); return tr[0] ? ep(t, doneAt(tr[0]) - 0.05, doneAt(tr[0]) + 0.5) : 0; };
+function tileFilled(i, t) {
+  const [, , tr] = phaseAt(t);
+  for (const x of tr) { if (x[2] === 'one' && x[3] === i) return t >= doneAt(x) ? t - doneAt(x) : -1; if (x[2] === 'all' && t >= doneAt(x) - 0.02) return t - doneAt(x) - i * 0.003; }
+  return -1;
+}
+
+/* ---------------- camera: perspective shots {t, d, p (position), l (look at), f (fov)} */
+const pcam = new TH.PerspectiveCamera(44, 540 / 960, 5, 20000); pcam.up.set(0, 0, 1);
+const WIDE = { p: [20, -1940, 1225], l: [20, 40, 200], f: 44 };
+const SHOTS = [
+ {t:0,p:[280,-2100,1450],l:[0,35,170],f:44},
+ {t:at('page')-0.15,d:0.8,p:[-120,-2200,1450],l:[0,60,180],f:44},
+ {t:T.l1-0.15,d:0.8,p:[-170,-2100,1400],l:[0,30,160],f:44},
+ {t:T.each-0.2,d:0.8,p:[170,-2200,1400],l:[10,40,150],f:44},
+ {t:T.l3-0.2,d:0.9,p:[-150,-2200,1450],l:[0,60,200],f:44},
+ {t:T.l4-0.15,d:0.9,p:[160,-2250,1490],l:[10,60,150],f:44},
+ {t:T.l6-0.2,d:0.8,p:[200,-2100,1420],l:[10,40,150],f:44},
+ {t:T.together-0.15,d:0.8,p:[250,-2100,1420],l:[15,20,160],f:44},
+ {t:T.orm-0.2,d:0.8,p:[-130,-2200,1470],l:[0,40,180],f:44},
+ {t:T.l7-0.15,d:1.4,p:[140,-2250,1490],l:[10,60,150],f:44}
+];
+const KICKS = [[T.t101, 0.04], [T.two, 0.04], [T.orders1, 0.04], [T.customer, 0.04], [T.more1, 0.05], [T.slow, 0.05], [T.problem, 0.03], [T.together, 0.04], [T.two2, 0.05], [T.hundreds, 0.03]];
+const SHAKES = [[T.more1, 5, 0.3], [T.slow, 6, 0.4]];
+const _rv = new TH.Vector3();
+function shoot(t) {
+  let p = SHOTS[0].p.slice(), l = SHOTS[0].l.slice(), f = SHOTS[0].f;
+  for (let i = 1; i < SHOTS.length; i++) {
+    const k = SHOTS[i]; if (t < k.t) break;
+    const q = k.d ? (k.e || ease.inOut)(prog(t, k.t, k.t + k.d)) : 1;
+    p = p.map((v, j) => lerp(v, k.p[j], q)); l = l.map((v, j) => lerp(v, k.l[j], q)); f = lerp(f, k.f, q);
+  }
+  let kick = 0;
+  for (const [t0, amp] of KICKS) { const dt = t - t0; if (dt > 0 && dt < 1.2) kick += amp * (dt < 0.05 ? dt / 0.05 : Math.exp(-(dt - 0.05) * 6)); }
+  let sx = 0, sy = 0;
+  for (const [t0, amp, dur] of SHAKES) { const dt = t - t0; if (dt > 0 && dt < dur) { const k = amp * (1 - dt / dur); sx += k * Math.sin(t * 91); sy += k * Math.cos(t * 67); } }
+  pcam.position.set(p[0] + 6 * Math.sin(t * 0.37), p[1] + 6 * Math.cos(t * 0.29), p[2] + 4 * Math.sin(t * 0.23));
+  pcam.lookAt(l[0] + sx, l[1], l[2] + sy);
+  pcam.fov = f * (1 - kick); pcam.updateProjectionMatrix(); pcam.updateMatrixWorld();
+  cam.f = l;
+  _rv.setFromMatrixColumn(pcam.matrixWorld, 0); const n = Math.hypot(_rv.x, _rv.y) || 1; camRight = [_rv.x / n, _rv.y / n, 0];
+  const d = Math.hypot(p[0] - l[0], p[1] - l[1], p[2] - l[2]);
+  scene.fog.near = d * 0.9; scene.fog.far = d * 3.4;
+}
+const _pv = new TH.Vector3();
+P = function (x, y, z) { _pv.set(x, y, z).project(pcam); return [(_pv.x + 1) * 270, (1 - _pv.y) * 480, _pv.z]; };
+
+/* ---------------- the stage */
+floor.scale.set(2.2, 2.2, 1); floor.position.set(0, 1500, -0.5);
+scene.children.filter((o) => o.type === 'LineSegments').forEach((o) => scene.remove(o));
+(() => {
+  const pts = [], S = 56;
+  for (let x = -3000; x <= 3000; x += S) pts.push(x, -2400, 0, x, 5000, 0);
+  for (let y = -2400; y <= 5000; y += S) pts.push(-3000, y, 0, 3000, y, 0);
+  const geo = new TH.BufferGeometry(); geo.setAttribute('position', new TH.Float32BufferAttribute(pts, 3));
+  const m = new TH.LineSegments(geo, new TH.LineBasicMaterial({ color: 0x2a221c, transparent: true, opacity: 0.5, fog: true }));
+  m.position.z = 0.05; scene.add(m);
+})();
+const APP = emberBox(APX, 0, APW, APD, APH, O);
+const DB = emberCyl(DBX, 0, DBR, DBH, O, { bands: [0, 50, 100, DBH] });
+const ROAD = road([[APX + APW / 2, 0, 0], [DBX - DBR, 0, 0]], O2);
+const CRATE = emberBox(0, 0, 44, 32, 26, O2), BUNDLE = emberBox(0, 0, 70, 46, 40, OK);
+pool(APX, 0, 260, O); pool(DBX, 0, 200, O);
+
+/* ---------------- instanced slabs: order tiles and the wait tower */
+function rimTex() {
+  const c = document.createElement('canvas'); c.width = 128; c.height = 128; const g = c.getContext('2d');
+  g.fillStyle = 'rgb(58,58,58)'; g.fillRect(0, 0, 128, 128); g.strokeStyle = '#fff'; g.lineWidth = 10; g.strokeRect(5, 5, 118, 118);
+  const tx = new TH.CanvasTexture(c); tx.colorSpace = TH.SRGBColorSpace; tx.anisotropy = 8; return tx;
+}
+function slabs(n, tex) {
+  const geo = new TH.BoxGeometry(1, 1, 1); geo.translate(0, 0, 0.5);
+  const m = new TH.InstancedMesh(geo, new TH.MeshBasicMaterial({ map: tex, toneMapped: false, fog: true }), n);
+  m.instanceMatrix.setUsage(TH.DynamicDrawUsage); m.setColorAt(0, new TH.Color()); m.instanceColor.setUsage(TH.DynamicDrawUsage);
+  m.frustumCulled = false; scene.add(m); return m;
+}
+const TX_R = rimTex(), TILES = slabs(NO, TX_R), TOWER = slabs(NO + 1, TX_R);
+const CO = { O: C(O), O2: C(O2), OK: C(OK), RED: C(RED), AMB: C(AMB) };
+const _o = new TH.Object3D(), _c = new TH.Color();
+const tint = (a, k, b, m = 0) => (b ? _c.copy(a).lerp(b, clamp(m)) : _c.copy(a)).multiplyScalar(k);
+function put(M, i, x, y, z, w, d, h, col) {
+  _o.position.set(x, y, z); _o.scale.set(Math.max(0.001, w), Math.max(0.001, d), Math.max(0.001, h)); _o.updateMatrix();
+  M.setMatrixAt(i, _o.matrix); M.setColorAt(i, col);
+}
+const hide = (M, i) => put(M, i, 0, 0, -50, 0, 0, 0, _c.setRGB(0, 0, 0));
+const done = (M) => { M.instanceMatrix.needsUpdate = true; M.instanceColor.needsUpdate = true; };
+
+/* ---------------- the world, frame by frame */
+function world(t) {
+  const fadeIn = ep(t, -0.5, -0.1);
+  const [ph0, , TR] = phaseAt(t), fix = TR === FIX;
+  const n = tripsDone(t), slow = TR === SLOW;
+  // app, database, road
+  APP.setLook(fix && n >= 2 ? mixHex(O, OK, ep(t, T.query3, T.query3 + 0.4)) : O, 1 + 1.4 * pulse(t, T.orders1, 2), fadeIn);
+  const dbHot = TR.some((x) => t > x[0] + (x[1] - x[0]) * 0.4 && t < x[0] + (x[1] - x[0]) * 0.6);
+  DB.update(); DB.setLook(dbHot ? O2 : O, dbHot ? 2.2 : 1, fadeIn);
+  const active = TR.some((x) => t > x[0] && t < x[1]);
+  ROAD.set(1, active ? (fix ? OK : AMB) : O2, fadeIn, t);
+
+  // couriers: out amber, back green (the list trip carries a crate, the fix's second trip a big bundle)
+  let crate = null, bundle = null;
+  for (const x of TR) {
+    const [s, e, kind] = x; if (t < s - 0.02 || t > e + 0.05) continue;
+    const q = prog(t, s, e), out = q < 0.5, u = out ? q * 2 : (q - 0.5) * 2, pts = out ? GO : BACK;
+    const col = out ? (kind === 'all' ? OK : AMB) : OK, size = kind === 'one' ? 0.8 : 1.3;
+    const p = orb(pts, ease.inOut(u), col, clamp(q / 0.06) * (1 - clamp((q - 0.97) / 0.03)), size);
+    if (kind === 'list' && !out && p) crate = p;
+    if (kind === 'all' && p) bundle = p;
+    if (q > 0.47 && q < 0.6) ripple(t, s + (e - s) * 0.47, DBX, 0, DBH + 1, out ? AMB : OK, 70, 0.45);
+  }
+  CRATE.g.visible = !!crate; if (crate) { CRATE.g.position.set(crate[0], crate[1], crate[2] - 13); CRATE.setLook(O2, 1.6, 1); }
+  BUNDLE.g.visible = !!bundle; if (bundle) { BUNDLE.g.position.set(bundle[0], bundle[1], bundle[2] - 20); BUNDLE.setLook(OK, 2, 1); }
+
+  // the 100 order tiles: appear with the list, then fill in (green) as each customer comes back
+  const on = tilesOn(t), firstHot = slow && t > T.each - 0.1 && t < T.customer + 0.6;
+  for (let i = 0; i < NO; i++) {
+    const [x, y] = tileXY(i), a = clamp(on * 1.6 - (i / NO) * 0.6);
+    if (a <= 0.01) { hide(TILES, i); continue; }
+    const f = tileFilled(i, t), pend = TR.some((tr) => tr[2] === 'one' && tr[3] === i && t > tr[0] && t < doneAt(tr));
+    let col = tint(CO.O, 0.55);
+    if (pend) col = tint(CO.AMB, 1.6);
+    if (f >= 0) col = tint(CO.OK, 1.1 + 1.6 * Math.exp(-f * 4));
+    if (firstHot && i === 0) col = f >= 0 ? tint(CO.OK, 2.4) : tint(CO.AMB, 2 + pulse(t, T.each, 4));
+    put(TILES, i, x, y, APH + 0.5 + 18 * (1 - ease.out(a)), 16, 10.5, 4, col);
+  }
+  done(TILES);
+
+  // the wait tower: one slab per finished trip
+  for (let k = 0; k <= NO; k++) {
+    if (k >= n) { hide(TOWER, k); continue; }
+    const tk = TR[k] ? doneAt(TR[k]) : 0, drop = 1 - ep(t, tk, tk + 0.25, ease.out);
+    const hot = slow && t > T.l3 - 0.3 && t < T.l4;
+    const col = fix ? tint(CO.OK, 1.4) : tint(CO.AMB, (0.9 + 1.4 * Math.exp(-(t - tk) * 5)) * (hot ? 1 + 0.6 * pulse(t, T.slow, 2) : 1), CO.RED, hot ? ep(t, T.slow - 0.2, T.slow + 0.4) : 0);
+    put(TOWER, k, TWX, TWY, k * (SLH + SLG) + 40 * drop, TWS, TWS, SLH, col);
+  }
+  done(TOWER);
+  if (slow && t > T.slow) sparks(t, T.slow, TWX, TWY, 101 * (SLH + SLG), RED, 30, 7, 130, 0.9);
+  if (fix && t > T.query3 + 0.05) { ripple(t, T.query3 + 0.05, APX, 0, APH + 2, OK, 150, 0.8); sparks(t, T.query3 + 0.05, APX, 0, APH + 6, OK, 26, 9, 120, 0.8); }
+}
+
+/* ---------------- world tags */
+const tg = (key, html, style, wp, t, a, b, dy = 0) => { const e = tag(key, html, style, wp, t, a, b, dy); if (P(...wp)[2] > 1) e.style.display = 'none'; return e; };
+function tags(t) {
+  const big = (c) => `font-size:15px;padding:9px 13px;letter-spacing:1px;border-color:${c}`;
+  const sp = (c, s) => `<span style="color:${c}">${s}</span>`;
+  const appW = [APX, -APD / 2, 0], dbW = [DBX, -DBR, 0], topW = [TWX, TWY, (tripsDone(t)) * (SLH + SLG) + 10];
+  tg('app', sp(O2, 'YOUR APP'), `border-color:${O2}88`, appW, t, 0.4, T.l1 - 0.2, 26);
+  tg('db', sp(O2, 'DATABASE'), `border-color:${O2}88`, dbW, t, 0.4, T.l1 - 0.2, 26);
+  tg('tw0', sp(AMB, '⏱ TIME SPENT WAITING'), `border-color:${AMB}88`, topW, t, 1.6, T.l1 - 0.2, -26);
+  // the list
+  tg('list', sp(OK, '1 TRIP → 100 ORDERS'), big(OK), appW, t, T.orders1 + 0.1, T.each - 0.2, 30);
+  // one per order
+  const first = SLOW[1], fq = prog(t, first[0], first[1]), fp = along(fq < 0.5 ? GO : BACK, ease.inOut(fq < 0.5 ? fq * 2 : (fq - 0.5) * 2));
+  tg('who', sp(fq < 0.5 ? AMB : OK, fq < 0.5 ? 'ORDER #1 → WHO\'S THE CUSTOMER?' : '← ANA'), big(fq < 0.5 ? AMB : OK), fp, t, T.each, T.customer + 0.6, -36);
+  tg('per', sp(AMB, '1 TRIP PER ORDER'), big(AMB), [0, 0, 60], t, T.one2, T.l3 - 0.2, -40);
+  // waits
+  tg('wait', sp(AMB, 'EVERY TRIP = A WAIT'), big(AMB), [TWX + TWS / 2 + 10, TWY, 120], t, T.waits1, T.slow - 0.1);
+  tg('net', sp(O2, 'NETWORK'), `border-color:${O2}88`, [(APX + DBX) / 2 + 40, 0, 0], t, T.network, T.slow - 0.3, -10);
+  tg('dbw', sp(O2, 'DATABASE'), `border-color:${O2}88`, dbW, t, T.database2, T.slow - 0.3, 26);
+  tg('slowT', sp(RED, 'ALL THOSE WAITS = A SLOW PAGE'), big(RED), topW, t, T.slow, T.l4 - 0.15, -28);
+  tg('qry', sp(O2, '1 REQUEST = 1 QUERY'), big(O2), [(APX + DBX) / 2, 0, 60], t, T.query1 - 0.25, T.problem - 0.3, -40);
+  // the fix
+  tg('f1', sp(OK, 'TRIP 1 · THE ORDERS'), big(OK), appW, t, T.get + 0.6, T.orm - 0.3, 30);
+  tg('f2', sp(OK, 'TRIP 2 · ALL THE CUSTOMERS'), big(OK), [DBX - 60, 0, 60], t, T.together, T.two2 - 0.05, -60);
+  tg('fw', sp(OK, '2 WAITS'), big(OK), topW, t, T.two2, T.l7 - 0.2, -26);
+}
+
+/* ---------------- reel config */
+const svgOrm = `<svg width="46" height="46" viewBox="0 0 100 100" fill="none" stroke="#7CF29A" stroke-width="7" stroke-linejoin="round" stroke-linecap="round"><rect x="10" y="14" width="34" height="72" rx="6"/><ellipse cx="73" cy="26" rx="17" ry="7"/><path d="M56 26 V74 C56 78 64 81 73 81 C82 81 90 78 90 74 V26"/><path d="M44 50 H56"/></svg>`;
+const REEL = {
+  shots: [], world, tags,
+  code: [
+    [T.l6 - 0.1, T.orm - 0.15, 'orders page', 'the fix', [[0, '1 TRIP', AMB], [T.query3 + 0.05, '2 TRIPS · DONE', OK]],
+      [['-- trip 1: the orders'], ['SELECT * FROM orders'], ['ORDER BY id DESC LIMIT 100;'], ['SELECT * FROM customers', T.ask2 - 0.1], ['WHERE id IN (7, 12, 31);', T.ask2 - 0.1]],
+      [[T.get + 0.6, 3, '✓', 'good'], [T.query3 + 0.05, 5, '✓ all at once', 'good']]],
+  ],
+  hl: /\b(SELECT|FROM|WHERE|IN|LIMIT|orders|customers)\b/g,
+  tools: [{ a: T.orm - 0.1, b: T.l7 - 0.15, svg: svgOrm, name: 'Eager loading', sub: 'ONE OPTION IN YOUR ORM', src: 'RAILS <span style="color:#7CF29A">includes</span> · DJANGO <span style="color:#7CF29A">prefetch_related</span> · PRISMA <span style="color:#7CF29A">include</span>', top: 192 }],
+  slams: [],
+  bad: ['101', 'hundred', 'more', 'slow', 'hundreds', 'page'],
+  good: ['two', 'one', 'tray', 'together', 'eager', 'loading', 'few'],
+  tiles: [['N+1', 'N+1<br>QUERIES'], ['⚡', 'QUERY<br>OPTIMIZATION'], ['⌕', 'DATABASE<br>INDEXING']],
+  end: DURATION+1, follow: DURATION+2,
+  cover: { t: 'N+1<br>QUERIES', at: T.slow + 0.3, zoom: 1.02, dy: 45 },
+  flash: (t) => 0.06 * pulse(t, T.more1, 7) + 0.06 * pulse(t, T.slow, 6),
+};
+</script>
+<script src="../_ember/overlay.js"></script>
+<script>
+/* ---------------- bloom: scene → half-float target, bright pass, three blur levels, composite to the canvas */
+const RT = (w, h, s = 0) => new TH.WebGLRenderTarget(w, h, { type: TH.HalfFloatType, samples: s, depthBuffer: s > 0 });
+const rtMain = RT(1080, 1920, 4), BL = [[RT(540, 960), RT(540, 960)], [RT(270, 480), RT(270, 480)], [RT(135, 240), RT(135, 240)]];
+const fsCam = new TH.OrthographicCamera(-1, 1, 1, -1, 0, 1), fsScene = new TH.Scene(), fsQuad = new TH.Mesh(new TH.PlaneGeometry(2, 2));
+fsQuad.frustumCulled = false; fsScene.add(fsQuad);
+const VS = 'varying vec2 vUv; void main() { vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }';
+const shm = (fs, u) => new TH.ShaderMaterial({ uniforms: u, vertexShader: VS, fragmentShader: fs, depthTest: false, depthWrite: false });
+const mBright = shm(`uniform sampler2D tex; uniform float th; varying vec2 vUv;
+void main() { vec3 c = texture2D(tex, vUv).rgb; float l = max(c.r, max(c.g, c.b)); gl_FragColor = vec4(c * smoothstep(th, th + 0.4, l), 1.0); }`,
+  { tex: { value: null }, th: { value: 0.8 } });
+const mBlur = shm(`uniform sampler2D tex; uniform vec2 dir; varying vec2 vUv;
+void main() {
+  vec3 c = texture2D(tex, vUv).rgb * 0.2270270270;
+  c += (texture2D(tex, vUv + dir * 1.3846153846).rgb + texture2D(tex, vUv - dir * 1.3846153846).rgb) * 0.3162162162;
+  c += (texture2D(tex, vUv + dir * 3.2307692308).rgb + texture2D(tex, vUv - dir * 3.2307692308).rgb) * 0.0702702703;
+  gl_FragColor = vec4(c, 1.0);
+}`, { tex: { value: null }, dir: { value: new TH.Vector2() } });
+const mComp = shm(`uniform sampler2D base, b1, b2, b3; uniform float k1, k2, k3; varying vec2 vUv;
+void main() {
+  vec3 c = texture2D(base, vUv).rgb + texture2D(b1, vUv).rgb * k1 + texture2D(b2, vUv).rgb * k2 + texture2D(b3, vUv).rgb * k3;
+  c = c / (1.0 + max(c - 1.0, 0.0) * 0.6);
+  gl_FragColor = vec4(c, 1.0);
+  #include <colorspace_fragment>
+}`, { base: { value: rtMain.texture }, b1: { value: BL[0][0].texture }, b2: { value: BL[1][1].texture }, b3: { value: BL[2][1].texture }, k1: { value: 0.5 }, k2: { value: 0.65 }, k3: { value: 0.8 } });
+function pass(mat, dst) { fsQuad.material = mat; renderer.setRenderTarget(dst); renderer.render(fsScene, fsCam); }
+function blur(src, dst, dx, dy) { mBlur.uniforms.tex.value = src.texture; mBlur.uniforms.dir.value.set(dx / src.width, dy / src.height); pass(mBlur, dst); }
+function bloom() {
+  mBright.uniforms.tex.value = rtMain.texture; pass(mBright, BL[0][0]);
+  blur(BL[0][0], BL[0][1], 1, 0); blur(BL[0][1], BL[0][0], 0, 1);
+  blur(BL[0][0], BL[1][0], 1, 0); blur(BL[1][0], BL[1][1], 0, 1);
+  blur(BL[1][1], BL[2][0], 1, 0); blur(BL[2][0], BL[2][1], 0, 1);
+  pass(mComp, null);
+}
+
+/* ---------------- HUD and cards */
+const stg = $('stage'), before = $('prof');
+const mk = (html) => { const w = document.createElement('div'); w.innerHTML = html.trim(); const n = w.firstChild; stg.insertBefore(n, before); return n; };
+const HUD = mk(`<div id="hud"><div class="k">DATABASE<br>TRIPS</div><div id="hudG">NEEDED: 2</div><div id="hudN">0</div></div>`);
+const EQ = mk(`<div id="eq" class="cd2"><div class="h">N + 1</div><div class="row"><div class="b" id="eq1"><div class="n">1</div><div class="s">QUERY FOR<br>THE LIST</div></div><div class="b" id="eq2"><div class="n">+ N</div><div class="s">ONE MORE FOR<br>EACH ORDER</div></div></div><div id="eqT">N = 100 ORDERS → 101 QUERIES</div></div>`);
+const WT = mk(`<div id="wt" class="cd2"><div class="h">The waiter</div><svg id="wtS" viewBox="0 0 460 150"></svg><div id="wtL"></div></div>`);
+const LG2 = mk(`<div id="lg2" class="cd2"><div class="tb"><i></i><i></i><i></i><b>database query log</b><span style="margin-left:auto;letter-spacing:1px">QUERIES PER PAGE</span></div><div class="r" id="lgA">/orders page<span class="q"></span></div><div class="r" id="lgB">/feed page<span class="q"></span></div></div>`);
+if (/cover/.test(location.hash)) { const s = document.createElement('style'); s.textContent = '#hud, .cd2 { display: none !important; }'; document.head.appendChild(s); }
+// the waiter: kitchen on the left, the table on the right; one plate per walk, then all four on a tray
+const svg = $('wtS');
+svg.innerHTML = `<rect x="14" y="30" width="96" height="92" rx="10" fill="none" stroke="#FF6A1F" stroke-width="3"/><text x="62" y="140" text-anchor="middle" font-family="Mono" font-size="12" font-weight="800" fill="#9c948c" letter-spacing="1.5">KITCHEN</text>
+<rect x="340" y="62" width="104" height="40" rx="8" fill="none" stroke="#FFB070" stroke-width="3"/><text x="392" y="140" text-anchor="middle" font-family="Mono" font-size="12" font-weight="800" fill="#9c948c" letter-spacing="1.5">TABLE</text>
+<line x1="112" y1="108" x2="338" y2="108" stroke="#3a342e" stroke-width="2" stroke-dasharray="6 7"/>
+<g id="wtP">${[0, 1, 2, 3].map((i) => `<circle id="pl${i}" cx="${358 + i * 23}" cy="82" r="9" fill="#7CF29A" opacity="0"/>`).join('')}</g>
+<g id="wtW"><circle cx="0" cy="0" r="13" fill="#F2EEE8"/><rect id="wtTray" x="-26" y="-34" width="52" height="5" rx="2" fill="#7CF29A" opacity="0"/>${[0, 1, 2, 3].map((i) => `<circle id="tp${i}" cx="${-18 + i * 12}" cy="-40" r="6" fill="#7CF29A" opacity="0"/>`).join('')}</g>`;
+function waiterDom(t) {
+  const p = popIn(t, T.l5 - 0.1, T.l6 - 0.15); vis(WT, p.a, `translateY(${p.y}px) scale(${p.s})`);
+  if (p.a <= 0.001) return;
+  const A = T.waiter - 0.1, B = T.instead - 0.05, n = 4, per = (B - A) / n;
+  let x, plates = 0, carry = 0, tray = false;
+  if (t < B) {
+    const k = Math.min(n - 1, Math.floor((t - A) / per)), q = clamp((t - A - k * per) / per);
+    x = q < 0.5 ? lerp(130, 320, ease.inOut(q * 2)) : lerp(320, 130, ease.inOut((q - 0.5) * 2));
+    plates = t < A ? 0 : k + (q >= 0.5 ? 1 : 0); carry = q < 0.5 && t >= A ? 1 : 0;
+  } else {
+    const q = ep(t, B, T.tray + 0.2, ease.inOut); x = lerp(130, 320, q); tray = true; plates = q >= 1 ? 4 : 0;
+  }
+  $('wtW').setAttribute('transform', `translate(${x},92)`);
+  $('wtTray').setAttribute('opacity', tray && plates < 4 ? 1 : 0);
+  for (let i = 0; i < 4; i++) {
+    $('tp' + i).setAttribute('opacity', tray ? (plates < 4 ? 1 : 0) : (i === 0 && carry ? 1 : 0));
+    $('pl' + i).setAttribute('opacity', i < plates ? 1 : 0);
+  }
+  setH('wtL', tray ? '✓ ONE TRIP, ONE TRAY' : 'ONE PLATE PER TRIP · ' + Math.max(0, Math.min(4, Math.floor((t - A) / per) + 1)) + ' WALKS');
+  $('wtL').style.color = tray ? OK : AMB;
+}
+function eqDom(t) {
+  const p = popIn(t, T.problem - 0.3, T.l5 - 0.15); vis(EQ, p.a, `translateY(${p.y}px) scale(${p.s})`);
+  if (p.a <= 0.001) return;
+  $('eq1').className = 'b' + (t > T.list - 0.35 ? ' on1' : ''); $('eq2').className = 'b' + (t > T.each3 - 0.1 ? ' on2' : '');
+  $('eqT').style.opacity = ep(t, T.orders4 - 0.1, T.orders4 + 0.2);
+}
+function logDom(t) {
+  const p = popIn(t, T.log - 0.1, T.ifv - 0.1); vis(LG2, p.a, `translateY(${p.y}px) scale(${p.s})`);
+  if (p.a <= 0.001) return;
+  const a = t > T.few - 0.05, b = t > T.hundreds - 0.05;
+  setH('lgA', `/orders page<span class="q" style="color:${a ? OK : '#77706A'}">${a ? '2 queries ✓' : '…'}</span>`);
+  setH('lgB', `/feed page<span class="q" style="color:${b ? RED : '#77706A'}">${b ? '340 queries ✕' : '…'}</span>`);
+  $('lgB').style.background = b ? 'rgba(255,70,50,0.1)' : '';
+}
+function hudDom(t) {
+  const p = popIn(t, 0.1, T.ifv - 0.1); vis(HUD, p.a, `translateY(${p.y}px) scale(${p.s})`);
+  if (p.a <= 0.001) return;
+  const n = tripsDone(t), fix = phaseAt(t)[2] === FIX;
+  setH('hudN', String(n)); $('hudN').style.color = fix ? OK : n > 2 ? RED : n ? AMB : WH;
+  $('hudN').style.transform = `scale(${1 + 0.18 * pulse(t, T.more1 + 0.1, 5) + 0.2 * pulse(t, T.query3 + 0.05, 5)})`;
+  const g = window01(t, T.two - 0.05, T.l1 - 0.3, 0.2); $('hudG').style.opacity = g; $('hudG').style.display = g > 0.01 ? '' : 'none';
+}
+function clampTags() {
+  for (const k in LB) {
+    const e = LB[k]; if (e.style.display === 'none') continue;
+    const w = e.offsetWidth, x = parseFloat(e.style.left), y = clamp(parseFloat(e.style.top), 196, 668);
+    const right = y > 450 ? 540 - 70 : 540 - 14;
+    e.style.left = clamp(x, 14 + w / 2, right - w / 2) + 'px'; e.style.top = y + 'px';
+  }
+}
+
+window.render = (t) => {
+  shoot(t);
+  orbsReset(); sparksReset(); ringsReset();
+  REEL.world(t);
+  sparksFlush(); updateEmbers(t);
+  renderer.setRenderTarget(rtMain); renderer.render(scene, pcam);
+  bloom();
+  REEL.tags(t); clampTags();
+  card(t); tools(t);
+  hudDom(t); eqDom(t); logDom(t);
+  $('dim').style.opacity = Math.max(0.55 * ep(t, REEL.end, REEL.end + 0.6), 0.62 * window01(t, T.problem - 0.3, T.l6 - 0.05, 0.3));
+  $('flash').style.opacity = REEL.flash(t);
+  caps(t);
+  profile(t);
+};
+</script>
+<script src="../_ember/play.js"></script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+01 6/6 matched | Claude,@0.00 checkout's@1.48 celebrating.@2.06 Every@2.84 order@3.06 failed.@3.40
+02 2/2 matched | Why@0.00 confetti?@0.30
+03 10/10 matched | That's@0.00 the@0.34 success@0.52 screen.@0.90 Every@1.94 failed@2.22 order@2.62 gets@2.98 a@3.24 party.@3.42
+04 5/5 matched | Didn't@0.00 you@0.54 add@0.64 error@0.80 handling?@1.04
+05 13/13 matched | Try,@0.00 catch,@0.92 a@1.56 big@1.66 red@1.92 error@2.16 message.@2.44 I@3.20 tested@3.24 it.@3.74 Nothing@4.34 went@4.52 red.@4.72
+06 11/11 matched | Because@0.00 that@0.40 five@0.80 hundred@1.02 is@1.40 a@1.76 response,@1.94 not@2.80 a@3.12 rejected@3.26 promise.@3.66
+07 6/6 matched | So@0.00 the@0.24 catch@0.40 should@0.72 catch@1.22 it!@1.62
+08 10/10 matched | Fetch@0.00 doesn't@0.30 reject@0.70 just@1.08 because@1.34 the@1.70 HTTP@1.90 status@2.44 says@2.86 failure.@3.14
+09 9/9 matched | So@0.00 my@0.94 app@1.74 heard@2.16 "no"...@2.56 and@3.96 threw@4.06 a@4.28 party?@4.48
+10 11/11 matched | Await@0.00 fetch,@0.48 check@1.48 response@1.62 dot@2.20 ok.@2.42 If@3.44 false,@3.58 throw@4.46 an@4.58 error.@4.72
+11 11/11 matched | If@0.00 not@0.24 response@0.62 dot@1.46 ok...@1.80 throw...@3.50 It's@4.50 red!@4.76 It@5.50 actually@5.62 failed!@6.00
+12 4/4 matched | Congratulations.@0.00 Your@1.28 failure@1.44 works.@1.78
+13 11/11 matched | Oh@0.00 no.@0.20 Support@0.98 says@1.26 thirty@1.60 people@2.06 got@2.50 confetti...@2.74 and@3.66 no@3.84 order.@4.08
+14 5/5 matched | Free@0.00 confetti.@0.18 Delivery@1.06 not@1.44 included.@1.72

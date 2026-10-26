@@ -1,0 +1,16 @@
+1.0-7.6s Cleo: Claude, Chrome's gatekeeping. My API works in Postman. Here? CORS.
+8.3-10.0s Claude: Finally. Board time.
+10.5-12.4s Cleo: Since when do you have a board?
+12.8-18.8s Claude: Since now. Your page: localhost, port three thousand. Your API: same host, port eight thousand.
+19.3-21.5s Cleo: Same laptop.
+22.0-27.1s Claude: Different port, different origin. And Chrome checks the API's guest list.
+27.5-29.7s Cleo: So Chrome blocks the request?
+30.2-37.2s Claude: Sometimes a preflight check stops it. Otherwise, Chrome hides the response unless your origin is on the list.
+37.7-38.6s Cleo: And Postman?
+39.1-43.0s Claude: Postman isn't a browser. It never checks the guest list.
+43.4-45.5s Cleo: So I fix it in the front end?
+46.1-54.1s Claude: Server side. Add Access-Control-Allow-Origin with your page's exact origin. Guests don't write the guest list.
+54.6-59.0s Cleo: Allowed my page's exact origin on the server... It loaded!
+59.4-61.0s Claude: Next lesson: production.
+61.5-62.6s Cleo: Same guest list?
+63.5-65.5s Claude: New address. Back outside.

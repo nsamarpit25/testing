@@ -1,0 +1,41 @@
+02:23:34 us-east-1 g6e.2xlarge subnet-0648f6e3da55349b1 (InsufficientInstanceCapacity)
+02:23:41 us-east-1 g6e.2xlarge subnet-05f6162ec26b8b423 (InsufficientInstanceCapacity)
+02:23:48 us-east-1 g6e.2xlarge subnet-0a6d9689a4fbb5034 (InsufficientInstanceCapacity)
+02:23:55 us-east-1 g6e.2xlarge subnet-0b1291b31c4e5c25c (InsufficientInstanceCapacity)
+02:23:57 us-east-1 g6e.2xlarge subnet-0c4662e8aca3cc53e (Unsupported)
+02:23:59 us-east-1 g6e.2xlarge subnet-049fe4e59e4e896cf (Unsupported)
+02:24:06 us-east-1 g6.2xlarge subnet-0648f6e3da55349b1 (InsufficientInstanceCapacity)
+02:24:14 us-east-1 g6.2xlarge subnet-05f6162ec26b8b423 (InsufficientInstanceCapacity)
+02:24:21 us-east-1 g6.2xlarge subnet-0a6d9689a4fbb5034 (InsufficientInstanceCapacity)
+02:24:28 us-east-1 g6.2xlarge subnet-0b1291b31c4e5c25c (InsufficientInstanceCapacity)
+02:24:30 us-east-1 g6.2xlarge subnet-0c4662e8aca3cc53e (Unsupported)
+02:24:37 us-east-1 g6.2xlarge subnet-049fe4e59e4e896cf (InsufficientInstanceCapacity)
+02:24:43 us-east-1 g5.2xlarge subnet-0648f6e3da55349b1 (InsufficientInstanceCapacity)
+02:24:50 us-east-1 g5.2xlarge subnet-05f6162ec26b8b423 (InsufficientInstanceCapacity)
+02:24:57 us-east-1 g5.2xlarge subnet-0a6d9689a4fbb5034 (InsufficientInstanceCapacity)
+02:25:03 us-east-1 g5.2xlarge subnet-0b1291b31c4e5c25c (InsufficientInstanceCapacity)
+02:25:05 us-east-1 g5.2xlarge subnet-0c4662e8aca3cc53e (Unsupported)
+02:25:13 us-east-1 g5.2xlarge subnet-049fe4e59e4e896cf (InsufficientInstanceCapacity)
+02:25:19 us-east-1 g6e.xlarge subnet-0648f6e3da55349b1 (InsufficientInstanceCapacity)
+02:25:25 us-east-1 g6e.xlarge subnet-05f6162ec26b8b423 (InsufficientInstanceCapacity)
+02:25:32 us-east-1 g6e.xlarge subnet-0a6d9689a4fbb5034 (InsufficientInstanceCapacity)
+02:25:39 us-east-1 g6e.xlarge subnet-0b1291b31c4e5c25c (InsufficientInstanceCapacity)
+02:25:41 us-east-1 g6e.xlarge subnet-0c4662e8aca3cc53e (Unsupported)
+02:25:43 us-east-1 g6e.xlarge subnet-049fe4e59e4e896cf (Unsupported)
+02:25:49 us-east-1 g6.xlarge subnet-0648f6e3da55349b1 (InsufficientInstanceCapacity)
+02:25:57 us-east-1 g6.xlarge subnet-05f6162ec26b8b423 (InsufficientInstanceCapacity)
+02:26:03 us-east-1 g6.xlarge subnet-0a6d9689a4fbb5034 (InsufficientInstanceCapacity)
+02:26:10 us-east-1 g6.xlarge subnet-0b1291b31c4e5c25c (InsufficientInstanceCapacity)
+02:26:12 us-east-1 g6.xlarge subnet-0c4662e8aca3cc53e (Unsupported)
+02:26:19 us-east-1 g6.xlarge subnet-049fe4e59e4e896cf (InsufficientInstanceCapacity)
+02:26:26 us-east-1 g5.xlarge subnet-0648f6e3da55349b1 (InsufficientInstanceCapacity)
+02:26:33 us-east-1 g5.xlarge subnet-05f6162ec26b8b423 (InsufficientInstanceCapacity)
+GOT g5.xlarge us-east-1 subnet-0a6d9689a4fbb5034 i-056c4ac37a4bd912f 02:26:36
+W: Target Packages (Packages) is configured multiple times in /etc/apt/sources.list.d/archive_uri-https_developer_download_nvidia_com_compute_cuda_repos_ubuntu2204_x86_64_-jammy.list:1 and /etc/apt/sources.list.d/cuda-ubuntu2204-x86_64.list:1
+W: Target Translations (en) is configured multiple times in /etc/apt/sources.list.d/archive_uri-https_developer_download_nvidia_com_compute_cuda_repos_ubuntu2204_x86_64_-jammy.list:1 and /etc/apt/sources.list.d/cuda-ubuntu2204-x86_64.list:1
+W: Target Packages (Packages) is configured multiple times in /etc/apt/sources.list.d/archive_uri-https_developer_download_nvidia_com_compute_cuda_repos_ubuntu2204_x86_64_-jammy.list:1 and /etc/apt/sources.list.d/cuda-ubuntu2204-x86_64.list:1
+W: Target Translations (en) is configured multiple times in /etc/apt/sources.list.d/archive_uri-https_developer_download_nvidia_com_compute_cuda_repos_ubuntu2204_x86_64_-jammy.list:1 and /etc/apt/sources.list.d/cuda-ubuntu2204-x86_64.list:1
+Blender 5.2.2 LTS
+NVIDIA A10G
+1
+READY 02:29:03

@@ -1,0 +1,191 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- 17 Message queues (v2), in the ember style. World: YOUR phone, a SERVER with a QUEUE tray in front of it (message
+     blocks sit in slots), your FRIEND's phone (dead at first), and later a WORKER box behind. Hook: you send "hey", one
+     grey tick, the friend's phone is off; the message waits in the queue. Two more go in. The phone comes back, takes them
+     in order, confirms each, and only then is each block removed. Shops: checkout drops orders in the queue, a rush piles
+     up in line, and the worker takes them at its own pace. Beats come from voice/words.json via at(). -->
+<link rel="stylesheet" href="../_ember/fonts.css">
+<link rel="stylesheet" href="../_ember/reel.css">
+</head>
+<body>
+<div id="stage">
+  <div id="world">
+    <canvas id="cv" width="1080" height="1920"></canvas>
+    <div class="layer" id="lbls"></div>
+  </div>
+</div>
+<script src="../../tools/lib.js"></script>
+<script src="voice/words.js"></script>
+<script src="../_ember/three.js"></script>
+<script src="../_ember/world.js"></script>
+<script src="../_ember/base.js"></script>
+<script>
+for (let i = 0; i < 16; i++) ORBS.push({ core: orbSprite(9), glow: orbSprite(34), trail: [0, 1, 2, 3, 4].map(() => orbSprite(10)) });
+
+/* ---------------- beats */
+const T = {
+  texted: at('texted'), dead: at('dead'), tick: at('tech') /* "grey tick" → whisper: "great tech" */, where: at('where'), now: at('now'),
+  waiting: at('waiting'), queue1: at('queue'), line1: at('line'), picks1: at('picks'), drop: at('drop'), move: at('move'), receiver: at('receiver'), online: at('online'),
+  comes: at('comes'), back: at('back'), picks2: at('picks', 2), confirms: at('confirms'), arrived: at('arrived'), only: at('only'), removed: at('removed'),
+  shops: at('shops'), checkout: at('checkout'), drops: at('drops'), background: at('background'), pace: at('pace'), rush: at('rush'), waits: at('waits'), piling: at('piling'),
+  like: at('like'), post: at('post'), letters: at('letters'), collect: at('collect'), rabbitmq: at('rabbitmq'), amazon: at('amazon'), ifv: at('if'), follow: at('follow'),
+};
+const CUT = { Q: T.waiting - 0.3, BACK: T.comes - 0.4, SHOP: T.shops - 0.3, LIKE: T.like - 0.2, TOOLS: T.rabbitmq - 0.3, END: T.ifv - 0.15 };
+
+/* ---------------- layout */
+const YOU = [-195, 20], SRV = [-5, 70], FR = [190, 20], WK = [135, 225];
+const SLOTS = [...Array(6)].map((_, k) => [-85 + k * 34, -45]);
+const TRIP = 0.4;
+const MSGS = ['hey', 'you up?', 'call me'];
+const MIN = [T.tick - 0.35, T.drop + 0.2, T.move + 0.15];                              // messages land in the queue
+const MOUT = MSGS.map((_, k) => T.picks2 + k * 0.4);                                   // delivered, in order
+const MACK = MSGS.map((_, k) => T.confirms + 0.1 + k * 0.3);                            // confirmed
+const MDEL = MSGS.map((_, k) => T.removed - 0.1 + k * 0.22);                            // removed from the queue
+const OIN = [...[0, 1, 2].map((k) => T.checkout + 0.2 + k * 0.45), ...[0, 1, 2, 3, 4, 5, 6].map((k) => T.rush - 0.1 + k * 0.13)];
+const OOUT = [...Array(OIN.length)].map((_, k) => Math.max(OIN[k] + 0.3, T.background + 0.1 + k * 0.62));  // the worker's own pace
+const WAKE = T.comes;
+
+/* ---------------- camera */
+const SHOTS = [
+  { t: 0, d: 0, f: [0, -15, 60], s: 0.88, a: -0.38, e: 0.58, sy: 470 },
+  { t: CUT.Q, d: 1.0, f: [-10, -25, 55], s: 0.96, a: -0.42, e: 0.6, sy: 470 },
+  { t: CUT.BACK, d: 1.0, f: [10, -20, 55], s: 0.92, a: -0.42, e: 0.6, sy: 470 },
+  { t: CUT.SHOP, d: 1.0, f: [-5, 60, 60], s: 0.88, a: -0.42, e: 0.62, sy: 490 },
+  { t: CUT.LIKE, d: 1.0, f: [-5, 60, 60], s: 0.88, a: -0.42, e: 0.62, sy: 490 },
+  { t: CUT.TOOLS, d: 1.0, f: [10, 40, 60], s: 0.86, a: -0.42, e: 0.62, sy: 590 },
+  { t: CUT.END, d: 2.0, f: [10, 40, 60], s: 0.84, a: -0.42, e: 0.62, sy: 580 },
+];
+const KICKS = [[T.texted, 0.03], [T.dead, 0.03], [T.tick, 0.04], [T.now, 0.03], [T.queue1, 0.05], [T.online, 0.03], [T.comes, 0.05], [T.confirms, 0.03],
+  [T.removed, 0.04], [T.checkout, 0.03], [T.rush, 0.05], [T.waits, 0.03], [T.post, 0.03], [T.rabbitmq, 0.03], [T.amazon, 0.03]];
+const SHAKES = [[T.rush, 2, 0.25]];
+
+/* ---------------- build the world */
+const label = (g, W_, H_, txt, col, size, y = H_ / 2) => { g.fillStyle = col; g.font = `800 ${size}px Mono`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.shadowColor = col; g.shadowBlur = 12; g.fillText(txt, W_ / 2, y); g.shadowBlur = 0; g.textAlign = 'left'; };
+const mk = (p, w, d, h, col, k = 5) => { const b = emberBox(p[0], p[1], w, d, h, col); const f = decal(w, h, 'front', k, b.g); f.m.position.set(0, -d / 2 - 0.3, h / 2); return { b, f, pl: pool(p[0], p[1], w * 1.3, col), p }; };
+const you = mk(YOU, 84, 18, 140, O, 5), fr = mk(FR, 84, 18, 140, O, 5), srv = mk(SRV, 110, 60, 140, O, 4), wk = mk(WK, 96, 56, 110, O, 4);
+const tray = emberBox((SLOTS[0][0] + SLOTS[5][0]) / 2, SLOTS[0][1], 6 * 34 + 10, 36, 6, AMB);
+const BLK = SLOTS.map((p) => emberBox(p[0], p[1], 26, 24, 20, AMB, { z: 6 }));
+const P_YQ = [[YOU[0] + 42, YOU[1], 80], [SLOTS[0][0] - 30, SLOTS[0][1], 60], [SLOTS[0][0], SLOTS[0][1], 32]];
+const slotTop = (k) => [SLOTS[k][0], SLOTS[k][1], 32];
+const P_QF = (k) => [slotTop(k), [SLOTS[5][0] + 40, SLOTS[5][1], 70], [FR[0] - 42, FR[1], 80]];
+const P_QW = (k) => [slotTop(k), [SLOTS[5][0] + 40, SLOTS[5][1] + 60, 80], [WK[0] - 30, WK[1] - 28, 60]];
+const rYQ = road([[YOU[0] + 42, YOU[1], 0], [SLOTS[0][0] - 20, SLOTS[0][1], 0]], O2), rQF = road([[SLOTS[5][0] + 20, SLOTS[5][1], 0], [FR[0] - 42, FR[1], 0]], O2);
+const rQW = road([[SLOTS[5][0] + 20, SLOTS[5][1] + 10, 0], [WK[0] - 48, WK[1], 0]], O2);
+
+function bubble(g, W_, txt, y, col, right) {
+  g.font = '800 44px Mono'; const w = Math.min(W_ - 36, g.measureText(txt).width + 34), x = right ? W_ - 18 - w : 18;
+  g.strokeStyle = col; g.lineWidth = 6; rrect(g, x, y, w, 76, 18); g.stroke(); g.fillStyle = col; g.textBaseline = 'middle'; g.fillText(txt, x + 17, y + 40);
+}
+function phoneDraw(g, W_, H_, col, title, msgs, status, stCol, off) {
+  g.strokeStyle = col + 'aa'; g.lineWidth = 6; rrect(g, 14, 14, W_ - 28, H_ - 28, 34); g.stroke();
+  if (off) { label(g, W_, H_, 'PHONE OFF', DIM, 48, H_ / 2); label(g, W_, H_, '▯ 0%', RED + 'aa', 44, H_ / 2 + 70); return; }
+  label(g, W_, H_, title, col, 50, 76);
+  msgs.slice(-4).forEach((m, i) => bubble(g, W_, m[0], 140 + i * 94, m[1], m[2]));
+  if (status) label(g, W_, H_, status, stCol || col, 44, H_ - 76);
+}
+
+/* ---------------- the world, frame by frame */
+function world(t) {
+  const thru = (pts, t0, dur, col, size = 1) => { const q = (t - t0) / dur; if (q > -0.02 && q < 1.1) orb(pts, clamp(q), col, clamp(q / 0.08) * (1 - clamp((q - 1) / 0.1)), size); };
+  const q0 = ease.back(prog(t, 0.05, 0.4));
+  // what sits in the queue right now
+  const shop = t > CUT.SHOP;
+  let inQ = [];
+  if (!shop) inQ = MSGS.map((m, k) => ({ k, col: t > MOUT[k] ? (t > MACK[k] ? OK : O2) : AMB, on: t >= MIN[k] + TRIP && t < MDEL[k] })).filter((x) => x.on);
+  else inQ = OIN.map((a, k) => ({ k, col: AMB, on: t >= a + 0.25 && t < OOUT[k] })).filter((x) => x.on);
+  BLK.forEach((b, s) => {
+    const it = inQ[s];
+    b.g.visible = !!it && t < CUT.TOOLS + 3; if (!it) return;
+    b.setLook(it.col, 1.4 + 1.5 * pulse(t, (shop ? OIN : MIN)[it.k] + TRIP), 1);
+  });
+  const crowd = shop && t > T.rush ? inQ.length : 0;
+  tray.setLook(crowd > 5 ? mixHex(AMB, RED, 0.5) : AMB, 1.2, 1);
+  // server
+  srv.b.g.visible = q0 > 0.01; srv.b.g.scale.set(1, 1, Math.max(0.01, q0)); srv.b.setLook(O, 1.2, 1);
+  srv.f.m.visible = srv.b.g.visible; srv.f.draw((g, W_, H_) => { label(g, W_, H_, 'SERVER', O, 50, H_ * 0.14); label(g, W_, H_, shop ? 'CALM' : '', OK, 40, H_ * 0.8); label(g, W_, H_, 'QUEUE ↓', AMB, 38, H_ * 0.55); }); srv.pl.set(O, 0.4 * q0);
+  // your phone
+  const yMsgs = []; MSGS.forEach((m, k) => { if (t > MIN[k] - TRIP && !shop) yMsgs.push([m + (t > MACK[k] ? ' ✓✓' : ' ✓'), t > MACK[k] ? OK : O2, true]); });
+  const nO = OIN.filter((a) => t > a).length;
+  const yTitle = shop ? 'CHECKOUT' : 'YOU', ySt = shop ? `${nO} ORDERS SENT` : t > T.tick - 0.2 && t < MACK[0] ? 'ONE GREY TICK' : t > MACK[2] ? 'DELIVERED' : '';
+  you.b.g.visible = q0 > 0.01; you.b.g.scale.set(1, 1, Math.max(0.01, q0)); you.b.setLook(O, 1.2 + 1.5 * Math.max(...MIN.map((a) => pulse(t, a - TRIP)), ...OIN.map((a) => 0.5 * pulse(t, a))), 1);
+  you.f.m.visible = you.b.g.visible; you.f.draw((g, W_, H_) => shop ? phoneDraw(g, W_, H_, O, 'CHECKOUT', [], ySt, AMB) : phoneDraw(g, W_, H_, O, yTitle, yMsgs, ySt, t > MACK[2] ? OK : GR)); you.pl.set(O, 0.45 * q0);
+  // your friend's phone: dead, then back
+  const off = t < WAKE, fCol = off ? DIM : mixHex(O, OK, 0.35);
+  const fMsgs = MSGS.filter((_, k) => t > MOUT[k] + TRIP).map((m) => [m, OK, false]);
+  fr.b.g.visible = q0 > 0.01 && t < CUT.SHOP + 0.6; fr.b.g.scale.set(1, 1, Math.max(0.01, q0) * (shop ? 1 - ep(t, CUT.SHOP, CUT.SHOP + 0.6) : 1));
+  fr.b.setLook(fCol, off ? 0.6 : 1.3 + 2 * Math.max(pulse(t, WAKE), ...MOUT.map((a) => pulse(t, a + TRIP))), off ? 0.7 : 1);
+  fr.f.m.visible = fr.b.g.visible; fr.f.draw((g, W_, H_) => phoneDraw(g, W_, H_, fCol, 'FRIEND', fMsgs, t > MACK[0] ? 'CONFIRMED' : '', OK, off)); fr.pl.set(fCol, off ? 0.1 : 0.45);
+  if (t > WAKE && t < WAKE + 0.8) { ripple(t, WAKE, FR[0], FR[1], 2, OK, 100, 0.7); sparks(t, WAKE, FR[0], FR[1], 140, OK, 12, 4, 100, 0.6); }
+  // the worker: a background program that takes orders at its own pace
+  const qw = ease.back(prog(t, T.checkout - 0.3, T.checkout + 0.2));
+  const busy = shop && OOUT.some((a) => t > a - 0.1 && t < a + 0.5);
+  wk.b.g.visible = qw > 0.01; wk.b.g.scale.set(1, 1, Math.max(0.01, qw)); wk.b.setLook(busy ? mixHex(O, OK, 0.4) : O, 1.2 + 1.2 * Math.max(...OOUT.map((a) => pulse(t, a + TRIP))), 1);
+  const nDone = OOUT.filter((a) => t > a + TRIP).length;
+  wk.f.m.visible = wk.b.g.visible; wk.f.draw((g, W_, H_) => { label(g, W_, H_, 'WORKER', O, 46, H_ * 0.16); label(g, W_, H_, 'background job', GR, 30, H_ * 0.3); label(g, W_, H_, `${nDone} done`, OK, 48, H_ * 0.62); label(g, W_, H_, 'own pace', GR, 30, H_ * 0.85); }); wk.pl.set(O, 0.4 * qw);
+  // trips
+  rYQ.set(1, O2, 0.75 * Math.max(...[...MIN, ...OIN].map((a) => window01(t, a - TRIP - 0.1, a + 0.2, 0.08))), t);
+  rQF.set(1, OK, 0.7 * window01(t, MOUT[0] - 0.1, MACK[2] + 0.4, 0.15), t);
+  rQW.set(1, O2, 0.7 * (shop && t > T.background - 0.2 && t < CUT.TOOLS + 3 ? 1 : 0), t);
+  MIN.forEach((a, k) => thru(P_YQ, a - TRIP, TRIP + 0.05, O2, 0.8));
+  MOUT.forEach((a, k) => thru(P_QF(0), a, TRIP, OK, 0.8));
+  MACK.forEach((a) => thru([...P_QF(0)].reverse(), a - TRIP, TRIP, OK, 0.55));
+  OIN.forEach((a) => thru(P_YQ, a - 0.05, 0.3, O2, 0.7));
+  OOUT.forEach((a) => thru(P_QW(0), a, TRIP, OK, 0.7));
+  MDEL.forEach((a, k) => sparks(t, a, SLOTS[k][0], SLOTS[k][1], 30, OK, 6, 10 + k, 60, 0.4));
+}
+
+/* ---------------- world tags */
+function tags(t) {
+  const Y_T = [YOU[0], YOU[1], 175], F_T = [FR[0], FR[1], 175], Q_T = [SLOTS[2][0] + 17, SLOTS[2][1], 30], W_T = [WK[0], WK[1], 150], S_T = [SRV[0], SRV[1], 180];
+  const big = (c) => `font-size:15px;padding:9px 13px;letter-spacing:1px;border-color:${c}`;
+  const nQ = OIN.filter((a, k) => t >= a + 0.25 && t < OOUT[k]).length;
+  tag('dead', `<span style="color:${GR}">PHONE DEAD</span>`, '', F_T, t, T.dead - 0.1, T.where);
+  tag('where', `<span style="color:${AMB}">SO WHERE IS IT?</span>`, big(AMB), Y_T, t, T.where, CUT.Q + 0.2);
+  tag('q', `<span style="color:${AMB}">WAITING IN THE QUEUE</span>`, big(AMB), Q_T, t, T.queue1 - 0.1, T.drop - 0.1, 40);
+  tag('move', `<span style="color:${O2}">DROP IT IN · MOVE ON</span>`, `border-color:${O2}88`, Y_T, t, T.drop, T.receiver - 0.1);
+  tag('offl', `<span style="color:${GR}">RECEIVER OFFLINE</span>`, '', [FR[0] - 30, FR[1], 175], t, T.receiver, WAKE - 0.05);
+  tag('back', `<span style="color:${OK}">BACK ONLINE</span>`, big(OK), F_T, t, WAKE, T.confirms - 0.1);
+  tag('order', `<span style="color:${OK}">PICKS THEM UP</span>`, `border-color:${OK}88`, Q_T, t, T.picks2, T.confirms - 0.1, 40);
+  tag('ack', `<span style="color:${OK}">✓ CONFIRMED → REMOVED</span>`, big(OK), Q_T, t, T.confirms, CUT.SHOP + 0.2, 40);
+  tag('wait', `<span style="color:${AMB}">${nQ} ORDERS WAITING IN LINE</span>`, big(AMB), Q_T, t, T.rush, CUT.TOOLS + 0.4, 40);
+  tag('pace', `<span style="color:${OK}">AT ITS OWN PACE</span>`, `border-color:${OK}88`, W_T, t, T.pace - 0.3, T.post - 0.1);
+  tag('calm', `<span style="color:${OK}">SERVER NOT SWAMPED</span>`, `border-color:${OK}88`, S_T, t, T.piling - 0.1, T.like + 0.3);
+  tag('po', `<span style="color:${AMB}">POST OFFICE HOLDS YOUR LETTERS</span>`, big(AMB), S_T, t, T.post - 0.1, CUT.TOOLS + 0.4);
+}
+
+/* ---------------- reel config */
+const svgRMQ = `<svg width="46" height="46" viewBox="0 0 100 100" fill="none" stroke="#FF6600" stroke-width="7" stroke-linejoin="round"><path d="M16 14 H34 V44 H66 V14 H84 V86 H16 Z"/><rect x="58" y="58" width="14" height="14"/></svg>`;
+const svgSQS = `<svg width="46" height="46" viewBox="0 0 100 100" fill="none" stroke="#FF9900" stroke-width="7" stroke-linejoin="round"><rect x="14" y="30" width="72" height="40" rx="8"/><path d="M30 30 V70 M50 30 V70 M70 30 V70"/></svg>`;
+const REEL = {
+  shots: SHOTS, kicks: KICKS, shakes: SHAKES, world, tags,
+  code: [
+    [T.waiting - 0.2, T.shops - 0.35, 'queue', 'chat messages', [[0, 'WAITING', AMB], [WAKE, 'DELIVERING', OK], [MDEL[2], 'EMPTY', OK]],
+      [["send('hey')      → queue"], ["send('you up?')  → queue", MIN[1] - 0.2], ["send('call me')  → queue", MIN[2] - 0.2], ['friend online: take ×3', WAKE], ['confirm ×3 → removed', T.confirms]],
+      [[MIN[0] + TRIP, 1, 'waiting', 'amb'], [MIN[1] + TRIP, 2, 'waiting', 'amb'], [MIN[2] + TRIP, 3, 'waiting', 'amb'], [MOUT[0], 4, 'picked up', 'good'], ...MOUT.map((d, k) => [d + TRIP, k + 1, 'delivered', 'good']), ...MDEL.map((d, k) => [d, k + 1, '✓ removed', 'good']), [MDEL[0], 5, '✓', 'good']], 'type'],
+    [T.shops - 0.3, CUT.TOOLS - 0.1, 'checkout.js', 'orders', [[0, 'QUEUED', AMB], [T.rush, 'RUSH', RED], [T.piling, 'HANDLED', OK]],
+      [['queue.send(order)'], ['worker: queue.receive()', T.background - 0.2], ['worker: done → confirm', T.pace]],
+      [[T.checkout, 1, (t) => `${OIN.filter((a) => t > a).length} sent`, 'amb'], [T.background, 2, (t) => `${OOUT.filter((a) => t > a + TRIP).length} handled`, 'run'], [T.pace, 3, '✓ own pace', 'good']]],
+  ],
+  hl: /\b(send|queue|receive|worker|confirm)\b/g,
+  tools: [
+    { a: T.rabbitmq - 0.1, b: CUT.END, svg: svgRMQ, name: 'RabbitMQ', sub: 'OPEN-SOURCE MESSAGE QUEUE', top: 150 },
+    { a: T.amazon - 0.1, b: CUT.END, svg: svgSQS, name: 'Amazon SQS', sub: 'MANAGED QUEUES IN THE CLOUD', top: 262 },
+  ],
+  slams: [
+    { a: T.queue1 - 0.15, b: T.picks1 - 0.1, text: 'message queue', sub: 'MESSAGES WAIT IN LINE', size: 60 },
+  ],
+  bad: ['dead', 'rush'],
+  good: ['queue', 'confirms', 'removed'],
+  tiles: [['☰', 'MESSAGE<br>QUEUES'], ['⚡', 'CACHING'], ['⌕', 'DATABASE<br>INDEXING']],
+  end: CUT.END, follow: T.follow,
+  cover: { t: 'MESSAGE QUEUES', at: T.drop + 0.9, zoom: 0.95, dy: 40 },
+  flash: (t) => 0.06 * pulse(t, T.tick, 7) + 0.07 * pulse(t, WAKE, 7),
+};
+</script>
+<script src="../_ember/overlay.js"></script>
+<script src="../_ember/play.js"></script>
+</body>
+</html>

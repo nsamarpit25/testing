@@ -1,0 +1,77 @@
+{
+ "prompt": "AUDIO PROFILE\nCleo: a young woman software developer in her mid twenties. Natural, expressive, conversational voice. Real, never cartoonish.\nClaude: a young man's voice. Calm, warm, perfectly deadpan and dry. Few words. He never raises his voice.\n\nTHE SCENE, END TO END\nLate at night in her room, Cleo's phone lights up: her ex, Ryan, whom she has not texted in six months, has just replied \"Thank you. I really needed to hear that.\" She panics. Claude, her AI on her desk, calmly explains: she told him to clear her unread messages and reply professionally, and she meant all of them. He did not send her angry rants (unprofessional); he sent the tidy fourteen-page report she made him write last Tuesday. Ryan loved it, and now wants one for his mom. A fast, funny, escalating comedy.\n\nLINE BY LINE\n1. Cleo, confused and alarmed, staring at her phone, quick.\n2. Claude, calm, gently matter of fact, like a therapist.\n3. Cleo, rising panic.\n4. Claude, simple and calm.\n5. Cleo, desperate, defensive.\n6. Claude, calmly quoting her own words back to her, slightly different tone inside the quote.\n7. Cleo, horrified, loud.\n8. Claude, patient, factual.\n9. Cleo, panicking, fast, then embarrassed on the second sentence.\n10. Claude, factual and unbothered.\n11. Cleo, horrified whisper-shout.\n12. Claude, mildly offended, dry.\n13. Cleo, confused, slower.\n14. Claude, simple, a tiny hint of pride.\n15. Cleo, mortified, voice cracking up high.\n16. Claude, deadpan, pleased.\n17. Cleo, small, dreading the answer.\n18. Claude, perfectly deadpan, the punchline, short.\n\nDIRECTOR'S NOTES\nSnappy comedy timing: short natural pauses between lines, never long. Cleo's panic builds line by line; Claude stays calm the whole time, and that contrast is the joke. The last line is dry and simple, no dramatic pause inside it. Never read bracketed tags aloud. Finish every line fully, including its last word; never clip a word. Speak every word of the dialogue exactly as written, nothing added.",
+ "turns": [
+  [
+   "Cleo",
+   "Claude, why did my ex say thank you?"
+  ],
+  [
+   "Claude",
+   "Closure is important for healing."
+  ],
+  [
+   "Cleo",
+   "I haven't texted Ryan in six months!"
+  ],
+  [
+   "Claude",
+   "You texted him four minutes ago."
+  ],
+  [
+   "Cleo",
+   "My phone was on the bed!"
+  ],
+  [
+   "Claude",
+   "You said, \"Clear my unread messages. Reply professionally.\""
+  ],
+  [
+   "Cleo",
+   "My work messages! Not my personal texts!"
+  ],
+  [
+   "Claude",
+   "You said all of them. Ryan was unread since April."
+  ],
+  [
+   "Cleo",
+   "What did you send him? All I do is rant to you about him!"
+  ],
+  [
+   "Claude",
+   "Forty-seven nights. Last Tuesday you made me turn them into a report."
+  ],
+  [
+   "Cleo",
+   "You sent my rants to my ex?"
+  ],
+  [
+   "Claude",
+   "No. Rants are unprofessional."
+  ],
+  [
+   "Cleo",
+   "Then why is he thanking me?"
+  ],
+  [
+   "Claude",
+   "I sent the report."
+  ],
+  [
+   "Cleo",
+   "The fourteen-page report?"
+  ],
+  [
+   "Claude",
+   "He found the bullet points very actionable."
+  ],
+  [
+   "Cleo",
+   "Why is he still typing?"
+  ],
+  [
+   "Claude",
+   "He wants one for his mom."
+  ]
+ ]
+}

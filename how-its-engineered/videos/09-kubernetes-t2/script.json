@@ -1,0 +1,34 @@
+{
+ "topic": "Kubernetes (trial remake t2)",
+ "lines": [
+  [
+   {"say": "A server died at three A-M.", "show": "A server [died] at 3 AM."},
+   {"say": "By morning, your app had quietly moved to another server, and nobody woke up.", "show": "By morning, your app had quietly moved *to another server,* and nobody woke up."}
+  ],
+  [
+   {"say": "The thing that moved it is Kubernetes. It runs copies of your app on a group of servers.", "show": "The thing that moved it is *Kubernetes.* It runs copies of your app on [a group of servers.]"}
+  ],
+  [
+   {"say": "You don't give it steps. You tell it what you want, and it keeps making that true.", "show": "You don't give it steps. You tell it what you want, and it *keeps making that true.*"}
+  ],
+  [
+   {"say": "Think of a thermostat. You set twenty-one degrees, and it keeps pulling the room back there.", "show": "Think of a *thermostat.* You set *21°,* and it keeps pulling the room back there."}
+  ],
+  [
+   {"say": "So you say: three copies, always.", "show": "So you say: *3 copies,* always."},
+   {"say": "A server dies? It spins up replacement copies on the ones that are left.", "show": "A server [dies?] It spins up replacement copies *on the ones that are left.*"}
+  ],
+  [
+   {"say": "Switch on auto-scaling, and it adds copies when more users show up, then removes them once they leave.", "show": "Switch on *auto-scaling,* and it [adds copies] when more users show up, then removes them once they leave."}
+  ],
+  [
+   {"say": "Shipping a new version? It swaps old copies for new ones a few at a time, so the app stays up through the whole update.", "show": "Shipping a new version? It swaps old copies for new ones *a few at a time,* so the app [stays up] through the whole update."}
+  ],
+  [
+   {"say": "That's how your app recovered on its own while you slept.", "show": "That's how your app *recovered on its own while you slept.*"}
+  ],
+  [
+   {"say": "If you build with AI, follow for the system design it quietly skips.", "show": "If you build with AI, follow for the system design it quietly [skips.]"}
+  ]
+ ]
+}

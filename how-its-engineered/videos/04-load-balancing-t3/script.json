@@ -1,0 +1,59 @@
+{
+  "topic": "Load balancing",
+  "lines": [
+    [
+      {
+        "say": "It went viral: 100,000 people opened your app at once. So why didn't it go down?",
+        "show": "It went *viral:* 100,000 people opened your app at once. So why didn't it go [down?]"
+      }
+    ],
+    [
+      {
+        "say": "One server would crash under that crowd. So you run copies of your app on ten servers.",
+        "show": "One server would [crash] under that crowd. So you run *copies* of your app on 10 servers."
+      }
+    ],
+    [
+      {
+        "say": "But who decides which server gets each request? A load balancer.",
+        "show": "But who *decides* which server gets each request? A *load balancer.*"
+      }
+    ],
+    [
+      {
+        "say": "Like a store manager sending you to the shortest checkout line.",
+        "show": "Like a *store manager* sending you to the *shortest* checkout line."
+      }
+    ],
+    [
+      {
+        "say": "The simplest rule, round robin, just takes turns: one, two, three, back to one. A smarter rule, least connections, picks the server with the fewest open connections.",
+        "show": "The simplest rule, *round robin,* just takes turns: one, two, three, back to one. A smarter rule, *least connections,* picks the server with the fewest open connections."
+      }
+    ],
+    [
+      {
+        "say": "It also pings every server every few seconds. Any server that stops answering gets skipped.",
+        "show": "It also *pings* every server every few seconds. Any server that [stops answering] gets *skipped.*"
+      }
+    ],
+    [
+      {
+        "say": "Need more power? Add servers behind it, and users keep the same address.",
+        "show": "Need more power? *Add servers* behind it, and users keep the *same address.*"
+      }
+    ],
+    [
+      {
+        "say": "AWS, Engine X and Cloudflare do this for you.",
+        "show": "*AWS, NGINX* and *Cloudflare* do this for you."
+      }
+    ],
+    [
+      {
+        "say": "If AI writes your code, follow for the system design it leaves out.",
+        "show": "If AI writes your code, *follow* for the system design it leaves out."
+      }
+    ]
+  ]
+}

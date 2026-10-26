@@ -1,0 +1,47 @@
+{
+  "topic": "API gateways",
+  "lines": [
+    [
+      {
+        "say": "A stranger opened everyone's orders in your food app, without logging in. One service forgot one check.",
+        "show": "A *stranger* opened [everyone's orders] in your food app, without logging in. One service [forgot one check.]"
+      }
+    ],
+    [
+      {
+        "say": "Big apps run separate services: orders, payments, menu. If each one checks logins by itself, sooner or later one gets missed.",
+        "show": "Big apps run separate *services:* orders, payments, menu. If each one checks logins by itself, sooner or later one gets [missed.]"
+      }
+    ],
+    [
+      {
+        "say": "An API gateway puts one front door in front of all of them. Every request, like show my orders, passes through it.",
+        "show": "An *API gateway* puts *one front door* in front of all of them. Every request, like *show my orders,* passes through it."
+      }
+    ],
+    [
+      {
+        "say": "Think airport security: nobody reaches the gate without passing it.",
+        "show": "Think *airport security:* nobody reaches the gate without passing it."
+      }
+    ],
+    [
+      {
+        "say": "It checks every request for a valid login. No login? Blocked at the door. The orders service still checks whose orders you can see.",
+        "show": "It checks every request for a *valid login.* No login? [Blocked at the door.] The orders service still checks *whose orders* you can see."
+      }
+    ],
+    [
+      {
+        "say": "It also sends each request to the right service, and can slow down anyone sending too many.",
+        "show": "It also *sends* each request to the *right service,* and can *slow down* anyone sending too many."
+      }
+    ],
+    [
+      {
+        "say": "If AI writes your code, follow for the system design it leaves out.",
+        "show": "If AI writes your code, *follow* for the system design it [leaves out.]"
+      }
+    ]
+  ]
+}

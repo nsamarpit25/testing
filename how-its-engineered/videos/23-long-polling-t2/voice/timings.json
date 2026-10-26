@@ -1,0 +1,74 @@
+[
+ {
+  "li": 0,
+  "pi": 0,
+  "say": "Your app asked the server, any new messages? It didn't answer. For thirty seconds, on purpose.",
+  "show": "Your app asked the server, any new messages? It [didn't answer.] For *thirty seconds,* on purpose.",
+  "start": 0.0,
+  "end": 5.18
+ },
+ {
+  "li": 0,
+  "pi": 1,
+  "say": "Why would a server do that?",
+  "show": "[Why] would a server do that?",
+  "start": 5.68,
+  "end": 6.58
+ },
+ {
+  "li": 1,
+  "pi": 0,
+  "say": "Without it, your app keeps asking, and almost every time there's nothing new. That's a lot of wasted trips.",
+  "show": "Without it, your app *keeps asking,* and almost every time there's nothing new. That's a lot of [wasted trips.]",
+  "start": 7.0,
+  "end": 11.58
+ },
+ {
+  "li": 2,
+  "pi": 0,
+  "say": "Long polling flips that around. The server holds on to your question, and waits.",
+  "show": "*Long polling* flips that around. The server *holds on* to your question, and waits.",
+  "start": 12.12,
+  "end": 15.6
+ },
+ {
+  "li": 3,
+  "pi": 0,
+  "say": "The moment a message arrives, it answers. Your app shows it, then asks again right away.",
+  "show": "The *moment* a message arrives, it *answers.* Your app shows it, then asks again right away.",
+  "start": 16.0,
+  "end": 19.64
+ },
+ {
+  "li": 4,
+  "pi": 0,
+  "say": "If nothing happens within a time limit, say thirty seconds, the server answers: nothing yet. And your app asks again.",
+  "show": "If nothing happens within a *time limit,* say thirty seconds, the server answers: [nothing yet.] And your app asks again.",
+  "start": 19.96,
+  "end": 24.66
+ },
+ {
+  "li": 5,
+  "pi": 0,
+  "say": "Like a kid asking are we there yet every minute, versus asking once and hearing the answer the moment you arrive.",
+  "show": "Like a kid asking [are we there yet] every minute, versus asking *once* and hearing the answer the moment you *arrive.*",
+  "start": 25.02,
+  "end": 29.74
+ },
+ {
+  "li": 6,
+  "pi": 0,
+  "say": "Telegram bots can get their messages this way, over plain web requests.",
+  "show": "*Telegram bots* can get their messages this way, over *plain web requests.*",
+  "start": 30.38,
+  "end": 33.02
+ },
+ {
+  "li": 7,
+  "pi": 0,
+  "say": "If AI writes your code, follow for the system design it leaves out.",
+  "show": "If AI writes your code, *follow* for the system design it leaves out.",
+  "start": 33.4,
+  "end": 35.76
+ }
+]

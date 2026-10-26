@@ -1,0 +1,239 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- 11 Health checks, remade in the 21 ember style. World: three copies of an app at the back; a router in the middle
+     that hands user requests to the copies; two users in front; a health checker on the left that pings the copies.
+     Copy 1 freezes (still "running", answers nothing) and gets restarted; copy 3 starts up late and is skipped until ready.
+     Beats come from voice/words.json via at(). Shared pieces live in ../_ember/. -->
+<link rel="stylesheet" href="../_ember/fonts.css">
+<link rel="stylesheet" href="../_ember/reel.css">
+</head>
+<body>
+<div id="stage">
+  <div id="world">
+    <canvas id="cv" width="1080" height="1920"></canvas>
+    <div class="layer" id="lbls"></div>
+  </div>
+</div>
+<script src="../../tools/lib.js"></script>
+<script src="voice/words.js"></script>
+<script src="../_ember/three.js"></script>
+<script src="../_ember/world.js"></script>
+<script src="../_ember/base.js"></script>
+<script>
+const ICE = '#BFE9FF';
+const addIcon = (k, d) => { ICON[k] = d; P2[k] = new Path2D(d); };
+addIcon('user', 'M50 18 a14 14 0 1 0 0.1 0 M24 84 Q24 56 50 56 Q76 56 76 84');
+for (let i = 0; i < 12; i++) ORBS.push({ core: orbSprite(9), glow: orbSprite(34), trail: [0, 1, 2, 3, 4].map(() => orbSprite(10)) });
+
+/* ---------------- beats */
+const T = {
+  froze: at('froze'), saturday: at('saturday'), still: at('still'), running: at('running'), answering: at('answering'), n30: at('30'), later: at('later'), restarted: at('restarted'), how: at('how'), know: at('know'),
+  heres: at('heres'), trap: at('catch'), running2: at('running', 2), working: at('working'), frozen: at('frozen'), crash: at('crash'), never: at('never'), kicks: at('kicks'),
+  fix: at('fix'), health: at('health'), system: at('system'), keeps: at('keeps'), asking: at('asking'), okay: at('okay'),
+  like: at('like'), nurse: at('nurse'), pulse_: at('pulse'), minutes: at('minutes'),
+  check: at('check', 2), alive: at('alive'), every: at('every'), seconds: at('seconds'), page: at('page'), three: at('three'), missed: at('missed'), answers: at('answers'), row: at('row'), restarts: at('restarts'),
+  check2: at('check', 3), ready: at('ready'), new_: at('new'), copy: at('copy'), starting: at('starting'), says: at('says'), not2: at('not', 2), yet: at('yet'), user: at('user'), skip: at('skip'), ready2: at('ready', 2),
+  kubernetes: at('kubernetes'), liveness: at('liveness'), readiness: at('readiness'), probes: at('probes'),
+  ifv: at('if'), follow: at('follow'),
+};
+const CUT = { TRAP: T.heres - 0.2, FIX: T.fix - 0.2, NURSE: T.like - 0.2, ALIVE: T.check - 0.25, READY: T.check2 - 0.2, KUBE: T.kubernetes - 0.25, END: T.ifv - 0.15 };
+
+/* ---------------- layout */
+const APPS = [[-70, 140], [70, 140], [210, 140]], CHK = [-215, -50], RT = [40, -40], USERS = [[-20, -175], [110, -165]];
+const FROZE = [[T.froze - 0.1, T.restarted], [T.frozen - 0.15, T.fix - 0.2], [T.three - 0.7, T.restarts]];
+const isFrozen = (t) => FROZE.some(([a, b]) => t >= a && t < b);
+const RESTARTS = [T.restarted, T.restarts];
+const a3Ready = (t) => t >= T.ready2 - 0.05;
+
+/* ---------------- camera */
+const WIDE = { f: [0, -20, 30], s: 0.86, a: -0.42, e: 0.62, sy: 540 };
+const SHOTS = [
+  { t: 0, d: 0, f: [-70, 120, 40], s: 1.3, a: -0.38, e: 0.52, sy: 490 },
+  { t: CUT.TRAP, d: 1.0, f: [-40, 40, 30], s: 1.05, a: -0.42, e: 0.58, sy: 560 },
+  { t: CUT.FIX, d: 1.0, ...WIDE },
+  { t: CUT.NURSE, d: 1.0, f: [-120, 40, 30], s: 1.0, a: -0.42, e: 0.58, sy: 560 },
+  { t: CUT.ALIVE, d: 1.0, ...WIDE, f: [-40, -10, 30], s: 0.9 },
+  { t: CUT.READY, d: 1.0, ...WIDE, f: [60, -10, 30], s: 0.78 },
+  { t: CUT.KUBE, d: 1.0, ...WIDE, s: 0.8, sy: 620 },
+  { t: CUT.END, d: 2.0, ...WIDE, s: 0.78, sy: 620 },
+];
+// t2 remake: every shot re-angled (azimuth, elevation, zoom) so no frame matches the original
+const REANGLE = [[0.16, 0.06, 0.92], [-0.16, -0.04, 0.94], [0.14, 0.06, 0.92], [-0.16, 0.05, 0.95], [0.14, -0.05, 0.93], [-0.14, 0.06, 0.94],
+  [0.16, -0.04, 0.93], [-0.14, 0.05, 0.94], [0.14, 0.05, 0.93], [-0.16, -0.04, 0.94], [0.12, 0.06, 0.92]];
+SHOTS.forEach((s, i) => { const r = REANGLE[i % REANGLE.length]; s.a += r[0]; s.e = Math.min(1.0, Math.max(0.3, s.e + r[1])); s.s *= r[2]; });
+const KICKS = [[T.froze, 0.04], [T.answering, 0.03], [T.restarted, 0.05], [T.working, 0.04], [T.never, 0.03], [T.health, 0.05], [T.okay, 0.03],
+  [T.nurse, 0.03], [T.three, 0.03], [T.answers, 0.03], [T.row, 0.04], [T.restarts, 0.05], [T.yet, 0.03], [T.skip, 0.03], [T.ready2, 0.04], [T.liveness, 0.03], [T.readiness, 0.03]];
+const SHAKES = [[T.froze, 2, 0.25]];
+
+/* ---------------- who sends what, when */
+const steps = (a, b, dt) => { const r = []; for (let x = a; x < b; x += dt) r.push(x); return r; };
+const PINGS = [];   // [t0 (leaves the checker), app index]
+steps(T.keeps - 0.3, T.three - 0.9, 0.75).forEach((t0, k) => PINGS.push([t0, k % 2]));
+[T.three, T.answers, T.row].forEach((ta) => PINGS.push([ta - 0.4, 0]));
+steps(T.restarts + 0.5, CUT.READY, 0.75).forEach((t0, k) => PINGS.push([t0, k % 2]));
+[T.ready, T.yet, T.ready2].forEach((ta) => PINGS.push([ta - 0.4, 2]));
+steps(T.ready2 + 0.6, CUT.END, 0.9).forEach((t0, k) => PINGS.push([t0, k % 3]));
+const REQS = [];    // [t0 (leaves the user), user, app index]
+steps(0.2, T.n30, 0.45).forEach((t0, k) => REQS.push([t0, k % 2, 0]));
+steps(T.restarted + 0.4, CUT.TRAP, 0.4).forEach((t0, k) => REQS.push([t0, k % 2, k % 2]));
+steps(T.user - 0.6, CUT.END, 0.3).forEach((t0, k) => { const ok = a3Ready(t0 + 0.6); REQS.push([t0, k % 2, ok ? k % 3 : k % 2]); });
+
+/* ---------------- build the world */
+const AP = APPS.map((p, i) => { const b = emberBox(p[0], p[1], 76, 52, 88, O); const f = decal(76, 88, 'front', 5, b.g); f.m.position.set(0, -26.3, 44); return { b, f, p, i, pool: pool(p[0], p[1], 110, O) }; });
+const chk = emberBox(CHK[0], CHK[1], 70, 50, 60, OK);
+const chkF = decal(70, 60, 'front', 6, chk.g); chkF.m.position.set(0, -25.3, 30);
+const poolK = pool(CHK[0], CHK[1], 110, OK);
+const rt = emberBox(RT[0], RT[1], 70, 40, 40, O);
+const rtF = decal(70, 40, 'front', 6, rt.g); rtF.m.position.set(0, -20.3, 20);
+const poolR = pool(RT[0], RT[1], 100, O);
+const US = USERS.map((p) => { const b = emberBox(p[0], p[1], 38, 9, 66, O); const f = decal(34, 62, 'front', 6, b.g); f.m.position.set(0, -4.8, 33); return { b, f, p, pool: pool(p[0], p[1], 70, O) }; });
+const aIn = (i) => [APPS[i][0], APPS[i][1] - 26, 34];
+const R_IN = [RT[0], RT[1] - 20, 22], R_OUT = [RT[0], RT[1] + 20, 22], K_OUT = [CHK[0] + 35, CHK[1] + 10, 34];
+const rApp = APPS.map((p) => road([[R_OUT[0], R_OUT[1], 0], [p[0], p[1] - 26, 0]], O));
+const rChk = APPS.map((p) => road([[K_OUT[0], K_OUT[1], 0], [p[0] - 20, p[1] - 26, 0]], OK));
+const rUs = USERS.map((p) => road([[p[0], p[1] + 5, 0], [R_IN[0], R_IN[1], 0]], O));
+
+/* ---------------- canvas faces */
+const label = (g, W_, H_, txt, col, size, y = H_ / 2) => { g.fillStyle = col; g.font = `800 ${size}px Mono`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.shadowColor = col; g.shadowBlur = 12; g.fillText(txt, W_ / 2, y); g.shadowBlur = 0; g.textAlign = 'left'; };
+function appDraw(g, W_, H_, col, i, t, state, prog_) {
+  label(g, W_, H_, 'APP', col + 'aa', 46, H_ * 0.15);
+  label(g, W_, H_, String(i + 1), col, 120, H_ * 0.42);
+  if (state === 'start') {   // a progress bar while the copy boots
+    g.strokeStyle = col; g.lineWidth = 6; rrect(g, 50, H_ * 0.7, W_ - 100, 46, 10); g.stroke();
+    g.fillStyle = col; rrect(g, 58, H_ * 0.7 + 8, (W_ - 116) * prog_, 30, 6); g.fill();
+    return;
+  }
+  // a spinner: turns while the app works, stuck while it is frozen
+  const ang = state === 'frozen' ? 1.1 : t * 7;
+  for (let k = 0; k < 8; k++) {
+    const a = ang + (k * Math.PI) / 4, on = state === 'frozen' ? 0.35 : 0.25 + 0.75 * (k / 7);
+    g.beginPath(); g.arc(W_ / 2 + Math.cos(a) * 60, H_ * 0.76 + Math.sin(a) * 60, 12, 0, Math.PI * 2);
+    g.fillStyle = col + Math.round(on * 255).toString(16).padStart(2, '0'); g.fill();
+  }
+}
+function chkDraw(g, W_, H_, col, t) {   // a heartbeat line, like a pulse monitor
+  label(g, W_, H_, 'CHECK', col, 46, H_ * 0.2);
+  g.strokeStyle = col; g.lineWidth = 7; g.shadowColor = col; g.shadowBlur = 10; g.beginPath();
+  for (let x = 0; x <= W_ - 40; x += 6) {
+    const u = ((x / (W_ - 40)) * 2 - t * 0.9) % 1, ph = u < 0 ? u + 1 : u;
+    const y = H_ * 0.62 - (ph > 0.45 && ph < 0.5 ? 70 : ph > 0.5 && ph < 0.55 ? -40 : 0);
+    x ? g.lineTo(20 + x, y) : g.moveTo(20 + x, y);
+  }
+  g.stroke(); g.shadowBlur = 0;
+}
+function phoneDraw(g, W_, H_, col) { g.strokeStyle = col; g.lineWidth = 6; rrect(g, 12, 12, W_ - 24, H_ - 24, 20); g.stroke(); icon(g, 'user', W_ / 2, H_ / 2, W_ * 0.62, col, 8, 8); }
+
+/* ---------------- the world, frame by frame */
+function world(t) {
+  const thru = (pts, t0, dur, col, size = 1) => { const q = (t - t0) / dur; if (q > -0.02 && q < 1.1) orb(pts, clamp(q), col, clamp(q / 0.08) * (1 - clamp((q - 1) / 0.1)), size); };
+  const fz = isFrozen(t);
+  // the three copies
+  AP.forEach((a) => {
+    const i = a.i;
+    let q = i < 2 ? ease.back(prog(t, 0.05 + i * 0.1, 0.4 + i * 0.1)) : ease.back(prog(t, T.new_ - 0.15, T.new_ + 0.25));
+    RESTARTS.forEach((r) => { if (i === 0) q *= 1 - 0.85 * Math.sin(Math.PI * prog(t, r - 0.05, r + 0.55)); });   // restart: dips and comes back
+    const frozen = i === 0 && fz, starting = i === 2 && !a3Ready(t);
+    const col = frozen ? ICE : starting ? AMB : i === 0 && RESTARTS.some((r) => t > r && t < r + 1.0) ? OK : i === 2 && t > T.ready2 - 0.05 && t < T.ready2 + 1.2 ? OK : O;
+    const dimA = i === 1 && t < CUT.FIX ? 0.5 : 1;
+    a.b.g.visible = q > 0.01; a.b.g.scale.set(1, 1, Math.max(0.01, q));
+    a.b.setLook(col, 1.2 + 2.5 * (i === 0 ? pulse(t, T.froze) + pulse(t, T.restarted) + pulse(t, T.restarts) : 0) + 2 * (i === 2 ? pulse(t, T.ready2) : 0), dimA);
+    a.f.m.visible = a.b.g.visible; a.f.m.material.opacity = dimA;
+    a.f.draw((g, W_, H_) => appDraw(g, W_, H_, col, i, t, frozen ? 'frozen' : starting ? 'start' : 'run', prog(t, T.new_, T.ready2)));
+    a.pool.set(col, 0.4 * q * dimA);
+    if (frozen) sparks(t, Math.floor(t * 3) / 3, a.p[0], a.p[1], 90, ICE, 4, 500 + Math.floor(t * 3), 30, 0.6, -20);
+    rApp[i].set(q > 0.5 ? 1 : 0, starting ? DIM : frozen ? ICE : O, (starting ? 0.25 : 0.45) * dimA, t);
+  });
+  // router + users
+  const rq = ease.back(prog(t, 0.1, 0.45));
+  rt.g.visible = rq > 0.01; rt.g.scale.set(1, 1, Math.max(0.01, rq)); rt.setLook(O, 1.1, 1);
+  rtF.m.visible = rt.g.visible; rtF.draw((g, W_, H_) => label(g, W_, H_, 'ROUTER', O, 30)); poolR.set(O, 0.35 * rq);
+  US.forEach((u, k) => {
+    const q = ease.back(prog(t, 0.15 + k * 0.08, 0.5 + k * 0.08));
+    u.b.g.visible = q > 0.01; u.b.g.scale.set(1, 1, Math.max(0.01, q)); u.b.setLook(O, 1.1, 1);
+    u.f.m.visible = u.b.g.visible; u.f.draw((g, W_, H_) => phoneDraw(g, W_, H_, O)); u.pool.set(O, 0.35 * q);
+    rUs[k].set(ep(t, 0.3, 0.7), O, 0.4, t);
+  });
+  // user requests: to a frozen copy they go in and never come back
+  REQS.forEach(([t0, k, i], n) => {
+    const u = USERS[k], from = [u[0], u[1] + 5, 36];
+    thru([from, R_IN], t0, 0.3, O2, 0.8); thru([R_OUT, aIn(i)], t0 + 0.3, 0.3, O2, 0.8);
+    const ta = t0 + 0.6;
+    if (i === 0 && isFrozen(ta)) sparks(t, ta, aIn(0)[0], aIn(0)[1], 40, ICE, 6, 700 + n, 50, 0.4);
+    else { thru([aIn(i), R_OUT], ta + 0.05, 0.3, OK, 0.7); thru([R_IN, from], ta + 0.35, 0.3, OK, 0.7); }
+  });
+  // the health checker (the nurse), from "health check" on
+  const kq = ease.back(prog(t, T.health - 0.15, T.health + 0.25));
+  chk.g.visible = kq > 0.01; chk.g.scale.set(1, 1, Math.max(0.01, kq)); chk.setLook(OK, 1.3 + 2 * pulse(t, T.health) + 1.5 * pulse(t, T.alive) + 1.5 * pulse(t, T.ready));
+  chkF.m.visible = chk.g.visible; chkF.draw((g, W_, H_) => chkDraw(g, W_, H_, OK, t)); poolK.set(OK, 0.45 * kq);
+  rChk.forEach((r, i) => r.set(kq > 0.5 && (i < 2 || t > T.new_ + 0.2) ? ep(t, T.health + 0.1, T.health + 0.5) : 0, OK, 0.3, t));
+  PINGS.forEach(([t0, i], n) => {
+    const to = [APPS[i][0] - 20, APPS[i][1] - 26, 40], ta = t0 + 0.4;
+    thru([K_OUT, to], t0, 0.4, OK, 0.6);
+    if (i === 0 && isFrozen(ta)) { sparks(t, ta, to[0], to[1], 40, RED, 10, 900 + n, 70, 0.45); ripple(t, ta, APPS[0][0], APPS[0][1], 2, RED, 80, 0.6); }
+    else thru([to, K_OUT], ta + 0.05, 0.4, i === 2 && !a3Ready(ta) ? AMB : OK, 0.55);
+  });
+}
+
+/* ---------------- world tags */
+function tags(t) {
+  const A1 = [APPS[0][0], APPS[0][1], 130], A3 = [APPS[2][0] - 25, APPS[2][1] + 10, 130];
+  tag('time', '<b>SAT</b> · 11:48 PM', '', A1, t, T.saturday - 0.1, T.still);
+  tag('run', `<span style="color:${OK}">STATUS: RUNNING ✓</span>`, `border-color:${OK}88`, A1, t, T.running - 0.05, T.n30 - 0.1);
+  tag('noans', `<span style="color:${ICE}">✗ NOT ANSWERING ANYONE</span>`, `border-color:${ICE}88`, A1, t, T.answering, T.n30 - 0.1, 34);
+  const secs = Math.round(30 * prog(t, T.n30 - 0.1, T.restarted - 0.1));
+  tag('timer', `<span style="color:${AMB}">FROZEN · +${secs}s</span>`, `border-color:${AMB}88`, A1, t, T.n30 - 0.1, T.restarted + 0.1);
+  tag('rst', `<span style="color:${OK}">↻ RESTARTED</span>`, `border-color:${OK}88`, A1, t, T.restarted + 0.15, T.how + 0.1);
+  tag('how', `<span style="color:${AMB}">WHO NOTICED?</span>`, `border-color:${AMB}88`, A1, t, T.how, CUT.TRAP + 0.2);
+  tag('chk', '<b>HEALTH CHECKER</b>', '', [CHK[0], CHK[1], 100], t, T.health + 0.1, T.asking - 0.1);
+  tag('ask', `<span style="color:${OK}">"ARE YOU OKAY?"</span>`, `border-color:${OK}88`, [(CHK[0] + APPS[0][0]) / 2, (CHK[1] + APPS[0][1]) / 2, 70], t, T.asking, CUT.NURSE + 0.2);
+  tag('nurse', `<span style="color:${OK}">CHECKER = NURSE</span>`, `border-color:${OK}88`, [CHK[0], CHK[1], 100], t, T.nurse - 0.05, CUT.ALIVE + 0.2);
+  tag('pat', '<b>APP</b> = PATIENT · PULSE = REPLY', '', A1, t, T.pulse_ - 0.05, CUT.ALIVE + 0.2);
+  tag('live', `<span style="color:${OK}">CHECK 1 · ALIVE?</span>`, `border-color:${OK}88`, [CHK[0], CHK[1], 100], t, T.alive - 0.05, CUT.READY);
+  const miss = t < T.answers ? '1' : t < T.row ? '2' : '3';
+  tag('miss', `<span style="color:${RED}">✗ MISSED ${miss}/3${miss === '3' ? ' → RESTART' : ''}</span>`, `border-color:${RED}88`, A1, t, T.three, T.row - 0.05);
+  tag('rst2', `<span style="color:${OK}">↻ RESTARTED · ANSWERING</span>`, `border-color:${OK}88`, A1, t, T.restarts + 0.15, CUT.READY + 0.3);
+  tag('big1', `<span style="color:${RED}">RUNNING ≠ WORKING</span>`, `font-size:15px;padding:9px 13px;letter-spacing:1px;border-color:${RED}`, A1, t, T.working - 0.1, CUT.FIX + 0.2, -10);
+  tag('big2', `<span style="color:${RED}">3 MISSED CHECKS → RESTART</span>`, `font-size:15px;padding:9px 13px;letter-spacing:1px;border-color:${RED}`, A1, t, T.row - 0.05, T.restarts + 0.1, -10);
+  tag('rdy', `<span style="color:${AMB}">CHECK 2 · READY?</span>`, `border-color:${AMB}88`, [CHK[0] + 45, CHK[1], 100], t, T.ready - 0.05, CUT.KUBE);
+  tag('new', '<b>NEW COPY</b> · STARTING UP', '', A3, t, T.copy, T.not2);
+  tag('nyet', `<span style="color:${AMB}">"NOT YET"</span>`, `border-color:${AMB}88`, A3, t, T.not2, T.skip - 0.15);
+  tag('skip', `<span style="color:${AMB}">NOT READY → NO TRAFFIC</span>`, `font-size:15px;padding:9px 13px;letter-spacing:1px;border-color:${AMB}`, A3, t, T.skip - 0.05, T.ready2 - 0.05);
+  tag('rdy2', `<span style="color:${OK}">✓ READY · GETS REQUESTS</span>`, `border-color:${OK}88`, A3, t, T.ready2, CUT.KUBE + 0.3);
+}
+
+/* ---------------- reel config */
+const REEL = {
+  shots: SHOTS, kicks: KICKS, shakes: SHAKES, world, tags,
+  code: [
+    [T.heres - 0.15, T.fix - 0.25, 'app 1', 'frozen', [[0, 'RUNNING', OK], [T.working, 'NOT WORKING', RED]],
+      [['process     running'], ['answers     none', T.working - 0.1], ['crashed?    no', T.crash - 0.1], ['restart?    never', T.never - 0.1]],
+      [[T.running2, 1, '✓', 'good'], [T.working, 2, '✗', 'bad'], [T.crash, 3, 'no crash', 'amb'], [T.never, 4, '✗ stuck', 'bad']]],
+    [T.check - 0.2, T.check2 - 0.25, 'liveness check', 'app 1 · every 10s', [[0, 'ALIVE?', AMB], [T.three, 'MISSING', RED], [T.restarts, 'RESTARTED', OK]],
+      [['GET /health   200 OK', T.every], ['GET /health   timeout', T.three - 0.05], ['GET /health   timeout', T.answers - 0.05], ['GET /health   timeout', T.row - 0.05], ['→ restart app 1', T.restarts - 0.1]],
+      [[T.every + 0.1, 1, '✓', 'good'], [T.three, 2, 'miss 1', 'bad'], [T.answers, 3, 'miss 2', 'bad'], [T.row, 4, 'miss 3', 'bad'], [T.restarts, 5, '↻', 'good']]],
+    [T.check2 - 0.15, T.kubernetes - 0.25, 'readiness check', 'app 3 · new copy', [[0, 'READY?', AMB], [T.ready2, 'READY', OK]],
+      [['GET /ready    503 not yet', T.says - 0.1], ['requests →  app 1, app 2', T.skip - 0.15], ['GET /ready    200 OK', T.ready2 - 0.1]],
+      [[T.yet, 1, 'skip it', 'amb'], [T.skip, 2, '✓', 'good'], [T.ready2, 3, '✓ in', 'good']]],
+    [T.kubernetes - 0.2, CUT.END, 'deployment.yaml', 'kubernetes', [[0, 'PROBES', AMB]],
+      [['livenessProbe:'], ['  httpGet: {path: /health, port: 8080}'], ['readinessProbe:', T.readiness - 0.95], ['  httpGet: {path: /ready, port: 8080}', T.readiness - 0.7]],
+      [[T.liveness, 1, 'restart if frozen', 'run'], [T.readiness, 3, 'skip until ready', 'amb']], 'type'],
+  ],
+  hl: /\b(livenessProbe|readinessProbe|httpGet|path|port|GET|process|answers|crashed|restart)\b/g,
+  slams: [
+    { a: T.health - 0.1, b: T.like - 0.15, text: 'health check', sub: 'KEEP ASKING: ARE YOU OKAY?', size: 62 },
+  ],
+  bad: ['froze'],
+  good: ['restarted', 'skip', 'pulse'],
+  tiles: [['♥', 'HEALTH<br>CHECKS'], ['⎈', 'KUBER-<br>NETES'], ['⚖', 'LOAD<br>BALANCING']],
+  end: CUT.END, follow: T.follow,
+  wbw: true,
+  cover: { k: 'HEALTH CHECKS', t: 'STILL RUNNING.<br>NOT WORKING.', at: T.answering + 0.4, zoom: 1, dy: 0 },
+  flash: (t) => 0.08 * pulse(t, T.froze, 7) + 0.06 * pulse(t, T.restarts, 7),
+};
+</script>
+<script src="../_ember/overlay.js"></script>
+<script src="../_ember/play.js"></script>
+</body>
+</html>

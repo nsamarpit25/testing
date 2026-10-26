@@ -1,0 +1,328 @@
+{
+ "_doc": "Catalog of every @talkingagents reel: episode, version, parent. build_tracker.py joins it with live stats. Deleted reels keep their last known numbers here.",
+ "episodes": {
+  "1": "Imposter syndrome: who really built it?",
+  "2": "API key pushed to GitHub, $2,000 bill",
+  "3": "AI refactor broke working code",
+  "4": "useEffect loop: 45,000 database reads",
+  "5": "CSS fixes sent to the wrong localhost",
+  "6": "Side project: the trumpet button",
+  "7": "Save button solved by her own old answer",
+  "8": "Password reset was a 2019 TODO",
+  "9": "Sharing a localhost link",
+  "10": "Test email sent to 40,000 customers",
+  "11": "Merge conflict: kept mine, force pushed",
+  "12": "Two hours to center a box",
+  "14": "fetch() throws confetti on a 500 error",
+  "15": "CORS: works in Postman, blocked in Chrome",
+  "16": "git bisect, nature documentary",
+  "17": "Battery 3%: storm, power cut, goodnight (emotional)",
+  "18": "Auto-Reply: Claude texted her ex a 14-page report",
+  "19": "Management Material: promoted for typing \"done yet?\"",
+  "20": "Past Me Is A Hater: Claude blocked her 1 AM planner",
+  "21": "Quitting Tomorrow: 24 hours without AI, via Hawaii",
+  "22": "Explain The Cloud Like I'm Five: 12,000 money-saving screenshots",
+  "23": "The Whole Team: her 12 employees are Claude in four tabs",
+  "24": "I Asked For A Grocery List: water, and Pad Thai"
+ },
+ "reels": {
+  "DepT2tBz3rg": {
+   "ep": 1,
+   "kind": "original",
+   "deleted": "2026-10-21",
+   "why": "Deleted by you; weakest hook in Ep1 (44% swipe away)",
+   "last": {
+    "views": 1615,
+    "skip": 44.3,
+    "posted": "2026-10-18T18:20:49+0000"
+   }
+  },
+  "DeqiIxDtMcS": {
+   "ep": 2,
+   "kind": "original"
+  },
+  "Der9pjFzBEp": {
+   "ep": 3,
+   "kind": "original"
+  },
+  "DetP40XN2gp": {
+   "ep": 4,
+   "kind": "original"
+  },
+  "DeuUvcZTh5S": {
+   "ep": 5,
+   "kind": "original",
+   "deleted": "2026-10-21",
+   "why": "Deleted by you",
+   "last": {
+    "views": 1560,
+    "skip": 44.8,
+    "posted": "2026-10-20T17:03:00+0000"
+   }
+  },
+  "DeunDHHip1m": {
+   "ep": 2,
+   "kind": "tight",
+   "deleted": "2026-10-21",
+   "why": "No better than the original",
+   "last": {
+    "views": 1579,
+    "skip": 47.2,
+    "posted": "2026-10-20T19:43:00+0000"
+   }
+  },
+  "DeuqwlglNhh": {
+   "ep": 6,
+   "kind": "original"
+  },
+  "DeuuVtiDydl": {
+   "ep": 4,
+   "kind": "tight",
+   "flag": "1-frame screen flashes after 2 cuts",
+   "deleted": "2026-10-21",
+   "why": "Deleted by you; weakest Ep4 version and had a 1-frame flash",
+   "last": {
+    "views": 1508,
+    "skip": 42.4,
+    "posted": "2026-10-20T20:47:00+0000"
+   }
+  },
+  "Deux6JaiXiq": {
+   "ep": 1,
+   "kind": "cold",
+   "deleted": "2026-10-21",
+   "why": "Deleted by you",
+   "last": {
+    "views": 1479,
+    "skip": 34.3,
+    "posted": "2026-10-20T21:18:00+0000"
+   }
+  },
+  "Deu1fH7AvxS": {
+   "ep": 5,
+   "kind": "tight",
+   "flag": "0.2 s flash at the very start",
+   "deleted": "2026-10-21",
+   "why": "Glitch at the start; the cold open hooks better",
+   "last": {
+    "views": 1375,
+    "skip": 36.8,
+    "posted": "2026-10-20T21:49:00+0000"
+   }
+  },
+  "Deu5ENKDrUL": {
+   "ep": 3,
+   "kind": "tight",
+   "flag": "1-frame screen flashes after 2 cuts",
+   "deleted": "2026-10-21",
+   "why": "Deleted by you; bug: 1-frame screen flashes after 2 cuts",
+   "last": {
+    "views": 1770,
+    "skip": 34.0,
+    "posted": "2026-10-20T22:21:00+0000"
+   }
+  },
+  "Deu8pHkjs7D": {
+   "ep": 6,
+   "kind": "cold",
+   "deleted": "2026-10-21",
+   "why": "Worst reel: 53% skip",
+   "last": {
+    "views": 262,
+    "skip": 53.3,
+    "posted": "2026-10-20T22:52:00+0000"
+   }
+  },
+  "DevARh1ARzY": {
+   "ep": 1,
+   "kind": "tight",
+   "deleted": "2026-10-21",
+   "why": "Duplicate; the cold open hooks better",
+   "last": {
+    "views": 1068,
+    "skip": 36.5,
+    "posted": "2026-10-20T23:24:00+0000"
+   }
+  },
+  "DevD1zyEZwB": {
+   "ep": 6,
+   "kind": "tight",
+   "flag": "1-frame screen flash at 35.7 s",
+   "deleted": "2026-10-21",
+   "why": "Deleted by you; behind the original, stalled, 1-frame flash",
+   "last": {
+    "views": 1958,
+    "skip": 37.6,
+    "posted": "2026-10-20T23:54:00+0000"
+   }
+  },
+  "DevHXkwjrkC": {
+   "ep": 3,
+   "kind": "cold",
+   "deleted": "2026-10-21",
+   "why": "Weakest of the Ep3 versions",
+   "last": {
+    "views": 1518,
+    "skip": 38.1,
+    "posted": "2026-10-21T00:26:00+0000"
+   }
+  },
+  "DevPU3XlBR8": {
+   "ep": 2,
+   "kind": "cold",
+   "flag": "Phone buzz sound ends abruptly",
+   "deleted": "2026-10-21",
+   "why": "Deleted by you; bug: Phone buzz sound ends abruptly",
+   "last": {
+    "views": 1719,
+    "skip": 32.5,
+    "posted": "2026-10-21T01:35:00+0000"
+   }
+  },
+  "DevS5AwilR6": {
+   "ep": 5,
+   "kind": "cold",
+   "flag": "0.27 s screen flash at 4.6 s",
+   "deleted": "2026-10-21",
+   "why": "Deleted by you; bug: 0.27 s screen flash at 4.6 s",
+   "last": {
+    "views": 1633,
+    "skip": 29.2,
+    "posted": "2026-10-21T02:06:00+0000"
+   }
+  },
+  "DevWdzcD_YO": {
+   "ep": 8,
+   "kind": "original",
+   "flag": "\"For seven years?\" is cut off at 33 s",
+   "deleted": "2026-10-21",
+   "why": "Deleted by you; bug: \"For seven years?\" is cut off at 33 s",
+   "last": {
+    "views": 1673,
+    "skip": 33.3,
+    "posted": "2026-10-21T02:37:00+0000"
+   }
+  },
+  "DevZ_79E5-v": {
+   "ep": 9,
+   "kind": "original",
+   "flag": "Phone buzz sound ends abruptly"
+  },
+  "Devdhj5gq_e": {
+   "ep": 7,
+   "kind": "original",
+   "flag": "Choppy cuts at 13.6 s and 34.5 s"
+  },
+  "DevhFgPEbnV": {
+   "ep": 3,
+   "kind": "remake",
+   "deleted": "2026-10-21",
+   "why": "Deleted by you; weakest Ep3 version",
+   "last": {
+    "views": 1483,
+    "skip": 39.4,
+    "posted": "2026-10-21T04:10:00+0000"
+   }
+  },
+  "DevksKyEzNv": {
+   "ep": 4,
+   "kind": "remake",
+   "deleted": "2026-10-21",
+   "why": "Deleted by you",
+   "last": {
+    "views": 1863,
+    "skip": 32.0,
+    "posted": "2026-10-21T04:42:16+0000"
+   }
+  },
+  "DevoQ0dD6T3": {
+   "ep": 1,
+   "kind": "remake"
+  },
+  "Devr1FTkoUb": {
+   "ep": 8,
+   "kind": "cold",
+   "deleted": "2026-10-21",
+   "why": "Posted the wrong (failed) file: flash cut and chopped audio",
+   "last": {
+    "views": 0,
+    "skip": null,
+    "posted": "2026-10-21T05:44:00+0000"
+   }
+  },
+  "Dev70uICnZI": {
+   "ep": 10,
+   "kind": "original",
+   "deleted": "2026-10-21",
+   "why": "Deleted by you",
+   "last": {
+    "views": 1686,
+    "skip": 37.5,
+    "posted": "2026-10-21T08:04:00+0000"
+   }
+  },
+  "DewOPkTjG6E": {
+   "ep": 11,
+   "kind": "original",
+   "deleted": "2026-10-21",
+   "why": "Deleted by you: slow pace and lip sync issues",
+   "last": {
+    "views": 0,
+    "skip": null,
+    "posted": "2026-10-21T10:45:00+0000"
+   }
+  },
+  "DewrvfvDs_b": {
+   "ep": 12,
+   "kind": "original"
+  },
+  "DexWx3HiEfL": {
+   "ep": 5,
+   "kind": "variant C"
+  },
+  "DeyQHPbCTHj": {
+   "ep": 8,
+   "kind": "original",
+   "flag": "\"For seven years?\" is cut off at 33 s",
+   "parent": "DevWdzcD_YO"
+  },
+  "Deyz8hkCuGo": {
+   "ep": 10,
+   "kind": "remake",
+   "parent": "Dev70uICnZI"
+  },
+  "DezKed5DsNJ": {
+   "ep": 14,
+   "kind": "original"
+  },
+  "DezXnAYE5mY": {
+   "ep": 15,
+   "kind": "original"
+  },
+  "Deznt7RFQMt": {
+   "ep": 18,
+   "kind": "original"
+  },
+  "De07IjFk3OM": {
+   "ep": 19,
+   "kind": "original"
+  },
+  "De1ctuEEVXz": {
+   "ep": 20,
+   "kind": "original"
+  },
+  "De17bmdCcB7": {
+   "ep": 21,
+   "kind": "original"
+  },
+  "De4L3t9DZT_": {
+   "ep": 16,
+   "kind": "original"
+  },
+  "De3SACNgaAN": {
+   "ep": 17,
+   "kind": "original"
+  }
+ },
+ "upcoming": []
+}

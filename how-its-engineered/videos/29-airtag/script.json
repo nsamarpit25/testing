@@ -1,0 +1,73 @@
+{
+ "topic": "How AirTags Find Things",
+ "lines": [
+  [
+   {
+    "say": "Your AirTag says your bag is in another city. The AirTag didn't find it. A stranger's phone did.",
+    "show": "Your *AirTag* says your bag is in *another city.* The AirTag didn't find it. A [stranger's phone] did."
+   }
+  ],
+  [
+   {
+    "say": "An AirTag has no GPS. No SIM. No Wi-Fi. It talks over Bluetooth, on a coin battery.",
+    "show": "An AirTag has *no GPS.* No SIM. No Wi-Fi. It talks over *Bluetooth,* on a [coin battery.]"
+   }
+  ],
+  [
+   {
+    "say": "Every few seconds, it whispers one thing: I'm here.",
+    "show": "Every few seconds, it *whispers* one thing: [I'm here.]"
+   }
+  ],
+  [
+   {
+    "say": "Any iPhone walking past hears it. It adds its own location, locks it, and sends it to Apple.",
+    "show": "Any *iPhone* walking past hears it. It adds its *own location,* locks it, and [sends it to Apple.]"
+   },
+   {
+    "say": "The stranger never even knows.",
+    "show": "The stranger [never even knows.]"
+   }
+  ],
+  [
+   {
+    "say": "Then your phone downloads that report, unlocks it, and there's your bag.",
+    "show": "Then *your phone* downloads that report, unlocks it, and [there's your bag.]"
+   }
+  ],
+  [
+   {
+    "say": "Only your phone has the key. Apple can't read the location, and the stranger can't see whose tag it is.",
+    "show": "Only *your phone* has the key. Apple [can't read] the location, and the stranger can't see *whose tag* it is."
+   }
+  ],
+  [
+   {
+    "say": "Now repeat that across hundreds of millions of Apple devices. That's how a twenty-nine dollar disc shows up almost anywhere.",
+    "show": "Now repeat that across *hundreds of millions* of Apple devices. That's how a *$29 disc* shows up [almost anywhere.]"
+   }
+  ],
+  [
+   {
+    "say": "In twenty twenty-three, an airline told one passenger her bag was safe. Her AirTag showed it at a random apartment complex, next to the dumpsters. The network found it before the airline did.",
+    "show": "In 2023, an *airline* told one passenger her bag was *safe.* Her AirTag showed it at a *random apartment complex,* next to the dumpsters. The *network* found it [before the airline did.]"
+   }
+  ],
+  [
+   {
+    "say": "And if a stranger's AirTag travels with you, your phone warns you. iPhone or Android.",
+    "show": "And if a stranger's AirTag *travels with you,* your phone [warns you.] iPhone or Android."
+   }
+  ],
+  [
+   {
+    "say": "So that little disc isn't tracking anything. Everyone around it is.",
+    "show": "So that little disc *isn't tracking anything.* [Everyone around it is.]"
+   },
+   {
+    "say": "Follow for how everyday tech really works.",
+    "show": "Follow for how *everyday tech* really works."
+   }
+  ]
+ ]
+}

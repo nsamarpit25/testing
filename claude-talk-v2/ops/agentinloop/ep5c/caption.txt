@@ -1,0 +1,5 @@
+Made the button green eleven times. It stayed blue for forty minutes. Turns out three copies of my app were running, and every fix went to a different port 🫠
+
+How many "final" folders are on your machine right now?
+
+#webdev #codinglife #aicomedy #3danimation #developerhumor

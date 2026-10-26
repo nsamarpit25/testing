@@ -1,0 +1,430 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- 33 GPS, solid low-poly dioramas (kit.js + scenes.js + gps.js). Story: your phone knows your street; the satellites
+     have no idea you exist. The phone never sends, only listens. ~30 satellites with atomic clocks broadcast where they
+     are and when each signal left; travel time at light speed = distance; one distance = a sphere, three overlap at one
+     spot, a fourth fixes the phone's clock. Until May 2000 public GPS was wrong on purpose (a street away); switched off
+     overnight. Twist: the satellites only say where they are; your phone works out where you are. Beats from voice/words.js. -->
+<link rel="stylesheet" href="../_ember/fonts.css">
+<link rel="stylesheet" href="lib/reel.css">
+<style>
+#stage { background: #0b0a09; }
+#vig { background: radial-gradient(120% 82% at 50% 44%, rgba(8,6,4,0) 52%, rgba(8,6,4,0.72) 100%); }
+#hud { pointer-events: none; }
+.hc { position: absolute; left: 0; top: 0; display: none; padding: 9px 15px 10px 17px; border-radius: 10px; background: linear-gradient(180deg, rgba(36,33,31,0.93), rgba(19,17,16,0.93)); border: 1px solid rgba(255,255,255,0.075); box-shadow: 0 12px 30px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06); white-space: nowrap; transform-origin: 0 0; }
+.hc::before { content: ''; position: absolute; left: 7px; top: 10px; bottom: 10px; width: 3px; border-radius: 2px; background: var(--c); box-shadow: 0 0 8px var(--cg); }
+.hc .k { font: 650 9.5px/1 Inter; letter-spacing: 1.5px; color: var(--c); text-transform: uppercase; }
+.hc .v { font: 750 19px/1.05 Inter; letter-spacing: -0.3px; margin-top: 6px; color: #f5f4f3; font-variant-numeric: tabular-nums; }
+.hc.big .v { font-size: 24px; }
+.hc .v small { font-size: 0.72em; color: #a39e99; font-weight: 650; }
+.hp { position: absolute; left: 0; top: 0; display: none; font: 600 11px/1 Inter; padding: 6px 10px 6px 9px; border-radius: 20px; background: rgba(24,22,20,0.9); border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 6px 16px rgba(0,0,0,0.4); color: #e6e3e0; white-space: nowrap; transform-origin: 0 0; }
+.hp::before { content: ''; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--c); margin-right: 6px; vertical-align: 1px; }
+.hp.hot { border-color: var(--cg); }
+#cap .box { left: 50%; right: auto; transform: translateX(-50%); padding: 0 10px; background: none; }
+#cap .box::before, #cap .box::after { content: ''; position: absolute; width: 8px; height: 8px; border: 1.6px solid #ff6a1f; }
+#cap .box::before { left: -2px; top: -4px; border-width: 1.6px 0 0 1.6px; }
+#cap .box::after { right: -2px; bottom: -4px; border-width: 0 1.6px 1.6px 0; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="world">
+    <canvas id="cv" width="1080" height="1920"></canvas>
+    <div class="layer" id="lbls"></div>
+  </div>
+</div>
+<script src="../../tools/lib.js"></script>
+<script src="voice/words.js"></script>
+<script src="lib/three.js"></script>
+<script src="../_ember/world.js"></script>
+<script src="lib/base.js"></script>
+<script src="kit.js"></script>
+<script src="scenes.js"></script>
+<script src="gps.js"></script>
+<script>
+for (let i = 0; i < 48; i++) { const m = new TH.Mesh(new TH.RingGeometry(0.9, 1, 96), new TH.MeshBasicMaterial({ color: 0xffffff, transparent: true, blending: TH.AdditiveBlending, depthWrite: false, toneMapped: false, side: TH.DoubleSide })); m.visible = false; scene.add(m); RINGS.push(m); }
+const RING_TX = ctex(512, 512, (g, w, h) => {
+  const gr = g.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, w / 2);
+  gr.addColorStop(0, 'rgba(255,255,255,0)'); gr.addColorStop(0.8, 'rgba(255,255,255,0.025)'); gr.addColorStop(0.985, 'rgba(255,255,255,0.06)'); gr.addColorStop(1, 'rgba(255,255,255,0)');
+  g.fillStyle = gr; g.fillRect(0, 0, w, h);
+  g.strokeStyle = '#ffffff'; g.lineWidth = 3.2; g.beginPath(); g.arc(w / 2, h / 2, w / 2 - 6, 0, 7); g.stroke();
+});
+const RING_G = new TH.PlaneGeometry(2, 2);
+for (const m of RINGS) { m.geometry = RING_G; m.material.map = RING_TX; m.material.needsUpdate = true; m.renderOrder = 4; }
+// a flat ring on the ground (z up)
+function ripple(t, t0, x, y, z, col, maxR, dur = 0.9) {
+  const p = prog(t, t0, t0 + dur); if (p <= 0 || p >= 1 || ringI >= RINGS.length) return;
+  const m = RINGS[ringI++], r = maxR * (0.1 + 0.9 * ease.out(p));
+  m.visible = true; m.quaternion.identity(); m.position.set(x, y, z); m.scale.set(r, r, 1); m.material.color.set(col); m.material.opacity = 0.85 * Math.pow(1 - p, 1.3) * Math.min(1, p * 12);
+}
+// a ring that faces the camera (space), radius in screen px
+function rippleB(t, t0, p, col, rpx, dur = 1.2, a = 0.85) {
+  const q = prog(t, t0, t0 + dur); if (q <= 0 || q >= 1 || ringI >= RINGS.length) return;
+  const m = RINGS[ringI++], r = rpx / cam.s * (0.08 + 0.92 * ease.out(q));
+  m.visible = true; m.quaternion.copy(camera.quaternion); m.position.set(...p); m.scale.set(r, r, 1); m.material.color.set(col); m.material.opacity = a * Math.pow(1 - q, 1.3) * Math.min(1, q * 12);
+}
+const LMAX = 8, LINKS = [];
+const dotSprite = () => { const sp = new TH.Sprite(new TH.SpriteMaterial({ map: TX_ORB, transparent: true, blending: TH.AdditiveBlending, depthWrite: false, depthTest: false, toneMapped: false })); sp.visible = false; sp.renderOrder = 6; scene.add(sp); return sp; };
+for (let i = 0; i < 8; i++) {
+  const geo = new TH.LineGeometry(); geo.setPositions(new Array(LMAX * 3).fill(0).map((_, k) => k));
+  const core = new TH.Line2(geo, lineMat(O, 3.4)), halo = new TH.Line2(geo, lineMat(O, 11, { add: true, op: 0.16 }));
+  core.renderOrder = 5; halo.renderOrder = 4;
+  for (const l of [core, halo]) { l.frustumCulled = false; l.visible = false; scene.add(l); }
+  LINKS.push({ geo, core, halo, head: dotSprite(), end: dotSprite() });
+}
+let linkI = 0;
+function linksReset() { linkI = 0; for (const L of LINKS) L.core.visible = L.halo.visible = L.head.visible = L.end.visible = false; }
+function subLine(pts, q0, q1) {
+  const d = [0]; for (let i = 1; i < pts.length; i++) d.push(d[i - 1] + Math.hypot(...[0, 1, 2].map((j) => pts[i][j] - pts[i - 1][j])));
+  const L = d[d.length - 1], at_ = (u) => { let i = 1; while (i < pts.length - 1 && d[i] < u) i++; const k = (u - d[i - 1]) / Math.max(1e-6, d[i] - d[i - 1]); return [0, 1, 2].map((j) => lerp(pts[i - 1][j], pts[i][j], clamp(k))); };
+  const u0 = q0 * L, u1 = q1 * L, out = [at_(u0)];
+  for (let i = 1; i < pts.length - 1; i++) if (d[i] > u0 && d[i] < u1) out.push(pts[i]);
+  out.push(at_(u1)); return out;
+}
+// link(t, pts, t0, dur, t1, col): draws on along pts over [t0, t0+dur] (eased unless o.lin), holds, fades out at t1
+function link(t, pts, t0, dur, t1, col, o = {}) {
+  if (t < t0 || t > t1 || linkI >= LINKS.length) return null;
+  const L = LINKS[linkI++], fq = o.lin ? (x) => x : ease.inOut, q = fq(prog(t, t0, t0 + dur)), q0 = o.travel ? ease.inOut(prog(t, t0 + dur * 0.35, t0 + dur * 1.25)) : 0;
+  const a = (o.a ?? 1) * (1 - ep(t, t1 - 0.25, t1)) * (o.travel ? 1 - ep(t, t0 + dur * 1.05, t0 + dur * 1.25) : 1);
+  if (q <= 0.001 || a <= 0.01) return null;
+  const part = subLine(pts, q0, q).slice(0, LMAX), arr = L.geo.attributes.instanceStart.data.array;
+  for (let i = 0; i < part.length - 1; i++) arr.set([...part[i], ...part[i + 1]], i * 6);
+  L.geo.attributes.instanceStart.data.needsUpdate = true; L.geo.instanceCount = part.length - 1;
+  for (const [l, k] of [[L.core, 1], [L.halo, 0.16]]) { l.visible = true; l.material.color.set(col); l.material.opacity = a * k; }
+  const tip = part[part.length - 1], px = 1 / cam.s;
+  if (q < 0.999 || o.travel) { L.head.visible = true; L.head.position.set(...tip); L.head.material.color.set(mixHex(col, '#ffffff', 0.5)); L.head.material.opacity = a; L.head.scale.set(16 * px, 16 * px, 1); }
+  if (q >= 0.999 && !o.travel) { const k = ease.out(prog(t, t0 + dur, t0 + dur + 0.25)); L.end.visible = true; L.end.position.set(...tip); L.end.material.color.set(col); L.end.material.opacity = a * (0.6 + 0.4 * (1 - k)); L.end.scale.set((10 + 14 * (1 - k)) * px, (10 + 14 * (1 - k)) * px, 1); }
+  return tip;
+}
+
+/* ---------------- beats */
+const T = {
+  street: at('street'), gps1: at('gps'), idea: at('idea'), exist: at('exist'),
+  your2: at('your', 2), never: at('never'), sends: at('sends'), anything: at('anything'), only1: at('only'), listens: at('listens'),
+  about: at('about'), n30: at('30'), orbit: at('orbit'), earth: at('earth'), carrying: at('carrying'), precise1: at('precise'), clocks: at('clocks'),
+  they: at('they'), broadcasting: at('broadcasting'), where1: at('where'), when: at('when'), left: at('left'),
+  signals: at('signals'), speed: at('speed'), light: at('light'), takes: at('takes'), far: at('far'), is1: at('is'),
+  one2: at('one', 2), distance: at('distance'), sphere: at('sphere'), add: at('add'), sats3: at('satellites', 3), spheres: at('spheres'), overlap: at('overlap'), spot: at('spot'),
+  fourth: at('fourth'), fixes: at('fixes'), clock: at('clock'), nowhere: at('nowhere'), precise2: at('precise', 2),
+  until: at('until'), y2000: at('2000'), america: at('america'), wrong: at('wrong'), purpose: at('purpose'), street2: at('street', 2), really: at('really'), were: at('were'),
+  then: at('then'), president: at('president'), error: at('error'), switched: at('switched'), off: at('off'), overnight: at('overnight'), road: at('road'),
+  so2: at('so', 2), tracking: at('tracking'), space: at('space'), sats4: at('satellites', 4), say: at('say'), your5: at('your', 5), works: at('works'), are4: at('are', 3),
+  follow: at('follow'),
+};
+const CUT = { HOOK: 0, PH0: at('the') - 0.04, SAT: T.gps1 - 0.08, ST1: T.your2 - 0.12, GLOBE: T.about - 0.1, CLK: T.carrying - 0.1, BC: T.they - 0.15, LIGHT: T.signals - 0.12,
+  SPH: T.one2 - 0.1, PCLK: T.fixes - 0.04, SA: T.until - 0.1, TW: T.so2 - 0.1, FIN: T.your5 - 0.14, END: T.follow - 0.15 };
+
+/* ---------------- build */
+const CI = buildCity(), SP = buildSpace(), PH = buildPhoneStudio();
+// the AirTag reel's story objects stay hidden
+[CI.bag.g, CI.herBag.g, CI.redTag.g, CI.stranger.root, CI.you.root, CI.hider.root].forEach((o) => { o.visible = false; });
+CI.movers.forEach((m) => { m.g.visible = false; }); CI.dots.visible = false;
+// you: walking east on the hero sidewalk, phone in hand
+const YOU = person(scene, 0, 0, 0, { seed: 3, phone: true, coat: true, shirt: '#57534f' });
+// x along the sidewalk south of block (0, 0), west of the bus shelter; restarts per street scene so it never rounds the corner
+const YLANE = -560, youX = (t) => t < CUT.SAT ? -420 + 60 * t : t < CUT.GLOBE ? -480 + 60 * (t - CUT.ST1) : t < CUT.FIN ? -300 + 60 * (t - CUT.SA) : -460 + 60 * (t - CUT.FIN);
+const phoneW = () => wpos(YOU.phone);
+const HOLO = { x: holo(ICO.x, 110, RED), pin: holo(ICO.pin, 120, O), epin: holo(ICO.pin, 120, O), wpin: holo(ICO.pin, 300, RED), tpin: holo(ICO.pin, 230, O) };
+const YDOT = glowSpot(scene, 0, 0, 18, 120, '#f4f3f2', 0);
+const ERRM = new TH.MeshBasicMaterial({ color: C(RED), transparent: true, opacity: 0, blending: TH.AdditiveBlending, depthWrite: false, toneMapped: false, side: TH.DoubleSide });
+const ERR = new TH.Mesh(new TH.RingGeometry(0.97, 1, 128), ERRM); ERR.renderOrder = 3; scene.add(ERR);
+const ERRF = glowSpot(scene, 0, 0, 19, 1, RED, 0);
+const yp = PH.top;
+
+/* ---------------- phone screens */
+const UI = { card: '#1f1d1c', tile: '#2c2a28', tx: '#f5f4f3', tx2: '#a39e99', tx3: '#6f6a66' };
+const uiSpace = (g, W, H) => { const k = W / 600; g.scale(k, k); return H / k; };
+function rr(g, x, y, w, h, r, fill, stroke, lw = 2) { g.beginPath(); g.roundRect(x, y, w, h, r); if (fill) { g.fillStyle = fill; g.fill(); } if (stroke) { g.strokeStyle = stroke; g.lineWidth = lw; g.stroke(); } }
+function dot(g, x, y, r, fill) { g.beginPath(); g.arc(x, y, r, 0, 7); g.fillStyle = fill; g.fill(); }
+function tx(g, s, x, y, font, col, al = 'left', bl = 'alphabetic') { g.font = font; g.fillStyle = col; g.textAlign = al; g.textBaseline = bl; g.fillText(s, x, y); }
+function statusBar(g, W, col = UI.tx) {
+  tx(g, '9:41', 104, 68, '650 31px Inter', col, 'center');
+  for (let k = 0; k < 4; k++) rr(g, W - 198 + k * 10, 70 - 10 - k * 5, 7, 10 + k * 5, 2, col);
+  g.strokeStyle = col; g.lineCap = 'round'; g.lineWidth = 4.5; for (const r of [9, 17]) { g.beginPath(); g.arc(W - 132, 70, r, -Math.PI * 0.74, -Math.PI * 0.26); g.stroke(); } dot(g, W - 132, 68, 3.5, col);
+  rr(g, W - 104, 47, 48, 24, 8, null, 'rgba(245,244,243,0.5)', 2.5); rr(g, W - 100, 51, 34, 16, 4, col); rr(g, W - 53, 55, 4, 8, 2, 'rgba(245,244,243,0.5)');
+}
+const MY = 0.36;
+function mapBg(g, W, H, z = 1) {
+  g.fillStyle = '#1c1b1a'; g.fillRect(0, 0, W, H);
+  g.save(); g.translate(W / 2, H * MY); g.rotate(-0.3); g.scale(z, z);
+  const CX = 74, CY = 94, N = Math.ceil(1100 / z / CX);
+  for (let i = -N; i <= N; i++) for (let j = -N; j <= N; j++) { const r = rnd(i * 31 + j * 7, 3); g.fillStyle = r < 0.08 ? '#1f241d' : r < 0.5 ? '#222120' : '#1f1e1d'; g.fillRect(i * CX + 6, j * CY + 6, CX - 12, CY - 12); }
+  g.lineCap = 'butt';
+  for (const [w, c, m] of [[7, '#2d2b29', 1], [15, '#3a3734', 4]]) {
+    g.strokeStyle = c; g.lineWidth = w; g.beginPath();
+    for (let i = -N; i <= N; i++) if (i % m === 0) { g.moveTo(i * CX, -N * CY); g.lineTo(i * CX, N * CY); }
+    for (let j = -N; j <= N; j++) if (j % m === 0) { g.moveTo(-N * CX, j * CY); g.lineTo(N * CX, j * CY); }
+    g.stroke();
+  }
+  g.lineCap = 'round';
+  g.strokeStyle = '#151617'; g.lineWidth = 92; g.beginPath(); g.moveTo(-1400, 620); g.bezierCurveTo(-500, 300, -100, 520, 500, 160); g.bezierCurveTo(800, -20, 1100, -60, 1500, -300); g.stroke();
+  g.fillStyle = '#74706b'; g.font = '600 21px Inter'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.save(); g.rotate(Math.PI / 2); g.fillText('MARKET ST', -2 * CY, -4 * CX + 1); g.restore(); g.restore();
+  return { CX, CY };
+}
+// the maps screen: your street lights up, the blue-dot-style marker in orange, accuracy halo, a frosted sheet
+function mapScreen(g, W0, H0, t) {
+  const H = uiSpace(g, W0, H0), W = 600;
+  mapBg(g, W, H, 1.05);
+  const k = ep(t, T.street - 0.15, T.street + 0.35);
+  g.save(); g.translate(W / 2, H * MY); g.rotate(-0.3); g.scale(1.05, 1.05);
+  g.strokeStyle = hexA(O, 0.25 + 0.6 * k); g.lineWidth = 15 + 6 * k; g.lineCap = 'round'; g.beginPath(); g.moveTo(-520, 0); g.lineTo(520, 0); g.stroke();
+  g.restore();
+  const x = W / 2, y = H * MY, pr = (t * 0.9) % 1;
+  dot(g, x, y, 70, hexA(O, 0.12)); g.strokeStyle = hexA(O, 0.35); g.lineWidth = 2; g.beginPath(); g.arc(x, y, 70, 0, 7); g.stroke();
+  g.strokeStyle = hexA(O, 0.7 * (1 - pr)); g.lineWidth = 4; g.beginPath(); g.arc(x, y, 24 + pr * 70, 0, 7); g.stroke();
+  // heading cone
+  const gr = g.createRadialGradient(x, y, 0, x, y, 110); gr.addColorStop(0, hexA(O, 0.5)); gr.addColorStop(1, hexA(O, 0));
+  g.fillStyle = gr; g.beginPath(); g.moveTo(x, y); g.arc(x, y, 110, -0.3 - 0.45, -0.3 + 0.45); g.closePath(); g.fill();
+  g.save(); g.shadowColor = 'rgba(0,0,0,0.55)'; g.shadowBlur = 16; dot(g, x, y, 25, '#fff'); g.restore(); dot(g, x, y, 18, O);
+  // street name pill
+  const pa = k; g.globalAlpha = pa; rr(g, x + 40, y - 112, 204, 56, 28, 'rgba(31,29,28,0.95)', hexA(O, 0.6), 2.5); tx(g, 'Station Rd', x + 142, y - 76, '750 27px Inter', UI.tx, 'center'); g.globalAlpha = 1;
+  statusBar(g, W);
+  rr(g, 30, 100, W - 60, 74, 37, 'rgba(44,42,40,0.95)'); dot(g, 74, 137, 12, O); tx(g, 'You are here', 102, 147, '650 28px Inter', UI.tx);
+  const y0 = H * 0.63;
+  g.save(); g.shadowColor = 'rgba(0,0,0,0.6)'; g.shadowBlur = 40; rr(g, 0, y0, W, H - y0 + 60, 46, 'rgba(31,29,28,0.98)'); g.restore();
+  rr(g, W / 2 - 36, y0 + 14, 72, 10, 5, '#4a4643');
+  tx(g, 'My location', 44, y0 + 78, '600 25px Inter', UI.tx2); tx(g, 'Station Rd', 44, y0 + 132, '800 50px Inter', UI.tx);
+  tx(g, 'Accurate to 4 m', 44, y0 + 176, '600 26px Inter', O);
+  const tw = (W - 80) / 2;
+  [['Satellites', String(9 + (Math.floor(t * 1.3) % 3)) + ' in view', false], ['Sent to space', 'Nothing', true]].forEach(([a, b, red], i) => {
+    const xx = 30 + i * (tw + 20); rr(g, xx, y0 + 214, tw, 132, 28, UI.tile);
+    tx(g, a, xx + 24, y0 + 262, '600 24px Inter', UI.tx2); tx(g, b, xx + 24, y0 + 312, '750 33px Inter', red ? RED : UI.tx);
+  });
+  rr(g, W / 2 - 110, H - 34, 220, 10, 5, UI.tx);
+}
+// the phone's clock: off by a millisecond (that's 300 km), until the fourth satellite fixes it
+function clockScreen(g, W0, H0, t) {
+  const H = uiSpace(g, W0, H0), W = 600, fx = T.clock + 0.1, fixed = t > fx;
+  g.fillStyle = '#110f0e'; g.fillRect(0, 0, W, H);
+  const col = fixed ? OK : AMB, cy_ = H * 0.36;
+  const gr = g.createRadialGradient(W / 2, cy_, 10, W / 2, cy_, 480); gr.addColorStop(0, hexA(col, 0.18)); gr.addColorStop(1, hexA(col, 0)); g.fillStyle = gr; g.fillRect(0, 0, W, H);
+  statusBar(g, W);
+  tx(g, 'PHONE CLOCK', W / 2, cy_ - 170, '700 26px Mono', UI.tx2, 'center');
+  const sec = 26 + (t - CUT.PCLK), s = Math.floor(sec) % 60;
+  tx(g, `12:04:${String(s).padStart(2, '0')}`, W / 2, cy_ - 40, '700 112px Mono', UI.tx, 'center');
+  const fr = fixed ? (sec % 1).toFixed(6).slice(1) : ((sec + 0.001337) % 1).toFixed(6).slice(1);
+  const scr_ = t > fx - 0.25 && t < fx ? '.' + Array.from({ length: 6 }, (_, i) => Math.floor(rnd(Math.floor(t * 30) + i, 7) * 10)).join('') : fr;
+  tx(g, scr_.slice(0, 4) + ' ' + scr_.slice(4), W / 2, cy_ + 50, '700 64px Mono', col, 'center');
+  const ok = fixed ? ep(t, fx, fx + 0.3) : 1;
+  g.globalAlpha = ok;
+  rr(g, W / 2 - 220, cy_ + 112, 440, 76, 38, hexA(col, 0.16), hexA(col, 0.6), 3);
+  tx(g, fixed ? 'Synced to GPS time ✓' : 'Off by 0.001 s', W / 2, cy_ + 162, '750 32px Inter', col, 'center');
+  tx(g, fixed ? 'Error removed' : '= about 300 km of error', W / 2, cy_ + 240, '600 28px Inter', UI.tx2, 'center');
+  g.globalAlpha = 1;
+  rr(g, 40, H * 0.72, W - 80, 112, 30, UI.tile);
+  tx(g, 'Inside your phone', 74, H * 0.72 + 46, '600 24px Inter', UI.tx2); tx(g, 'Quartz crystal', 74, H * 0.72 + 88, '750 32px Inter', UI.tx);
+  tx(g, 'not atomic', W - 74, H * 0.72 + 88, '650 26px Inter', AMB, 'right');
+  rr(g, W / 2 - 110, H - 34, 220, 10, 5, UI.tx);
+}
+function paint(t, mode) { PH.s.draw(mode + Math.floor(t * 30), (g, W, H) => (mode === 'map' ? mapScreen : clockScreen)(g, W, H, t)); }
+
+/* ---------------- camera */
+const CUTS = [];
+const cut = (t, f, s, o = {}) => CUTS.push({ t, f, s, ...o });
+const H1 = (t) => SP.heroAt(0, t), Q = (t, l = 0) => QAt(t, l), mid = (a, b, k = 0.5) => [lerp(a[0], b[0], k), lerp(a[1], b[1], k), lerp(a[2], b[2], k)];
+const youAt = (t, z = 110) => [youX(t), YLANE, z];
+cut(CUT.HOOK, youAt(0.5, 150), 1.0, { push: 1.08, sy: 480 });
+cut(CUT.PH0, [yp[0], yp[1], yp[2] + 2], 4.0, { e: 0.3, push: 1.08, sy: 470, cut: true });
+cut(CUT.SAT, H1(CUT.SAT + 1.4), 0.42, { a: -0.62, e: 0.42, push: 1.12, sy: 440 });
+cut(CUT.ST1, youAt(CUT.ST1 + 1.4, 280), 0.85, { push: 1.08, sy: 470 });
+cut(CUT.GLOBE, EC, 0.034, { a: -0.7, e: 0.5, push: 1.15, sy: 450 });
+cut(CUT.CLK, H1(CUT.CLK + 1), 0.62, { a: -1.05, e: 0.32, push: 1.08, sy: 420, cut: true });
+cut(CUT.BC, mid(H1(CUT.BC + 1.5), SP.heroAt(1, CUT.BC + 1.5)), 0.07, { a: -0.7, e: 0.5, push: 1.1, sy: 450 });
+cut(CUT.LIGHT, mid(H1(CUT.LIGHT + 2), Q(CUT.LIGHT + 2), 0.45), 0.1, { a: -0.82, e: 0.45, push: 1.08, sy: 470, cut: true });
+cut(CUT.SPH, mid(EC, Q(CUT.SPH + 2), 0.75), 0.033, { a: -0.7, e: 0.5, to: { f: Q(T.spot), s: 0.075, a: -0.7, e: 0.5, sy: 470 }, dur: T.spot - CUT.SPH + 0.3, sy: 470, cut: true });
+cut(T.fourth - 0.1, Q(T.fourth), 0.075, { a: -0.7, e: 0.5, push: 0.94, sy: 470, glide: true });
+cut(CUT.PCLK, [yp[0], yp[1], yp[2] + 2], 4.0, { e: 0.3, push: 1.06, sy: 470 });
+cut(CUT.SA, [youX(CUT.SA + 5), 150, 0], 0.17, { a: -0.3, e: 1.18, push: 1.06, sy: 470 });
+cut(T.then - 0.1, [youX(T.then + 2), 220, 0], 0.18, { a: -0.3, e: 1.18, to: { f: [youX(T.road), YLANE - 250, 0], s: 0.26, a: -0.36, e: 1.12, sy: 500 }, dur: T.road - T.then + 0.6, glide: true });
+cut(CUT.TW, EC, 0.034, { a: -0.7, e: 0.5, push: 1.15, sy: 450 });
+cut(CUT.FIN, youAt(CUT.FIN + 0.8, 200), 0.95, { push: 1.1, sy: 470 });
+const SHOTS = [];
+CUTS.forEach((c, i) => {
+  const nx = CUTS[i + 1] ? CUTS[i + 1].t : DURATION + 1, k = { t: c.t, d: 0, f: c.f, s: c.s, a: c.a ?? -0.7, e: c.e ?? 0.6, sy: c.sy ?? 450 };
+  const pv = CUTS[i - 1], near = pv && (c.glide || Math.hypot(c.f[0] - pv.f[0], c.f[1] - pv.f[1]) < 1500) && !c.cut;
+  if (near) { k.d = Math.min(0.55, (nx - c.t) * 0.4); k.ez = ease.inOut; k.g = true; }
+  SHOTS.push(k);
+  if (c.to) SHOTS.push({ t: c.t + (k.d || 0) + 0.001, d: c.dur - (k.d || 0), ez: c.ez, ...c.to });
+  else SHOTS.push({ t: c.t + 0.001 + (k.d || 0), d: nx - c.t - (k.d || 0), ez: (x) => x, f: c.pan ? c.f.map((v, j) => v + c.pan[j]) : c.f, s: c.s * (c.push || 1), a: k.a + (c.da || 0), e: k.e, sy: k.sy });
+});
+const inShot = (t, a, b) => t >= a && t < b;
+const inSpace = (t) => inShot(t, CUT.SAT, CUT.ST1) || inShot(t, CUT.GLOBE, CUT.PCLK) || inShot(t, CUT.TW, CUT.FIN);
+const inPhone = (t) => inShot(t, CUT.PH0, CUT.SAT) || inShot(t, CUT.PCLK, CUT.SA);
+
+/* ---------------- the world, frame by frame */
+const PING_P = 1.5;
+const FACADES = []; scene.traverse((o) => { if (o.material && o.material.emissiveMap && !FACADES.includes(o.material) && o.material !== SP.earthM) FACADES.push(o.material); });
+function satPings(t, sats, period, rpx, a = 0.7) {
+  sats.forEach((s, k) => {
+    const off = rnd(k, 31) * period, s0 = Math.floor((t - off) / period) * period + off;
+    for (const st of [s0, s0 - period]) rippleB(t, st, SP.satPos(s, t), O, rpx, period * 1.1, a);
+  });
+}
+function world(t) {
+  linksReset();
+  cam3(t, SHOTS);
+  const fe = lerp(0.3, 0.9, clamp((cam.s - 0.1) / 0.5)); for (const m of FACADES) m.emissiveIntensity = fe;
+  CI.update(t, { on: 0 }); CI.dots.visible = false;
+  // you, walking, phone up
+  const yx = youX(t); YOU.root.position.set(yx, YLANE, 16); YOU.root.rotation.z = 0; YOU.pose('walkphone', yx / 140 * Math.PI * 2);
+  const ph = phoneW();
+  // ---- space
+  const sp = inSpace(t);
+  const popK = (s, k) => (inShot(t, CUT.GLOBE, CUT.CLK) ? ease.back(prog(t, T.n30 - 0.2 + k * 0.055, T.n30 + 0.15 + k * 0.055)) : 1);
+  SP.sats.forEach((s, k) => { s.pop = popK(s, k); });
+  SP.update(t, { glow: sp ? (cam.s < 0.2 ? 1 : 0.35) : 0, glowK: cam.s < 0.2 ? 1 : 2 });
+  const orbQ = inShot(t, CUT.GLOBE, CUT.CLK) ? ease.inOut(prog(t, T.orbit - 0.35, T.orbit + 0.75)) : 1;
+  SP.planes.forEach((L, k) => { L.geometry.instanceCount = Math.max(1, Math.round(128 * clamp(orbQ * 1.15 - k * 0.03))); L.material.opacity = (cam.s < 0.2 ? 0.34 : 0.12); });
+  // broadcasts: every satellite rings out now and then; the hero ones more often in the broadcast shot
+  if (inShot(t, CUT.GLOBE, CUT.CLK)) satPings(t, SP.sats.filter((s) => s.pop > 0.9), 2.4, 30, 0.5);
+  if (inShot(t, CUT.BC, CUT.LIGHT)) { satPings(t, SP.sats, 1.6, 120, 0.75); }
+  if (inShot(t, CUT.TW, CUT.FIN)) { satPings(t, SP.sats.filter((s) => s.hero < 0), 2.6, 28, 0.4); if (t > T.say - 0.2) satPings(t, SP.hero, 1.0, 46, 0.9); }
+  if (inShot(t, CUT.SAT, CUT.ST1)) satPings(t, [SP.hero[0]], 1.4, 160, 0.7);
+  if (inShot(t, CUT.CLK, CUT.BC)) rippleB(t, Math.floor(t) + 0.0, v3.add(H1(t), [0, 0, 0]), AMB, 220, 0.8, 0.5);
+  // the signal from one satellite to you, at light speed (slowed down)
+  const q = Q(t, 0), qL = Q(t, 18), L0 = CUT.LIGHT + 0.35, LD = 1.7;
+  if (inShot(t, CUT.LIGHT, CUT.SPH)) {
+    link(t, [H1(t), qL], L0, LD, CUT.SPH, O, { lin: true });
+    ripple(t, L0 + LD, 0, 0, 0, O, 0); rippleB(t, L0 + LD, qL, O, 60, 0.8);
+    for (let k = 1; k < 4; k++) link(t, [SP.heroAt(k, t), qL], L0 + 0.5 + k * 0.25, LD, CUT.SPH, O, { a: 0.25, travel: true, lin: true });
+  }
+  // distance spheres: one, then two more (they meet at one spot), then a fourth
+  const inS = inShot(t, CUT.SPH, CUT.PCLK);
+  const SPT = [[T.one2, T.sphere + 0.1], [T.add + 0.1, T.spheres], [T.sats3 + 0.15, T.overlap + 0.2], [T.fourth - 0.05, T.fixes]];
+  SPT.forEach(([a, b], k) => {
+    const r = ease.inOut(prog(t, a, b)), fade = k === 0 ? 1 - 0.55 * ep(t, T.add, T.add + 0.6) : 1;
+    const later = 1 - 0.6 * ep(t, T.spot, T.spot + 0.6);
+    SP.sphere(k, SP.heroAt(k, t), q, inS ? r : 0, inS ? fade * later * (0.6 + 0.4 * (1 - prog(t, b, b + 1))) : 0, inS ? ease.out(prog(t, b - 0.15, b + 0.55)) : 0, 1);
+    if (inS && t > a) link(t, [SP.heroAt(k, t), qL], a, 0.4, CUT.PCLK, O, { a: 0.55 });
+  });
+  if (!inS) SP.spheres.forEach((o, k) => SP.sphere(k, [0, 0, 0], [1, 1, 1], 0, 0, 0));
+  const pinIn = inS ? ease.back(prog(t, T.spot - 0.25, T.spot + 0.2)) : inShot(t, CUT.LIGHT, CUT.SPH) ? ep(t, L0 + LD - 0.1, L0 + LD + 0.2) : 0;
+  HOLO.epin.show(v3.add(q, v3.mul(v3.norm(v3.sub(q, EC)), 30 / cam.s + 400 * (1 - ep(t, T.spot - 0.25, T.spot + 0.05)) * (inS ? 1 : 0))), pinIn > 0 ? Math.min(1, pinIn) : 0, (54 / cam.s) / 120 * Math.max(0.3, pinIn));
+  if (inS) { rippleB(t, T.spot + 0.05, q, O, 90, 1.0); rippleB(t, T.fixes - 0.25, q, AMB, 70, 0.9); }
+  // ---- the street
+  const st1 = inShot(t, CUT.ST1, CUT.GLOBE), fin = t >= CUT.FIN, hk = t < CUT.PH0;
+  screenLit(YOU.screen, 0.3 + 0.7 * Math.max(pulse(t, T.listens, 2), hk ? 1 : 0, fin ? ep(t, T.works, T.works + 0.4) : 0, st1 ? 0.3 : 0));
+  if (!st1) HOLO.x.show([0, 0, 0], 0);
+  if (st1) {
+    // "never sends": a line tries to go up and is crossed out
+    link(t, [ph, v3.add(ph, [0, 0, 430])], T.sends - 0.05, 0.45, T.only1 - 0.1, RED, { a: 0.9 });
+    const xa = window01(t, T.anything - 0.1, T.only1 - 0.05, 0.15);
+    HOLO.x.show(v3.add(ph, [0, 0, 450]), xa, (70 / cam.s) / 110 * (0.7 + 0.3 * ease.back(prog(t, T.anything - 0.1, T.anything + 0.2))));
+    // "only listens": signals arrive from the sky
+    [[-500, 250], [450, 380], [80, -400]].forEach(([dx, dy], k) => link(t, [v3.add(ph, [dx, dy, 1500]), ph], T.only1 + 0.05 + k * 0.18, 0.45, CUT.GLOBE, O, { travel: true }));
+    if (t > T.listens) ripple(t, T.listens + 0.35, ph[0], ph[1], ph[2], O, 60, 0.7);
+  }
+  if (fin) {
+    // your phone works it out: four signals arrive, then a pin above you
+    [[-700, 200], [600, 450], [300, -500], [-350, -650]].forEach(([dx, dy], k) => link(t, [v3.add(ph, [dx, dy, 1500]), ph], CUT.FIN + 0.15 + k * 0.16, 0.5, CUT.END + 1, O, { a: 0.85 }));
+    pingsAt(t, T.works - 0.1, CUT.END, ph, O, 70, 1.0, 0.8);
+  }
+  // the hook: you on your street, signals coming down, a pin over you
+  if (hk) { [[-600, 300], [500, 420], [150, -450]].forEach(([dx, dy], k) => link(t, [v3.add(ph, [dx, dy, 1300]), ph], 0.05 + k * 0.12, 0.4, CUT.PH0, O, { travel: true })); ripple(t, 0.45, yx, YLANE, 18, O, 150, 0.8); }
+  const pinF = fin ? ease.back(prog(t, T.are4 - 0.35, T.are4 + 0.05)) : hk ? ease.back(prog(t, 0.2, 0.55)) : 0;
+  HOLO.pin.show([yx, YLANE, hk ? 300 : 300 + 260 * (1 - ep(t, T.are4 - 0.35, T.are4, ease.in))], fin || hk ? clamp(pinF * 3) : 0, 1);
+  if (fin) ripple(t, T.are4 + 0.05, yx, YLANE, 18, O, 160, 0.9);
+  // ---- the story: until May 2000 the public signal was wrong on purpose
+  const sa = inShot(t, CUT.SA, CUT.TW), snap = ep(t, T.off - 0.05, T.off + 0.55, ease.back), offK = ep(t, T.switched, T.off + 0.5, ease.inOut);
+  const wob = [430 * Math.sin(t * 1.3) + 220 * Math.sin(t * 3.1 + 1), 1650 + 160 * Math.sin(t * 2.3) + 90 * Math.cos(t * 4.4)];
+  const wpos_ = [yx + lerp(wob[0], 0, snap), YLANE + lerp(wob[1], 0, snap), 0];
+  const wa = sa ? ep(t, T.until + 0.3, T.y2000 + 0.3) : 0;
+  HOLO.wpin.show([wpos_[0], wpos_[1], 140 + 100 * Math.abs(Math.sin(t * 6)) * (1 - snap)], wa, (52 / cam.s) / 300);
+  HOLO.wpin.material.color.set(t > T.off + 0.1 ? '#ffd9c2' : '#ffffff');
+  HOLO.wpin.material.map = t > T.off + 0.1 ? HOLO.tpin.material.map : HOLO.wpin.material.map;
+  const eR = lerp(1900, 180, offK);
+  ERR.position.set(yx, YLANE, 19); ERR.scale.set(eR, eR, 1); ERRM.opacity = sa ? 0.55 * wa : 0; ERRM.color.set(t > T.off ? O : RED);
+  ERRF.position.set(yx, YLANE, 18.5); ERRF.scale.set(eR, eR, 1); ERRF.material.opacity = sa ? 0.12 * wa : 0; ERRF.material.color.set(t > T.off ? O : RED);
+  YDOT.position.set(yx, YLANE, 18); YDOT.scale.set(220, 220, 1); YDOT.material.opacity = sa ? 0.5 : 0;
+  if (sa) { pingsAt(t, CUT.SA + 0.3, CUT.TW, [yx, YLANE, 18], '#f4f3f2', 260, 1.6, 1.5); if (t < T.off) pingsAt(t, CUT.SA + 0.5, T.off, [wpos_[0], wpos_[1], 18], RED, 420, 1.2, 0.9); ripple(t, T.off + 0.3, yx, YLANE, 19, O, 700, 1.0); }
+  // ---- the phone
+  if (inShot(t, 0, CUT.SAT)) paint(t, 'map');
+  if (inShot(t, CUT.PCLK, CUT.SA)) paint(t, 'clock');
+  if (inPhone(t)) ripple(t, T.fixes + 0.3, yp[0], yp[1], yp[2] - 70, OK, 160, 0.9);
+}
+const screenLit = (m, k) => m.color.setRGB(0.6 + 1.9 * k, 0.5 + 0.75 * k, 0.42 + 0.22 * k);
+const glowAt = (t, s) => Math.exp(-Math.pow((t - s - 0.1) / 0.2, 2));
+function pingsAt(t, t0, t1, p, col, R, dur = 1.8, period = PING_P) {
+  if (t < t0 || t > t1 + dur) return 0;
+  let hit = 0;
+  for (let s = t0 + Math.floor((t - t0) / period) * period; s >= t0 && s > t - dur; s -= period) { if (s <= t1) { ripple(t, s, p[0], p[1], p[2], col, R, dur); hit = Math.max(hit, glowAt(t, s)); } }
+  return hit;
+}
+
+/* ---------------- HUD */
+const K = (k, v, c, o) => ({ k, v, c, ...o });
+const nsClock = (t, off = 0) => { const s = 7.0371 + t + off, ss = Math.floor(s) % 60, f = Math.floor((s % 1) * 1e9).toString().padStart(9, '0'); return `12:04:${String(ss).padStart(2, '0')}<small>.${f.slice(0, 3)} ${f.slice(3, 6)} ${f.slice(6)}</small>`; };
+function tags(t) {
+  hud.begin();
+  const H = (key, o) => hud.card(key, o, t), CH = (key, o) => hud.chip(key, o, t);
+  const ph = phoneW(), h1 = H1(t), q = Q(t, 20), yx = youX(t);
+  // hook
+  CH('st0', { s: 'Station Rd', w: [yx, YLANE, 420], x: 30, y: -12, rel: true, a: 0.35, b: CUT.PH0, hot: true, c: O });
+  H('h0', K('Your phone knows', 'Your street ✓', O, { w: [yp[0], yp[1], yp[2] + 20], x: 290, y: 190, a: T.street - 0.1, b: CUT.SAT }));
+  CH('sat', { s: 'GPS satellite', w: h1, x: 70, y: -90, rel: true, a: CUT.SAT + 0.2, b: CUT.ST1, c: O });
+  H('h1', K('Does it know you?', 'No idea you exist ✕', RED, { x: 30, y: 580, a: T.idea - 0.12, b: CUT.ST1, big: true }));
+  // street: sends nothing, only listens
+  H('send', K('Your phone sends', 'Nothing ✕', RED, { w: v3.add(ph, [0, 0, 450]), x: 290, y: 180, a: T.sends + 0.1, b: CUT.GLOBE }));
+  H('rx', K('It only', 'Listens ✓', OK, { w: ph, x: 30, y: 590, a: T.listens - 0.1, b: CUT.GLOBE, big: true }));
+  // the constellation
+  const nOn = SP.sats.filter((s) => s.pop > 0.5).length;
+  H('n', K('GPS satellites', inShot(t, CUT.GLOBE, CUT.CLK) ? String(Math.max(1, nOn)) : '30', O, { x: 30, y: 170, a: T.n30 - 0.12, b: CUT.CLK, big: true }));
+  CH('orb', { s: 'Orbits ~20,000 km up', w: SP.satPos(SP.sats[7], t), x: 30, y: 30, rel: true, a: T.orbit + 0.2, b: CUT.CLK });
+  CH('earthc', { s: 'Earth', w: v3.add(EC, [0, 0, -ER * 0.2]), x: -20, y: 10, rel: true, a: T.earth - 0.05, b: CUT.CLK });
+  H('clk', K('Atomic clock on board', nsClock(t), AMB, { w: v3.add(h1, [0, -60, -40]), x: 120, y: 560, a: T.carrying + 0.15, b: CUT.BC, big: true }));
+  CH('acc', { s: 'Off by billionths of a second', w: h1, x: 30, y: 200, a: T.precise1 + 0.1, b: CUT.BC, c: AMB });
+  // broadcasts
+  H('where', K('Each one says', 'Where I am', O, { w: h1, x: 30, y: 180, a: T.where1 - 0.1, b: CUT.LIGHT }));
+  H('when', K('And sent at', nsClock(Math.min(t, T.when + 0.05)), AMB, { x: 290, y: 170, a: T.when - 0.1, b: CUT.LIGHT }));
+  // light speed
+  const L0 = CUT.LIGHT + 0.35, lq = prog(t, L0, L0 + 1.7);
+  H('tt', K('Travel time', (0.067 * lq).toFixed(3) + ' s', AMB, { x: 300, y: 170, a: L0 + 0.05, b: CUT.SPH }));
+  H('sol', K('Speed of light', '300,000 km/s', O, { x: 30, y: 170, a: T.speed - 0.1, b: CUT.SPH }));
+  H('dist', K('So that satellite is', '20,200 km away', OK, { w: mid(h1, q), x: 30, y: 580, a: T.far - 0.1, b: CUT.SPH, big: true }));
+  // spheres
+  H('one', K('One distance', 'You’re somewhere on this', O, { x: 30, y: 170, a: T.sphere - 0.15, b: T.add }));
+  H('three', K('Three distances', 'Overlap at one spot', OK, { w: q, x: 30, y: 580, a: T.spot - 0.15, b: T.fourth - 0.1, big: true }));
+  CH('you', { s: 'You', w: q, x: 30, y: -36, rel: true, a: T.spot + 0.15, b: CUT.PCLK, hot: true, c: O });
+  H('four', K('A fourth satellite', 'Checks the clock', AMB, { w: SP.heroAt(3, t), x: 30, y: 580, a: T.fourth - 0.05, b: CUT.PCLK, big: true }));
+  // phone clock
+  H('qz', K('Your phone clock', 'Nowhere near as precise', AMB, { x: 30, y: 170, a: T.nowhere - 0.12, b: CUT.SA }));
+  // the story
+  CH('yr', { s: 'Before May 2000', x: 30, y: 170, a: T.until - 0.05, b: T.then - 0.1, hot: true, c: AMB });
+  H('wrong', K('Public GPS', 'Wrong on purpose', RED, { x: 30, y: 206, a: T.wrong - 0.1, b: T.then - 0.1, big: true }));
+  CH('says', { s: 'GPS says you’re here', w: [yx + 430 * Math.sin(t * 1.3) + 220 * Math.sin(t * 3.1 + 1), YLANE + 1650 + 160 * Math.sin(t * 2.3) + 90 * Math.cos(t * 4.4), 140], x: 40, y: -50, rel: true, a: T.america - 0.05, b: T.switched, hot: true, c: RED });
+  CH('real', { s: 'You’re really here', w: [yx, YLANE, 60], x: 40, y: 30, rel: true, a: T.really - 0.1, b: CUT.TW, hot: true, c: '#f4f3f2' });
+  H('err', K('Error', '~100 m · a street away', RED, { x: 30, y: 640, a: T.street2 - 0.1, b: T.switched + 0.1 }));
+  H('fix', K('Overnight', 'Up to 10× more accurate', OK, { x: 30, y: 640, a: T.overnight - 0.05, b: CUT.TW, big: true }));
+  CH('road', { s: 'Right road ✓', w: [yx, YLANE, 60], x: 40, y: -70, rel: true, a: T.road - 0.1, b: CUT.TW, hot: true, c: O });
+  // the twist
+  H('nos', K('Tracking you from space?', 'No ✕', RED, { x: 30, y: 170, a: T.tracking - 0.1, b: CUT.FIN, big: true }));
+  ['I’m here', 'I’m here', 'I’m here', 'I’m here'].forEach((s, k) => CH('ih' + k, { s, w: SP.heroAt(k, t), x: 14, y: -30, rel: true, a: T.say - 0.1 + k * 0.12, b: CUT.FIN, c: O }));
+  H('works', K('Your phone', 'Works out where you are', OK, { w: ph, x: 30, y: 650, a: T.works - 0.12, b: CUT.END, big: true }));
+  hud.end();
+}
+
+/* ---------------- reel config */
+const SATSVG = '<svg width="44" height="44" viewBox="0 0 44 44" fill="none" stroke="#ff6a1f" stroke-width="2.2" stroke-linejoin="round"><rect x="17" y="17" width="10" height="10" rx="1.5"/><rect x="3" y="18" width="11" height="8"/><rect x="30" y="18" width="11" height="8"/><path d="M14 22 H17 M27 22 H30 M22 27 V32 M18 36 Q22 32 26 36"/></svg>';
+const REEL = {
+  shots: [{ t: 0, f: [0, 0, 0], s: 1, a: -0.7, e: 0.6, sy: 480 }], world, tags,
+  tools: [
+    { a: T.then - 0.05, b: CUT.TW - 0.05, svg: SATSVG, name: 'Clinton: switch it off', sub: 'SELECTIVE AVAILABILITY ENDS', src: 'PUBLIC GPS ERROR SWITCHED OFF · 1–2 MAY 2000' },
+  ],
+  slams: [],
+  bad: ['wrong', 'on', 'purpose', 'exist'],
+  good: ['road', 'clock', 'are'],
+  tiles: [['◎', 'AIRTAGS'], ['⇄', 'LOAD<br>BALANCING'], ['≋', 'MESSAGE<br>QUEUES']],
+  end: CUT.END, follow: T.follow,
+  cover: { k: 'HOW IT WORKS', t: 'GPS', at: T.spot + 0.45, zoom: 0.95, dy: 60 },
+};
+</script>
+<script src="lib/overlay.js"></script>
+<script>
+{ const r0 = window.ready; window.ready = async () => { await r0(); ctexRedraw(); PH.s._k = null; }; }
+if (/cover/.test(location.hash)) { const c = document.createElement('style'); c.textContent = '#hud { display: none !important; } #stage { background: #070707 !important; }'; document.head.appendChild(c); }
+</script>
+<script src="../_ember/play.js"></script>
+</body>
+</html>

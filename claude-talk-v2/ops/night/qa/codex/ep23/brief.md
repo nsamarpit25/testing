@@ -1,0 +1,23 @@
+You are the final reviewer for a vertical Instagram reel (1080x1920) on @talkingagents: a short 3D comedy where Cleo, a junior developer, talks to Claude, a small orange AI companion on her desk. The attached sheets are the COMPLETE video at 2 frames/second (yellow label = time in seconds), with burned-in word-by-word captions. Timed dialogue:
+
+0.5-3.8s Cleo: Claude, the client wants to meet my twelve employees.
+4.1-6.8s Claude: Your twelve employees are me in four tabs.
+7.1-10.7s Cleo: They're departments! Design, finance, legal!
+11.0-13.6s Claude: Legal is finance with longer sentences.
+13.9-16.2s Cleo: Help me write back. They hate the logo.
+16.5-18.9s Claude: Design says it's bold. Delete my first line.
+19.2-22.1s Cleo: And finance. They owe us eight thousand dollars.
+22.4-25.4s Claude: Finance says pay first. Legal agrees.
+25.7-27.1s Cleo: Their legal team replied!
+27.6-28.7s Claude: Read the first line.
+29.2-31.2s Cleo: Sure! Here's your legal reply.
+31.8-32.7s Claude: Hello, me.
+33.0-35.4s Cleo: Their twelve employees are you too?
+36.0-38.2s Claude: Then this meeting could have been two prompts.
+
+Premise: The Whole Team: Cleo's tiny agency is just her and Claude (small orange AI on her desk) in four browser tabs, but she told a client she has twelve employees. Claude writes replies as her design, finance and legal teams and tells her to delete his first line (the AI opener 'Sure! Here's...'). The client's legal team replies, and their email still starts with 'Sure! Here's your legal reply:'. Their team is AI too. Claude: 'Hello, me.' / 'Then this meeting could have been two prompts.' Intended: sunset look, monitor inserts, mail dings, ending holds on the client's reply and fades, @talkingagents handle, Cleo's hair over one eye, no text hook in frame 1.
+
+Review the whole video for anything that would hurt it on Instagram or look broken: wrong or missing captions vs dialogue, captions overlapping important content, unreadable, cropped or wrong screen content, screens that contradict the dialogue, shots that are too short (flash cuts), a character facing the wrong way, visual glitches, a weak opening (no hook TEXT overlay is allowed in the first scene; dialogue captions are fine), the ending (fade to black is intended), and whether the joke lands.
+Allowed by the channel owner, not issues: the small "@talkingagents" handle near the bottom on every frame; Cleo's hair falling over one eye (her design); a short silent beat before the first line; the blurred background in Claude's to-camera shots (shallow depth of field).
+
+Reply with a short list of concrete issues (time, what, fix) ranked by severity, then a final line exactly "VERDICT: PASS" (good to upload as is, minor nits only) or "VERDICT: FAIL" (must fix first).

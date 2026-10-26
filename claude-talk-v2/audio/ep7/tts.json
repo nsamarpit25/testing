@@ -1,0 +1,69 @@
+{
+ "prompt": "AUDIO PROFILE\nCleo: a young woman software developer in her mid twenties. Soft, natural, conversational voice. Real and understated, never cartoonish.\nClaude: a young man's voice. Calm, warm and gently dry-witted, never theatrical. Few words.\n\nTHE SCENE, END TO END\nEvening at her desk, lit by her monitor. Cleo has spent three hours on a Save button that does nothing. Claude, a small companion on her desk, finds a Stack Overflow answer that fixes it, then shows her who wrote it: Cleo herself, three years ago.\n\nLINE BY LINE\n1. Cleo, quiet accusation, tired.\n2. Claude, patient.\n3. Cleo, three small, tired beats.\n4. Claude, matter-of-fact.\n5. Cleo, flat, no wink.\n6. Claude, mild optimism.\n7. Cleo, small pleading.\n8. Claude, simple instruction.\n9. Cleo, almost offended.\n10. Claude, gentle certainty.\n11. Cleo, sincere relief.\n12. Claude, no emphasis, let it land.\n13. Cleo, recognition, slow, a beat between the two sentences.\n14. Claude, warmly factual.\n15. Cleo, a small hopeful smile.\n16. Claude, gentle, a tiny pause after 'did'.\n\nDIRECTOR'S NOTES\nA natural, conversational pace, like two friends at a desk; not rushed, not slow. Let the jokes land with a short beat before the dry lines. Leave a short beat at every [medium pause] and at every \"...\"; never read the bracketed tags aloud. Speak every word of the dialogue exactly as written, nothing added.",
+ "turns": [
+  [
+   "Cleo",
+   "Claude, this button hates me."
+  ],
+  [
+   "Claude",
+   "What should it do?"
+  ],
+  [
+   "Cleo",
+   "Save. One job. Three hours."
+  ],
+  [
+   "Claude",
+   "Any error message?"
+  ],
+  [
+   "Cleo",
+   "Nothing. It just sits there, judging my degree."
+  ],
+  [
+   "Claude",
+   "I found your exact problem."
+  ],
+  [
+   "Cleo",
+   "Please tell me someone solved it."
+  ],
+  [
+   "Claude",
+   "Change the button type to submit."
+  ],
+  [
+   "Cleo",
+   "That's it?"
+  ],
+  [
+   "Claude",
+   "That's it."
+  ],
+  [
+   "Cleo",
+   "Whoever wrote that deserves a raise. And an apology."
+  ],
+  [
+   "Claude",
+   "Check the name."
+  ],
+  [
+   "Cleo",
+   "That's me. Three years ago."
+  ],
+  [
+   "Claude",
+   "You called it an easy mistake."
+  ],
+  [
+   "Cleo",
+   "Can we forget this happened?"
+  ],
+  [
+   "Claude",
+   "You already did. That's how we got here."
+  ]
+ ]
+}

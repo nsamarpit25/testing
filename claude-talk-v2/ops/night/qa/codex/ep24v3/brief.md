@@ -1,0 +1,25 @@
+You are the final reviewer for a vertical Instagram reel (1080x1920) on @talkingagents: a short 3D comedy where Cleo, a junior developer, talks to Claude, a small orange AI companion on her desk. The attached sheets are the COMPLETE video at 2 frames/second (yellow label = time in seconds), with burned-in word-by-word captions. Timed dialogue:
+
+0.5-3.9s Cleo: Claude, why does my grocery list say water?
+4.2-5.7s Claude: You asked to eat like an adult.
+6.0-9.4s Cleo: Adults eat food! Eggs, spinach, chicken!
+9.7-11.7s Claude: I checked your last nine Tuesdays.
+12.0-13.9s Cleo: You made a spinach log?
+14.3-16.6s Claude: Nine bags bought. Zero eaten.
+16.9-19.4s Cleo: I'm cooking tonight. For real this time.
+19.9-22.2s Claude: Buying spinach is a donation to your trash can.
+22.5-25.2s Cleo: So put chicken on the list! I'm starving.
+25.6-28.4s Claude: It's Tuesday. Eight o'clock. Check your phone.
+28.7-30.6s Cleo: You ordered my Pad Thai?
+31.1-32.7s Claude: The water is for the spice.
+33.0-35.1s Cleo: Did you at least get spring rolls?
+35.7-37.1s Claude: Two. I'm not an amateur.
+
+Premise: You are the final quality reviewer for a 3D animated Instagram reel (@talkingagents): Cleo, a young woman at her desk, and Claude, a small orange AI companion on her desk. Comedy episode "I Asked For A Grocery List": on a Tuesday at 8 PM Cleo's grocery list from Claude only says "Water". Claude checked her last nine Tuesdays: nine bags of spinach bought, zero eaten. While she insists she'll cook, Claude has already ordered her usual Pad Thai (the water is for the spice), plus two spring rolls.
+
+Intended, not issues: night light; the monitor inserts (Grocery List "1. Water", the Tuesday Grocery
+
+Review the whole video for anything that would hurt it on Instagram or look broken: wrong or missing captions vs dialogue, captions overlapping important content, unreadable, cropped or wrong screen content, screens that contradict the dialogue, shots that are too short (flash cuts), a character facing the wrong way, visual glitches, a weak opening (no hook TEXT overlay is allowed in the first scene; dialogue captions are fine), the ending (fade to black is intended), and whether the joke lands.
+Allowed by the channel owner, not issues: the small "@talkingagents" handle near the bottom on every frame; Cleo's hair falling over one eye (her design); a short silent beat before the first line; the blurred background in Claude's to-camera shots (shallow depth of field).
+
+Reply with a short list of concrete issues (time, what, fix) ranked by severity, then a final line exactly "VERDICT: PASS" (good to upload as is, minor nits only) or "VERDICT: FAIL" (must fix first).

@@ -1,0 +1,76 @@
+{
+ "m0": {
+  "kind": "page",
+  "url": "claude \u00b7 chat",
+  "accent": "#5b5bd6",
+  "title": "You, 11:38 PM",
+  "body": [
+   "\"Write my announcement.",
+   "I'm quitting AI tomorrow.",
+   "Make it sound strong.\""
+  ]
+ },
+ "m1": {
+  "kind": "page",
+  "url": "claude \u00b7 plan",
+  "accent": "#5b5bd6",
+  "title": "Your Plan for Quitting AI",
+  "body": [
+   "Step 1. Close this chat.",
+   "",
+   "That's the whole plan."
+  ]
+ },
+ "m2": {
+  "kind": "page",
+  "url": "clock",
+  "accent": "#212529",
+  "title": "11:59:30 PM",
+  "body": [
+   "Your AI-free day starts in"
+  ],
+  "big": {
+   "text": "30 SECONDS",
+   "color": "#d64545"
+  }
+ },
+ "m3": {
+  "kind": "page",
+  "url": "settings / date & time",
+  "accent": "#495057",
+  "title": "Date & Time",
+  "body": [
+   "Time zone",
+   "Hawaii (UTC-10)",
+   "Local time"
+  ],
+  "big": {
+   "text": "6:00 PM",
+   "color": "#1c7ed6"
+  }
+ },
+ "m4": {
+  "kind": "page",
+  "url": "mail \u00b7 new message",
+  "accent": "#1c7ed6",
+  "title": "To: Mark",
+  "body": [
+   "Subject: Does this sound rude?",
+   "",
+   "Hi Mark,",
+   "Per my last email..."
+  ]
+ },
+ "p1": {
+  "kind": "chat",
+  "title": "Story \u00b7 posted 11:41 PM",
+  "msgs": [
+   [
+    "me",
+    "Starting tomorrow: 24 hours with no AI. My brain still works."
+   ]
+  ],
+  "size": 58,
+  "bottom": 260
+ }
+}

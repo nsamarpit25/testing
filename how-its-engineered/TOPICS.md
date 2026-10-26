@@ -2,7 +2,7 @@
 
 Source: the "Who's gonna tell vibe coders about…" list (110 items, original order).
 Workflow per topic: script + hook options → approval → voice (Gemini Puck) → video.html → preview → render → cover → caption.
-Status: ✅ posted / 🎬 made, not posted / 📝 planned / blank = open.
+Status: ✅ posted / ⏰ scheduled (IST) / 🎬 made, not posted / 📝 planned / blank = open.
 
 ## Next up: ranking after 09 Kubernetes (2026-10-17)
 
@@ -27,7 +27,7 @@ Scored 1–5 on **Arc** (follows Docker → Kubernetes), **Pain** (relatable for
 
 **Order from here:** take the topics in list order (no random picks). #18 Distributed Transactions is the first Three.js reel (our render(t) page with a real 3D world; the earlier Remotion version was dropped). A Feature Flags script + voice is parked in `videos/feature-flags-draft/`.
 
-**Pick for next:** #19 Saga Pattern. Timeouts + Retries ended up as two reels (15, 16); pick the top remaining topic from the ranking above.
+**Pick for next (25 Oct):** #37 Pessimistic Locking, then #38 Distributed Locks. #34 CAP Theorem, #35 Eventual Consistency and #36 Optimistic Locking are built (24 Oct), passed an Argon fact check on 25 Oct, and are scheduled as live posts.
 
 ## All 110
 
@@ -50,28 +50,28 @@ Scored 1–5 on **Arc** (follows Docker → Kubernetes), **Pain** (relatable for
 | 15 | Message Queues | ✅ | How WhatsApp delivers when your friend's phone is off | Post office holding letters |
 | 16 | Pub/Sub | ✅ | One post, a million followers notified | Radio broadcast tower |
 | 17 | Event-Driven Architecture | ✅ | Services that react instead of ask | Doorbell vs checking the door |
-| 18 | Distributed Transactions | 🎬 | Booking flight + hotel: both or neither | Vault with two keys |
-| 19 | Saga Pattern | | Undoing a multi-step order | Cancelling a trip step by step |
-| 20 | Dead Letter Queues | | Where failed messages go | Lost-and-found box |
-| 21 | Cron Jobs | | How apps run tasks at 3 AM | Wall of alarm clocks |
-| 22 | WebSockets | | Live chat without refreshing | Open phone line vs letters |
-| 23 | Long Polling | | The hack before real-time existed | "Are we there yet?" on repeat |
-| 24 | Server-Sent Events | | How ChatGPT streams words to you | Typewriter / ticker tape |
-| 25 | Database Indexing | | 1 row in a billion in milliseconds | Book index vs reading every page |
-| 26 | Query Optimization | | Same answer, 1000× faster | Shortest route on a map |
-| 27 | N+1 Queries | | Why your app makes 101 queries instead of 1 | 100 trips to the shop for 100 items |
-| 28 | Connection Pooling | | Why apps don't open a new DB connection per request | Taxi rank vs calling a new cab |
-| 29 | Read Replicas | | Why reads are cheap at scale | Many cashiers, one stock room |
-| 30 | Sharding | | When one database isn't enough | Library split A–M / N–Z buildings |
-| 31 | Partitioning | | How tables stay fast after years | Monthly folders in a filing cabinet |
-| 32 | Replication | | Why your data survives a dead server | Photocopies in different safes |
-| 33 | Leader Election | | What happens when the boss server dies | Class picking a new monitor |
-| 34 | CAP Theorem | | You can't have all three | Two bank branches, phone line cut |
-| 35 | Eventual Consistency | | Why your like count jumps around | Gossip spreading through a town |
-| 36 | Optimistic Locking | | Edit freely, check at save time | Google Docs version check |
-| 37 | Pessimistic Locking | | Lock it before anyone else touches it | Library book checked out |
-| 38 | Distributed Locks | | Only one worker runs the job | Talking stick |
-| 39 | Race Conditions | | Two people book the last seat | Two hands grabbing one ticket |
+| 18 | Distributed Transactions | ✅ | Booking flight + hotel: both or neither | Vault with two keys |
+| 19 | Saga Pattern | ✅ | Undoing a multi-step order | Cancelling a trip step by step |
+| 20 | Dead Letter Queues | ✅ | Where failed messages go | Lost-and-found box |
+| 21 | Cron Jobs | ✅ | How apps run tasks at 3 AM | Wall of alarm clocks |
+| 22 | WebSockets | ✅ | Live chat without refreshing | Open phone line vs letters |
+| 23 | Long Polling | ✅ | The hack before real-time existed | "Are we there yet?" on repeat |
+| 24 | Server-Sent Events | ✅ | How ChatGPT streams words to you | Typewriter / ticker tape |
+| 25 | Database Indexing | ✅ | 1 row in a billion in milliseconds | Book index vs reading every page |
+| 26 | Query Optimization | ✅ | Same answer, 1000× faster | Shortest route on a map |
+| 27 | N+1 Queries | ✅ | Why your app makes 101 queries instead of 1 | 100 trips to the shop for 100 items |
+| 28 | Connection Pooling | ✅ | Why apps don't open a new DB connection per request | Taxi rank vs calling a new cab |
+| 29 | Read Replicas | ✅ | Why reads are cheap at scale | Many cashiers, one stock room |
+| 30 | Sharding | ✅ | When one database isn't enough | Library split A–M / N–Z buildings |
+| 31 | Partitioning | ✅ | How tables stay fast after years | Monthly folders in a filing cabinet |
+| 32 | Replication | ✅ | Why your data survives a dead server | Photocopies in different safes |
+| 33 | Leader Election | ✅ | What happens when the boss server dies | Class picking a new monitor |
+| 34 | CAP Theorem | ✅ | You can't have all three | Two bank branches, phone line cut |
+| 35 | Eventual Consistency | ✅ | Why your like count jumps around | Gossip spreading through a town |
+| 36 | Optimistic Locking | ✅ | Edit freely, check at save time | Google Docs version check |
+| 37 | Pessimistic Locking | 🎬 | Lock it before anyone else touches it | Library book checked out |
+| 38 | Distributed Locks | 🎬 | Only one worker runs the job | Talking stick |
+| 39 | Race Conditions | 🎬 | Two people book the last seat | Two hands grabbing one ticket |
 | 40 | Deadlocks | | Two processes waiting on each other forever | Two cars at a narrow bridge |
 | 41 | Memory Leaks | | Why your app slows down over days | Tap left running into a sink |
 | 42 | Garbage Collection | | Who cleans up your app's memory | Cleaning crew sweeping the room |
@@ -85,7 +85,7 @@ Scored 1–5 on **Arc** (follows Docker → Kubernetes), **Pain** (relatable for
 | 50 | Cache Invalidation | | The hardest problem in CS | Stale menu board |
 | 51 | Feature Flags | 📝 | Shipping code that's switched off | Light switches per room |
 | 52 | Blue-Green Deployment | | Updating with zero downtime | Two stages, swap the spotlight |
-| 53 | Canary Releases | 🎬 | Test on 1% before everyone | Canary in a coal mine |
+| 53 | Canary Releases | ✅ | Test on 1% before everyone | Canary in a coal mine |
 | 54 | Rolling Deployments | | Replace servers one at a time | Changing a train's carriages while it runs |
 | 55 | Rollbacks | | The undo button for production | Time machine / rewind |
 | 56 | Health Checks | ✅ | How a system knows a server died | ECG monitor |

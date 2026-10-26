@@ -1,0 +1,402 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- 41 Leader election. A perspective three.js world with bloom (own camera + post pass).
+     World: YOUR APP (a box, front) and five database servers in a ring, S1 at the front. S1 is the leader: writes go
+     app → S1 → the others, and S1 sends small heartbeat orbs to everyone. S1 goes silent (dark). Heartbeat card (leader
+     sends "I'm alive", the line goes flat, the follower knows something's wrong). Random timers drain over the four
+     followers; S5's runs out first, it turns amber (candidate, term 2) and sends "vote for me" to everyone. Votes come
+     back green, a counter goes 1 → 2 → 3 of 5 = majority, S5 becomes the new leader and starts the heartbeats.
+     Class card (one vote each, more than half, only one can win). What-if: S1 and S5 both take writes, two versions =
+     split brain. A network cut (red wall) splits {S1, S2} from {S3, S4, S5}: the three side keeps a leader and saves
+     writes, the two side can't. The wall heals, S1 comes back thinking it's leader of term 1, sees term 2, steps down.
+     etcd/Raft tool card, then the end card. A "term · heartbeat · leader" HUD sits on top. Beats from voice/words.json. -->
+<link rel="stylesheet" href="../_ember/fonts.css">
+<link rel="stylesheet" href="../_ember/reel.css">
+<style>
+#cap { top: 728px !important; }
+#cap .box { background: linear-gradient(90deg, transparent, rgba(8,7,6,0.82) 16%, rgba(8,7,6,0.82) 84%, transparent); }
+#ed { top: 192px !important; }
+.lbl { background: rgba(12,11,10,0.95); }
+.tm { display: inline-block; width: 24px; height: 24px; border-radius: 50%; vertical-align: middle; -webkit-mask: radial-gradient(circle, transparent 6px, #000 7px); mask: radial-gradient(circle, transparent 6px, #000 7px); }
+#mt { position: absolute; left: 70px; right: 70px; top: 114px; height: 72px; opacity: 0; padding: 8px 14px; box-sizing: border-box; display: flex; align-items: center; gap: 12px;
+  background: rgba(14,12,11,0.95); border: 1px solid rgba(255,255,255,0.12); border-radius: 12px; box-shadow: 0 14px 34px rgba(0,0,0,0.6); }
+#mt .c { display: flex; flex-direction: column; align-items: center; min-width: 74px; }
+#mt .n { font: 800 20px/1 Inter; white-space: nowrap; }
+#mt .k { font: 800 9.5px/1 Mono; letter-spacing: 1px; margin-top: 5px; color: #9c948c; white-space: nowrap; }
+#ecg { flex: 1; height: 40px; }
+.cd2 { position: absolute; left: 40px; right: 40px; top: 196px; opacity: 0; background: rgba(16,14,12,0.96); border: 1px solid rgba(111,195,255,0.4); border-radius: 14px; box-shadow: 0 20px 50px rgba(0,0,0,0.7); overflow: hidden; padding: 14px 16px 12px; }
+.cd2 .h { font: italic 400 30px/1 Instrument; color: #efe6d8; margin-bottom: 4px; }
+.cd2 svg { display: block; width: 100%; height: 220px; }
+.cd2 .f { margin-top: 2px; font: 800 12px/1 Mono; letter-spacing: 1.2px; text-align: center; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="world">
+    <canvas id="cv" width="1080" height="1920"></canvas>
+    <div class="layer" id="lbls"></div>
+  </div>
+</div>
+<script src="../../tools/lib.js"></script>
+<script src="voice/words.js"></script>
+<script src="../_ember/three.js"></script>
+<script src="../_ember/world.js"></script>
+<script src="../_ember/base.js"></script>
+<script>
+for (let i = 0; i < 30; i++) ORBS.push({ core: orbSprite(9), glow: orbSprite(34), trail: [0, 1, 2, 3, 4].map(() => orbSprite(10)) });
+const RD = '#6FC3FF';
+
+/* ---------------- beats */
+const T = {
+  five: at('five'), leader: at('leader'), write: at('write'), silent: at('silent'), whos: at('whos'),
+  l1: line(1).start, heartbeat: at('heartbeat'), alive: at('alive'), stop: at('stop'), wrong: at('wrong'),
+  l2: line(2).start, random: at('random'), first: at('first'), vote: at('vote'), me: at('me'),
+  l3: line(3).start, majority: at('majority'), three: at('three'), included: at('included'), heart2: at('heartbeats', 2),
+  l4: line(4).start, cls: at('class'), monitor: at('monitor'), vote2: at('vote', 2), half: at('half'), winners: at('winners'), two1: at('two'),
+  l5: line(5).start, two2: at('two', 2), accepted: at('accepted'), split: at('split'), versions: at('versions'), brain: at('brain'),
+  l6: line(6).start, network: at('network'), cuts: at('cuts'), three2: at('three', 2), two4: at('two', 4), three3: at('three', 3), save: at('save'), cant2: at('cant', 2),
+  l7: line(7).start, old: at('old'), back: at('back'), newer: at('newer'), steps: at('steps'),
+  l8: line(8).start, etcd: at('etcd'), raft: at('raft'),
+  ifv: line(9).start, follow: at('follow', 2),
+};
+
+/* ---------------- layout: Z up */
+const APX = 0, APY = -380, APW = 170, APD = 90, APH = 52;     // your app
+const SW = 130, SD = 130, SH = 58, N = 5;                      // a server box
+const SP = [...Array(N)].map((_, i) => { const a = (-90 + i * 72) * Math.PI / 180; return [300 * Math.cos(a), 260 + 300 * Math.sin(a)]; });
+const NM = ['S1', 'S2', 'S3', 'S4', 'S5'];
+const appTop = [APX, APY + 10, APH + 6], topS = (i, e = 0) => [SP[i][0], SP[i][1], SH + 10 + e];
+function arc(a, b, h, n = 24) { return [...Array(n + 1)].map((_, i) => { const q = i / n; return [lerp(a[0], b[0], q), lerp(a[1], b[1], q), lerp(a[2], b[2], q) + h * 4 * q * (1 - q)]; }); }
+const FLY = 0.45, HB = 1.1;
+const ifWin = (t) => t > T.two2 - 0.1 && t < T.l6 - 0.2;   // the "what if two leaders" stretch
+const cutOn = (t) => ep(t, T.cuts - 0.1, T.cuts + 0.3) * (1 - ep(t, T.l7 + 0.05, T.l7 + 0.5));
+const side2 = (i) => i <= 1;   // S1 and S2 end up on the small side of the cut
+
+/* ---------------- who is what, when (colour keys) */
+const KEYS = [
+  [[0, O], [T.silent, RED], [T.silent + 0.5, DIM], [T.two2 - 0.1, O], [T.l6 - 0.3, DIM], [T.back - 0.1, O], [T.steps, RD]],
+  [[0, RD]], [[0, RD]], [[0, RD]],
+  [[0, RD], [T.first, AMB], [T.heart2, O]],
+];
+const leaderAt = (t) => (t < T.silent ? 0 : t > T.heart2 ? 4 : -1);
+const voteN = (t) => (t < T.vote ? 0 : t < T.majority + 0.08 ? 1 : t < T.three ? 2 : 3);
+
+/* ---------------- traffic: [start, from, to, colour, size, kind, dur] (from/to: 'app' or a server index) */
+const TR = [];
+(() => {
+  // the old leader: writes in, copies out, heartbeats
+  for (let t = 0.3; t < T.silent - 0.7; t += 0.7) { TR.push([t, 'app', 0, AMB, 0.9]); for (const j of [1, 2, 3, 4]) TR.push([t + FLY + 0.05, 0, j, RD, 0.55]); }
+  for (let t = 0.65; t < T.silent - 0.2; t += HB) for (const j of [1, 2, 3, 4]) TR.push([t, 0, j, O, 0.4, 'hb']);
+  for (let t = T.silent + 0.2; t < T.whos + 0.6; t += 0.6) TR.push([t, 'app', 0, AMB, 0.85, 'lost']);
+  // the election: vote requests, two votes back
+  for (const j of [0, 1, 2, 3]) TR.push([T.vote - 0.05, 4, j, AMB, 0.8, j ? '' : 'lost', 0.55]);
+  TR.push([T.majority + 0.08 - 0.55, 1, 4, OK, 0.85, '', 0.55], [T.three - 0.55, 3, 4, OK, 0.85, '', 0.55]);
+  // the new leader's heartbeats: to the live followers, to the right side of the cut, then to S1 too
+  for (let t = T.heart2; t < T.ifv - 0.3; t += HB) {
+    if (ifWin(t)) continue;
+    const cut = t > T.cuts - 0.2 && t < T.l7 + 0.2, back = t > T.back - 0.3;
+    for (const j of [0, 1, 2, 3]) { if (j === 0 && !back) continue; if (cut && side2(j)) continue; TR.push([t, 4, j, O, 0.4, 'hb', 0.5]); }
+  }
+  // what if: two leaders, each takes a write
+  TR.push([T.accepted - 0.35, 'app', 0, AMB, 1], [T.accepted - 0.1, 'app', 4, AMB, 1]);
+  // the cut: the three side saves a write (leader → the two copies, acks back); the two side asks and gets nothing
+  TR.push([T.save - 0.6, 4, 2, AMB, 0.8, '', 0.5], [T.save - 0.6, 4, 3, AMB, 0.8, '', 0.5], [T.save - 0.05, 2, 4, OK, 0.7, '', 0.5], [T.save - 0.05, 3, 4, OK, 0.7, '', 0.5]);
+  TR.push([T.cant2 - 0.55, 1, 0, AMB, 0.8, 'lost', 0.5], [T.cant2 - 0.55, 1, 2, AMB, 0.8, 'block', 0.5]);
+  // the old leader sees the newer term
+  TR.push([T.newer - 0.5, 4, 0, O, 0.75, '', 0.5]);
+})();
+const ptOf = (e) => (e === 'app' ? appTop : topS(e, -6));
+
+/* ---------------- camera */
+const pcam = new TH.PerspectiveCamera(44, 540 / 960, 5, 20000); pcam.up.set(0, 0, 1);
+const SHOTS = [
+  { t: 0, p: [30, -1380, 1260], l: [0, 150, 0], f: 44 },
+  { t: 0.01, d: 6, p: [0, -1300, 1180], l: [0, 150, 0], f: 44, e: ease.out },
+  { t: T.l2 - 0.3, d: 1.4, p: [0, -1400, 1400], l: [0, 190, 0], f: 44 },
+  { t: T.l6 - 0.2, d: 1.2, p: [0, -1080, 1700], l: [0, 200, 0], f: 44 },
+  { t: T.l7 + 0.3, d: 1.4, p: [0, -1400, 1400], l: [0, 190, 0], f: 44 },
+];
+const KICKS = [[T.silent, 0.04], [T.first, 0.03], [T.three, 0.04], [T.heart2, 0.03], [T.brain, 0.04], [T.cuts, 0.04], [T.steps, 0.03]];
+const SHAKES = [[T.silent, 3, 0.3], [T.brain, 3, 0.3], [T.cuts, 4, 0.35]];
+const _rv = new TH.Vector3();
+function shoot(t) {
+  let p = SHOTS[0].p.slice(), l = SHOTS[0].l.slice(), f = SHOTS[0].f;
+  for (let i = 1; i < SHOTS.length; i++) {
+    const k = SHOTS[i]; if (t < k.t) break;
+    const q = k.d ? (k.e || ease.inOut)(prog(t, k.t, k.t + k.d)) : 1;
+    p = p.map((v, j) => lerp(v, k.p[j], q)); l = l.map((v, j) => lerp(v, k.l[j], q)); f = lerp(f, k.f, q);
+  }
+  let kick = 0;
+  for (const [t0, amp] of KICKS) { const dt = t - t0; if (dt > 0 && dt < 1.2) kick += amp * (dt < 0.05 ? dt / 0.05 : Math.exp(-(dt - 0.05) * 6)); }
+  let sx = 0, sy = 0;
+  for (const [t0, amp, dur] of SHAKES) { const dt = t - t0; if (dt > 0 && dt < dur) { const k = amp * (1 - dt / dur); sx += k * Math.sin(t * 91); sy += k * Math.cos(t * 67); } }
+  pcam.position.set(p[0] + 6 * Math.sin(t * 0.37), p[1] + 6 * Math.cos(t * 0.29), p[2] + 4 * Math.sin(t * 0.23));
+  pcam.lookAt(l[0] + sx, l[1], l[2] + sy);
+  pcam.fov = f * (1 - kick); pcam.updateProjectionMatrix(); pcam.updateMatrixWorld();
+  cam.f = l;
+  _rv.setFromMatrixColumn(pcam.matrixWorld, 0); const n = Math.hypot(_rv.x, _rv.y) || 1; camRight = [_rv.x / n, _rv.y / n, 0];
+  const d = Math.hypot(p[0] - l[0], p[1] - l[1], p[2] - l[2]);
+  scene.fog.near = d * 0.9; scene.fog.far = d * 3.4;
+}
+const _pv = new TH.Vector3();
+P = function (x, y, z) { _pv.set(x, y, z).project(pcam); return [(_pv.x + 1) * 270, (1 - _pv.y) * 480, _pv.z]; };
+
+/* ---------------- the stage */
+floor.scale.set(2.2, 2.2, 1); floor.position.set(0, 1500, -0.5);
+const APP = emberBox(APX, APY, APW, APD, APH, O2), POOLA = pool(APX, APY, 190, O2);
+const SRV = SP.map((p) => emberBox(p[0], p[1], SW, SD, SH, RD));
+const POOLS = SP.map((p) => pool(p[0], p[1], 210, RD));
+const LINKS = [[0, 1], [1, 2], [2, 3], [3, 4], [4, 0]].map(([a, b]) => ({ a, b, r: road([[SP[a][0], SP[a][1], 0], [SP[b][0], SP[b][1], 0]], RD) }));
+const crosses = (l) => side2(l.a) !== side2(l.b);
+// the network cut: a thin red wall between {S1, S2} and {S3, S4, S5}
+const W0 = [-365, -100], W1 = [416, 471], WL = Math.hypot(W1[0] - W0[0], W1[1] - W0[1]);
+const WALL = emberBox((W0[0] + W1[0]) / 2, (W0[1] + W1[1]) / 2, WL, 10, 80, RED);
+WALL.g.rotation.z = Math.atan2(W1[1] - W0[1], W1[0] - W0[0]);
+
+/* ---------------- the world, frame by frame */
+function world(t) {
+  APP.setLook(O2, 1, ep(t, 0, 0.5)); POOLA.set(O2, 0.4 * ep(t, 0, 0.5));
+  for (let i = 0; i < N; i++) {
+    const a = ep(t, 0.05 + i * 0.07, 0.45 + i * 0.07);
+    let c = colAt(KEYS[i], t), g = 1.1;
+    if (i === 0 && t > T.silent && t < T.silent + 0.5) c = mixHex(c, RED, 0.5 + 0.5 * Math.sin(t * 30) ** 2);
+    if (i === 0 && ifWin(t)) { c = mixHex(O, RED, 0.35 * Math.sin(t * 6) ** 2); }
+    if (i === 4 && t > T.first && t < T.heart2) g = 1.1 + 0.3 * Math.sin(t * 8) ** 2;
+    if (side2(i) && t > T.cant2 - 0.2 && t < T.l7 + 0.2) c = mixHex(c, RED, 0.35);
+    g += 0.6 * pulse(t, T.three, 4) * (i === 4) + 0.6 * pulse(t, T.steps, 4) * (i === 0);
+    SRV[i].setLook(c, g, a); POOLS[i].set(c === DIM ? DIM : c, 0.4 * a * (c === DIM ? 0.3 : 1));
+  }
+  // network links, the two that cross the cut go red and break
+  const cut = cutOn(t);
+  for (const L of LINKS) {
+    const a = ep(t, 0.4, 1.0) * 0.7, x = crosses(L) ? cut : 0;
+    L.r.set(1, x > 0.05 ? RED : mixHex(RD, DIM, 0.45), a * (1 - 0.85 * x * (0.5 + 0.5 * Math.sin(t * 25) ** 2)), t);
+  }
+  WALL.g.scale.z = Math.max(0.01, ep(t, T.cuts - 0.1, T.cuts + 0.3, ease.out) * (1 - ep(t, T.l7 + 0.05, T.l7 + 0.5)));
+  WALL.setLook(RED, 1.3, cut);
+  // traffic
+  for (const [s0, f, d, col, size, kind, du] of TR) {
+    const dur = du || FLY, q = prog(t, s0, s0 + dur);
+    if (q <= 0 || q >= 1) continue;
+    const path = arc(ptOf(f), ptOf(d), f === 'app' || d === 'app' ? 130 : kind === 'hb' ? 40 : 80);
+    if (kind === 'block') { const qq = Math.min(q, 0.5); orb(path, ease.inOut(qq), q > 0.4 ? RED : col, 1 - prog(q, 0.5, 1), size); continue; }
+    if (kind === 'lost') { orb(path, ease.inOut(q), q > 0.7 ? mixHex(col, DIM, 0.6) : col, 1 - prog(q, 0.75, 1), size); continue; }
+    orb(path, ease.inOut(q), col, kind === 'hb' ? 0.85 : 1, size);
+  }
+  for (const [s0, f, d, col, size, kind, du] of TR) {
+    const e = s0 + (du || FLY);
+    if (kind === 'hb' && t > s0 && t < s0 + 0.5 && d === (f === 0 ? 1 : 0)) ripple(t, s0, SP[f][0], SP[f][1], 1, O, 150, 0.5);
+    if (kind === 'block' && t > s0 + (du || FLY) * 0.5 && t < s0 + 1) { const p = arc(ptOf(f), ptOf(d), 80)[12]; sparks(t, s0 + (du || FLY) * 0.5, p[0], p[1], p[2], RED, 12, 23, 150, 0.6, 200); }
+    if (!kind && d !== 'app' && t > e && t < e + 0.6) ripple(t, e, SP[d][0], SP[d][1], SH + 4, col, 120, 0.6);
+  }
+  if (t > T.silent && t < T.silent + 0.9) sparks(t, T.silent, SP[0][0], SP[0][1], SH + 20, RED, 22, 11, 200, 0.9, 240);
+  if (t > T.three && t < T.three + 0.9) ripple(t, T.three, SP[4][0], SP[4][1], 1, OK, 200, 0.8);
+  if (t > T.heart2 && t < T.heart2 + 0.9) ripple(t, T.heart2, SP[4][0], SP[4][1], 1, O, 220, 0.9);
+  if (t > T.brain - 0.1 && t < T.brain + 0.8) for (const i of [0, 4]) sparks(t, T.brain - 0.1, SP[i][0], SP[i][1], SH + 20, RED, 14, 13 + i, 170, 0.7, 220);
+  if (t > T.cuts && t < T.cuts + 1) for (let k = 0; k < 4; k++) { const q = (k + 0.5) / 4; sparks(t, T.cuts, lerp(W0[0], W1[0], q), lerp(W0[1], W1[1], q), 60, RED, 8, 31 + k, 160, 0.7, 220); }
+  if (t > T.steps && t < T.steps + 0.8) ripple(t, T.steps, SP[0][0], SP[0][1], 1, RD, 180, 0.8);
+}
+
+/* ---------------- world tags */
+const tg = (key, html, style, wp, t, a, b, dy = 0) => { const e = tag(key, html, style, wp, t, a, b, dy); if (P(...wp)[2] > 1) e.style.display = 'none'; return e; };
+function tags(t) {
+  const big = (c) => `font-size:15px;padding:9px 13px;letter-spacing:1px;border-color:${c}`;
+  const sm = (c) => `font-size:13px;padding:7px 11px;letter-spacing:1px;border-color:${c}`;
+  const sp = (c, s) => `<span style="color:${c}">${s}</span>`;
+  const appW = [APX, APY - APD / 2, 0], hd = (i) => topS(i, 20), ft = (i) => [SP[i][0], SP[i][1] - SD / 2 - 10, 0];
+  const s5 = (key, html, style, t, a, b) => tg(key, html, style, ft(4), t, a, b, 46);   // under S5's name
+  // server names, always there; the app box in front is labelled so it doesn't read as a sixth server
+  tg('app', sp(O2, 'YOUR APP'), `font-size:11px;padding:5px 8px;border-color:${O2}`, [APX, APY + APD / 2, APH + 10], t, 0.3, T.ifv - 0.2, -18);
+  for (let i = 0; i < N; i++) tg('n' + i, sp(GR, NM[i]), `font-size:11px;padding:5px 8px;border-color:#3a332d`, ft(i), t, 0.4 + i * 0.07, T.ifv - 0.2, 14);
+  // the old leader
+  tg('L0', sp(O, '★ LEADER'), sm(O), hd(0), t, T.leader - 0.1, T.silent - 0.05, -24);
+  tg('wr', sp(AMB, 'EVERY WRITE GOES THROUGH IT'), big(AMB), appW, t, T.write - 0.15, T.silent - 0.1, 30);
+  tg('sil', sp(RED, '✕ SILENT'), sm(RED), hd(0), t, T.silent - 0.05, T.l1 - 0.1, -24);
+  for (const i of [1, 2, 3, 4]) tg('q' + i, sp(WH, '?'), sm(WH), hd(i), t, T.whos - 0.1 + i * 0.06, T.l1 - 0.1, -24);
+  tg('who', sp(WH, "WHO'S IN CHARGE NOW?"), big(WH), appW, t, T.whos - 0.1, T.l1 - 0.1, 30);
+  // timers: each follower drains its own random timer, S5's runs out first
+  const DUR = [0, 6.0, 6.6, 5.8, T.first - T.l2 - 0.1];
+  for (const i of [1, 2, 3, 4]) {
+    const t0 = T.l2 + 0.1, left = clamp(1 - (t - t0) / DUR[i]), reset = ep(t, T.vote + 0.4, T.vote + 0.7), f = i === 4 ? left : Math.max(left, reset);
+    const c = f < 0.01 ? RED : f < 0.3 ? AMB : RD, pc = Math.round(f * 100);
+    tg('tm' + i, `<span class="tm" style="background:conic-gradient(${c} ${pc}%, #2a2521 0)"></span>`, `padding:5px;border-radius:50%;border-color:${c}`, hd(i), t, T.l2 + 0.05, i === 4 ? T.first + 0.2 : T.l3 - 0.2, -26);
+  }
+  tg('rt', sp(RD, 'EACH ONE: ITS OWN RANDOM TIMER'), big(RD), appW, t, T.random - 0.15, T.first - 0.1, 30);
+  tg('ft', sp(AMB, 'S5 RUNS OUT FIRST'), big(AMB), appW, t, T.first - 0.1, T.vote - 0.1, 30);
+  s5('cd', sp(AMB, 'CANDIDATE · TERM 2'), sm(AMB), t, T.first + 0.15, T.vote - 0.05);
+  s5('vm', sp(AMB, '“VOTE FOR ME” · TERM 2'), sm(AMB), t, T.vote - 0.05, T.heart2 - 0.05);
+  for (const [i, at_] of [[1, T.majority + 0.08], [3, T.three]]) tg('v' + i, sp(OK, '✓ YES'), sm(OK), hd(i), t, at_ - 0.6, T.heart2 - 0.1, -24);
+  tg('maj', sp(WH, 'IT NEEDS A MAJORITY'), big(WH), appW, t, T.majority - 0.1, T.three - 0.1, 30);
+  tg('mok', sp(OK, '✓ 3 OF 5 VOTES · ITS OWN INCLUDED'), big(OK), appW, t, T.three - 0.05, T.heart2 - 0.1, 30);
+  s5('L4', sp(O, '★ NEW LEADER'), sm(O), t, T.heart2 - 0.05, T.l4 - 0.1);
+  tg('hbs', sp(O, 'NOW S5 SENDS THE HEARTBEATS'), big(O), appW, t, T.heart2 - 0.05, T.l4 - 0.1, 30);
+  // what if two leaders
+  tg('wi', sp(RED, 'WHAT IF TWO SERVERS BOTH ACT AS LEADER?'), sm(RED), appW, t, T.two2 - 0.1, T.split - 0.1, 30);
+  tg('h0', sp(O, 'LEADER?') + ' · price = $10', sm(O), hd(0), t, T.accepted, T.l6 - 0.2, -24);
+  s5('h4', sp(O, 'LEADER') + ' · price = $12', sm(O), t, T.accepted + 0.25, T.l6 - 0.2);
+  tg('ver', sp(RED, '✕ TWO VERSIONS OF YOUR DATA'), big(RED), appW, t, T.split - 0.1, T.brain - 0.15, 30);
+  tg('sb', sp(RED, 'SPLIT BRAIN'), `font-size:20px;padding:11px 16px;letter-spacing:1.5px;border-color:${RED}`, appW, t, T.brain - 0.1, T.l6 - 0.15, 30);
+  // the cut
+  const c3 = [-40, 330, 0], c2 = [200, -60, 0];
+  tg('cut', sp(RED, '⚡ NETWORK CUT'), big(RED), appW, t, T.cuts - 0.1, T.three2 - 0.1, 30);
+  tg('g3', t < T.three3 - 0.1 ? sp(WH, '3 SERVERS') : sp(OK, '✓ 3 OF 5: HAS A LEADER, SAVES WRITES'), sm(t < T.three3 - 0.1 ? WH : OK), c3, t, T.three2 - 0.1, T.l7 - 0.1, 0);
+  tg('g2', t < T.cant2 - 0.1 ? sp(WH, '2 SERVERS') : sp(RED, "✕ 2 OF 5: CAN'T"), sm(t < T.cant2 - 0.1 ? WH : RED), c2, t, T.two4 - 0.1, T.l7 - 0.1, 0);
+  s5('L4b', sp(O, '★ LEADER'), sm(O), t, T.l6 + 0.1, T.ifv - 0.2);
+  tg('sv', sp(OK, '✓ SAVED'), sm(OK), hd(3), t, T.save + 0.4, T.l7 - 0.1, -24);
+  // the old leader comes back
+  tg('ob', sp(O, '★ “STILL LEADER?” · TERM 1'), sm(O), hd(0), t, T.back - 0.1, T.newer - 0.05, -24);
+  tg('os', sp(AMB, 'SEES TERM 2 → STEPS DOWN'), sm(AMB), hd(0), t, T.newer - 0.05, T.steps + 0.25, -24);
+  tg('of', sp(RD, 'FOLLOWER · TERM 2'), sm(RD), hd(0), t, T.steps + 0.25, T.ifv - 0.2, -24);
+}
+
+/* ---------------- reel config */
+const svgEtcd = `<svg width="46" height="46" viewBox="0 0 100 100" fill="none" stroke="#7CF29A" stroke-width="7" stroke-linejoin="round" stroke-linecap="round"><circle cx="50" cy="22" r="11"/><circle cx="20" cy="74" r="11"/><circle cx="80" cy="74" r="11"/><path d="M44 32 L26 64 M56 32 L74 64 M31 74 H69"/></svg>`;
+const REEL = {
+  shots: [], world, tags,
+  code: [],
+  tools: [{ a: T.etcd - 0.25, b: T.ifv - 0.15, svg: svgEtcd, name: 'etcd', sub: 'USES RAFT TO ELECT A LEADER', src: 'RAFT ALSO RUNS IN <span style="color:#7CF29A">CONSUL</span> · <span style="color:#7CF29A">COCKROACHDB</span> · <span style="color:#7CF29A">KAFKA (KRAFT)</span>', top: 192 }],
+  slams: [],
+  bad: ['silent', 'whos', 'charge', 'now', 'stop', 'wrong', 'two', 'winners', 'split', 'brain', 'versions', 'cant'],
+  good: ['leader', 'heartbeat', 'alive', 'random', 'timer', 'vote', 'for', 'me', 'majority', 'three', 'votes', 'heartbeats', 'monitor', 'one', 'half', 'newer', 'election', 'steps', 'down', 'etcd', 'raft', 'skipped'],
+  tiles: [['★', 'LEADER<br>ELECTION'], ['⧉', 'REPLICATION'], ['▦', 'SHARDING']],
+  end: T.ifv - 0.15, follow: T.follow,
+  cover: { t: 'LEADER ELECTION', at: T.three + 0.7, zoom: 1, dy: 60 },
+  flash: (t) => 0.05 * pulse(t, T.silent, 7) + 0.04 * pulse(t, T.brain, 6) + 0.05 * pulse(t, T.cuts, 7),
+};
+</script>
+<script src="../_ember/overlay.js"></script>
+<script>
+/* ---------------- bloom: scene → half-float target, bright pass, three blur levels, composite to the canvas */
+const RT = (w, h, s = 0) => new TH.WebGLRenderTarget(w, h, { type: TH.HalfFloatType, samples: s, depthBuffer: s > 0 });
+const rtMain = RT(1080, 1920, 4), BL = [[RT(540, 960), RT(540, 960)], [RT(270, 480), RT(270, 480)], [RT(135, 240), RT(135, 240)]];
+const fsCam = new TH.OrthographicCamera(-1, 1, 1, -1, 0, 1), fsScene = new TH.Scene(), fsQuad = new TH.Mesh(new TH.PlaneGeometry(2, 2));
+fsQuad.frustumCulled = false; fsScene.add(fsQuad);
+const VS = 'varying vec2 vUv; void main() { vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }';
+const shm = (fs, u) => new TH.ShaderMaterial({ uniforms: u, vertexShader: VS, fragmentShader: fs, depthTest: false, depthWrite: false });
+const mBright = shm(`uniform sampler2D tex; uniform float th; varying vec2 vUv;
+void main() { vec3 c = texture2D(tex, vUv).rgb; float l = max(c.r, max(c.g, c.b)); gl_FragColor = vec4(c * smoothstep(th, th + 0.4, l), 1.0); }`,
+  { tex: { value: null }, th: { value: 0.8 } });
+const mBlur = shm(`uniform sampler2D tex; uniform vec2 dir; varying vec2 vUv;
+void main() {
+  vec3 c = texture2D(tex, vUv).rgb * 0.2270270270;
+  c += (texture2D(tex, vUv + dir * 1.3846153846).rgb + texture2D(tex, vUv - dir * 1.3846153846).rgb) * 0.3162162162;
+  c += (texture2D(tex, vUv + dir * 3.2307692308).rgb + texture2D(tex, vUv - dir * 3.2307692308).rgb) * 0.0702702703;
+  gl_FragColor = vec4(c, 1.0);
+}`, { tex: { value: null }, dir: { value: new TH.Vector2() } });
+const mComp = shm(`uniform sampler2D base, b1, b2, b3; uniform float k1, k2, k3; varying vec2 vUv;
+void main() {
+  vec3 c = texture2D(base, vUv).rgb + texture2D(b1, vUv).rgb * k1 + texture2D(b2, vUv).rgb * k2 + texture2D(b3, vUv).rgb * k3;
+  c = c / (1.0 + max(c - 1.0, 0.0) * 0.6);
+  gl_FragColor = vec4(c, 1.0);
+  #include <colorspace_fragment>
+}`, { base: { value: rtMain.texture }, b1: { value: BL[0][0].texture }, b2: { value: BL[1][1].texture }, b3: { value: BL[2][1].texture }, k1: { value: 0.5 }, k2: { value: 0.65 }, k3: { value: 0.8 } });
+function pass(mat, dst) { fsQuad.material = mat; renderer.setRenderTarget(dst); renderer.render(fsScene, fsCam); }
+function blur(src, dst, dx, dy) { mBlur.uniforms.tex.value = src.texture; mBlur.uniforms.dir.value.set(dx / src.width, dy / src.height); pass(mBlur, dst); }
+function bloom() {
+  mBright.uniforms.tex.value = rtMain.texture; pass(mBright, BL[0][0]);
+  blur(BL[0][0], BL[0][1], 1, 0); blur(BL[0][1], BL[0][0], 0, 1);
+  blur(BL[0][0], BL[1][0], 1, 0); blur(BL[1][0], BL[1][1], 0, 1);
+  blur(BL[1][1], BL[2][0], 1, 0); blur(BL[2][0], BL[2][1], 0, 1);
+  pass(mComp, null);
+}
+
+/* ---------------- HUD (term · heartbeat line · leader), heartbeat card, class card */
+const stg = $('stage'), before = $('prof');
+const mk = (html) => { const w = document.createElement('div'); w.innerHTML = html.trim(); const n = w.firstChild; stg.insertBefore(n, before); return n; };
+const MT = mk(`<div id="mt"><div class="c"><div class="n" id="tn"></div><div class="k">TERM</div></div><svg id="ecg" viewBox="0 0 200 40" preserveAspectRatio="none"><polyline id="ecgL" fill="none" stroke-width="2.4" stroke-linejoin="round"/></svg><div class="c"><div class="n" id="ln"></div><div class="k" id="lk"></div></div></div>`);
+const HBC = mk(`<div id="hbc" class="cd2"><div class="h">The heartbeat</div><svg id="hbS" viewBox="0 0 460 220"></svg><div class="f" id="hbF"></div></div>`);
+const CLS = mk(`<div id="cls" class="cd2"><div class="h">A class picks a new monitor</div><svg id="clS" viewBox="0 0 460 220"></svg><div class="f" id="clF"></div></div>`);
+if (/cover/.test(location.hash)) { const s = document.createElement('style'); s.textContent = '#mt, .cd2 { display: none !important; }'; document.head.appendChild(s); }
+// a heartbeat trace: a spike every HB seconds while beats are being sent, flat otherwise
+const beatV = (d) => (d < 0.05 ? d / 0.05 : d < 0.1 ? 1 - ((d - 0.05) / 0.05) * 1.6 : d < 0.15 ? -0.6 + ((d - 0.1) / 0.05) * 0.6 : 0);
+function trace(t, alive, base, W, H, y0, amp, span = 3) {
+  const pts = [];
+  for (let x = 0; x <= 80; x++) { const tt = t - (80 - x) / 80 * span, d = (((tt - base) % HB) + HB) % HB; pts.push(`${(x / 80 * W).toFixed(1)},${(y0 - (alive(tt) ? beatV(d) : 0) * amp).toFixed(1)}`); }
+  return pts.join(' ');
+}
+const CL_V = ['A', 'B', 'A', 'B', 'A'];   // who each kid votes for
+(() => {
+  const box = (x, lab, id) => `<g id="${id}"><rect x="${x}" y="22" width="120" height="70" rx="8" fill="#15130f" stroke-width="3"/><text x="${x + 60}" y="64" text-anchor="middle" font-family="Mono" font-size="15" font-weight="800">${lab}</text></g>`;
+  $('hbS').innerHTML = `${box(14, 'LEADER', 'hbL')}${box(326, 'FOLLOWER', 'hbR')}
+    <g id="hbH"><text id="hbHt" x="0" y="58" text-anchor="middle" font-family="Inter" font-size="26" fill="#FF6A1F">♥</text><text id="hbHs" x="0" y="34" text-anchor="middle" font-family="Mono" font-size="11" font-weight="800" fill="#FFB070">I'M ALIVE</text></g>
+    <text id="hbX" x="386" y="16" text-anchor="middle" font-family="Inter" font-size="22" font-weight="900" fill="#FF4632" opacity="0">!</text>
+    <line x1="10" y1="168" x2="450" y2="168" stroke="#2a2521" stroke-width="1"/><polyline id="hbE" fill="none" stroke-width="3" stroke-linejoin="round"/>`;
+  const kid = (x, i) => `<g id="k${i}"><circle cx="${x}" cy="176" r="15" fill="#15130f" stroke="#9c948c" stroke-width="3"/><path d="M${x - 20} 214 Q${x} 186 ${x + 20} 214" fill="#15130f" stroke="#9c948c" stroke-width="3"/></g>`;
+  const cand = (x, n) => `<g><circle cx="${x}" cy="40" r="20" fill="#15130f" stroke="#F2EEE8" stroke-width="3"/><text x="${x}" y="47" text-anchor="middle" font-family="Inter" font-size="18" font-weight="900" fill="#F2EEE8">${n}</text>
+    <text id="ct${n}" x="${x}" y="88" text-anchor="middle" font-family="Mono" font-size="16" font-weight="800" fill="#9c948c">0 VOTES</text><text id="cm${n}" x="${x + 34}" y="40" font-family="Inter" font-size="26" font-weight="900" opacity="0"></text></g>`;
+  const KX = [50, 140, 230, 320, 410];
+  $('clS').innerHTML = KX.map((x, i) => `<line id="vl${i}" x1="${x}" y1="158" x2="${CL_V[i] === 'A' ? 140 : 320}" y2="98" stroke="${CL_V[i] === 'A' ? '#FF6A1F' : '#6FC3FF'}" stroke-width="3" stroke-dasharray="6 6" opacity="0"/>`).join('')
+    + cand(140, 'A') + cand(320, 'B') + KX.map(kid).join('');
+})();
+function hbDom(t) {
+  const p = popIn(t, T.l1 - 0.1, T.l2 - 0.1); vis(HBC, p.a, `translateY(${p.y}px) scale(${p.s})`);
+  if (p.a <= 0.001) return;
+  const on = t < T.stop, k = ((t - T.l1) % 0.9) / 0.9;
+  $('hbH').setAttribute('transform', `translate(${lerp(150, 310, k)},0)`); $('hbH').setAttribute('opacity', on ? Math.min(1, k * 6, (1 - k) * 6) : 0);
+  $('hbL').querySelector('rect').setAttribute('stroke', on ? O : DIM); $('hbL').querySelector('text').setAttribute('fill', on ? O : DIM);
+  const wr = t > T.wrong - 0.15; $('hbR').querySelector('rect').setAttribute('stroke', wr ? RED : RD); $('hbR').querySelector('text').setAttribute('fill', wr ? RED : RD);
+  $('hbX').setAttribute('opacity', ep(t, T.wrong - 0.15, T.wrong + 0.1));
+  $('hbE').setAttribute('points', trace(t, (tt) => tt < T.stop, T.l1, 440, 0, 168, 34, 2.5).split(' ').map((s) => { const [x, y] = s.split(','); return `${+x + 10},${y}`; }).join(' '));
+  $('hbE').setAttribute('stroke', on ? O : RED);
+  setH('hbF', wr ? "✕ NO HEARTBEAT: SOMETHING'S WRONG" : on ? '♥ A TINY “I’M ALIVE” MESSAGE, AGAIN AND AGAIN' : 'THE HEARTBEATS STOP…');
+  $('hbF').style.color = wr ? RED : on ? O2 : AMB;
+}
+function clsDom(t) {
+  const p = popIn(t, T.l4 - 0.1, T.l5 - 0.1); vis(CLS, p.a, `translateY(${p.y}px) scale(${p.s})`);
+  if (p.a <= 0.001) return;
+  let a = 0, b = 0;
+  CL_V.forEach((v, i) => { const s = ep(t, T.vote2 - 0.35 + i * 0.22, T.vote2 - 0.15 + i * 0.22); $('vl' + i).setAttribute('opacity', s); if (s > 0.5) v === 'A' ? a++ : b++; $('k' + i).querySelector('circle').setAttribute('stroke', s > 0.5 ? (v === 'A' ? O : RD) : GR); });
+  const done = t > T.two1 - 0.1;
+  setH('ctA', a + (a === 1 ? ' VOTE' : ' VOTES')); setH('ctB', b + (b === 1 ? ' VOTE' : ' VOTES'));
+  $('ctA').setAttribute('fill', done ? OK : a ? O : GR); $('ctB').setAttribute('fill', done ? RED : b ? RD : GR);
+  setH('cmA', '✓'); $('cmA').setAttribute('fill', OK); $('cmA').setAttribute('opacity', ep(t, T.two1 - 0.1, T.two1 + 0.1));
+  setH('cmB', '✕'); $('cmB').setAttribute('fill', RED); $('cmB').setAttribute('opacity', ep(t, T.two1 - 0.1, T.two1 + 0.1));
+  setH('clF', done ? '✓ ONLY ONE CAN GET 3 OF 5: NO TWO WINNERS' : t > T.half - 0.15 ? 'TO WIN: MORE THAN HALF = 3 OF 5' : t > T.vote2 - 0.4 ? 'EVERYONE GETS ONE VOTE' : 'WHO WILL BE THE NEW MONITOR?');
+  $('clF').style.color = done ? OK : t > T.half - 0.15 ? WH : O2;
+}
+function hudDom(t) {
+  const p = popIn(t, 0.15, T.ifv - 0.15); vis(MT, p.a, `translateY(${p.y}px) scale(${p.s})`);
+  if (p.a <= 0.001) return;
+  const term = t < T.first + 0.15 ? 1 : 2; setH('tn', String(term)); $('tn').style.color = term === 2 && t < T.heart2 ? AMB : WH;
+  const alive = (tt) => tt < T.silent || (tt > T.heart2 && !ifWin(tt));
+  $('ecgL').setAttribute('points', trace(t, alive, t < T.heart2 ? 0.65 : T.heart2, 200, 0, 22, 17));
+  $('ecgL').setAttribute('stroke', alive(t) ? O : RED);
+  let n, k, c;
+  if (ifWin(t) && t > T.accepted) { n = 'S1 + S5 ?!'; k = 'TWO LEADERS'; c = RED; }
+  else if (leaderAt(t) === 0) { n = 'S1'; k = 'LEADER'; c = O; }
+  else if (leaderAt(t) === 4) { n = 'S5'; k = 'LEADER'; c = O; }
+  else if (t > T.vote - 0.05) { const v = voteN(t); n = v + ' / 5' + (v >= 3 ? ' ✓' : ''); k = 'VOTES FOR S5'; c = v >= 3 ? OK : AMB; }
+  else { n = '?'; k = 'LEADER'; c = RED; }
+  setH('ln', n); setH('lk', k); $('ln').style.color = c;
+}
+function clampTags() {
+  for (const k in LB) {
+    const e = LB[k]; if (e.style.display === 'none') continue;
+    const w = e.offsetWidth, x = parseFloat(e.style.left), y = clamp(parseFloat(e.style.top), 200, 668);
+    const right = y > 450 ? 540 - 70 : 540 - 14;
+    e.style.left = clamp(x, 14 + w / 2, right - w / 2) + 'px'; e.style.top = y + 'px';
+  }
+}
+
+window.render = (t) => {
+  shoot(t);
+  orbsReset(); sparksReset(); ringsReset();
+  REEL.world(t);
+  sparksFlush(); updateEmbers(t);
+  renderer.setRenderTarget(rtMain); renderer.render(scene, pcam);
+  bloom();
+  REEL.tags(t); clampTags();
+  if (LB.app && LB.app.style.display !== 'none') LB.app.style.top = '702px';   // below the other bottom tags, above the caption
+  card(t); tools(t);
+  hudDom(t); hbDom(t); clsDom(t);
+  $('dim').style.opacity = Math.max(0.55 * ep(t, REEL.end, REEL.end + 0.6), 0.6 * window01(t, T.l1 - 0.1, T.l2 - 0.05, 0.3), 0.6 * window01(t, T.l4 - 0.1, T.l5 - 0.05, 0.3));
+  $('flash').style.opacity = REEL.flash(t);
+  caps(t);
+  profile(t);
+};
+</script>
+<script src="../_ember/play.js"></script>
+</body>
+</html>

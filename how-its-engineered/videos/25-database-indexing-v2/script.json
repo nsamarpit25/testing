@@ -1,0 +1,57 @@
+{
+ "topic": "Database indexing",
+ "lines": [
+  [
+   {
+    "say": "Out of a hundred million users, your app finds you in milliseconds. Drop the email index, and logins can take seconds.",
+    "show": "Out of *100 million* users, your app finds you in *milliseconds.* Drop the email index, and logins can take *seconds.*"
+   },
+   {
+    "say": "What's an index?",
+    "show": "[What's an index?]"
+   }
+  ],
+  [
+   {
+    "say": "Your users sit in a table, one row each, in no order. Without an index, the database may scan the whole table, row after row. A hundred million rows to read. On every login.",
+    "show": "Your users sit in a table, *one row each,* in no order. Without an index, the database may scan the *whole table,* row after row. *100 million rows* to read. [On every login.]"
+   }
+  ],
+  [
+   {
+    "say": "One line of SQL builds an index: a separate list of one column, like email, kept sorted. Each entry points to its row.",
+    "show": "One line of SQL builds an [index:] a separate list of one column, like email, kept *sorted.* Each entry *points* to its row."
+   }
+  ],
+  [
+   {
+    "say": "Because it's sorted, this lookup doesn't start at the top. It jumps to the S section, narrows it down in a few hops, and lands on your exact row.",
+    "show": "Because it's sorted, this lookup doesn't start at the top. It *jumps* to the *S* section, narrows it down in [a few hops,] and lands on your exact row."
+   }
+  ],
+  [
+   {
+    "say": "Like a book's index: find the word, get the page, skip the rest.",
+    "show": "Like a book's index: find the word, get the page, [skip the rest.]"
+   }
+  ],
+  [
+   {
+    "say": "The catch: every index takes space, and makes saving new users a little slower, because each index has to be updated too. So index what you search by, not everything.",
+    "show": "The catch: every index takes *space,* and makes saving new users a little *slower,* because each index has to be updated too. So index [what you search by,] not everything."
+   }
+  ],
+  [
+   {
+    "say": "Postgres and MySQL already index your primary key, usually the ID. Search by email, or anything else? Make sure it has an index.",
+    "show": "*Postgres* and *MySQL* already index your *primary key,* usually the ID. Search by email, or anything else? [Make sure it has an index.]"
+   }
+  ],
+  [
+   {
+    "say": "If you're a vibe coder, follow for the system design your AI skipped.",
+    "show": "If you're a vibe coder, follow for the system design your AI [skipped.]"
+   }
+  ]
+ ]
+}

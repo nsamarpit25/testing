@@ -1,0 +1,6 @@
+A = argon #1
+B = codex #1
+C = argon #3
+D = codex #2
+E = argon #2
+F = codex #3

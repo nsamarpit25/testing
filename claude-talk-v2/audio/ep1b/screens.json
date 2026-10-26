@@ -1,0 +1,40 @@
+{
+ "k1": {
+  "kind": "page",
+  "url": "taskflow.cleo.dev",
+  "accent": "#7048e8",
+  "title": "TaskFlow",
+  "body": [
+   "Your tasks, sorted.",
+   "",
+   "Board   \u00b7   Calendar   \u00b7   Team"
+  ]
+ },
+ "k2": {
+  "kind": "phone",
+  "app": "Slack",
+  "title": "Arjun (Team Lead)",
+  "body": "Your project is really good. Great work today!"
+ },
+ "k3": {
+  "kind": "term",
+  "title": "Chat with Claude",
+  "lines": [
+   "> No. Not what I meant.",
+   "> Still not what I meant.",
+   "> Closer. Still no.",
+   "> NOT what I meant.",
+   "+ > Yes. That."
+  ]
+ },
+ "k4": {
+  "kind": "term",
+  "title": "Chat with Claude",
+  "lines": [
+   "This should work.",
+   "This should work.",
+   "! Error: not a function",
+   "This should definitely work."
+  ]
+ }
+}

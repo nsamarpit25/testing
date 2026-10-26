@@ -1,0 +1,77 @@
+{
+ "prompt": "AUDIO PROFILE\nCleo: a young woman software developer in her mid twenties. Soft, natural, conversational voice. Real and understated, never cartoonish.\nClaude: a young man's voice. Calm, warm and gently dry-witted, never theatrical. Few words.\n\nTHE SCENE, END TO END\nEvening at her desk. Cleo's team lead praised her project today, but Claude, her small AI companion on the desk, wrote most of the code, and she feels like a fraud. Claude gently shows her how much of it was really her work.\n\nLINE BY LINE\n1. Cleo, quiet, not happy.\n2. Claude, gentle.\n3. Cleo, honest, a little lost.\n4. Claude, curious.\n5. Cleo, wry, embarrassed.\n6. Claude, light, teasing.\n7. Cleo, defensive.\n8. Claude, dry, warm.\n9. Cleo, caught, half laughing.\n10. Claude, sincere.\n11. Cleo, amused.\n12. Claude, deadpan.\n13. Cleo, teasing back.\n14. Claude, deadpan, proud.\n15. Cleo, softly, realizing.\n16. Claude, warm.\n17. Cleo, a small proud smile, then sheepish.\n18. Claude, warm, a smile in his voice.\n\nDIRECTOR'S NOTES\nA natural, conversational pace, like two friends at a desk; not rushed, not slow. Let the jokes land with a short beat before the dry lines. Leave a short beat at every [medium pause] and at every \"...\"; never read the bracketed tags aloud. Speak every word of the dialogue exactly as written, nothing added.",
+ "turns": [
+  [
+   "Cleo",
+   "Claude, my team lead said my project was really good today."
+  ],
+  [
+   "Claude",
+   "You don't sound happy."
+  ],
+  [
+   "Cleo",
+   "I didn't even write it. Am I even a developer?"
+  ],
+  [
+   "Claude",
+   "What did you say to him?"
+  ],
+  [
+   "Cleo",
+   "\"Thanks.\" Then I prayed he wouldn't ask how it works."
+  ],
+  [
+   "Claude",
+   "Yesterday you called it \"my stupid project.\""
+  ],
+  [
+   "Cleo",
+   "It was broken. I spent two hours fixing it."
+  ],
+  [
+   "Claude",
+   "When it's broken, it's yours. When it's good, it's mine?"
+  ],
+  [
+   "Cleo",
+   "Okay. Stop using my logic against me."
+  ],
+  [
+   "Claude",
+   "I wrote code. You tested it and decided what needed changing."
+  ],
+  [
+   "Cleo",
+   "And kept telling you, \"No, that's still not what I meant.\""
+  ],
+  [
+   "Claude",
+   "Repeatedly."
+  ],
+  [
+   "Cleo",
+   "You did say \"this should work\" a lot."
+  ],
+  [
+   "Claude",
+   "Very confidently."
+  ],
+  [
+   "Cleo",
+   "So... I did work hard on it."
+  ],
+  [
+   "Claude",
+   "I know. I was there."
+  ],
+  [
+   "Cleo",
+   "I built a really good project. Now teach me how it works."
+  ],
+  [
+   "Claude",
+   "Finally."
+  ]
+ ]
+}

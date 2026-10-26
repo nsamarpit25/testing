@@ -1,0 +1,271 @@
+{
+ "look": {
+  "base": "morning",
+  "colors": {
+   "V3_Cleo_Top": "#e07a5f",
+   "V3_Cleo_Trim": "#c4664d"
+  }
+ },
+ "lead": 0.5,
+ "gap": 0.32,
+ "hold": 2.6,
+ "beats": {
+  "8": 0.15,
+  "11": 0.1,
+  "12": 0.0,
+  "16": 0.25
+ },
+ "open": [
+  "CLEO",
+  "t0 look phone 1",
+  "t0 brow 0.025 6"
+ ],
+ "lines": {
+  "1": {
+   "shot": "CLEO",
+   "cleo": [
+    "1 look claude 8",
+    "1 hands r_open 8",
+    "1 brow 0.03 8",
+    "1.end+0.2 hands rest 12"
+   ]
+  },
+  "2": {
+   "shot": "BOARD",
+   "claude": [
+    "2-0.3 face bcam 6",
+    "2.w2 hop 0.012"
+   ]
+  },
+  "3": {
+   "shot": "CLEOCU",
+   "cleo": [
+    "3 look claude 6",
+    "3 hands push 8",
+    "3 brow 0.02 8",
+    "3.end+0.2 hands rest 12"
+   ]
+  },
+  "4": {
+   "shot": "BOARD",
+   "claude": [
+    "4 face board 8",
+    "4.w5 face bcam 8"
+   ]
+  },
+  "5": {
+   "shot": "CLEO",
+   "cleo": [
+    "5 look claude 8",
+    "5 hands open 8",
+    "5 brow 0.02 8",
+    "5.end+0.2 hands rest 12"
+   ]
+  },
+  "6": {
+   "shot": "BOARD",
+   "claude": [
+    "6 face board 8",
+    "6.w6 face bcam 8",
+    "6.w9 nod"
+   ]
+  },
+  "7": {
+   "shot": "CLEOCU",
+   "cleo": [
+    "7 look claude 6",
+    "7 hands r_ask 8",
+    "7 brow 0.03 8",
+    "7.end+0.2 hands rest 12"
+   ]
+  },
+  "8": {
+   "shot": "BOARD",
+   "claude": [
+    "8 face board 8",
+    "8.w5 face bcam 8"
+   ]
+  },
+  "9": {
+   "shot": "CLEO",
+   "cleo": [
+    "9 look claude 8",
+    "9 hands plead 8",
+    "9.end+0.2 hands rest 12"
+   ]
+  },
+  "10": {
+   "shot": "BOARD",
+   "claude": [
+    "10 face board 8",
+    "10.w3 face bcam 8"
+   ]
+  },
+  "11": {
+   "shot": "CLEOCU",
+   "cleo": [
+    "11 look claude 6",
+    "11 hands open 8",
+    "11 smile 0.35 8",
+    "11 brow 0.03 6",
+    "11.end+0.2 hands rest 12"
+   ]
+  },
+  "12": {
+   "shot": "BOARD",
+   "claude": [
+    "12-0.2 face bcam 6",
+    "12.w3 hop 0.014",
+    "12.w4 face board 8"
+   ],
+   "cleo": [
+    "12.w2 smile 0 6"
+   ]
+  },
+  "13": {
+   "shot": "CLEO",
+   "cleo": [
+    "13 look claude 8",
+    "13 hands r_ask 8",
+    "13 brow 0.02 8",
+    "13.end+0.2 hands rest 12"
+   ]
+  },
+  "14": {
+   "shot": "CLAUDE",
+   "claude": [
+    "14-0.2 face mon 6"
+   ],
+   "cleo": [
+    "14.w1 look monitor 8"
+   ]
+  },
+  "15": {
+   "shot": "CLEOCU",
+   "cleo": [
+    "15 look claude 6",
+    "15 hands push 8",
+    "15 smile 0.3 8",
+    "15.end+0.2 hands rest 12",
+    "15.end smile 0 10"
+   ]
+  },
+  "16": {
+   "shot": "BOARD",
+   "claude": [
+    "16-0.2 face board 6",
+    "16.w4 face bcam 8"
+   ]
+  }
+ },
+ "cuts": [
+  [
+   "1.w3",
+   "PHONE"
+  ],
+  [
+   "2-0.1",
+   "BOARD"
+  ],
+  [
+   "4.w2",
+   "BOARDCU"
+  ],
+  [
+   "6.w2",
+   "BOARDCU"
+  ],
+  [
+   "8.w2",
+   "BOARDCU"
+  ],
+  [
+   "10.w2",
+   "BOARDCU"
+  ],
+  [
+   "12.w3",
+   "BOARDCU"
+  ],
+  [
+   "14.w2",
+   "MON"
+  ],
+  [
+   "16.w3",
+   "BOARDCU"
+  ],
+  [
+   "16.end+1.2",
+   "WIDE"
+  ]
+ ],
+ "mon": [
+  [
+   "0",
+   "m0"
+  ],
+  [
+   "14-0.3",
+   "m1"
+  ]
+ ],
+ "board": [
+  [
+   "0",
+   "b0"
+  ],
+  [
+   "4-0.15",
+   "b1"
+  ],
+  [
+   "6-0.15",
+   "b2"
+  ],
+  [
+   "8-0.15",
+   "b3"
+  ],
+  [
+   "10-0.15",
+   "b4"
+  ],
+  [
+   "12.w3",
+   "b5"
+  ],
+  [
+   "16-0.15",
+   "b6"
+  ]
+ ],
+ "phone": [
+  [
+   "0",
+   "p1"
+  ]
+ ],
+ "sfx": [
+  [
+   "t0.1",
+   "softbuzz"
+  ],
+  [
+   "12.w3",
+   "buzz"
+  ],
+  [
+   "14.w2",
+   "pop"
+  ]
+ ],
+ "tail_cleo": [
+  "16.u0.5 look slump 12",
+  "16.end+0.6 look claude 10",
+  "16.end+0.6 brow 0.03 8"
+ ],
+ "tail_claude": [
+  "16.end+0.3 hop 0.012"
+ ]
+}

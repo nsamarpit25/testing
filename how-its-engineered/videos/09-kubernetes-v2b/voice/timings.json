@@ -1,0 +1,90 @@
+[
+ {
+  "li": 0,
+  "pi": 0,
+  "say": "Your app crashed at three A-M.",
+  "show": "Your app [crashed] at 3 AM.",
+  "start": 0.0,
+  "end": 1.92
+ },
+ {
+  "li": 0,
+  "pi": 1,
+  "say": "By the time you woke up, it was already back, on another server. Nobody touched it.",
+  "show": "By the time you woke up, it was already back, *on another server.* Nobody touched it.",
+  "start": 1.92,
+  "end": 5.9
+ },
+ {
+  "li": 1,
+  "pi": 0,
+  "say": "That's Kubernetes. It runs copies of your app across a group of servers.",
+  "show": "That's *Kubernetes.* It runs copies of your app across [a group of servers.]",
+  "start": 6.1,
+  "end": 9.48
+ },
+ {
+  "li": 2,
+  "pi": 0,
+  "say": "You tell it what you want, and it keeps making it true.",
+  "show": "You tell it what you want, and it *keeps making it true.*",
+  "start": 9.84,
+  "end": 12.06
+ },
+ {
+  "li": 3,
+  "pi": 0,
+  "say": "Like a thermostat. You pick twenty-one degrees, and it keeps the room there.",
+  "show": "Like a *thermostat.* You pick *21\u00b0,* and it keeps the room there.",
+  "start": 12.32,
+  "end": 15.34
+ },
+ {
+  "li": 4,
+  "pi": 0,
+  "say": "You say: three copies, always.",
+  "show": "You say: *3 copies,* always.",
+  "start": 15.64,
+  "end": 17.08
+ },
+ {
+  "li": 4,
+  "pi": 1,
+  "say": "A server dies? It starts replacement copies on the servers that are left.",
+  "show": "A server [dies?] It starts replacements *on the servers that are left.*",
+  "start": 17.36,
+  "end": 20.68
+ },
+ {
+  "li": 5,
+  "pi": 0,
+  "say": "Turn on autoscaling, and it adds copies when more users show up, then removes them when they leave.",
+  "show": "Turn on *autoscaling,* and it [adds copies] when more users show up, then removes them when they leave.",
+  "start": 21.06,
+  "end": 25.42
+ },
+ {
+  "li": 6,
+  "pi": 0,
+  "say": "New version? It swaps old copies for new ones a few at a time, so your app stays up during the update.",
+  "show": "New version? It swaps copies *a few at a time,* so your app [stays up] during the update.",
+  "start": 25.8,
+  "end": 30.74
+ },
+ {
+  "li": 7,
+  "pi": 0,
+  "say": "That's how your app recovered while you slept.",
+  "show": "That's how your app *recovered while you slept.*",
+  "start": 31.14,
+  "end": 32.94
+ },
+ {
+  "li": 8,
+  "pi": 0,
+  "say": "If you're a vibe coder, follow for the system design your AI skipped.",
+  "show": "If you're a vibe coder, follow for the system design your AI [skipped.]",
+  "start": 33.28,
+  "end": 36.32
+ }
+]

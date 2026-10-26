@@ -1,0 +1,82 @@
+[
+ {
+  "li": 0,
+  "pi": 0,
+  "say": "Before a card machine can take your money, it has to give your card power.",
+  "show": "Before a card machine can *take your money,* it has to [give your card power.]",
+  "start": 0.0,
+  "end": 3.38
+ },
+ {
+  "li": 0,
+  "pi": 1,
+  "say": "Your bank card has no battery. So how does it talk to the machine the moment you tap?",
+  "show": "Your bank card has *no battery.* So how does it talk to the machine the moment [you tap?]",
+  "start": 3.8,
+  "end": 7.72
+ },
+ {
+  "li": 1,
+  "pi": 0,
+  "say": "The machine makes an invisible magnetic field that keeps changing.",
+  "show": "The machine makes an *invisible magnetic field* that [keeps changing.]",
+  "start": 8.34,
+  "end": 11.12
+ },
+ {
+  "li": 2,
+  "pi": 0,
+  "say": "Around the edge of your card hides a coil of wire.",
+  "show": "Around the edge of your card hides a [coil of wire.]",
+  "start": 11.68,
+  "end": 13.84
+ },
+ {
+  "li": 3,
+  "pi": 0,
+  "say": "Bring it close, and the field creates just enough electricity in the coil to wake the chip.",
+  "show": "Bring it close, and the field creates just enough *electricity* in the coil to [wake the chip.]",
+  "start": 14.28,
+  "end": 18.24
+ },
+ {
+  "li": 4,
+  "pi": 0,
+  "say": "The chip answers through the same field. It doesn't just send your card number. It adds a one-time code that only works for this payment.",
+  "show": "The chip answers through the same field. It doesn't just send your card number. It adds a *one-time code* that [only works for this payment.]",
+  "start": 18.78,
+  "end": 24.94
+ },
+ {
+  "li": 5,
+  "pi": 0,
+  "say": "At a caf\u00e9, the machine usually sends that to your bank, which checks the code and approves or declines, within seconds.",
+  "show": "At a caf\u00e9, the machine usually sends that to your bank, which checks the code and *approves or declines,* [within seconds.]",
+  "start": 25.48,
+  "end": 31.02
+ },
+ {
+  "li": 6,
+  "pi": 0,
+  "say": "In twenty fourteen, London let people tap bank cards right onto the Tube.",
+  "show": "In 2014, London let people tap bank cards right onto the [Tube.]",
+  "start": 31.68,
+  "end": 34.78
+ },
+ {
+  "li": 6,
+  "pi": 1,
+  "say": "But a gate can't wait for the bank, so it checks the card is genuine on the spot, fast enough for you to keep walking. The bank checks the payment later.",
+  "show": "But a gate *can't wait* for the bank, so it checks the card is *genuine* on the spot, fast enough for you to keep walking. The bank checks the payment [later.]",
+  "start": 35.2,
+  "end": 41.58
+ },
+ {
+  "li": 7,
+  "pi": 0,
+  "say": "So your card is just plastic, until the machine wakes it up with electricity.",
+  "show": "So your card is just plastic, until the machine wakes it up with [electricity.]",
+  "start": 42.16,
+  "end": 45.86
+ }
+]

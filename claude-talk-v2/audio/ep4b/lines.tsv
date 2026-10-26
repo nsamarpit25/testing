@@ -1,0 +1,19 @@
+cleo	Claude! Forty thousand database reads in three minutes. We're going viral!
+claude	Cleo... you haven't deployed it yet.
+cleo	Then who's reading it?
+claude	Your app on localhost. Every read came from this desk.
+cleo	...From me?
+claude	From you. You're flooding your own database.
+cleo	I'm not even touching anything! The page is just sitting there.
+claude	Look at the Network tab.
+cleo	Why is it counting like a slot machine?
+claude	Your useEffect loads the tasks, updates the list, sees a new list... and loads again.
+cleo	I added tasks to the dependency array. To be responsive!
+claude	Very responsive. Forever.
+cleo	Make it stop! Make it stop!
+claude	Done. The fetch loop is gone.
+cleo	At least it didn't cost anything.
+cleo	"Daily read limit reached."
+cleo	Claude... can you rewind the database too?
+claude	I can rewind my edits. Not the calendar.
+cleo	I finally went viral... and my only fan was me.

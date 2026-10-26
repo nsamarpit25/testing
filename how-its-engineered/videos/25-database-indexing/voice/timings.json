@@ -1,0 +1,66 @@
+[
+ {
+  "li": 0,
+  "pi": 0,
+  "say": "Your app found one user out of a hundred million in the blink of an eye. It skipped almost all the others.",
+  "show": "Your app found *one user* out of *100 million* in the blink of an eye. It skipped almost all the others.",
+  "start": 0.0,
+  "end": 4.64
+ },
+ {
+  "li": 0,
+  "pi": 1,
+  "say": "How?",
+  "show": "[How?]",
+  "start": 4.96,
+  "end": 5.2
+ },
+ {
+  "li": 1,
+  "pi": 0,
+  "say": "Your users live in a table, one row each. Without help, the database may check every row until it finds yours. With millions of rows, that's slow.",
+  "show": "Your users live in a table, *one row each.* Without help, the database may check *every row* until it finds yours. With millions of rows, that's [slow.]",
+  "start": 5.66,
+  "end": 13.0
+ },
+ {
+  "li": 2,
+  "pi": 0,
+  "say": "An index fixes that. A common one keeps a single column, like emails, sorted, and each entry points to that user's row.",
+  "show": "An [index] fixes that. A common one keeps a single column, like emails, *sorted,* and each entry points to that user's row.",
+  "start": 13.46,
+  "end": 19.66
+ },
+ {
+  "li": 3,
+  "pi": 0,
+  "say": "Because it's sorted, the database narrows it down in a few steps. Like a book's index: find the word, get the page, skip the rest.",
+  "show": "Because it's sorted, the database narrows it down in *a few steps.* Like a book's index: find the word, get the page, [skip the rest.]",
+  "start": 19.88,
+  "end": 26.04
+ },
+ {
+  "li": 4,
+  "pi": 0,
+  "say": "One catch. Every index takes space, and every new row has to update it too. So index the columns you search by, not everything.",
+  "show": "One catch. Every index takes *space,* and every new row has to *update it too.* So index the columns [you search by,] not everything.",
+  "start": 26.4,
+  "end": 33.06
+ },
+ {
+  "li": 5,
+  "pi": 0,
+  "say": "Postgres and MySQL automatically index your primary key, usually the ID.",
+  "show": "*Postgres* and *MySQL* automatically index your *primary key,* usually the ID.",
+  "start": 33.44,
+  "end": 37.28
+ },
+ {
+  "li": 6,
+  "pi": 0,
+  "say": "If you're a vibe coder, follow for the system design your AI skipped.",
+  "show": "If you're a vibe coder, follow for the system design your AI [skipped.]",
+  "start": 37.56,
+  "end": 40.54
+ }
+]

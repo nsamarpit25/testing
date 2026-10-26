@@ -1,0 +1,66 @@
+[
+ {
+  "li": 0,
+  "pi": 0,
+  "say": "Your phone can find the street you're on. The GPS satellites have no idea you exist.",
+  "show": "Your phone can find the *street* you're on. The GPS satellites have [no idea you exist.]",
+  "start": 0.0,
+  "end": 4.26
+ },
+ {
+  "li": 1,
+  "pi": 0,
+  "say": "Your phone never sends anything to them. It only listens.",
+  "show": "Your phone never sends anything to them. It [only listens.]",
+  "start": 4.76,
+  "end": 7.12
+ },
+ {
+  "li": 2,
+  "pi": 0,
+  "say": "About thirty GPS satellites orbit the Earth, carrying super precise clocks. They keep broadcasting where they are, and exactly when each signal left.",
+  "show": "About *thirty GPS satellites* orbit the Earth, carrying super precise *clocks.* They keep broadcasting [where they are,] and exactly when each signal left.",
+  "start": 7.68,
+  "end": 14.5
+ },
+ {
+  "li": 3,
+  "pi": 0,
+  "say": "The signals travel at the speed of light, so how long each one takes tells your phone how far away that satellite is.",
+  "show": "The signals travel at the *speed of light,* so how long each one takes tells your phone [how far away] that satellite is.",
+  "start": 15.14,
+  "end": 19.84
+ },
+ {
+  "li": 4,
+  "pi": 0,
+  "say": "One distance puts you somewhere on a giant sphere. Add more satellites, and the spheres overlap at one spot. A fourth one fixes your phone's clock, which is nowhere near as precise.",
+  "show": "One distance puts you somewhere on a giant *sphere.* Add more satellites, and the spheres *overlap* at one spot. A fourth one [fixes your phone's clock,] which is nowhere near as precise.",
+  "start": 20.34,
+  "end": 28.44
+ },
+ {
+  "li": 5,
+  "pi": 0,
+  "say": "Until two thousand, America made public GPS wrong on purpose, enough to put you a street away from where you really were. Then President Clinton ordered that error switched off, and overnight, ordinary receivers could find the right road.",
+  "show": "Until 2000, America made public GPS *wrong on purpose,* enough to put you *a street away* from where you really were. Then President Clinton ordered that error switched off, and overnight, ordinary receivers could [find the right road.]",
+  "start": 29.0,
+  "end": 39.66
+ },
+ {
+  "li": 6,
+  "pi": 0,
+  "say": "So GPS isn't tracking you from space. The satellites only say where they are. Your phone works out where you are.",
+  "show": "So GPS isn't tracking you from space. The satellites only say *where they are.* [Your phone works out where you are.]",
+  "start": 40.34,
+  "end": 45.5
+ },
+ {
+  "li": 6,
+  "pi": 1,
+  "say": "Follow for how everyday tech really works.",
+  "show": "Follow for how [everyday tech] really works.",
+  "start": 45.7,
+  "end": 47.2
+ }
+]

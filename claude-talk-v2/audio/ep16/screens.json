@@ -1,0 +1,52 @@
+{
+ "c1": {
+  "kind": "term",
+  "title": "zsh",
+  "lines": [
+   "$ git log --oneline | wc -l",
+   "  128",
+   "$ git checkout HEAD~4",
+   "$ npm test checkout",
+   "! FAIL checkout.test.js"
+  ],
+  "hi": [
+   4
+  ]
+ },
+ "c2": {
+  "kind": "term",
+  "title": "zsh",
+  "lines": [
+   "$ git bisect start",
+   "$ git bisect bad",
+   "$ git bisect good a1b2c3d",
+   "Bisecting: 63 revisions left",
+   "(roughly 6 steps)"
+  ]
+ },
+ "c3": {
+  "kind": "term",
+  "title": "zsh",
+  "lines": [
+   "$ git bisect bad",
+   "e4f9a21 is the first bad commit",
+   "Author: Cleo",
+   "",
+   "    Small harmless cleanup"
+  ],
+  "hi": [
+   1
+  ]
+ },
+ "c2b": {
+  "kind": "term",
+  "title": "zsh",
+  "lines": [
+   "$ git bisect bad",
+   "$ git bisect good",
+   "$ git bisect good",
+   "Bisecting: 7 revisions left",
+   "(roughly 3 steps)"
+  ]
+ }
+}

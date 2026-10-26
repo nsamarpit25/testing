@@ -1,0 +1,47 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "hie-static",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8765",
+        "--bind",
+        "127.0.0.1",
+        "--directory",
+        "how-its-engineered"
+      ],
+      "port": 8765
+    },
+    {
+      "name": "hie-library",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "-I",
+        "how-its-engineered/tools/remake/bin/serve.py",
+        "8766"
+      ],
+      "port": 8766
+    },
+    {
+      "name": "reel-review",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "insights/review_server.py",
+        "8770"
+      ],
+      "port": 8770
+    },
+    {
+      "name": "reels",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "insights/reels_server.py",
+        "8780"
+      ],
+      "port": 8780
+    }
+  ]
+}

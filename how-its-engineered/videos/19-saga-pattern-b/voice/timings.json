@@ -1,0 +1,74 @@
+[
+ {
+  "li": 0,
+  "pi": 0,
+  "say": "Your flight and hotel are paid for. Then the car booking fails.",
+  "show": "Your *flight* and *hotel* are paid for. Then the car booking [fails.]",
+  "start": 0.0,
+  "end": 3.38
+ },
+ {
+  "li": 0,
+  "pi": 1,
+  "say": "Who gets your money back?",
+  "show": "Who gets your [money back?]",
+  "start": 3.66,
+  "end": 4.62
+ },
+ {
+  "li": 1,
+  "pi": 0,
+  "say": "Separate programs handle each booking and keep their own records. There's no shared undo button.",
+  "show": "*Separate programs* handle each booking and keep their own records. There's no [shared undo button.]",
+  "start": 5.14,
+  "end": 9.74
+ },
+ {
+  "li": 2,
+  "pi": 0,
+  "say": "The saga pattern runs the steps one by one, with a cleanup plan for each step if something fails.",
+  "show": "The [saga pattern] runs the steps *one by one,* with a [cleanup plan] for each step if something fails.",
+  "start": 10.2,
+  "end": 14.92
+ },
+ {
+  "li": 3,
+  "pi": 0,
+  "say": "First, the flight and hotel bookings succeed. Then the car booking fails.",
+  "show": "First, the *flight* and *hotel* bookings succeed. Then the car booking [fails.]",
+  "start": 15.34,
+  "end": 19.2
+ },
+ {
+  "li": 4,
+  "pi": 0,
+  "say": "So the saga cleans up backwards: cancel the hotel, then the flight, and request your refunds.",
+  "show": "So the saga cleans up [backwards:] cancel the hotel, then the flight, and request your *refunds.*",
+  "start": 19.38,
+  "end": 24.12
+ },
+ {
+  "li": 5,
+  "pi": 0,
+  "say": "Like a travel agent cancelling your trip step by step, in reverse.",
+  "show": "Like a *travel agent* cancelling your trip step by step, [in reverse.]",
+  "start": 24.42,
+  "end": 27.5
+ },
+ {
+  "li": 6,
+  "pi": 0,
+  "say": "These cleanup steps are called compensating actions, and you write them. AWS Step Functions can run the whole saga.",
+  "show": "These cleanup steps are called [compensating actions,] and *you write them.* *AWS Step Functions* can run the whole saga.",
+  "start": 27.5,
+  "end": 34.36
+ },
+ {
+  "li": 7,
+  "pi": 0,
+  "say": "If you're a vibe coder, follow for the system design your AI skipped.",
+  "show": "If you're a vibe coder, follow for the system design your AI [skipped.]",
+  "start": 34.96,
+  "end": 38.28
+ }
+]

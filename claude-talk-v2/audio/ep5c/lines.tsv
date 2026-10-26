@@ -1,0 +1,22 @@
+cleo	Claude. Either my CSS is haunted, or I am.
+claude	What happened?
+cleo	I made this button green eleven times. It's been blue for forty minutes. It's doing it on purpose.
+claude	Did you save?
+cleo	I saved! I hard-refreshed! I switched browsers! I put "important" on everything!
+claude	Everything?
+cleo	I even changed the text to "PLEASE WORK." Look! It still says "Add task"! You broke CSS.
+claude	Let me look at your terminals.
+cleo	Wait. Don't judge the folder names.
+claude	"my-app." "my-app-v2." "my-app-final."
+cleo	They're backups!
+claude	They're all running. Three copies. Three servers.
+claude	You're editing "final." Your browser is showing the original.
+cleo	But it says localhost!
+claude	Different ports. When 5173 was taken, Vite just took the next one.
+cleo	So every fix I made went... somewhere else?
+claude	Every single one. Open 5175.
+cleo	...Oh no.
+claude	Forty minutes of fixes. They all worked.
+cleo	Can we go back to blue?
+claude	Sure. Which folder?
+cleo	...I'm calling the next one my-app-final-final.

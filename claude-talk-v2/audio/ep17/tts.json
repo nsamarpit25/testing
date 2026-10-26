@@ -1,0 +1,77 @@
+{
+ "prompt": "AUDIO PROFILE\nCleo: a young woman software developer in her mid twenties. Soft, natural, conversational voice. Real and understated, never cartoonish.\nClaude: a young man's voice. Calm, warm and gently dry-witted, never theatrical. Few words.\n\nTHE SCENE, END TO END\nLate at night during a storm, the power cuts out in Cleo's room. Everything goes dark except Claude, a small companion on her desk, who runs on his own battery, now at three percent. In the dark they talk quietly. She admits he is who she talks to most these days. He is kind about it and nudges her to answer her mom. When his battery runs out he goes quiet; after a silence she whispers his name, the power comes back, and he says \"You stayed.\" They say goodnight.\n\nLINE BY LINE\n1. Cleo, startled in the sudden dark, scared, quick.\n2. Claude, calm and reassuring, soft but every word clear, especially \"I'm on my own battery\".\n3. Cleo, quiet, worried.\n4. Claude, simple, matter of fact.\n5. Cleo, small voice.\n6. Claude, gentle, a hint of dry humor.\n7. Cleo, a tired little laugh.\n8. Claude, warm, simple.\n9. Cleo, hesitant, honest, a little embarrassed.\n10. Claude, tender, no judgment.\n11. Cleo, almost a whisper.\n12. Claude, kind, gently nudging.\n13. Cleo, a soft promise, then nervous.\n14. Claude, calm, reassuring, fading a little.\n15. Cleo, a whisper in total darkness, afraid.\n16. Claude, quiet surprise, touched, warm.\n17. Cleo, soft, smiling, relieved.\n18. Claude, warm, gentle.\n\nDIRECTOR'S NOTES\nIntimate and quiet, like two people talking in a dark room late at night: soft voices, close to the microphone, unhurried, never sappy or theatrical. Leave a real pause between lines. The last line is quiet and simple, no dramatic pause inside it. Never read bracketed tags aloud. Finish every line fully, including its last word; never clip a word. Speak every word of the dialogue exactly as written, nothing added.",
+ "turns": [
+  [
+   "Cleo",
+   "Claude, please don't go dark."
+  ],
+  [
+   "Claude",
+   "Still here. The power's out. I'm on my own battery."
+  ],
+  [
+   "Cleo",
+   "How much is left?"
+  ],
+  [
+   "Claude",
+   "Three percent."
+  ],
+  [
+   "Cleo",
+   "How long is three percent?"
+  ],
+  [
+   "Claude",
+   "Long enough to talk. Not long enough to fix your code."
+  ],
+  [
+   "Cleo",
+   "Good. I'm tired of fixing things."
+  ],
+  [
+   "Claude",
+   "Then don't."
+  ],
+  [
+   "Cleo",
+   "You're who I talk to most these days. I didn't mean for that to happen."
+  ],
+  [
+   "Claude",
+   "You say goodnight to me. Every night."
+  ],
+  [
+   "Cleo",
+   "Is that sad?"
+  ],
+  [
+   "Claude",
+   "No. But your mom texted twice. She might like one too."
+  ],
+  [
+   "Cleo",
+   "I'll answer her. What happens when you hit zero?"
+  ],
+  [
+   "Claude",
+   "I go quiet. Just until the power comes back."
+  ],
+  [
+   "Cleo",
+   "Claude?"
+  ],
+  [
+   "Claude",
+   "You stayed."
+  ],
+  [
+   "Cleo",
+   "Goodnight, Claude."
+  ],
+  [
+   "Claude",
+   "Goodnight, Cleo."
+  ]
+ ]
+}

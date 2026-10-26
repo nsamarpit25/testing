@@ -1,0 +1,37 @@
+{
+ "topic": "Circuit breakers",
+ "lines": [
+  [
+   {"say": "Your whole shop just went down because the reviews got slow. Not broken. Just slow.",
+    "show": "Your whole shop just [went down] because the *reviews* got slow. Not broken. Just *slow.*"}
+  ],
+  [
+   {"say": "Your shop's server waits for reviews from another server. Waiting work piles up until the whole shop stops loading.",
+    "show": "Your shop's server *waits* for reviews from another server. Waiting work piles up until the whole shop [stops loading.]"}
+  ],
+  [
+   {"say": "A circuit breaker protects your house by cutting the power when something goes wrong. In software, it stops requests to the struggling server.",
+    "show": "A [circuit breaker] protects your house by cutting the *power* when something goes wrong. In software, it stops requests to the *struggling server.*"}
+  ],
+  [
+   {"say": "Too many slow or failed requests? It pauses new requests for a while.",
+    "show": "Too many *slow or failed* requests? It [pauses new requests] for a while."}
+  ],
+  [
+   {"say": "Your code decides what happens instead: skip the reviews and load the rest of the page.",
+    "show": "Your code decides what happens instead: [skip the reviews] and load the *rest of the page.*"}
+  ],
+  [
+   {"say": "Later, it lets a few requests through. Reviews fast again? Resume. Otherwise, pause again.",
+    "show": "Later, it lets a *few requests* through. Reviews fast again? [Resume.] Otherwise, *pause* again."}
+  ],
+  [
+   {"say": "That keeps one slow feature from sinking your whole app.",
+    "show": "That keeps one slow feature from [sinking your whole app.]"}
+  ],
+  [
+   {"say": "If you're a vibe coder, follow for the system design your AI skipped.",
+    "show": "If you're a vibe coder, follow for the system design your AI [skipped.]"}
+  ]
+ ]
+}

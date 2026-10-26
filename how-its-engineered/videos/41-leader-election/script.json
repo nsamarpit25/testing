@@ -1,0 +1,25 @@
+{
+ "topic": "Leader election",
+ "lines": [
+  [{"say": "Your database runs on five servers. One of them is the leader, and every write goes through it. Then it goes silent. Who's in charge now?",
+    "show": "Your database runs on *five servers.* One of them is the [leader,] and every write goes through it. Then it goes *silent.* [Who's in charge now?]"}],
+  [{"say": "The leader keeps sending a heartbeat, a tiny message that says I'm alive. When the heartbeats stop, the others know something's wrong.",
+    "show": "The leader keeps sending a [heartbeat,] a tiny message that says *I'm alive.* When the heartbeats *stop,* the others know something's [wrong.]"}],
+  [{"say": "Each server has its own random timer, so they rarely all jump at once. The first one to run out asks the rest: vote for me.",
+    "show": "Each server has its own *random timer,* so they rarely all jump at once. The first one to run out asks the rest: [vote for me.]"}],
+  [{"say": "It only wins with a majority. Out of five, that's three votes, its own included. Then it starts sending the heartbeats.",
+    "show": "It only wins with a [majority.] Out of five, that's *three votes,* its own included. Then it starts sending the *heartbeats.*"}],
+  [{"say": "Like a class picking a new monitor. Everyone gets one vote, and you need more than half, so there can't be two winners.",
+    "show": "Like a class picking a new *monitor.* Everyone gets *one vote,* and you need more than [half,] so there can't be [two winners.]"}],
+  [{"say": "That matters. If two servers both accepted writes as leader, your data would split into two versions. That's called split brain.",
+    "show": "That matters. If two servers both accepted writes as leader, your data would *split* into two versions. That's called [split brain.]"}],
+  [{"say": "If the network cuts the servers into three and two, only the side with three can pick a leader and save writes. The two can't.",
+    "show": "If the network cuts the servers into *three and two,* only the side with [three] can pick a leader and save writes. The two *can't.*"}],
+  [{"say": "And when the old leader comes back, it sees a newer election and steps down to follow.",
+    "show": "And when the old leader comes back, it sees a *newer election* and [steps down] to follow."}],
+  [{"say": "You rarely build this yourself. Tools like etcd use an algorithm called Raft to run these elections for you.",
+    "show": "You rarely build this yourself. Tools like *etcd* use an algorithm called [Raft] to run these elections for you."}],
+  [{"say": "If you're a vibe coder, follow for the system design your AI skipped.",
+    "show": "If you're a vibe coder, follow for the system design your AI [skipped.]"}]
+ ]
+}

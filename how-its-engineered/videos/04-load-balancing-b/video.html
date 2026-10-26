@@ -1,0 +1,226 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- 04 Load balancing, remade in the 21 ember style. World: a crowd of users in front; the load balancer in the middle;
+     ten app servers behind it in two rows (a third row is added near the end). The supermarket analogy is mapped onto
+     the same world (load balancer = manager, servers = checkout lines). Beats come from voice/words.json via at().
+     Shared pieces live in ../_ember/. -->
+<link rel="stylesheet" href="../_ember/fonts.css">
+<link rel="stylesheet" href="../_ember/reel.css">
+</head>
+<body>
+<div id="stage">
+  <div id="world">
+    <canvas id="cv" width="1080" height="1920"></canvas>
+    <div class="layer" id="lbls"></div>
+  </div>
+</div>
+<script src="../../tools/lib.js"></script>
+<script src="voice/words.js"></script>
+<script src="../_ember/three.js"></script>
+<script src="../_ember/world.js"></script>
+<script src="../_ember/base.js"></script>
+<script>
+const addIcon = (k, d) => { ICON[k] = d; P2[k] = new Path2D(d); };
+addIcon('user', 'M50 18 a14 14 0 1 0 0.1 0 M24 84 Q24 56 50 56 Q76 56 76 84');
+for (let i = 0; i < 14; i++) ORBS.push({ core: orbSprite(9), glow: orbSprite(34), trail: [0, 1, 2, 3, 4].map(() => orbSprite(10)) });
+
+/* ---------------- beats */
+const T = {
+  viral: at('100'), n100: at('100'), people: at('people'), once: at('once'), didnt: at('didnt'), down: at('down'),
+  one: at('one'), struggle: at('struggle'), so: at('so'), run: at('run'), copies: at('copies'), servers: at('servers'),
+  but: at('but'), who: at('who'), decides: at('decides'), request: at('request'), page: at('page'), load2: at('load', 2), balancer: at('balancer'),
+  like2: at('like', 2), supermarket: at('supermarket'), manager: at('manager'), shortest: at('shortest'), checkout: at('checkout'), line_: at('line'),
+  simplest: at('simplest'), round: at('round'), robin: at('robin'), one2: at('one', 2), two: at('two'), three: at('three'), back: at('back'), one3: at('one', 3),
+  smarter: at('smarter'), least: at('least'), picks: at('picks'), fewest: at('fewest'), open: at('open'),
+  also: at('also'), pings: at('pings'), few: at('few'), seconds: at('seconds'), stops: at('stops'), answering: at('answering'), skipped: at('skipped'),
+  need: at('need'), power: at('power'), add: at('add'), servers2: at('servers', 2), behind: at('behind'), users: at('users'), same: at('same'), address: at('address'),
+  aws: at('aws'), nginx: at('nginx'), cloudflare: at('cloudflare'),
+  ifv: at('if', 2), follow: at('follow'),
+};
+const CUT = { ONE: T.one - 0.2, RUN: T.run - 0.15, WHO: T.but - 0.2, LB: T.load2 - 0.3, SUP: T.like2 - 0.2, RR: T.simplest - 0.3, LC: T.smarter - 0.25, HC: T.also - 0.3, ADD: T.need - 0.25, TOOLS: T.aws - 0.3, END: T.ifv - 0.15 };
+
+/* ---------------- layout */
+const SRV = []; [140, 240].forEach((y) => [-200, -100, 0, 100, 200].forEach((x) => SRV.push([x, y])));
+const NEW = [[-150, 340], [-50, 340], [50, 340], [150, 340]];
+const LBP = [0, -40], SOLO = 2, DEAD = 7;
+const CROWD = []; [[-190, 5], [-255, 4]].forEach(([y, n]) => { for (let k = 0; k < n; k++) CROWD.push([(k - (n - 1) / 2) * 90 + 50, y]); });
+const CONN = [6, 4, 2, 5, 7, 5, 6, 3, 4, 6];
+
+/* ---------------- camera */
+const WIDE = { f: [0, 0, 30], s: 0.66, a: -0.42, e: 0.62, sy: 540 };
+const SHOTS = [
+  { t: 0, d: 0, ...WIDE, s: 0.7 },
+  { t: CUT.ONE, d: 0.9, f: [20, -60, 30], s: 0.86, a: -0.42, e: 0.58, sy: 540 },
+  { t: CUT.RUN, d: 1.1, ...WIDE },
+  { t: CUT.LB, d: 0.9, f: [20, -40, 30], s: 0.74, a: -0.42, e: 0.6, sy: 540 },
+  { t: CUT.SUP, d: 1.0, ...WIDE },
+  { t: CUT.RR, d: 1.0, f: [-5, 40, 30], s: 0.78, a: -0.42, e: 0.6, sy: 560 },
+  { t: CUT.LC, d: 1.0, f: [-20, 60, 30], s: 0.76, a: -0.42, e: 0.62, sy: 560 },
+  { t: CUT.HC, d: 1.0, ...WIDE, sy: 600 },
+  { t: CUT.ADD, d: 1.0, ...WIDE, f: [0, 60, 30], s: 0.62, sy: 530 },
+  { t: CUT.TOOLS, d: 1.0, ...WIDE, f: [0, 60, 30], s: 0.56, sy: 612 },
+  { t: CUT.END, d: 2.0, ...WIDE, f: [0, 60, 30], s: 0.56, sy: 612 },
+];
+const KICKS = [[T.viral, 0.03], [T.n100, 0.04], [T.didnt, 0.03], [T.struggle, 0.05], [T.copies, 0.03], [T.balancer, 0.05], [T.manager, 0.03],
+  [T.one2, 0.03], [T.two, 0.03], [T.three, 0.03], [T.one3, 0.03], [T.picks, 0.04], [T.pings, 0.03], [T.stops, 0.05], [T.add, 0.04], [T.aws, 0.03], [T.nginx, 0.03], [T.cloudflare, 0.03]];
+const SHAKES = [[T.struggle, 3, 0.3]];
+
+/* ---------------- traffic: who sends, which server gets it, when */
+const steps = (a, b, dt) => { const r = []; for (let x = a; x < b; x += dt) r.push(x); return r; };
+const alive = (t) => SRV.map((_, i) => !(i === DEAD && t > T.stops - 0.1)).concat(NEW.map(() => t > T.behind));
+let rr = 0;
+const FLOW = [];   // [t0 (leaves the crowd), crowd index, server index, kind]
+steps(0.1, CUT.ONE - 0.3, 0.14).forEach((t0, k) => FLOW.push([t0, k % CROWD.length, k % 10, 'lb']));
+steps(CUT.ONE + 0.1, T.but, 0.08).forEach((t0, k) => FLOW.push([t0, (k * 3) % CROWD.length, SOLO, 'solo']));
+steps(T.who, T.load2 - 0.1, 0.22).forEach((t0, k) => FLOW.push([t0, (k * 3 + 1) % CROWD.length, -1, 'lost']));
+steps(T.load2 + 0.1, CUT.RR, 0.16).forEach((t0, k) => FLOW.push([t0, (k * 7) % CROWD.length, k % 10, 'lb']));
+[[T.one2, 0], [T.two, 1], [T.three, 2], [T.one3, 0]].forEach(([ta, s], k) => FLOW.push([ta - 0.7, [4, 1, 6, 3][k], s, 'rr']));
+FLOW.push([T.picks - 0.4, 2, 2, 'lc']);
+steps(T.skipped - 0.4, CUT.END + 1, 0.17).forEach((t0, k) => {
+  const ok = alive(t0 + 0.8).map((a, i) => (a ? i : -1)).filter((i) => i >= 0);
+  FLOW.push([t0, (k * 3) % CROWD.length, ok[(rr++) % ok.length], 'lb']);
+});
+
+/* ---------------- build the world */
+const mkSrv = (p, i) => { const b = emberBox(p[0], p[1], 56, 46, 74, O); const f = decal(56, 74, 'front', 5, b.g); f.m.position.set(0, -23.3, 37); return { b, f, p, i }; };
+const SV = SRV.map(mkSrv), NV = NEW.map((p, k) => mkSrv(p, 10 + k));
+const ALL = SV.concat(NV);
+const poolsS = [pool(0, 190, 240, O), pool(0, 340, 200, O)];
+const lb = emberBox(LBP[0], LBP[1], 110, 50, 60, O);
+const lbF = decal(110, 60, 'front', 6, lb.g); lbF.m.position.set(0, -25.3, 30);
+const poolL = pool(LBP[0], LBP[1] - 20, 150, O);
+const PH = CROWD.map((p) => { const b = emberBox(p[0], p[1], 32, 8, 56, O); const f = decal(30, 52, 'front', 6, b.g); f.m.position.set(0, -4.3, 28); return { b, f, p }; });
+const poolU = pool(50, -220, 240, O);
+const L_IN = [LBP[0], LBP[1] - 25, 30], L_OUT = [LBP[0], LBP[1] + 25, 30];
+const sIn = (s) => [s.p[0], s.p[1] - 23, 30];
+const rOut = ALL.map((s) => road([[L_OUT[0], L_OUT[1], 0], [s.p[0], s.p[1] - 23, 0]], O));
+
+/* ---------------- canvas faces */
+const label = (g, W_, H_, txt, col, size, y = H_ / 2) => { g.fillStyle = col; g.font = `800 ${size}px Mono`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.shadowColor = col; g.shadowBlur = 12; g.fillText(txt, W_ / 2, y); g.shadowBlur = 0; g.textAlign = 'left'; };
+function srvDraw(g, W_, H_, col, i, meter) {
+  label(g, W_, H_, 'APP', col + 'aa', 40, H_ * 0.16);
+  label(g, W_, H_, String(i + 1), col, 130, H_ * 0.5);
+  if (meter > 0) for (let k = 0; k < 8; k++) { g.beginPath(); g.arc(W_ / 2 + ((k % 4) - 1.5) * 52, H_ * 0.78 + Math.floor(k / 4) * 46, 13, 0, Math.PI * 2); g.fillStyle = k < meter ? col : col + '33'; g.fill(); }
+}
+function phoneDraw(g, W_, H_, col) { g.strokeStyle = col; g.lineWidth = 6; rrect(g, 12, 12, W_ - 24, H_ - 24, 20); g.stroke(); icon(g, 'user', W_ / 2, H_ / 2, W_ * 0.62, col, 8, 8); }
+
+/* ---------------- the world, frame by frame */
+function world(t) {
+  const thru = (pts, t0, dur, col, size = 1) => { const q = (t - t0) / dur; if (q > -0.02 && q < 1.1) orb(pts, clamp(q), col, clamp(q / 0.08) * (1 - clamp((q - 1) / 0.1)), size); };
+  const live = alive(t);
+  // the load balancer: there in the hook, gone in the flashback, back on "load balancer"
+  const lbA = t < CUT.ONE ? 1 - ep(t, CUT.ONE - 0.3, CUT.ONE) : ease.back(prog(t, T.load2 - 0.1, T.load2 + 0.3));
+  const lbOn = (x) => (x < CUT.ONE - 0.3 || x > T.load2 + 0.1);
+  lb.g.visible = lbA > 0.01; lb.g.scale.set(Math.max(0.01, lbA), Math.max(0.01, lbA), Math.max(0.01, lbA));
+  const lCol = t > T.pings - 0.1 && t < T.skipped + 0.4 ? OK : O;
+  lb.setLook(lCol, 1.3 + 2.5 * pulse(t, T.balancer) + 1.5 * pulse(t, T.pings) + 1.5 * pulse(t, T.few));
+  lbF.m.visible = lb.g.visible; lbF.draw((g, W_, H_) => label(g, W_, H_, 'LOAD BAL.', lCol, 34));
+  poolL.set(lCol, 0.5 * lbA);
+  // servers: all ten in the hook; one alone in the flashback; ten again on "run"; four more on "add"
+  ALL.forEach((s) => {
+    const i = s.i, isNew = i >= 10;
+    let q;
+    if (isNew) q = ease.back(prog(t, T.add - 0.1 + (i - 10) * 0.08, T.add + 0.25 + (i - 10) * 0.08));
+    else if (i === SOLO) q = 1;
+    else q = t < CUT.ONE ? 1 - ep(t, CUT.ONE - 0.25, CUT.ONE + 0.05) : ease.back(prog(t, T.run + (i % 5) * 0.06 + Math.floor(i / 5) * 0.12, T.run + 0.3 + (i % 5) * 0.06 + Math.floor(i / 5) * 0.12));
+    q = Math.max(0, Math.min(1.2, q));
+    if (i >= 3) q *= 1 - window01(t, CUT.RR, CUT.LC + 0.2, 0.35);   // round robin is shown on a 3-server example
+    const hot = i === SOLO && t > CUT.ONE && t < T.run + 0.4;
+    const dead = i === DEAD && !live[i];
+    const rrHit = [[T.one2, 0], [T.two, 1], [T.three, 2], [T.one3, 0]].some(([ta, k]) => k === i && t > ta - 0.05 && t < ta + 0.45);
+    const pick = i === 2 && t > T.picks && t < CUT.HC;
+    let col = hot ? mixHex(O, RED, 0.6 + 0.4 * Math.sin(t * 16)) : dead ? RED : rrHit || pick ? OK : O;
+    const dim = dead ? 0.45 + 0.4 * window01(t, T.stops - 0.1, T.skipped + 0.5, 0.2) : 1;
+    s.b.g.visible = q > 0.01; s.b.g.scale.set(1, 1, Math.max(0.01, q));
+    s.b.setLook(col, 1 + 2 * (rrHit ? 1 : 0) + 2 * pulse(t, T.struggle) * (hot ? 1 : 0) + 1.5 * (pick ? pulse(t, T.picks) + 0.5 : 0), dim);
+    const meter = t > T.least - 0.2 && t < CUT.HC && i < 10 ? CONN[i] + (pick && t > T.picks + 0.4 ? 1 : 0) : 0;
+    s.f.m.visible = s.b.g.visible; s.f.m.material.opacity = dim; s.f.draw((g, W_, H_) => srvDraw(g, W_, H_, col, i, meter));
+    if (hot) sparks(t, Math.floor(t * 6) / 6, s.p[0], s.p[1] - 20, 60, RED, 8, Math.floor(t * 6), 90, 0.4);
+    rOut[i].set(lbA > 0.5 && q > 0.5 ? ep(t, isNew ? T.behind : (t < CUT.ONE ? 0 : T.load2), (isNew ? T.behind : (t < CUT.ONE ? 0 : T.load2)) + 0.4) : 0, dead ? RED : O, (dead ? 0.25 : 0.4) * (t > CUT.RR && t < CUT.HC ? 0.5 : 1), t);
+  });
+  poolsS[0].set(O, 0.12); poolsS[1].set(O, 0.12 * ep(t, T.add, T.add + 0.5));
+  // health checks: a ping to every server and a reply; the dead one never replies
+  [T.pings, T.few].forEach((t0, r) => ALL.slice(0, 10).forEach((s, i) => {
+    thru([L_OUT, sIn(s)], t0 - 0.05, 0.35, OK, 0.55);
+    if (!(i === DEAD && r === 1)) thru([sIn(s), L_OUT], t0 + 0.32, 0.35, OK, 0.45);
+  }));
+  ripple(t, T.stops, SRV[DEAD][0], SRV[DEAD][1], 2, RED, 90, 0.8);
+  // the crowd
+  PH.forEach((u, k) => {
+    const q = ease.back(prog(t, 0.05 + k * 0.03, 0.35 + k * 0.03));
+    u.b.g.visible = q > 0.01; u.b.g.scale.set(1, 1, Math.max(0.01, q)); u.b.setLook(O, 1.1 + 1.2 * pulse(t, T.n100 + k * 0.03), 1);
+    u.f.m.visible = u.b.g.visible; u.f.draw((g, W_, H_) => phoneDraw(g, W_, H_, O));
+  });
+  poolU.set(O, 0.3);
+  // requests
+  FLOW.forEach(([t0, c, si, kind], k) => {
+    const u = CROWD[c], from = [u[0], u[1] + 6, 34];
+    if (kind === 'solo') { thru([from, sIn(SV[SOLO])], t0, 0.55, RED, 0.75); return; }
+    if (kind === 'lost') { thru([from, [LBP[0] + (rnd(k, 5) - 0.5) * 60, LBP[1], 30]], t0, 0.5, O2, 0.7); sparks(t, t0 + 0.5, LBP[0], LBP[1], 30, O2, 5, 300 + k, 60, 0.35); return; }
+    if (!lbOn(t0 + 0.4) && kind === 'lb') return;
+    const col = kind === 'rr' || kind === 'lc' ? OK : O2, sz = kind === 'rr' || kind === 'lc' ? 1.2 : 0.8;
+    thru([from, L_IN], t0, 0.4, col, sz); thru([L_OUT, sIn(ALL[si])], t0 + 0.4, 0.3, col, sz);
+  });
+}
+
+/* ---------------- world tags */
+function tags(t) {
+  const users = Math.round(100000 * ease.inOut(prog(t, T.n100 - 0.2, T.people + 0.3)));
+  tag('users', `<b>${users.toLocaleString('en-US')} USERS</b> · AT ONCE`, '', [50, -220, 90], t, T.n100 - 0.25, CUT.ONE + 0.2, 34);
+  tag('fast', `<span style="color:${OK}">✓ NO SLOWDOWN</span>`, `border-color:${OK}88`, [0, 190, 120], t, T.didnt, CUT.ONE + 0.1);
+  tag('solo', `<span style="color:${RED}">1 SERVER · OVERLOADED</span>`, `border-color:${RED}88`, [SRV[SOLO][0], SRV[SOLO][1], 110], t, T.struggle - 0.1, T.run + 0.3);
+  tag('ten', '<b>10 COPIES</b> · 10 SERVERS', '', [0, 190, 120], t, T.copies, CUT.WHO + 0.3);
+  tag('who', `<span style="color:${AMB}">WHICH SERVER?</span>`, `border-color:${AMB}88`, [LBP[0], LBP[1], 60], t, T.decides, T.load2);
+  tag('lbt', '<b>LOAD BALANCER</b>', '', [LBP[0], LBP[1], 100], t, T.balancer + 0.1, CUT.SUP + 0.2);
+  tag('mgr', `<span style="color:${O2}">LOAD BALANCER = MANAGER</span>`, `border-color:${O}88`, [LBP[0], LBP[1], 100], t, T.manager - 0.05, CUT.RR + 0.2);
+  tag('chk', '<b>SERVERS</b> = CHECKOUT LINES', '', [0, 190, 120], t, T.checkout - 0.05, CUT.RR + 0.2);
+  [[T.one2, 0, '1'], [T.two, 1, '2'], [T.three, 2, '3'], [T.one3, 0, '→ BACK TO 1']].forEach(([ta, i, txt], k) =>
+    tag('rr' + k, `<span style="color:${OK}">${txt}</span>`, `border-color:${OK}88`, [SRV[i][0], SRV[i][1], 110], t, ta, k === 0 ? T.one3 - 0.05 : CUT.LC, k === 3 ? 30 : 0));
+  tag('ex', `<span style="color:${AMB}">3-SERVER EXAMPLE</span>`, `border-color:${AMB}88`, [-100, 140, 250], t, T.round, CUT.LC);
+  tag('pick', `<span style="color:${OK}">FEWEST OPEN · PICKED</span>`, `border-color:${OK}88`, [SRV[2][0], SRV[2][1], 110], t, T.picks + 0.1, CUT.HC + 0.2);
+  tag('ping', `<span style="color:${OK}">PING · EVERY FEW SECONDS</span>`, `border-color:${OK}88`, [LBP[0], LBP[1], 100], t, T.pings, CUT.ADD);
+  tag('dead', `<span style="color:${RED}">✗ NO ANSWER · SKIPPED</span>`, `border-color:${RED}88`, [SRV[DEAD][0], SRV[DEAD][1], 110], t, T.answering, CUT.ADD + 0.3);
+  tag('add', `<b>+4 SERVERS</b>`, '', [0, 340, 110], t, T.add + 0.2, CUT.TOOLS + 0.2);
+  tag('addr', `<span style="color:${OK}">SAME ADDRESS · app.com</span>`, `border-color:${OK}88`, [50, -220, 90], t, T.same - 0.1, CUT.TOOLS + 0.2, 34);
+}
+
+/* ---------------- reel config */
+const svgAWS = `<svg width="46" height="46" viewBox="0 0 100 100" fill="none" stroke="#FFC34D" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"><path d="M18 40 L32 66 L44 44 L56 66 L70 40"/><path d="M16 78 Q50 96 84 76 M76 70 L86 76 L80 86"/></svg>`;
+const svgN = `<svg width="46" height="46" viewBox="0 0 100 100"><path d="M50 6 L88 28 V72 L50 94 L12 72 V28 Z" fill="none" stroke="#7CF29A" stroke-width="7"/><path d="M36 70 V32 L64 70 V32" fill="none" stroke="#7CF29A" stroke-width="8" stroke-linejoin="round"/></svg>`;
+const svgC = `<svg width="46" height="46" viewBox="0 0 100 100"><path d="M28 74 H74 Q90 74 90 58 Q90 44 76 42 Q74 24 56 24 Q42 24 36 36 Q20 34 16 48 Q10 62 22 72 Z" fill="none" stroke="#FF6A1F" stroke-width="7" stroke-linejoin="round"/></svg>`;
+const REEL = {
+  shots: SHOTS, kicks: KICKS, shakes: SHAKES, world, tags,
+  code: [
+    [T.round - 0.3, T.smarter - 0.15, 'load balancer', 'round robin · 3-server example', [[0, 'IN TURN', AMB]],
+      [['request 1  →  server 1', T.one2 - 0.1], ['request 2  →  server 2', T.two - 0.1], ['request 3  →  server 3', T.three - 0.1], ['request 4  →  server 1', T.one3 - 0.1]],
+      [[T.one2, 1, '✓', 'good'], [T.two, 2, '✓', 'good'], [T.three, 3, '✓', 'good'], [T.one3, 4, 'repeat', 'amb']]],
+    [T.smarter - 0.1, T.also - 0.2, 'load balancer', 'least connections', [[0, 'COUNTING', AMB], [T.picks, 'PICKED 3', OK]],
+      [['server 1   6 open'], ['server 2   4 open'], ['server 3   2 open'], ['server 4   5 open'], ['…  10 servers']],
+      [[T.fewest, 3, '← fewest', 'good']]],
+    [T.also - 0.15, T.need - 0.2, 'health checks', 'every 5s', [[0, 'CHECKING', AMB], [T.stops, '1 DOWN', RED]],
+      [['server 1   200 OK'], ['server 2   200 OK', T.every], ['server 3   200 OK', T.few - 0.1], ['server 8   no answer', T.stops - 0.1]],
+      [[T.stops + 0.05, 4, '✗ skipped', 'bad']]],
+  ],
+  hl: /\b(server|request)\b/g,
+  tools: [
+    { a: T.aws - 0.1, b: CUT.END, svg: svgAWS, name: 'AWS', sub: 'ELASTIC LOAD BALANCING', top: 150 },
+    { a: T.nginx - 0.1, b: CUT.END, svg: svgN, name: 'NGINX', sub: 'UPSTREAM · ROUND ROBIN, LEAST_CONN', top: 262 },
+    { a: T.cloudflare - 0.1, b: CUT.END, svg: svgC, name: 'Cloudflare', sub: 'LOAD BALANCING · HEALTH MONITORS', top: 374 },
+  ],
+  slams: [
+    { a: T.balancer - 0.15, b: T.like2 + 0.2, text: 'load balancer', sub: 'SPREADS REQUESTS ACROSS SERVERS', size: 62 },
+  ],
+  bad: ['struggle'],
+  good: ['slow', 'down', 'address'],
+  tiles: [['⚖', 'LOAD<br>BALANCING'], ['⏱', 'RATE<br>LIMITING'], ['♥', 'HEALTH<br>CHECKS']],
+  end: CUT.END, follow: T.follow,
+  cover: { t: 'LOAD BALANCING', at: T.round, zoom: 1, dy: 40 },
+  flash: (t) => 0.08 * pulse(t, T.struggle, 7) + 0.06 * pulse(t, T.stops, 7),
+};
+</script>
+<script src="../_ember/overlay.js"></script>
+<script src="../_ember/play.js"></script>
+</body>
+</html>

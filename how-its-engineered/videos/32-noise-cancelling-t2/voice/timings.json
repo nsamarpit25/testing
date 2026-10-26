@@ -1,0 +1,74 @@
+[
+ {
+  "li": 0,
+  "pi": 0,
+  "say": "Your noise-cancelling headphones make a plane quieter by playing more sound into your ears. Not less. More.",
+  "show": "Your noise-cancelling headphones make a plane *quieter* by playing *more sound* into your ears. Not less. *More.*",
+  "start": 0.0,
+  "end": 5.96
+ },
+ {
+  "li": 1,
+  "pi": 0,
+  "say": "Sound is just air, pushing and pulling on your eardrum in waves.",
+  "show": "Sound is just air, *pushing* and *pulling* on your eardrum in *waves.*",
+  "start": 6.84,
+  "end": 9.62
+ },
+ {
+  "li": 2,
+  "pi": 0,
+  "say": "Tiny microphones on the outside of each ear cup listen to the engine roar.",
+  "show": "Tiny *microphones* on the outside of each ear cup listen to the engine [roar.]",
+  "start": 10.12,
+  "end": 13.06
+ },
+ {
+  "li": 3,
+  "pi": 0,
+  "say": "Then a chip flips that wave upside down: where the engine pushes, the headphones pull.",
+  "show": "Then a chip flips that wave *upside down:* where the engine pushes, the headphones *pull.*",
+  "start": 13.52,
+  "end": 17.32
+ },
+ {
+  "li": 4,
+  "pi": 0,
+  "say": "The speaker plays that opposite sound, even with your music off. At your ear, the two waves meet, and much of the roar cancels out.",
+  "show": "The speaker plays that *opposite sound,* even with your music off. At your ear, the two waves meet, and much of the roar *cancels out.*",
+  "start": 17.8,
+  "end": 24.02
+ },
+ {
+  "li": 4,
+  "pi": 1,
+  "say": "It works best on a low, steady rumble like an engine. Voices change too quickly for it to match.",
+  "show": "It works best on a *low, steady rumble* like an engine. [Voices] change too quickly for it to match.",
+  "start": 24.6,
+  "end": 28.66
+ },
+ {
+  "li": 5,
+  "pi": 0,
+  "say": "In 1978, engineer Amar Bose tried the airline's new headphones on a flight to Boston, but the engines drowned out his music. He was sketching the maths to fix it before the plane landed.",
+  "show": "In *1978,* engineer *Amar Bose* tried the airline's new headphones on a flight to Boston, but the engines [drowned out his music.] He was *sketching the maths* to fix it before the plane landed.",
+  "start": 28.66,
+  "end": 37.8
+ },
+ {
+  "li": 6,
+  "pi": 0,
+  "say": "So the quiet you hear isn't the absence of sound. It's two sound waves meeting at your ear, and mostly cancelling each other out.",
+  "show": "So the quiet you hear isn't the *absence* of sound. It's *two sound waves* meeting at your ear, and mostly *cancelling* each other out.",
+  "start": 38.48,
+  "end": 44.58
+ },
+ {
+  "li": 6,
+  "pi": 1,
+  "say": "Follow for how everyday tech really works.",
+  "show": "*Follow* for how everyday tech really works.",
+  "start": 45.14,
+  "end": 46.82
+ }
+]

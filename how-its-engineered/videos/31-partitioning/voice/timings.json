@@ -1,0 +1,74 @@
+[
+ {
+  "li": 0,
+  "pi": 0,
+  "say": "Your orders table was fast on day one. Three years later it holds a billion rows, and even asking for last week's orders gets slow.",
+  "show": "Your orders table was *fast* on day one. Three years later it holds a *billion rows,* and even asking for last week's orders gets [slow.]",
+  "start": 0.0,
+  "end": 5.62
+ },
+ {
+  "li": 1,
+  "pi": 0,
+  "say": "Partitioning splits that one giant table into smaller tables, called partitions, inside the same database. Your app still sees one table.",
+  "show": "Partitioning *splits* that one giant table into smaller tables, called [partitions,] inside the same database. Your app still sees *one table.*",
+  "start": 6.22,
+  "end": 12.38
+ },
+ {
+  "li": 2,
+  "pi": 0,
+  "say": "A partition key decides where each row goes. Usually it's a date, so each month of orders gets its own partition.",
+  "show": "A [partition key] decides where each row goes. Usually it's a *date,* so each *month* of orders gets its own partition.",
+  "start": 12.9,
+  "end": 17.48
+ },
+ {
+  "li": 3,
+  "pi": 0,
+  "say": "Now when you ask for last week's orders, the database knows which months can hold them, and skips all the others. Much less data to read.",
+  "show": "Now when you ask for last week's orders, the database knows which months can hold them, and [skips all the others.] Much *less data* to read.",
+  "start": 18.08,
+  "end": 23.0
+ },
+ {
+  "li": 4,
+  "pi": 0,
+  "say": "Like a filing cabinet with one folder per month. To find a March receipt, you open the March folder, not the whole cabinet.",
+  "show": "Like a filing cabinet with *one folder per month.* To find a March receipt, you open the [March folder,] not the whole cabinet.",
+  "start": 23.56,
+  "end": 28.4
+ },
+ {
+  "li": 5,
+  "pi": 0,
+  "say": "Old data gets easy too. Instead of deleting millions of rows one by one, you remove the oldest partition in one step.",
+  "show": "Old data gets *easy* too. Instead of deleting *millions of rows* one by one, you [remove the oldest partition] in one step.",
+  "start": 28.4,
+  "end": 33.78
+ },
+ {
+  "li": 6,
+  "pi": 0,
+  "say": "But a query that doesn't use the date has to check every partition. So pick the key you search by most, and don't make thousands of tiny ones.",
+  "show": "But a query that doesn't use the date has to check [every partition.] So pick the key you *search by most,* and don't make *thousands* of tiny ones.",
+  "start": 34.24,
+  "end": 39.46
+ },
+ {
+  "li": 7,
+  "pi": 0,
+  "say": "And it's not sharding. Partitions split a table inside one database. Shards split the data across many database servers.",
+  "show": "And it's not *sharding.* Partitions split a table inside [one database.] Shards split the data across *many database servers.*",
+  "start": 40.06,
+  "end": 45.08
+ },
+ {
+  "li": 8,
+  "pi": 0,
+  "say": "If you're a vibe coder, follow for the system design your AI skipped.",
+  "show": "If you're a vibe coder, follow for the system design your AI [skipped.]",
+  "start": 45.56,
+  "end": 47.86
+ }
+]

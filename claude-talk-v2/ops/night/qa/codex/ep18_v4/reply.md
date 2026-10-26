@@ -1,0 +1,5 @@
+- **Minor — 17.6–21.0s, 34.3–37.2s, 43.6–45.6s:** Cleo repeats similar raised-hand gestures, so her escalating panic feels visually flat. Optional fix: give the fourteen-page reveal a distinct frozen, wide-eyed reaction.
+
+No must-fix issues visible in the sampled frames. Captions appear consistent with the dialogue; screen inserts support the story without obstructing captions. The opening establishes curiosity, the final text reinforces the punchline, and the intended fade works. Audio sync and sub-half-second glitches cannot be verified from these sheets.
+
+VERDICT: PASS

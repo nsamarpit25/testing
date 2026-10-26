@@ -1,0 +1,53 @@
+{
+  "topic": "Saga pattern",
+  "lines": [
+    [
+      {
+        "say": "You charged for a flight and a hotel. Then the car booking fails. Who gives the money back?",
+        "show": "You charged for a flight and a hotel. Then the car booking [fails.] Who gives the *money* back?"
+      }
+    ],
+    [
+      {
+        "say": "Each booking lives in a separate program with its own records. There's no shared undo button.",
+        "show": "Each booking lives in a *separate program* with its own records. There's no shared [undo button.]"
+      }
+    ],
+    [
+      {
+        "say": "A saga runs the steps one by one, and gives every step a cleanup plan in case something fails.",
+        "show": "A *saga* runs the steps one by one, and gives every step a *cleanup plan* in case something fails."
+      }
+    ],
+    [
+      {
+        "say": "It logs each success: flight, hotel. Then the car fails.",
+        "show": "It logs each *success:* flight, hotel. Then the car [fails.]"
+      }
+    ],
+    [
+      {
+        "say": "So the saga cleans up backwards: cancel the hotel, then the flight, and send the refunds.",
+        "show": "So the saga cleans up *backwards:* cancel the hotel, then the flight, and send the *refunds.*"
+      }
+    ],
+    [
+      {
+        "say": "Like a travel agent undoing your trip in reverse.",
+        "show": "Like a *travel agent* undoing your trip *in reverse.*"
+      }
+    ],
+    [
+      {
+        "say": "These cleanup steps are called compensating actions, and you write them yourself. AWS Step Functions can run the whole saga.",
+        "show": "These cleanup steps are called *compensating actions,* and you write them yourself. *AWS Step Functions* can run the whole saga."
+      }
+    ],
+    [
+      {
+        "say": "If AI writes your code, follow for the system design it leaves out.",
+        "show": "If AI writes your code, *follow* for the system design it leaves out."
+      }
+    ]
+  ]
+}

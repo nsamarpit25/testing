@@ -1,0 +1,82 @@
+[
+ {
+  "li": 0,
+  "pi": 0,
+  "say": "Your iPhone recognises you in total darkness. So what is it looking at? And could a fake face fool it?",
+  "show": "Your iPhone recognises you in *total darkness.* So what is it looking at? And could [a fake face fool it?]",
+  "start": 0.0,
+  "end": 5.72
+ },
+ {
+  "li": 1,
+  "pi": 0,
+  "say": "Next to the selfie camera sit three tiny parts: a light, a dot projector and a special camera.",
+  "show": "Next to the selfie camera sit *three tiny parts:* a light, a dot projector and a [special camera.]",
+  "start": 6.38,
+  "end": 11.22
+ },
+ {
+  "li": 2,
+  "pi": 0,
+  "say": "First, the light washes your face in infrared light. Your eyes can't see it, but that camera can.",
+  "show": "First, the light washes your face in *infrared light.* Your eyes can't see it, but [that camera can.]",
+  "start": 11.96,
+  "end": 16.4
+ },
+ {
+  "li": 3,
+  "pi": 0,
+  "say": "Then the projector fires more than thirty thousand invisible dots at your face.",
+  "show": "Then the projector fires more than [30,000 invisible dots] at your face.",
+  "start": 17.16,
+  "end": 20.5
+ },
+ {
+  "li": 4,
+  "pi": 0,
+  "say": "The camera sits beside the projector, so it sees the dots from a different angle. That angle tells your phone how far away your nose and cheeks are.",
+  "show": "The camera sits *beside* the projector, so it sees the dots from a different angle. That angle tells your phone [how far away] your nose and cheeks are.",
+  "start": 21.2,
+  "end": 27.48
+ },
+ {
+  "li": 5,
+  "pi": 0,
+  "say": "It turns that into a 3D map, adds the infrared picture, and checks them against your saved face data.",
+  "show": "It turns that into a *3D map,* adds the infrared picture, and checks them against [your saved face data.]",
+  "start": 27.48,
+  "end": 32.2
+ },
+ {
+  "li": 6,
+  "pi": 0,
+  "say": "That's why a photo of you won't unlock it. A photo is flat.",
+  "show": "That's why a *photo* of you won't unlock it. [A photo is flat.]",
+  "start": 32.72,
+  "end": 35.2
+ },
+ {
+  "li": 7,
+  "pi": 0,
+  "say": "But a week after the iPhone X went on sale in twenty-seventeen, a Vietnamese security firm claimed a hundred-and-fifty-dollar 3D mask fooled it. Experts said key test details were missing.",
+  "show": "But a week after the iPhone X went on sale in 2017, a Vietnamese security firm claimed a *$150 3D mask* fooled it. Experts said [key test details were missing.]",
+  "start": 35.86,
+  "end": 44.32
+ },
+ {
+  "li": 8,
+  "pi": 0,
+  "say": "So the dark was never the problem. Your phone brings its own invisible light. The hard part is telling your face from a copy.",
+  "show": "So the dark was *never the problem.* Your phone brings its own invisible light. The hard part is telling [your face from a copy.]",
+  "start": 44.96,
+  "end": 50.64
+ },
+ {
+  "li": 8,
+  "pi": 1,
+  "say": "Follow for how everyday tech really works.",
+  "show": "Follow for how [everyday tech] really works.",
+  "start": 51.2,
+  "end": 52.84
+ }
+]

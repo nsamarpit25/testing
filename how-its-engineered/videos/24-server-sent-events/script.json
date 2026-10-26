@@ -1,0 +1,57 @@
+{
+ "topic": "Server-sent events",
+ "lines": [
+  [
+   {
+    "say": "You asked an AI chatbot a question, and the answer appeared word by word, like someone typing live.",
+    "show": "You asked an AI chatbot a question, and the answer appeared *word by word,* like someone typing live."
+   },
+   {
+    "say": "How does the server keep sending?",
+    "show": "How does the server [keep sending?]"
+   }
+  ],
+  [
+   {
+    "say": "If the server waited to send the whole answer at once, you'd stare at a blank screen for seconds.",
+    "show": "If the server waited to send the *whole answer* at once, you'd stare at a [blank screen] for seconds."
+   }
+  ],
+  [
+   {
+    "say": "With server-sent events, your app asks once, and the server keeps that reply open.",
+    "show": "With [server-sent events,] your app asks *once,* and the server keeps that reply open."
+   }
+  ],
+  [
+   {
+    "say": "Every time it has a few new words, it sends them right away in a small message called an event. Your app adds them to the screen.",
+    "show": "Every time it has a few new words, it sends them *right away* in a small message called an [event.] Your app adds them to the screen."
+   }
+  ],
+  [
+   {
+    "say": "It only flows one way, from the server to you. To send something back, your app makes a new request.",
+    "show": "It only flows *one way,* from the server to you. To send something back, your app makes a [new request.]"
+   }
+  ],
+  [
+   {
+    "say": "Like a news ticker. You tune in once, and the headlines keep rolling in.",
+    "show": "Like a *news ticker.* You tune in once, and the headlines [keep rolling in.]"
+   }
+  ],
+  [
+   {
+    "say": "OpenAI's API streams answers this way, and browsers support it built in.",
+    "show": "*OpenAI's API* streams answers this way, and *browsers* support it built in."
+   }
+  ],
+  [
+   {
+    "say": "If you're a vibe coder, follow for the system design your AI skipped.",
+    "show": "If you're a vibe coder, follow for the system design your AI [skipped.]"
+   }
+  ]
+ ]
+}

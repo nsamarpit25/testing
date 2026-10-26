@@ -1,0 +1,66 @@
+[
+ {
+  "li": 0,
+  "pi": 0,
+  "say": "In twenty-oh-two, Shazam launched in Britain, and there was no app. You dialled two five eight oh, held your phone to the speaker, and got the song name back by text.",
+  "show": "In 2002, Shazam launched in Britain, and there was *no app.* You dialled *2580,* held your phone to the speaker, and got the song name [back by text.]",
+  "start": 0.0,
+  "end": 8.42
+ },
+ {
+  "li": 1,
+  "pi": 0,
+  "say": "Today, you catch a tiny clip of a song in a noisy caf\u00e9, and Shazam names it in seconds. How?",
+  "show": "Today, you catch a tiny clip of a song in a *noisy caf\u00e9,* and Shazam names it in seconds. [How?]",
+  "start": 9.0,
+  "end": 14.0
+ },
+ {
+  "li": 2,
+  "pi": 0,
+  "say": "First, it turns the sound into a map: low notes at the bottom, high notes at the top, time going across.",
+  "show": "First, it turns the sound into a *map:* low notes at the bottom, high notes at the top, [time going across.]",
+  "start": 14.6,
+  "end": 19.24
+ },
+ {
+  "li": 3,
+  "pi": 0,
+  "say": "Louder sounds glow brighter, and Shazam keeps only the brightest point in each patch. They look like stars in a night sky.",
+  "show": "Louder sounds glow *brighter,* and Shazam keeps only the brightest point in each patch. They look like [stars in a night sky.]",
+  "start": 19.82,
+  "end": 25.6
+ },
+ {
+  "li": 4,
+  "pi": 0,
+  "say": "The caf\u00e9 noise adds a few extra stars and hides others, but enough of the pattern survives.",
+  "show": "The caf\u00e9 noise adds a few extra stars and hides others, but [enough of the pattern survives.]",
+  "start": 26.14,
+  "end": 30.38
+ },
+ {
+  "li": 5,
+  "pi": 0,
+  "say": "It draws lines between pairs of stars, turning their pitches and timing into tiny codes. Together, those codes are the recording's fingerprint.",
+  "show": "It draws *lines between pairs of stars,* turning their pitches and timing into tiny codes. Together, those codes are the [recording's fingerprint.]",
+  "start": 30.88,
+  "end": 37.22
+ },
+ {
+  "li": 6,
+  "pi": 0,
+  "say": "Shazam has fingerprints for millions of songs, and looks for the one whose stars line up with yours.",
+  "show": "Shazam has fingerprints for *millions of songs,* and looks for the one whose stars [line up with yours.]",
+  "start": 37.88,
+  "end": 41.78
+ },
+ {
+  "li": 7,
+  "pi": 0,
+  "say": "So Shazam isn't recognising the tune. It's recognising one exact recording. That's why humming it won't work.",
+  "show": "So Shazam isn't recognising the tune. It's recognising *one exact recording.* [That's why humming it won't work.]",
+  "start": 42.36,
+  "end": 47.64
+ }
+]

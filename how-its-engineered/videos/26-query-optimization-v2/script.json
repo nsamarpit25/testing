@@ -1,0 +1,53 @@
+{
+ "topic": "Query optimization",
+ "lines": [
+  [
+   {
+    "say": "Your orders page takes nine seconds to load. To show you ten orders, your app asks the database for a million.",
+    "show": "Your orders page takes *nine seconds* to load. To show you *ten orders,* your app asks the database for [a million.]"
+   }
+  ],
+  [
+   {
+    "say": "Your database keeps orders like a giant spreadsheet: one row per order, from every user, and a column for each detail. Your app's request says: send me all of it.",
+    "show": "Your database keeps orders like a giant *spreadsheet:* one row per order, from *every user,* and a column for each detail. Your app's request says: [send me all of it.]"
+   }
+  ],
+  [
+   {
+    "say": "A million rows, with every column, travel to your app. Your code keeps your ten newest, and throws the rest away.",
+    "show": "*A million rows,* with every column, travel to your app. Your code keeps your *ten newest,* and [throws the rest away.]"
+   }
+  ],
+  [
+   {
+    "say": "That request is called a query. A better one asks for exactly what the page shows: your ten newest orders, with just the details on screen.",
+    "show": "That request is called a *query.* A better one asks for exactly what the page shows: [your ten newest orders,] with just the details on screen."
+   }
+  ],
+  [
+   {
+    "say": "Like a shopping list: you ask for milk and eggs, not the whole shop delivered to your door.",
+    "show": "Like a *shopping list:* you ask for milk and eggs, not [the whole shop] delivered to your door."
+   }
+  ],
+  [
+   {
+    "say": "That's one part of query optimization: ten rows come back instead of a million, so there's far less to send and process.",
+    "show": "That's one part of [query optimization:] *ten rows* come back instead of a million, so there's far less to send and *process.*"
+   }
+  ],
+  [
+   {
+    "say": "To see how the database finds those rows, put EXPLAIN in front of the query. If it reads the whole table just to find a few rows, an index can help.",
+    "show": "To see how the database finds those rows, put [EXPLAIN] in front of the query. If it reads the *whole table* just to find a few rows, an *index* can help."
+   }
+  ],
+  [
+   {
+    "say": "If you're a vibe coder, follow for the system design your AI skipped.",
+    "show": "If you're a vibe coder, follow for the system design your AI [skipped.]"
+   }
+  ]
+ ]
+}

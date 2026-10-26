@@ -1,0 +1,190 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- 07 CI/CD (v2), in the ember style. World: YOUR LAPTOP on the left, USERS on the right and a conveyor between them.
+     Each code change is a small glowing card that rides the conveyor. Hook: a one-letter change slides straight to the
+     users and the app goes down (nothing in between). From "CI/CD" three stations rise on the conveyor: BUILD, TEST,
+     RELEASE. One change fails the build and stops; one fails the login test and stops; a good one passes both, waits at
+     release for an approval and reaches the users. Last: the typo again, caught at TEST, users never see it.
+     Beats come from voice/words.json via at(). -->
+<link rel="stylesheet" href="../_ember/fonts.css">
+<link rel="stylesheet" href="../_ember/reel.css">
+</head>
+<body>
+<div id="stage">
+  <div id="world">
+    <canvas id="cv" width="1080" height="1920"></canvas>
+    <div class="layer" id="lbls"></div>
+  </div>
+</div>
+<script src="../../tools/lib.js"></script>
+<script src="voice/words.js"></script>
+<script src="../_ember/three.js"></script>
+<script src="../_ember/world.js"></script>
+<script src="../_ember/base.js"></script>
+<script>
+/* ---------------- beats */
+const T = {
+  letter: at('letter'), two: at('two'), down: at('down'), change: at('change'), straight: at('straight'), nothing: at('nothing'), mistake: at('mistake'),
+  ci: at('ci'), automates: at('automates'), releasing: at('releasing'),
+  first: at('first'), builds: at('builds'), run: at('run'), fails1: at('fails'), stops1: at('stops'),
+  then: at('then'), tests: at('tests'), login: at('login'), fails2: at('fails', 2), stops2: at('stops', 2),
+  everything: at('everything'), update: at('update'), ready: at('ready'), automatically: at('automatically'), approves: at('approves'),
+  so: at('so'), typo: at('typo'), catches: at('catches'), never: at('never'), ifv: at('if', 2), follow: at('follow'),
+};
+const CUT = { NOTH: T.change - 0.3, PIPE: T.ci - 0.3, BUILD: T.first - 0.3, TEST: T.then - 0.3, SHIP: T.everything - 0.3, TYPO: T.so - 0.2, END: T.ifv - 0.15 };
+
+/* ---------------- layout */
+const LAP = [-215, 20], USR = [232, 30], ST = { build: [-85, 45], test: [25, 45], release: [135, 45] };
+const BELT_Y = -18, BELT_Z = 4, X0 = LAP[0] + 45, X1 = USR[0] - 48;
+const P_BELT = [[X0, BELT_Y, BELT_Z], [X1, BELT_Y, BELT_Z]];
+const SX = { build: ST.build[0], test: ST.test[0], release: ST.release[0] };
+// changes riding the belt: keyframes [time, x]; stop = where it is held, bad = it fails there
+const CH = [
+  { k: [[0.35, X0], [2.0, X1]], label: 'fix', col: AMB, bad: 'users', until: CUT.PIPE },
+  { k: [[T.first - 0.2, X0], [T.builds + 0.2, SX.build]], label: 'change', col: AMB, bad: 'build', at: T.fails1, until: CUT.TEST + 0.2 },
+  { k: [[T.then - 0.3, X0], [T.then + 0.4, SX.build], [T.then + 0.75, SX.build], [T.login - 0.1, SX.test]], label: 'change', col: AMB, bad: 'test', at: T.fails2, until: CUT.SHIP + 0.2 },
+  { k: [[T.everything - 0.7, X0], [T.everything - 0.2, SX.build], [T.everything + 0.25, SX.test], [T.update, SX.release], [T.approves + 0.1, SX.release], [T.approves + 0.8, X1]], label: 'change', col: OK, until: CUT.TYPO + 0.3 },
+  { k: [[T.so - 0.25, X0], [T.so + 0.3, SX.build], [T.so + 0.5, SX.build], [T.catches - 0.05, SX.test]], label: 'fix', col: AMB, bad: 'test', at: T.catches, until: CUT.END + 3 },
+];
+function xAt(c, t) {
+  const k = c.k; if (t <= k[0][0]) return k[0][1];
+  for (let i = 0; i < k.length - 1; i++) if (t <= k[i + 1][0]) return lerp(k[i][1], k[i + 1][1], ease.inOut(prog(t, k[i][0], k[i + 1][0])));
+  return k[k.length - 1][1];
+}
+const passT = (c, x) => { const k = c.k; for (let i = 0; i < k.length - 1; i++) if ((k[i][1] - x) * (k[i + 1][1] - x) <= 0 && k[i][1] !== k[i + 1][1]) return lerp(k[i][0], k[i + 1][0], (x - k[i][1]) / (k[i + 1][1] - k[i][1])); return null; };
+const ARRIVE0 = CH[0].k[1][0], DOWN = Math.min(ARRIVE0 + 1.0, T.down - 0.05), SHIPPED = CH[3].k[5][0];
+const STATIONS_UP = (n) => T.ci + 0.05 + n * 0.35;
+
+/* ---------------- camera */
+const SHOTS = [
+  { t: 0, d: 0, f: [5, 10, 50], s: 0.92, a: -0.4, e: 0.58, sy: 500 },
+  { t: CUT.PIPE, d: 1.0, f: [10, 15, 50], s: 0.9, a: -0.42, e: 0.58, sy: 500 },
+  { t: CUT.BUILD, d: 1.0, f: [0, 15, 50], s: 0.92, a: -0.42, e: 0.6, sy: 500 },
+  { t: CUT.TEST, d: 1.0, f: [5, 15, 50], s: 0.92, a: -0.42, e: 0.6, sy: 500 },
+  { t: CUT.SHIP, d: 1.0, f: [10, 15, 50], s: 0.9, a: -0.42, e: 0.6, sy: 500 },
+  { t: CUT.TYPO, d: 1.0, f: [10, 15, 50], s: 0.9, a: -0.42, e: 0.6, sy: 500 },
+  { t: CUT.END, d: 2.0, f: [5, 10, 50], s: 0.84, a: -0.42, e: 0.6, sy: 580 },
+];
+const KICKS = [[T.letter, 0.03], [DOWN, 0.06], [T.nothing, 0.03], [T.ci, 0.05], [T.fails1, 0.05], [T.fails2, 0.05], [T.approves, 0.04], [SHIPPED, 0.04], [T.catches, 0.05], [T.never, 0.03]];
+const SHAKES = [[DOWN, 2, 0.3]];
+
+/* ---------------- build the world */
+const label = (g, W_, H_, txt, col, size, y = H_ / 2) => { g.fillStyle = col; g.font = `800 ${size}px Mono`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.shadowColor = col; g.shadowBlur = 12; g.fillText(txt, W_ / 2, y); g.shadowBlur = 0; g.textAlign = 'left'; };
+const mk = (p, w, d, h, col, k = 5) => { const b = emberBox(p[0], p[1], w, d, h, col); const f = decal(w, h, 'front', k, b.g); f.m.position.set(0, -d / 2 - 0.3, h / 2); return { b, f, pl: pool(p[0], p[1], w * 1.3, col), p }; };
+const lap = mk(LAP, 90, 30, 120, O, 5), usr = mk(USR, 90, 40, 140, O, 5);
+const st = Object.fromEntries(Object.keys(ST).map((n) => [n, mk(ST[n], 84, 46, 120, AMB, 4)]));
+const cards = CH.map((c) => { const b = emberBox(0, BELT_Y, 34, 22, 26, c.col, { z: BELT_Z }); const f = decal(34, 26, 'front', 8, b.g); f.m.position.set(0, -11.3, 13); return { b, f }; });
+const belt = road(P_BELT, O2);
+
+function lapDraw(g, W_, H_, col, line, lineCol) {
+  g.strokeStyle = col + 'aa'; g.lineWidth = 6; rrect(g, 16, 16, W_ - 32, H_ - 32, 20); g.stroke();
+  label(g, W_, H_, 'YOUR CODE', col, 44, 70);
+  ['const menu = …', 'function pay() …', line].forEach((s, i) => label(g, W_, H_, s, i === 2 ? lineCol : GR, 30, 170 + i * 80));
+}
+function usrDraw(g, W_, H_, col, st_, stCol) {
+  label(g, W_, H_, 'USERS', col, 48, 64);
+  for (let k = 0; k < 3; k++) { const x = W_ * (0.25 + k * 0.25); g.strokeStyle = col + '99'; g.lineWidth = 5; g.beginPath(); g.arc(x, 210, 34, 0, Math.PI * 2); g.stroke(); g.beginPath(); g.arc(x, 330, 56, Math.PI, 0); g.stroke(); }
+  label(g, W_, H_, st_, stCol, 46, H_ - 110);
+}
+function stDraw(g, W_, H_, col, name, sub, subCol) {
+  label(g, W_, H_, name, col, 52, H_ * 0.18);
+  g.strokeStyle = col + '77'; g.lineWidth = 5; rrect(g, 40, H_ * 0.32, W_ - 80, H_ * 0.32, 16); g.stroke();
+  if (sub) label(g, W_, H_, sub, subCol || col, 40, H_ * 0.48);
+}
+
+/* ---------------- the world, frame by frame */
+function world(t) {
+  const q0 = ease.back(prog(t, 0.05, 0.4));
+  // the change cards
+  CH.forEach((c, i) => {
+    const on = t >= c.k[0][0] - 0.1 && t < c.until;
+    const fade = 1 - prog(t, c.until - 0.35, c.until);
+    const failed = c.at && t >= c.at;
+    const col = failed ? RED : c.col === OK && t < SHIPPED - 0.7 ? mixHex(AMB, OK, 0.5) : c.col;
+    const cd = cards[i]; cd.b.g.visible = on && fade > 0.01;
+    if (!cd.b.g.visible) return;
+    const x = xAt(c, t), pop = ease.back(prog(t, c.k[0][0] - 0.1, c.k[0][0] + 0.25));
+    cd.b.g.position.set(x, BELT_Y, BELT_Z + (failed ? 3 * Math.sin(t * 30) * pulse(t, c.at, 4) : 0));
+    cd.b.g.scale.setScalar(Math.max(0.01, pop * fade));
+    cd.b.setLook(col, 1.8 + 2.5 * (c.at ? pulse(t, c.at) : 0), 1);
+    cd.f.draw((g, W_, H_) => label(g, W_, H_, failed ? '✕' : c.label, col, 46, H_ / 2));
+  });
+  // the stations rise at "CI/CD"
+  Object.keys(ST).forEach((n, i) => {
+    const s = st[n], qs = ease.back(prog(t, STATIONS_UP(i), STATIONS_UP(i) + 0.45));
+    const holder = CH.find((c) => c.bad === n && t >= c.k[c.k.length - 1][0] - 0.3 && t < c.until);
+    const passed = CH.map((c) => passT(c, SX[n])).filter((p) => p != null && t >= p && t < p + 0.9 && !(CH.find((c) => c.bad === n && passT(c, SX[n]) === p)));
+    let sub = '', subCol = GR, col = AMB;
+    const NAME = { build: 'BUILD', test: 'TEST', release: 'RELEASE' }[n];
+    if (holder) { const f = t >= holder.at; sub = f ? '✕ FAILED' : n === 'build' ? 'building…' : 'login test…'; subCol = f ? RED : AMB; col = f ? RED : AMB; }
+    else if (n === 'release' && t > T.update - 0.1 && t < SHIPPED) { sub = t > T.approves ? '✓ approved' : t > T.automatically - 0.1 ? 'approve?' : 'ready'; subCol = t > T.approves ? OK : AMB; col = t > T.approves ? OK : AMB; }
+    else if (passed.length) { sub = n === 'release' ? '✓ released' : n === 'build' ? '✓ built' : '✓ passed'; subCol = OK; col = mixHex(AMB, OK, 0.6); }
+    else sub = n === 'build' ? 'code → app' : n === 'test' ? 'checks' : 'to users';
+    s.b.g.visible = qs > 0.01; s.b.g.scale.set(1, 1, Math.max(0.01, qs));
+    s.b.setLook(col, 1.3 + 2.3 * Math.max(pulse(t, STATIONS_UP(i)), ...CH.filter((c) => c.bad === n).map((c) => pulse(t, c.at))), 1);
+    s.f.m.visible = s.b.g.visible; s.f.draw((g, W_, H_) => stDraw(g, W_, H_, col, NAME, sub, subCol)); s.pl.set(col, 0.45 * qs);
+  });
+  // your code
+  const typoLine = t < CUT.NOTH ? (t < 0.35 ? 'title = …' : 'titel → title') : t > CUT.TYPO ? 'titel → title' : 'edit…';
+  lap.b.g.visible = q0 > 0.01; lap.b.g.scale.set(1, 1, Math.max(0.01, q0)); lap.b.setLook(O, 1.2 + 2 * Math.max(...CH.map((c) => pulse(t, c.k[0][0]))), 1);
+  lap.f.m.visible = lap.b.g.visible; lap.f.draw((g, W_, H_) => lapDraw(g, W_, H_, O, typoLine, AMB)); lap.pl.set(O, 0.5 * q0);
+  // users
+  const down = t > DOWN && t < CUT.PIPE + 0.4, upd = t > SHIPPED;
+  const uCol = down ? mixHex(O, RED, 0.6 + 0.3 * Math.sin(t * 9)) : upd ? mixHex(O, OK, 0.45) : O;
+  const uSt = down ? '✕ APP DOWN' : t > ARRIVE0 && t < DOWN ? '…' : upd ? (t > CUT.TYPO ? '✓ app fine' : '✓ updated') : 'app ok';
+  usr.b.g.visible = q0 > 0.01; usr.b.g.scale.set(1, 1, Math.max(0.01, q0)); usr.b.setLook(uCol, 1.2 + 2.5 * Math.max(pulse(t, DOWN), pulse(t, SHIPPED)), 1);
+  usr.f.m.visible = usr.b.g.visible; usr.f.draw((g, W_, H_) => usrDraw(g, W_, H_, uCol, uSt, down ? RED : upd ? OK : GR)); usr.pl.set(uCol, 0.5 * q0);
+  // the belt
+  belt.set(1, down ? RED : t < CUT.PIPE ? AMB : O2, 0.75 * q0, t);
+  ripple(t, DOWN, USR[0], USR[1], 2, RED, 110, 0.7); sparks(t, DOWN, USR[0], USR[1], 90, RED, 14, 2, 120, 0.6);
+  CH.filter((c) => c.at).forEach((c, i) => { const s = ST[c.bad]; ripple(t, c.at, s[0], s[1], 2, RED, 80, 0.6); sparks(t, c.at, s[0], BELT_Y, 30, RED, 10, 5 + i, 100, 0.5); });
+  ripple(t, SHIPPED, USR[0], USR[1], 2, OK, 100, 0.7);
+}
+
+/* ---------------- world tags */
+function tags(t) {
+  const L_T = [LAP[0] + 65, LAP[1], 160], U_T = [USR[0] - 85, USR[1], 180], M_T = [10, BELT_Y, 60];
+  const S_T = (n) => [ST[n][0], ST[n][1], 160];
+  const big = (c) => `font-size:15px;padding:9px 13px;letter-spacing:1px;border-color:${c}`;
+  tag('one', `<span style="color:${AMB}">ONE LETTER CHANGED</span>`, big(AMB), L_T, t, T.letter - 0.2, T.two);
+  tag('two', `<span style="color:${RED}">+2 MIN · WHOLE APP DOWN</span>`, big(RED), U_T, t, DOWN, CUT.NOTH + 0.2);
+  tag('noth', `<span style="color:${AMB}">NOTHING IN BETWEEN</span>`, big(AMB), M_T, t, T.nothing - 0.15, CUT.PIPE + 0.2);
+  tag('b', `<span style="color:${RED}">DOESN'T BUILD? STOPS</span>`, big(RED), S_T('build'), t, T.fails1 - 0.05, CUT.TEST + 0.2);
+  tag('t', `<span style="color:${RED}">LOGIN TEST FAILS? STOPS</span>`, big(RED), S_T('test'), t, T.fails2 - 0.05, CUT.SHIP + 0.2);
+  tag('r', `<span style="color:${OK}">AUTO, OR SOMEONE APPROVES</span>`, big(OK), S_T('release'), t, T.automatically - 0.1, SHIPPED + 0.3);
+  tag('c', `<span style="color:${RED}">TYPO CAUGHT HERE</span>`, big(RED), S_T('test'), t, T.catches, T.never - 0.1);
+  tag('n', `<span style="color:${OK}">USERS NEVER SEE IT</span>`, big(OK), U_T, t, T.never - 0.1, CUT.END + 0.3);
+}
+
+/* ---------------- reel config */
+const REEL = {
+  shots: SHOTS, kicks: KICKS, shakes: SHAKES, world, tags,
+  code: [
+    [0.25, CUT.PIPE - 0.1, 'menu.js', 'your change', [[0, 'LIVE', AMB], [DOWN, 'DOWN', RED]],
+      [["- const titel = 'Menu'"], ["+ const title = 'Menu'", 0.5], ['// other code still uses titel', T.two - 0.3]],
+      [[0.6, 2, '1 letter', 'amb'], [ARRIVE0, 2, '→ users', 'amb'], [DOWN, 3, '✕ crash', 'bad']], 'type'],
+    [T.first - 0.3, CUT.END - 0.1, 'ci.yml', 'on every change', [[0, 'RUNNING', AMB], [T.fails1, 'STOPPED', RED], [T.then, 'RUNNING', AMB], [T.fails2, 'STOPPED', RED], [T.everything, 'RUNNING', AMB], [SHIPPED, 'RELEASED', OK], [T.catches, 'STOPPED', RED]],
+      [['build: npm run build'], ['test: npm test', T.then - 0.2], ['release: auto or approve', T.everything - 0.2]],
+      [[T.fails1, 1, '✕ failed', 'bad'], [CH[2].k[1][0], 1, '✓ built', 'good'], [T.fails2, 2, '✕ login test', 'bad'],
+       [CH[3].k[1][0], 1, '✓ built', 'good'], [CH[3].k[2][0], 2, '✓ passed', 'good'], [T.approves, 3, '✓ approved', 'good'],
+       [CH[4].k[1][0], 1, '✓ built', 'good'], [T.catches, 2, '✕ caught', 'bad']]],
+  ],
+  hl: /\b(const|build|test|release|npm|run|auto|approve)\b/g,
+  tools: [],
+  slams: [
+    { a: T.ci - 0.1, b: T.first - 0.35, text: 'CI/CD', sub: 'AUTOMATIC STEPS BETWEEN YOUR CODE AND USERS', size: 80 },
+  ],
+  bad: ['down', 'nothing'],
+  good: ['ci', 'cd', 'release', 'never'],
+  tiles: [['⚙', 'CI/CD'], ['▣', 'DOCKER'], ['◔', 'CANARY<br>RELEASES']],
+  end: CUT.END, follow: T.follow,
+  cover: { t: 'CI/CD', at: DOWN + 0.6, zoom: 0.95, dy: 40 },
+  flash: (t) => 0.08 * pulse(t, DOWN, 7) + 0.05 * pulse(t, T.catches, 7),
+};
+</script>
+<script src="../_ember/overlay.js"></script>
+<script src="../_ember/play.js"></script>
+</body>
+</html>

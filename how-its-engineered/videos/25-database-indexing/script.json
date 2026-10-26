@@ -1,0 +1,51 @@
+{
+ "topic": "Database indexing",
+ "lines": [
+  [
+   {
+    "say": "Your app found one user out of a hundred million in the blink of an eye. It skipped almost all the others.",
+    "show": "Your app found *one user* out of *100 million* in the blink of an eye. It skipped almost all the others."
+   },
+   {
+    "say": "How?",
+    "show": "[How?]"
+   }
+  ],
+  [
+   {
+    "say": "Your users live in a table, one row each. Without help, the database may check every row until it finds yours. With millions of rows, that's slow.",
+    "show": "Your users live in a table, *one row each.* Without help, the database may check *every row* until it finds yours. With millions of rows, that's [slow.]"
+   }
+  ],
+  [
+   {
+    "say": "An index fixes that. A common one keeps a single column, like emails, sorted, and each entry points to that user's row.",
+    "show": "An [index] fixes that. A common one keeps a single column, like emails, *sorted,* and each entry points to that user's row."
+   }
+  ],
+  [
+   {
+    "say": "Because it's sorted, the database narrows it down in a few steps. Like a book's index: find the word, get the page, skip the rest.",
+    "show": "Because it's sorted, the database narrows it down in *a few steps.* Like a book's index: find the word, get the page, [skip the rest.]"
+   }
+  ],
+  [
+   {
+    "say": "One catch. Every index takes space, and every new row has to update it too. So index the columns you search by, not everything.",
+    "show": "One catch. Every index takes *space,* and every new row has to *update it too.* So index the columns [you search by,] not everything."
+   }
+  ],
+  [
+   {
+    "say": "Postgres and MySQL automatically index your primary key, usually the ID.",
+    "show": "*Postgres* and *MySQL* automatically index your *primary key,* usually the ID."
+   }
+  ],
+  [
+   {
+    "say": "If you're a vibe coder, follow for the system design your AI skipped.",
+    "show": "If you're a vibe coder, follow for the system design your AI [skipped.]"
+   }
+  ]
+ ]
+}

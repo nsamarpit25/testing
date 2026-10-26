@@ -1,0 +1,69 @@
+{
+ "prompt": "AUDIO PROFILE\nCleo: a young woman software developer in her mid twenties. Soft, natural, conversational voice. Real and understated, never cartoonish.\nClaude: a young man's voice. Calm, warm and gently dry-witted, never theatrical. Few words.\n\nTHE SCENE, END TO END\nEvening at her desk, lit by her monitor. Cleo's app says 'Check your inbox' after every password reset, but no email ever arrives. Claude, a small companion on her desk, reads the code and finds a TODO comment from 2019: the email was never written.\n\nLINE BY LINE\n1. Cleo, quiet certainty.\n2. Claude, patient.\n3. Cleo, reads the quote brightly, then flat.\n4. Claude, routine.\n5. Cleo, tired emphasis on eight.\n6. Claude, warm, dry.\n7. Cleo, mild resentment.\n8. Claude, reassuring.\n9. Cleo, searching for a reasonable explanation.\n10. Claude, small pause before 'note'.\n11. Claude, reads it without judgment.\n12. Cleo, very careful.\n13. Claude, plain statement.\n14. Cleo, soft disbelief.\n15. Claude, almost complimentary.\n16. Cleo, quiet realization.\n17. Claude, warm product-review voice.\n\nDIRECTOR'S NOTES\nA natural, conversational pace, like two friends at a desk; not rushed, not slow. Let the jokes land with a short beat before the dry lines. Leave a short beat at every [medium pause] and at every \"...\"; never read the bracketed tags aloud. Speak every word of the dialogue exactly as written, nothing added.",
+ "turns": [
+  [
+   "Cleo",
+   "Claude, password reset is lying."
+  ],
+  [
+   "Claude",
+   "What does it say?"
+  ],
+  [
+   "Cleo",
+   "\"Check your inbox.\" My inbox is empty."
+  ],
+  [
+   "Claude",
+   "And spam?"
+  ],
+  [
+   "Cleo",
+   "Empty. I've reset my password eight times."
+  ],
+  [
+   "Claude",
+   "That's a lot of trust."
+  ],
+  [
+   "Cleo",
+   "It says success every time. Very confidently."
+  ],
+  [
+   "Claude",
+   "Let me check the code."
+  ],
+  [
+   "Cleo",
+   "Maybe the email service is just slow."
+  ],
+  [
+   "Claude",
+   "I found a note. [medium pause] \"TODO, 2019: send the email.\""
+  ],
+  [
+   "Cleo",
+   "So what does the button do?"
+  ],
+  [
+   "Claude",
+   "Tells them to check their inbox."
+  ],
+  [
+   "Cleo",
+   "For seven years?"
+  ],
+  [
+   "Claude",
+   "Very consistently."
+  ],
+  [
+   "Cleo",
+   "We've been blaming spam."
+  ],
+  [
+   "Claude",
+   "Your most reliable feature is reassurance."
+  ]
+ ]
+}

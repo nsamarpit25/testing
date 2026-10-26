@@ -1,0 +1,14 @@
+1.0-5.1s Cleo: Claude, checkout's celebrating. Every order failed.
+5.6-6.4s Claude: Why confetti?
+6.9-10.7s Cleo: That's the success screen. Every failed order gets a party.
+11.2-12.7s Claude: Didn't you add error handling?
+13.1-18.3s Cleo: Try, catch, a big red error message. I tested it. Nothing went red.
+18.7-23.0s Claude: Because that five hundred is a response, not a rejected promise.
+23.5-25.3s Cleo: So the catch should catch it!
+25.7-29.2s Claude: Fetch doesn't reject just because the HTTP status says failure.
+29.8-34.7s Cleo: So my app heard "no"... and threw a party?
+35.2-40.2s Claude: Await fetch, check response dot ok. If false, throw an error.
+40.6-47.2s Cleo: If not response dot ok... throw... It's red! It actually failed!
+47.9-50.3s Claude: Congratulations. Your failure works.
+50.7-55.3s Cleo: Oh no. Support says thirty people got confetti... and no order.
+56.2-58.4s Claude: Free confetti. Delivery not included.

@@ -1,0 +1,278 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- 09 Kubernetes, remade in the 21 ember style. World: four servers in a 2x2 grid, copies of the app ("pods") sitting
+     on top; the Kubernetes control box in front, wired to every server; a thermostat off to the left for the analogy;
+     a users pad at the front that sends traffic during autoscaling and the rolling update.
+     Beats come from voice/words.json via at(). Shared pieces live in ../_ember/. -->
+<link rel="stylesheet" href="../_ember/fonts.css">
+<link rel="stylesheet" href="../_ember/reel.css">
+</head>
+<body>
+<div id="stage">
+  <div id="world">
+    <canvas id="cv" width="1080" height="1920"></canvas>
+    <div class="layer" id="lbls"></div>
+  </div>
+</div>
+<script src="../../tools/lib.js"></script>
+<script src="voice/words.js"></script>
+<script src="../_ember/three.js"></script>
+<script src="../_ember/world.js"></script>
+<script src="../_ember/base.js"></script>
+<script>
+const ICE = '#BFE9FF', DEAD = '#7a2e24';
+const addIcon = (k, d) => { ICON[k] = d; P2[k] = new Path2D(d); };
+addIcon('helm', 'M24 50 a26 26 0 1 0 52 0 a26 26 0 1 0 -52 0 M50 8 V92 M8 50 H92 M20 20 L80 80 M80 20 L20 80 M42 50 a8 8 0 1 0 16 0 a8 8 0 1 0 -16 0');
+addIcon('user', 'M38 34 a12 12 0 1 0 24 0 a12 12 0 1 0 -24 0 M26 84 Q26 56 50 56 Q74 56 74 84');
+
+/* ---------------- beats */
+const T = {
+  died: at('died'), three1: at('3'), morning: at('morning'), another: at('another'), nobody: at('nobody'),
+  kubernetes: at('kubernetes'), runs: at('runs'), copies: at('copies'), group: at('group'),
+  tell: at('tell'), want: at('want'), true_: at('true'), thermostat: at('thermostat'), set: at('set'), deg: at('21'), room: at('room'),
+  say: at('say'), three: at('three'), always: at('always'), server3: at('server', 3), dies: at('dies'), replacement: at('replacement'), left: at('left'),
+  auto: at('auto'), adds: at('adds'), users: at('users'), show: at('show'), removes: at('removes'), leave: at('leave'),
+  new_: at('new'), swaps: at('swaps'), few: at('few'), stays: at('stays'), update: at('update'),
+  recovered: at('recovered'), slept: at('slept'), ifv: at('if'), follow: at('follow'),
+};
+const CUT = { K8S: T.kubernetes - 0.35, TH: T.thermostat - 0.35, SAY: T.say - 0.3, DIE: T.server3 - 0.2, AUTO: T.auto - 0.3, UPD: T.new_ - 0.2, REC: T.recovered - 0.35, END: T.ifv - 0.15 };
+
+/* ---------------- layout */
+const N = [[-120, -40], [120, -40], [-120, 140], [120, 140]];
+const NW = 170, ND = 110, NH = 34;
+const SLOT = [-52, 0, 52];
+const CP = [0, -235], TH_ = [-310, -235], U = [0, -420];
+
+/* ---------------- camera */
+const WIDE = { f: [45, -10, 30], s: 0.92, a: -0.42, e: 0.6, sy: 610 };
+const SHOTS = [
+  { t: 0, d: 0, f: [N[0][0], N[0][1], 30], s: 2.4, a: -0.34, e: 0.42, sy: 600 },
+  { t: T.morning - 0.4, d: 1.0, f: [0, -40, 30], s: 1.7, a: -0.4, e: 0.5, sy: 600 },
+  { t: CUT.K8S, d: 1.2, ...WIDE },
+  { t: CUT.TH, d: 1.0, f: [TH_[0], TH_[1], 20], s: 2.3, a: -0.4, e: 0.62, sy: 600 },
+  { t: CUT.SAY, d: 1.0, ...WIDE },
+  { t: CUT.DIE, d: 0.5, f: [N[1][0] - 20, N[1][1] + 20, 40], s: 1.45, a: -0.44, e: 0.52, sy: 600 },
+  { t: T.replacement - 0.1, d: 0.9, ...WIDE },
+  { t: CUT.AUTO, d: 1.0, f: [45, -150, 30], s: 0.86, a: -0.42, e: 0.62, sy: 540 },
+  { t: CUT.UPD, d: 1.0, f: [40, 80, 40], s: 1.1, a: -0.42, e: 0.56, sy: 610 },
+  { t: CUT.REC, d: 1.0, ...WIDE, s: 0.95 },
+  { t: CUT.END, d: 2.0, ...WIDE, s: 0.82, sy: 640 },
+];
+// t2 remake: every shot re-angled (azimuth, elevation, zoom) so no frame matches the original
+const REANGLE = [[0.3, 0.08, 0.9], [-0.28, -0.06, 1.1], [0.1, 0.06, 0.97], [-0.3, 0.06, 1.08], [0.26, -0.08, 0.92], [0.06, 0.04, 0.98],
+  [-0.1, 0.04, 1.0], [-0.26, 0.08, 1.06], [0.22, 0.06, 0.92], [-0.3, -0.06, 1.05], [0.2, 0.12, 0.9]];
+SHOTS.forEach((s, i) => { const r = REANGLE[i % REANGLE.length]; s.a += r[0]; s.e = Math.min(1.0, Math.max(0.3, s.e + r[1])); s.s *= r[2]; });
+const KICKS = [[T.died, 0.08], [T.another, 0.03], [T.kubernetes, 0.05], [T.copies + 0.05, 0.03], [T.deg, 0.03], [T.room, 0.04], [T.three, 0.03],
+  [T.dies, 0.08], [T.replacement + 0.15, 0.04], [T.adds + 0.05, 0.03], [T.show + 0.05, 0.03], [T.swaps + 0.4, 0.03], [T.few + 0.2, 0.03], [T.stays, 0.04], [T.recovered, 0.05]];
+const SHAKES = [[T.died, 6, 0.45], [T.dies, 5, 0.4]];
+
+/* ---------------- build the world */
+const NODES = N.map((p, i) => {
+  const b = emberBox(p[0], p[1], NW, ND, NH, O);
+  const f = decal(NW, NH, 'front', 5, b.g); f.m.position.set(0, -ND / 2 - 0.3, NH / 2);
+  const pl = pool(p[0], p[1], 150, O);
+  blob(p[0], p[1], NW, ND);
+  return { b, f, pl, p, i, die: [T.died, T.dies][i] ?? Infinity };
+});
+const cpB = emberBox(CP[0], CP[1], 120, 64, 46, O);
+const cpF = decal(120, 46, 'front', 6, cpB.g); cpF.m.position.set(0, -32.3, 23);
+const poolCP = pool(CP[0], CP[1], 120, O);
+const rCP = N.map((p) => road([[CP[0], CP[1] + 32, 0], [p[0], p[1] - ND / 2, 0]], O));
+const rHook = road([[N[0][0] + NW / 2, N[0][1], 0], [N[1][0] - NW / 2, N[1][1], 0]], O);
+const thC = emberCyl(TH_[0], TH_[1], 52, 16, O);
+const thTop = decal(100, 100, 'top', 6); thTop.m.position.set(TH_[0], TH_[1], 16.4);
+const poolTH = pool(TH_[0], TH_[1], 130, O);
+const uB = emberBox(U[0], U[1], 150, 54, 6, O);
+const uTop = decal(140, 50, 'top', 6); uTop.m.position.set(U[0], U[1], 6.4);
+const poolU = pool(U[0], U[1], 120, O);
+
+// pods: copies of the app. a = start, die = crashes with its server, rm = removed by autoscaling, swap = v1 → v2
+const PODS = [
+  { n: 0, s: 1, a: -1, die: T.died },
+  { n: 1, s: 1, a: T.another - 0.15, die: T.dies },
+  { n: 2, s: 1, a: T.copies + 0.05, swap: T.swaps + 0.1 },
+  { n: 3, s: 1, a: T.copies + 0.3, swap: T.few - 0.1 },
+  { n: 2, s: 0, a: T.replacement + 0.15, swap: T.stays - 0.25 },
+  { n: 3, s: 0, a: T.adds + 0.05, rm: T.removes + 0.05 },
+  { n: 2, s: 2, a: T.users, rm: T.removes + 0.3 },
+  { n: 3, s: 2, a: T.show + 0.05, rm: T.leave },
+].map((d, i) => {
+  const b = emberBox(0, 0, 42, 40, 38, OK);
+  const f = decal(42, 38, 'front', 6, b.g); f.m.position.set(0, -20.3, 19);
+  return { ...d, i, b, f, die: d.die ?? Infinity, rm: d.rm ?? Infinity, swap: d.swap ?? Infinity };
+});
+const podPos = (p) => [N[p.n][0] + SLOT[p.s], N[p.n][1], NH];
+const alive = (p, t) => t >= p.a && t < p.die && t < p.rm;
+const want = (t) => (t > T.adds - 0.1 && t < T.removes ? 6 : 3);
+
+/* ---------------- canvas faces */
+function nodeDraw(g, W_, H_, col, i, dead, t) {
+  g.fillStyle = col; g.font = '800 64px Mono'; g.textBaseline = 'middle'; g.shadowColor = col; g.shadowBlur = 12;
+  g.fillText(dead ? 'DOWN' : `SERVER ${i + 1}`, 40, H_ / 2 + 4); g.shadowBlur = 0;
+  for (let k = 0; k < 4; k++) {
+    const on = dead ? Math.sin(t * 9 + k) > 0.7 : (Math.floor(t * 4 + k * 1.7 + i) % 3) === 0;
+    g.beginPath(); g.arc(W_ - 190 + k * 44, H_ / 2, 10, 0, Math.PI * 2); g.fillStyle = on ? col : col + '44'; g.fill();
+  }
+}
+function podDraw(g, W_, H_, col, ver) {
+  g.fillStyle = '#0f0d0c'; g.fillRect(0, 0, W_, H_);
+  g.fillStyle = col; g.textAlign = 'center'; g.textBaseline = 'middle'; g.shadowColor = col; g.shadowBlur = 12;
+  g.font = '800 66px Mono'; g.fillText('APP', W_ / 2, H_ * 0.38);
+  g.font = '800 50px Mono'; g.fillText('v' + ver, W_ / 2, H_ * 0.75); g.shadowBlur = 0; g.textAlign = 'left';
+}
+function cpDraw(g, W_, H_, col) {
+  icon(g, 'helm', 92, H_ / 2, H_ * 0.7, col, 8, 12);
+  g.fillStyle = col; g.font = '800 54px Mono'; g.textBaseline = 'middle'; g.shadowColor = col; g.shadowBlur = 12;
+  g.fillText('K8S', 190, H_ / 2 + 4); g.shadowBlur = 0;
+}
+function thDraw(g, W_, H_, room, col) {
+  const cx = W_ / 2, cy = H_ / 2, r = W_ * 0.4, a0 = Math.PI * 0.75, span = Math.PI * 1.5;
+  g.lineCap = 'round';
+  g.strokeStyle = '#3d3833'; g.lineWidth = 18; g.beginPath(); g.arc(cx, cy, r, a0, a0 + span); g.stroke();
+  const k = clamp((room - 15) / 10);
+  g.strokeStyle = col; g.shadowColor = col; g.shadowBlur = 16; g.beginPath(); g.arc(cx, cy, r, a0, a0 + span * k); g.stroke();
+  const ks = (21 - 15) / 10, ax = a0 + span * ks;   // the set point
+  g.fillStyle = WH; g.beginPath(); g.arc(cx + Math.cos(ax) * r, cy + Math.sin(ax) * r, 14, 0, Math.PI * 2); g.fill();
+  g.fillStyle = col; g.textAlign = 'center'; g.textBaseline = 'middle'; g.font = '800 150px Mono';
+  g.fillText(Math.round(room) + '°', cx, cy + 6); g.shadowBlur = 0;
+  g.fillStyle = GR; g.font = '700 40px Mono'; g.fillText('ROOM', cx, cy + 110); g.textAlign = 'left';
+}
+function usersDraw(g, W_, H_, n, col) {
+  for (let k = 0; k < 5; k++) icon(g, 'user', 110 + k * 145, H_ / 2, H_ * 0.8, k < n ? col : '#3d3833', 8, k < n ? 10 : 0);
+}
+
+/* ---------------- the world, frame by frame */
+function world(t) {
+  const thA = window01(t, CUT.TH + 0.1, CUT.SAY + 0.2, 0.4);
+  const bgOp = 1 - 0.78 * thA;
+  // servers
+  NODES.forEach((nd) => {
+    const inA = nd.i < 2 ? 1 : ease.back(prog(t, T.runs - 0.2 + 0.12 * (nd.i - 2), T.runs + 0.25 + 0.12 * (nd.i - 2)));
+    const dead = t > nd.die, col = !dead ? O : t < nd.die + 1.2 ? RED : DEAD;
+    nd.b.g.visible = inA > 0.01; nd.b.g.scale.set(1, 1, Math.max(0.01, inA));
+    nd.b.g.position.x = nd.p[0] + (t > nd.die && t < nd.die + 0.5 ? Math.sin((t - nd.die) * 70) * 3 * window01(t, nd.die, nd.die + 0.5, 0.05) : 0);
+    nd.b.setLook(col, 1 + 2.5 * pulse(t, nd.die), bgOp);
+    nd.f.m.visible = nd.b.g.visible; nd.f.m.material.opacity = bgOp;
+    nd.f.draw((g, W_, H_) => nodeDraw(g, W_, H_, col, nd.i, dead, t));
+    nd.pl.set(col, inA * bgOp * (dead ? 0.25 + 0.6 * pulse(t, nd.die, 2) : 0.35));
+    sparks(t, nd.die, nd.p[0], nd.p[1], NH + 10, RED, 30, 3 + nd.i, 170, 0.9);
+    ripple(t, nd.die, nd.p[0], nd.p[1], 1, RED, 130, 0.8);
+  });
+  // hook: the app hops from the dead server to the next one
+  rHook.set(window01(t, T.morning - 0.5, T.kubernetes, 0.3), O, 1, t);
+  const hq = (t - (T.morning - 0.25)) / 0.75;
+  if (hq > 0 && hq < 1.1) orb([[N[0][0] + 20, N[0][1], NH + 20], [N[1][0], N[1][1], NH + 20]], clamp(hq), OK, clamp(hq / 0.1) * (1 - clamp((hq - 1) / 0.1)));
+  // control box
+  const cpIn = ease.back(prog(t, T.kubernetes - 0.1, T.kubernetes + 0.35));
+  cpB.g.visible = cpIn > 0.01; cpB.g.scale.set(1, 1, Math.max(0.01, cpIn));
+  const cpCol = t > T.dies && t < T.replacement + 0.3 ? AMB : O;
+  cpB.setLook(cpCol, 1 + 2 * pulse(t, T.kubernetes) + 1.5 * pulse(t, T.replacement), bgOp);
+  cpF.m.visible = cpB.g.visible; cpF.m.material.opacity = bgOp; cpF.draw((g, W_, H_) => cpDraw(g, W_, H_, cpCol));
+  poolCP.set(cpCol, 0.5 * cpIn * bgOp);
+  rCP.forEach((r, i) => r.set(ep(t, T.group - 0.25 + 0.08 * i, T.group + 0.35 + 0.08 * i), t > NODES[i].die ? DEAD : O, bgOp, t));
+  // thermostat
+  const room = lerp(18, 21, ease.inOut(prog(t, T.set + 0.1, T.room + 0.1)));
+  const thCol = room > 20.95 ? OK : AMB;
+  const thIn = ease.back(prog(t, CUT.TH + 0.1, CUT.TH + 0.55));
+  thC.g.visible = thA > 0.01; thC.g.scale.set(1, 1, Math.max(0.01, thIn)); thC.update(); thC.setLook(thCol, 1 + 2 * pulse(t, T.room + 0.1), thA);
+  thTop.m.visible = thA > 0.01; thTop.m.position.z = 16.4 * thIn; thTop.m.material.opacity = thA; thTop.draw((g, W_, H_) => thDraw(g, W_, H_, room, thCol));
+  poolTH.set(thCol, 0.6 * thA);
+  sparks(t, T.room + 0.1, TH_[0], TH_[1], 20, OK, 18, 21, 110, 0.7);
+  // users pad
+  const uA = window01(t, CUT.AUTO + 0.2, CUT.REC + 0.3, 0.4);
+  const load = 1 + 3 * ep(t, T.users - 0.3, T.show + 0.2) - 3 * ep(t, T.removes - 0.1, T.leave + 0.1);
+  uB.g.visible = uTop.m.visible = uA > 0.01; uB.setLook(O, 1 + 1.5 * pulse(t, T.users), uA); uTop.m.material.opacity = uA;
+  uTop.draw((g, W_, H_) => usersDraw(g, W_, H_, Math.round(load + 0.4), O2));
+  poolU.set(O, 0.4 * uA);
+  // pods
+  const swapping = (p) => t > p.swap - 0.05 && t < p.swap + 0.7;
+  PODS.forEach((p) => {
+    const [x, y, z] = podPos(p);
+    let vis_ = t >= p.a, s = 1, dz = 0, col = OK, ver = 1, glow = 1;
+    if (t >= p.a) { const q = ease.out(prog(t, p.a, p.a + 0.4)); dz = (1 - q) * 130; s = Math.max(0.01, clamp(q * 3)); }
+    if (t > p.die) { const k = prog(t, p.die, p.die + 0.7); col = RED; s *= 1 - ease.in(k); glow = 3 * (0.5 + 0.5 * Math.sin(t * 40)); vis_ = vis_ && k < 1; }
+    if (t > p.rm) { const k = prog(t, p.rm, p.rm + 0.35); col = AMB; s *= 1 - ease.in(k); vis_ = vis_ && k < 1; }
+    if (t > p.swap) {
+      const k1 = prog(t, p.swap, p.swap + 0.3), k2 = prog(t, p.swap + 0.32, p.swap + 0.7);
+      ver = t > p.swap + 0.31 ? 2 : 1; col = ver === 2 ? ICE : AMB;
+      if (ver === 1) s *= Math.max(0.02, 1 - ease.in(k1)); else { dz = (1 - ease.out(k2)) * 110; s = Math.max(0.02, clamp(k2 * 3)); }
+      glow += 2 * pulse(t, p.swap + 0.7);
+    }
+    p.b.g.visible = vis_ && s > 0.015; p.b.g.position.set(x, y, z + dz); p.b.g.scale.set(s, s, s);
+    p.b.setLook(col, 1.2 + glow + 2 * pulse(t, p.a + 0.4) + 1.5 * pulse(t, T.three) * (alive(p, t) ? 1 : 0), bgOp);
+    p.f.m.visible = p.b.g.visible; p.f.m.material.opacity = bgOp; p.f.draw((g, W_, H_) => podDraw(g, W_, H_, col, ver));
+    if (p.a > 0) ripple(t, p.a + 0.4, x, y, z + 0.5, col, 50, 0.6);
+    sparks(t, p.die, x, y, z + 20, RED, 16, 40 + p.i, 140, 0.7);
+    if (p.swap < Infinity) sparks(t, p.swap + 0.7, x, y, z + 38, ICE, 12, 60 + p.i, 110, 0.6);
+    // Kubernetes sends the order: a packet from the control box to the server just before each copy starts / swaps
+    const cmd = (t0) => { const q = (t - (t0 - 0.45)) / 0.45; if (q > -0.02 && q < 1.1) orb([[CP[0], CP[1] + 32, 10], [x, y - ND / 2, 10], [x, y, z + 10]], clamp(q), O2, clamp(q / 0.1) * (1 - clamp((q - 1) / 0.1)), 0.8); };
+    if (p.a > T.kubernetes) cmd(p.a); if (p.swap < Infinity) cmd(p.swap + 0.32);
+  });
+  // traffic from users to the copies that are up (none to a copy mid-swap: that is why the app stays up)
+  if (uA > 0.05) {
+    const tgt = PODS.filter((p) => alive(p, t) && !swapping(p) && t > p.a + 0.4);
+    const nOrb = Math.min(5, Math.round(1 + load));
+    for (let k = 0; k < nOrb && tgt.length; k++) {
+      const per = 1.1, ph = ((t + k * per / nOrb) % per) / per, p = tgt[(k + Math.floor((t + k * per / nOrb) / per)) % tgt.length];
+      const [x, y, z] = podPos(p);
+      orb([[U[0] + (k - 2) * 18, U[1] + 27, 6], [x, y - ND / 2, 6], [x, y, z + 6]], ph, O2, uA * Math.min(1, ph * 8) * (1 - clamp((ph - 0.9) / 0.1)), 0.6);
+    }
+  }
+}
+
+/* ---------------- world tags */
+function tags(t) {
+  const runN = PODS.filter((p) => alive(p, t)).length, w = want(t);
+  tag('clock', `<b>3:00 AM</b>`, '', [N[0][0], N[0][1], 120], t, 0.15, T.morning - 0.1);
+  tag('down0', `<span style="color:${RED}">✕ SERVER DOWN</span>`, `border-color:${RED}88`, [N[0][0], N[0][1], 90], t, T.died + 0.05, CUT.K8S, 34);
+  tag('clock2', `<b>8:00 AM</b> · <span style="color:${OK}">RUNNING ✓</span>`, `border-color:${OK}88`, [N[1][0], N[1][1], 120], t, T.another + 0.2, CUT.K8S);
+  tag('asleep', '<b>YOU</b> · ASLEEP · 0 CLICKS', '', [0, -150, 0], t, T.nobody, CUT.K8S, 0);
+  tag('k8s', `<b>KUBERNETES</b>`, '', [CP[0], CP[1], 100], t, T.kubernetes + 0.4, T.want - 0.3);
+  tag('want', `WANT <b>${w}</b> · RUNNING <b style="color:${runN >= w ? OK : RED}">${runN}</b>`, `border-color:${runN >= w ? OK : RED}88`, [CP[0], CP[1], 100], t, T.want - 0.1, CUT.END, 0);
+  tag('set', `YOU SET <b>21°</b>`, '', [TH_[0], TH_[1], 70], t, T.deg - 0.05, CUT.SAY, -40);
+  tag('kept', `<span style="color:${OK}">✓ KEPT AT 21°</span>`, `border-color:${OK}88`, [TH_[0], TH_[1], 70], t, T.room + 0.1, CUT.SAY, 10);
+  tag('dies1', `<span style="color:${RED}">✕ SERVER 2 DOWN</span>`, `border-color:${RED}88`, [N[1][0], N[1][1], 62], t, T.dies + 0.05, T.auto - 0.2);
+  tag('repl', `<span style="color:${OK}">+1 REPLACEMENT</span>`, `border-color:${OK}88`, [N[2][0] + SLOT[0], N[2][1], 110], t, T.replacement + 0.5, T.auto - 0.2);
+  tag('users', `<b>USERS</b> ${t > T.show && t < T.removes ? '▲' : t > T.removes ? '▼' : ''}`, '', [U[0], U[1], 30], t, CUT.AUTO + 0.4, CUT.UPD + 0.2, 26);
+  tag('v2', `<span style="color:${ICE}">v1 → v2 · A FEW AT A TIME</span>`, `border-color:${ICE}88`, [0, 140, 120], t, T.swaps + 0.2, CUT.REC);
+  tag('up', `<span style="color:${OK}">✓ STILL SERVING USERS</span>`, `border-color:${OK}88`, [0, -40, 100], t, T.stays - 0.05, CUT.REC);
+  tag('rec', `<b>3:00 AM</b> · <span style="color:${OK}">RECOVERED ✓</span>`, `border-color:${OK}88`, [0, 40, 150], t, T.recovered, CUT.END + 0.2);
+}
+
+/* ---------------- reel config */
+const SW = PODS.filter((p) => p.swap < Infinity).map((p) => p.swap);
+const REEL = {
+  shots: SHOTS, kicks: KICKS, shakes: SHAKES, world, tags,
+  code: [
+    [T.tell - 0.25, CUT.TH, 'app.yaml', 'what you want', [[0, 'APPLYING', AMB], [T.true_ - 0.1, 'KEEPING IT TRUE', OK]],
+      [['kind: Deployment'], ['replicas: 3'], ['image: my-app:v1']],
+      [[T.want, 2, '← want 3', 'run'], [T.true_ - 0.1, 2, '✓ 3 running', 'good']], 'type'],
+    [T.server3 - 0.05, CUT.AUTO, 'kubernetes', 'events', [[0, 'WATCHING', AMB], [T.dies, 'SERVER DOWN', RED], [T.replacement + 0.5, 'BACK TO 3', OK]],
+      [['server-2    NotReady', T.dies], ['app copy    lost', T.dies + 0.25], ['new copy  → server-3', T.replacement]],
+      [[T.dies, 1, '✕', 'bad'], [T.dies + 0.25, 2, '2 of 3', 'bad'], [T.replacement + 0.55, 3, '✓ Running', 'good']]],
+    [CUT.AUTO + 0.2, T.leave + 0.45, 'autoscaler', 'on', [[0, '3 COPIES', OK], [T.adds, 'ADDING', AMB], [T.show + 0.4, '6 COPIES', OK], [T.removes, 'REMOVING', AMB], [T.leave + 0.1, '3 COPIES', OK]],
+      [['min: 3   max: 10'], ['more users  → add copies', T.adds - 0.1], ['fewer users → remove', T.removes - 0.1]],
+      [[T.show + 0.3, 2, '+3', 'good'], [T.leave, 3, '−3', 'amb']]],
+    [CUT.UPD + 0.1, CUT.REC, 'app.yaml', 'new version', [[0, 'UPDATING', AMB], [SW[2] + 0.7, 'ALL ON v2', OK]],
+      [['image: my-app:v2'], ['copy 1   v1 → v2', SW[0]], ['copy 2   v1 → v2', SW[1]], ['copy 3   v1 → v2', SW[2]]],
+      [[SW[0] + 0.7, 2, '✓', 'good'], [SW[1] + 0.7, 3, '✓', 'good'], [SW[2] + 0.7, 4, '✓', 'good']]],
+  ],
+  hl: /\b(kind|replicas|image|min|max|NotReady|Running)\b/g,
+  slams: [
+    { a: T.kubernetes - 0.1, b: T.copies + 0.2, text: 'kubernetes', sub: 'KEEPS YOUR APP RUNNING', size: 70 },
+  ],
+  bad: ['died', 'dies', 'dies?', 'down'],
+  good: ['kubernetes', 'true', 'always', 'up', 'recovered', 'another', 'autoscaling', 'adds', 'running'],
+  tiles: [['⎈', 'KUBER-<br>NETES'], ['▣', 'DOCKER'], ['◐', 'HEALTH<br>CHECKS']],
+  end: CUT.END, follow: T.follow,
+  wbw: true,
+  cover: { k: 'KUBERNETES', t: 'SERVER DIED.<br>APP DIDN\'T.', at: T.dies + 0.3, zoom: 1, dy: 0 },
+  flash: (t) => 0.24 * pulse(t, T.died, 7) + 0.18 * pulse(t, T.dies, 7),
+};
+</script>
+<script src="../_ember/overlay.js"></script>
+<script src="../_ember/play.js"></script>
+</body>
+</html>

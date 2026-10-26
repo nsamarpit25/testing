@@ -1,0 +1,5 @@
+- **Minor — 23–24.5s:** The monitor’s “+ 1 PDF, 14 pages” reveals the attachment before the dialogue builds to it. Hide that line until the report reveal to preserve more surprise.
+
+The opening establishes the hook, the captions appear consistent with the dialogue, and the final “mom” joke lands. The intended fade works.
+
+VERDICT: PASS

@@ -1,0 +1,15 @@
+== output/ep14_takes/take1.wav  54.9s
+   speakers: OK
+   gemini words: line 1: 'checkout's' -> 'check out'; line 6: 'five hundred' -> ''; line 10: 'dot' -> ''; line 11: 'dot' -> ''; line 13: 'thirty' -> ''
+   whisper words: line 1: 'checkout's' -> 'check out'; line 6: 'five hundred' -> ''; line 10: 'await' -> 'wait'; line 10: 'dot' -> ''; line 11: 'dot' -> ''; line 13: 'thirty' -> ''
+   pitch: 1:262 2:153 3:278 4:162 5:262 6:128 7:242 8:143 9:222 10:117 11:213 12:124 13:232 14:136
+== output/ep14_takes/take2.wav  60.6s
+   speakers: OK
+   gemini words: line 1: 'checkout's' -> 'check out'; line 6: 'five hundred' -> ''; line 8: 'http' -> 'htp'; line 10: 'await' -> 'a wait'; line 10: 'dot' -> ''; line 11: 'dot' -> ''; line 13: 'thirty' -> ''
+   whisper words: line 1: 'checkout's' -> 'check out'; line 6: 'five hundred' -> ''; line 10: 'dot' -> ''; line 11: 'dot' -> ''; line 13: 'thirty' -> ''
+   pitch: 1:276 2:139 3:225 4:134 5:242 6:129 7:296 8:140 9:232 10:125 11:216 12:114 13:242 14:152
+== output/ep14_takes/take3.wav  54.4s
+   speakers: line 2 (Claude) sounds like the other voice (191 Hz)
+   gemini words: line 1: 'checkout's' -> 'checkouts'; line 4: 'error' -> 'air'; line 6: 'five hundred' -> ''; line 8: 'says' -> 'has'; line 10: 'dot' -> ''; line 11: 'dot' -> ''; line 13: 'thirty' -> ''; line 14: 'free' -> ''
+   whisper words: line 1: 'checkout's' -> 'checkouts'; line 6: 'five hundred' -> ''; line 8: 'says' -> 'has'; line 13: 'thirty' -> ''; line 14: 'free' -> ''
+   pitch: 1:260 2:191 3:222 4:137 5:239 6:125 7:267 8:129 9:242 10:143 11:225 12:147 13:219 14:138

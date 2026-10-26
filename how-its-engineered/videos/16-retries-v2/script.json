@@ -1,0 +1,33 @@
+{
+ "topic": "Retries",
+ "lines": [
+  [
+   {"say": "The weather server stopped answering for one second. Then thousands of apps tried again at the same moment, and it went down for real.",
+    "show": "The weather server stopped answering for *one second.* Then thousands of apps tried again at the same moment, and it [went down for real.]"}
+  ],
+  [
+   {"say": "Retrying means trying again. It helps when a connection drops for a moment.",
+    "show": "Retrying means *trying again.* It helps when a connection [drops for a moment.]"}
+  ],
+  [
+   {"say": "But thousands of apps trying again instantly, over and over, can overwhelm the server. That's a retry storm.",
+    "show": "But thousands of apps trying again *instantly,* over and over, can overwhelm the server. That's a [retry storm.]"}
+  ],
+  [
+   {"say": "Fix one: stop when it works, or after three retries.",
+    "show": "Fix one: stop when it works, or [after three retries.]"}
+  ],
+  [
+   {"say": "Fix two: wait longer each time. One second, then two, then four, so the server can recover.",
+    "show": "Fix two: [wait longer] each time. One second, then two, then four, so the server can *recover.*"}
+  ],
+  [
+   {"say": "Fix three: add a little randomness to each wait, so the apps don't all come back together.",
+    "show": "Fix three: add a little [randomness] to each wait, so the apps don't all *come back together.*"}
+  ],
+  [
+   {"say": "If you're a vibe coder, follow for the system design your AI skipped.",
+    "show": "If you're a vibe coder, follow for the system design your AI [skipped.]"}
+  ]
+ ]
+}

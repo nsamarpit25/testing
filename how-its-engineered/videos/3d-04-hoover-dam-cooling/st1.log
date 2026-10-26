@@ -1,0 +1,24 @@
+/Users/samarpit/insta-automation/how-its-engineered/videos/3d-04-hoover-dam-cooling/hd.py:78: DeprecationWarning: 'Material.use_nodes' is expected to be removed in Blender 6.0
+  m.use_nodes = True
+/Users/samarpit/insta-automation/how-its-engineered/videos/3d-04-hoover-dam-cooling/hd.py:2407: DeprecationWarning: 'World.use_nodes' is expected to be removed in Blender 6.0
+  w.use_nodes = True
+00:23.612  render           | Saved: 'st1/f_0030.png'
+00:25.970  render           | Saved: 'st1/f_0100.png'
+00:27.738  render           | Saved: 'st1/f_0160.png'
+00:28.938  render           | Saved: 'st1/f_0220.png'
+00:30.002  render           | Saved: 'st1/f_0322.png'
+00:31.128  render           | Saved: 'st1/f_0360.png'
+00:32.344  render           | Saved: 'st1/f_0440.png'
+00:33.658  render           | Saved: 'st1/f_0520.png'
+00:35.309  render           | Saved: 'st1/f_0590.png'
+00:38.756  render           | Saved: 'st1/f_0640.png'
+00:40.512  render           | Saved: 'st1/f_0740.png'
+00:41.618  render           | Saved: 'st1/f_0820.png'
+00:42.546  render           | Saved: 'st1/f_0860.png'
+00:43.623  render           | Saved: 'st1/f_0930.png'
+00:44.422  render           | Saved: 'st1/f_1030.png'
+BAKED 569 tracks 615658 keys
+GPU METAL ['Apple M3 Pro (GPU - 18 cores)']
+Blender 5.2.2 LTS (hash d13f752e3b9c built 2026-09-15 01:49:19)
+
+Blender quit

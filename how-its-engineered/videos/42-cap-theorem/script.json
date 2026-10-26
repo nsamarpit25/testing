@@ -1,0 +1,60 @@
+{
+ "topic": "CAP theorem",
+ "status": "approved for build (Sam asked for 3 topic videos, 24 Oct)",
+ "lines": [
+  [
+   {
+    "say": "Your bank has two branches, and the line between them just got cut. A customer asks to withdraw money. Do you say yes?",
+    "show": "Your bank has *two branches,* and the line between them just got [cut.] A customer asks to *withdraw money.* [Do you say yes?]"
+   }
+  ],
+  [
+   {
+    "say": "That's the CAP theorem. Consistency: every read sees the latest write. Availability: every request gets a real answer, never an error. Partition tolerance: the system keeps working when the network splits.",
+    "show": "That's the [CAP theorem.] *Consistency:* every read sees the latest write. *Availability:* every request gets a real answer, never an *error.* *Partition tolerance:* the system keeps working when the network [splits.]"
+   }
+  ],
+  [
+   {
+    "say": "Your data lives on servers in different places. Usually they sync in milliseconds. But networks do break, so you have to handle the split.",
+    "show": "Your data lives on servers in *different places.* Usually they sync in *milliseconds.* But networks do [break,] so you have to handle the split."
+   }
+  ],
+  [
+   {
+    "say": "Pick consistency, and the branch that can't check refuses: sorry, try again later. Nobody sees a wrong balance, but some people get an error.",
+    "show": "Pick [consistency,] and the branch that can't check *refuses:* sorry, try again later. Nobody sees a *wrong balance,* but some people get an [error.]"
+   }
+  ],
+  [
+   {
+    "say": "Pick availability, and both branches keep saying yes. Everyone gets an answer, but a balance can be out of date, and the same money can be spent twice.",
+    "show": "Pick [availability,] and both branches keep saying *yes.* Everyone gets an answer, but a balance can be *out of date,* and the same money can be spent [twice.]"
+   }
+  ],
+  [
+   {
+    "say": "So it's not pick any two of three. When the network splits, you choose: correct, or always answering.",
+    "show": "So it's not *pick any two of three.* When the network splits, you choose: [correct,] or [always answering.]"
+   }
+  ],
+  [
+   {
+    "say": "A view count that's a few seconds behind is fine. A wrong account balance isn't. That's how engineers pick.",
+    "show": "A *view count* that's a few seconds behind is fine. A wrong *account balance* [isn't.] That's how engineers pick."
+   }
+  ],
+  [
+   {
+    "say": "etcd picks consistency: the smaller side stops taking writes. Cassandra lets you choose for each query.",
+    "show": "*etcd* picks [consistency:] the smaller side stops taking writes. *Cassandra* lets you choose for [each query.]"
+   }
+  ],
+  [
+   {
+    "say": "If you're a vibe coder, follow for the system design your AI skipped.",
+    "show": "If you're a vibe coder, follow for the system design your AI [skipped.]"
+   }
+  ]
+ ]
+}

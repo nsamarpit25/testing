@@ -1,0 +1,49 @@
+/Users/samarpit/insta-automation/how-its-engineered/videos/3d-03-jet-blades/sf_mac.py:78: DeprecationWarning: 'Material.use_nodes' is expected to be removed in Blender 6.0
+  m.use_nodes = True
+/Users/samarpit/insta-automation/how-its-engineered/videos/3d-03-jet-blades/sf_mac.py:2406: DeprecationWarning: 'World.use_nodes' is expected to be removed in Blender 6.0
+  w.use_nodes = True
+02:59.377  render           | Saved: 'fi_m/f_0261.png'
+03:07.321  render           | Saved: 'fi_m/f_0262.png'
+03:15.275  render           | Saved: 'fi_m/f_0263.png'
+03:22.982  render           | Saved: 'fi_m/f_0264.png'
+03:30.818  render           | Saved: 'fi_m/f_0265.png'
+03:38.705  render           | Saved: 'fi_m/f_0266.png'
+03:46.669  render           | Saved: 'fi_m/f_0267.png'
+03:54.539  render           | Saved: 'fi_m/f_0268.png'
+04:01.939  render           | Saved: 'fi_m/f_0269.png'
+04:09.422  render           | Saved: 'fi_m/f_0270.png'
+04:16.984  render           | Saved: 'fi_m/f_0271.png'
+04:24.641  render           | Saved: 'fi_m/f_0272.png'
+04:32.511  render           | Saved: 'fi_m/f_0273.png'
+04:40.410  render           | Saved: 'fi_m/f_0274.png'
+04:48.333  render           | Saved: 'fi_m/f_0275.png'
+04:56.285  render           | Saved: 'fi_m/f_0276.png'
+05:04.315  render           | Saved: 'fi_m/f_0277.png'
+05:12.419  render           | Saved: 'fi_m/f_0278.png'
+05:20.593  render           | Saved: 'fi_m/f_0279.png'
+05:28.735  render           | Saved: 'fi_m/f_0280.png'
+05:36.541  render           | Saved: 'fi_m/f_0281.png'
+05:44.157  render           | Saved: 'fi_m/f_0282.png'
+05:51.818  render           | Saved: 'fi_m/f_0283.png'
+05:59.592  render           | Saved: 'fi_m/f_0284.png'
+06:07.468  render           | Saved: 'fi_m/f_0285.png'
+06:15.676  render           | Saved: 'fi_m/f_0286.png'
+06:24.022  render           | Saved: 'fi_m/f_0287.png'
+06:32.142  render           | Saved: 'fi_m/f_0288.png'
+06:40.259  render           | Saved: 'fi_m/f_0289.png'
+06:48.465  render           | Saved: 'fi_m/f_0290.png'
+06:56.502  render           | Saved: 'fi_m/f_0291.png'
+07:04.566  render           | Saved: 'fi_m/f_0292.png'
+07:12.725  render           | Saved: 'fi_m/f_0293.png'
+07:20.911  render           | Saved: 'fi_m/f_0294.png'
+07:29.118  render           | Saved: 'fi_m/f_0295.png'
+07:37.506  render           | Saved: 'fi_m/f_0296.png'
+07:45.876  render           | Saved: 'fi_m/f_0297.png'
+07:54.262  render           | Saved: 'fi_m/f_0298.png'
+08:02.738  render           | Saved: 'fi_m/f_0299.png'
+08:11.222  render           | Saved: 'fi_m/f_0300.png'
+BAKED 50 tracks 15500 keys
+GPU METAL ['Apple M3 Pro (GPU - 18 cores)']
+Blender 5.2.2 LTS (hash d13f752e3b9c built 2026-09-15 01:49:19)
+
+Blender quit

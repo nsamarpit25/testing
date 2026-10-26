@@ -1,0 +1,66 @@
+[
+ {
+  "li": 0,
+  "pi": 0,
+  "say": "3 a.m. Nobody's awake, and your app just emailed ten thousand people their receipts.",
+  "show": "3 a.m. Nobody's awake, and your app just emailed *10,000 people* their receipts.",
+  "start": 0.2,
+  "end": 3.86
+ },
+ {
+  "li": 0,
+  "pi": 1,
+  "say": "Who pressed the button?",
+  "show": "Who [pressed the button?]",
+  "start": 4.24,
+  "end": 4.92
+ },
+ {
+  "li": 1,
+  "pi": 0,
+  "say": "Nobody. A cron job did. It's a scheduled task, like a repeating alarm for your server.",
+  "show": "Nobody. A [cron job] did. It's a scheduled task, like a *repeating alarm* for your server.",
+  "start": 5.44,
+  "end": 9.2
+ },
+ {
+  "li": 2,
+  "pi": 0,
+  "say": "You set the timing once: every day at three a.m.",
+  "show": "You set the timing once: *every day at 3 a.m.*",
+  "start": 9.54,
+  "end": 12.06
+ },
+ {
+  "li": 3,
+  "pi": 0,
+  "say": "When the alarm rings, your server runs the code that emails the receipts.",
+  "show": "When the alarm rings, your server [runs the code] that *emails the receipts.*",
+  "start": 12.4,
+  "end": 15.42
+ },
+ {
+  "li": 4,
+  "pi": 0,
+  "say": "One catch. Set up that same task on two servers, and both alarms ring. People could get two receipts. So keep the schedule in one place.",
+  "show": "One catch. Set up that same task on *two servers,* and both alarms ring. People could get [two receipts.] So keep the schedule *in one place.*",
+  "start": 16.0,
+  "end": 23.32
+ },
+ {
+  "li": 5,
+  "pi": 0,
+  "say": "Linux has cron built in, and Kubernetes has CronJobs.",
+  "show": "*Linux* has cron built in, and *Kubernetes* has CronJobs.",
+  "start": 23.72,
+  "end": 26.26
+ },
+ {
+  "li": 6,
+  "pi": 0,
+  "say": "If you're a vibe coder, follow for the system design your AI skipped.",
+  "show": "If you're a vibe coder, follow for the system design your AI [skipped.]",
+  "start": 26.26,
+  "end": 29.6
+ }
+]

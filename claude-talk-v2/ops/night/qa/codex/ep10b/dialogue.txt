@@ -1,0 +1,16 @@
+1.0-6.5s Cleo: Claude, how do I unsend one email... from forty thousand inboxes?
+7.0-7.7s Claude: On purpose?
+8.1-12.7s Cleo: It was a test. The subject is "test test please ignore."
+13.2-13.9s Claude: Who was it for?
+14.3-18.6s Cleo: Me. Just me. My script used the real customer list.
+19.0-19.9s Claude: Any replies?
+20.4-24.3s Cleo: Two hundred. One person wrote, "Received, thank you."
+24.8-25.3s Claude: Polite.
+25.9-28.4s Cleo: My manager replied. With a thumbs up.
+28.9-29.6s Claude: Supportive.
+30.0-33.8s Cleo: Then the CEO replied. "What is this?"
+34.6-35.8s Claude: There is some good news.
+36.3-37.7s Cleo: There's good news?
+38.1-41.9s Claude: Sixty-one percent opened it. Marketing's best is twelve.
+42.4-46.3s Cleo: So my mistake... beat marketing?
+48.0-50.5s Claude: Tell them it took years of practice.

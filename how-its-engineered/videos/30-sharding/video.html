@@ -1,0 +1,440 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- 30 Sharding. A perspective three.js world with bloom (own camera + post pass).
+     World: YOUR APP (a box, front) and the data as glowing user cubes (ids 0..63, one InstancedMesh). Hook: one server
+     holds every user as a 4x4x4 block; writes fill its last layer, then bounce off (full); two ghost copies get every
+     write too (copies don't split writes). Split: the block shatters and each cube flies to shard id % 4 (2x2 platforms,
+     each its own colour). Code card: userId % 4, user 42 lifts out of shard 2 and one request goes straight there.
+     Library card (A–M / N–Z, a reader walks to the right building). Traffic spreads over the shards, a ghost 5th shard.
+     Scatter-gather: one question fans out to every shard and the counts merge at the app. Hot shard: a bad key floods
+     shard 0 while the others idle. Moving data: a 5th shard rises and 48 of 64 cubes migrate to id % 5. Shard last.
+     A load-per-server meter sits on top the whole time. Beats come from voice/words.json. -->
+<link rel="stylesheet" href="../_ember/fonts.css">
+<link rel="stylesheet" href="../_ember/reel.css">
+<style>
+#cap { top: 728px !important; }
+#cap .box { background: linear-gradient(90deg, transparent, rgba(8,7,6,0.82) 16%, rgba(8,7,6,0.82) 84%, transparent); }
+#ed { top: 192px !important; }
+.lbl { background: rgba(12,11,10,0.95); }
+#mt { position: absolute; left: 100px; right: 100px; top: 114px; height: 76px; opacity: 0; padding: 8px 12px 6px; box-sizing: border-box;
+  background: rgba(14,12,11,0.95); border: 1px solid rgba(255,255,255,0.12); border-radius: 12px; box-shadow: 0 14px 34px rgba(0,0,0,0.6); }
+#mt .h { font: 800 11px/1 Mono; letter-spacing: 1.6px; color: #9c948c; text-align: center; }
+#mt .bars { display: flex; justify-content: center; align-items: flex-end; gap: 10px; height: 44px; margin-top: 5px; }
+#mt .c { width: 38px; display: flex; flex-direction: column; align-items: center; transition: none; }
+#mt .b { width: 28px; height: 30px; border-radius: 3px; position: relative; overflow: hidden; background: repeating-linear-gradient(0deg, #2a2521 0 2px, #1a1714 2px 4px); }
+#mt .f { position: absolute; left: 0; right: 0; bottom: 0; height: 0; background: repeating-linear-gradient(0deg, currentColor 0 2px, transparent 2px 4px); }
+#mt .k { font: 800 11px/1 Mono; letter-spacing: 0.8px; margin-top: 3px; color: #9c948c; }
+.cd2 { position: absolute; left: 40px; right: 40px; top: 196px; opacity: 0; background: rgba(16,14,12,0.96); border: 1px solid rgba(199,146,255,0.4); border-radius: 14px; box-shadow: 0 20px 50px rgba(0,0,0,0.7); overflow: hidden; }
+#lib { padding: 14px 16px 12px; }
+#lib .h { font: italic 400 30px/1 Instrument; color: #efe6d8; margin-bottom: 4px; }
+#libS { display: block; width: 100%; height: 230px; }
+#libL { margin-top: 2px; font: 800 12px/1 Mono; letter-spacing: 1.2px; text-align: center; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="world">
+    <canvas id="cv" width="1080" height="1920"></canvas>
+    <div class="layer" id="lbls"></div>
+  </div>
+</div>
+<script src="../../tools/lib.js"></script>
+<script src="voice/words.js"></script>
+<script src="../_ember/three.js"></script>
+<script src="../_ember/world.js"></script>
+<script src="../_ember/base.js"></script>
+<script>
+for (let i = 0; i < 44; i++) ORBS.push({ core: orbSprite(9), glow: orbSprite(34), trail: [0, 1, 2, 3, 4].map(() => orbSprite(10)) });
+const RD = '#6FC3FF', PU = '#C792FF', WR = AMB;
+const SC = [O, AMB, RD, PU, OK];   // shard colours, shard 4 is the one added at the end
+
+/* ---------------- beats */
+const T = {
+  outgrows: at('outgrows'), hold: at('hold'), keep: at('keep'), write1: at('write'), copies: at('copies'), write2: at('write', 2), lands: at('lands'), machine: at('machine'),
+  l1: line(1).start, split: at('split'), several: at('several'), shard: at('shard'), some: at('some'),
+  l2: line(2).start, key: at('key'), userid: at('user', 2), rule: at('rule'), number: at('number'),
+  l3: line(3).start, u42: at('42'), s2: at('2'), straight: at('straight'), one4: at('one', 4), not: at('not'),
+  l4: line(4).start, library: at('library'), two: at('two'), authors: at('authors'), m: at('m'), z: at('z'), walk: at('walk'),
+  l5: line(5).start, slice: at('slice'), room: at('room'), add: at('add'),
+  l6: line(6).start, cost: at('cost'), question: at('question'), today: at('today'), ask: at('ask'), combine: at('combine'), answers: at('answers'),
+  l7: line(7).start, bad: at('bad'), traffic: at('traffic'), idle: at('idle'), hot: at('hot'),
+  l8: line(8).start, moving: at('moving'), add2: at('add', 2), hard: at('hard'), last: at('last'), caching: at('caching'), replicas: at('replicas'),
+  ifv: line(9).start, follow: at('follow'),
+};
+
+/* ---------------- layout: Z up */
+const APX = 0, APY = -250, APW = 170, APD = 90, APH = 52;        // your app
+const MAIN = [0, 210];                                             // the one server at the start (and later shard 4)
+const SH = [[-200, 360], [200, 360], [-200, 60], [200, 60], [0, 210]];
+const PW = 186, PD = 116, PH = 12;                                 // shard platform
+const CS = 34, PITCH = 40;                                         // a user cube
+const N = 64, U42 = 42;
+const appTop = [APX, APY + 10, APH + 6];
+function arc(a, b, h, n = 24) { return [...Array(n + 1)].map((_, i) => { const q = i / n; return [lerp(a[0], b[0], q), lerp(a[1], b[1], q), lerp(a[2], b[2], q) + h * 4 * q * (1 - q)]; }); }
+const shTop = (s) => [SH[s][0], SH[s][1], PH + 2 * PITCH + 14];
+const PATH = SH.map((p, s) => arc(appTop, shTop(s), 120));
+const PATHR = PATH.map((p) => p.slice().reverse());
+const PATHM = arc(appTop, [MAIN[0], MAIN[1], PH + 4 * PITCH + 10], 150);
+const GHOSTS = [[-235, 330], [235, 330]];
+const PATHG = GHOSTS.map(([x, y]) => arc([MAIN[0], MAIN[1], PH + 4 * PITCH], [x, y, PH + 4 * PITCH], 60, 16));
+
+/* ---------------- where every cube is */
+const slotMain = (id) => [MAIN[0] + ((id % 4) - 1.5) * PITCH, MAIN[1] + ((Math.floor(id / 4) % 4) - 1.5) * PITCH, PH + CS / 2 + 2 + Math.floor(id / 16) * PITCH];
+const slotSh = (s, k) => [SH[s][0] + ((k % 4) - 1.5) * PITCH, SH[s][1] + ((Math.floor(k / 4) % 2) - 0.5) * PITCH, PH + CS / 2 + 2 + Math.floor(k / 8) * PITCH];
+const FLY = 0.5;
+// the last layer (ids 48..63) arrives as writes during the hook
+const FILL = [...Array(16)].map((_, j) => 0.35 + j * 0.2);
+const BOUNCE = [T.keep + 0.1, T.write1 + 0.1, T.copies + 0.2, T.write2 - 0.1, T.lands - 0.1, T.machine - 0.3];
+const appearT = (id) => (id < 48 ? -1 : FILL[id - 48] + FLY);
+const SPLIT = [...Array(N)].map((_, id) => { const s0 = T.split + 0.05 + rnd(id, 7) * 0.7 + (3 - Math.floor(id / 16)) * 0.08; return { s0, d: 0.85 + rnd(id, 8) * 0.25, h: 110 + rnd(id, 9) * 130 }; });
+const MOVE = [...Array(N)].map((_, id) => { const s0 = T.add2 + 0.25 + rnd(id, 11) * 1.4; return { s0, d: 0.8 + rnd(id, 12) * 0.3, h: 90 + rnd(id, 13) * 160, moves: id % 4 !== id % 5 }; });
+const MOVERS = MOVE.filter((m) => m.moves).length;   // 48 of 64
+function cubeAt(id, t) {   // → [x, y, z, colour, spin]
+  const a = slotMain(id), b = slotSh(id % 4, Math.floor(id / 4)), c = slotSh(id % 5, Math.floor(id / 5));
+  const sp = SPLIT[id], mv = MOVE[id];
+  const fly = (p, q, h) => [lerp(p[0], q[0], ease.inOut(h.q)), lerp(p[1], q[1], ease.inOut(h.q)), lerp(p[2], q[2], ease.inOut(h.q)) + h.h * 4 * h.q * (1 - h.q)];
+  if (t < sp.s0) {
+    const full = ep(t, T.hold - 0.2, T.hold + 0.3);
+    let p = a.slice();
+    const at0 = appearT(id); if (at0 > 0) { const q = ep(t, at0 - 0.2, at0, ease.in); p[2] += (1 - q) * 120; }
+    return [...p, mixHex(O, RED, full * (0.6 + 0.4 * Math.sin(t * 9 + id) ** 2)), 0];
+  }
+  if (t < mv.s0 || !mv.moves && t < mv.s0) {
+    const q = clamp((t - sp.s0) / sp.d);
+    if (q < 1) return [...fly(a, b, { q, h: sp.h }), mixHex(mixHex(O, RED, 0.6), SC[id % 4], q), q];
+    return [...b, SC[id % 4], 0];
+  }
+  const q = clamp((t - mv.s0) / mv.d);
+  if (q < 1) return [...fly(b, c, { q, h: mv.moves ? mv.h : 40 }), mv.moves ? mixHex(AMB, SC[id % 5], q * q) : SC[id % 5], mv.moves ? q : 0];
+  return [...c, SC[id % 5], 0];
+}
+const shardOf = (id, t) => (t < MOVE[id].s0 + MOVE[id].d * 0.5 ? id % 4 : id % 5);
+
+/* ---------------- traffic */
+const REQ = [];   // {s, d: shard (or -1 = the one server), kind: 'w' | 'r' | 'q', ret}
+(() => {
+  FILL.forEach((s) => REQ.push({ s, d: -1, kind: 'w' }));
+  BOUNCE.forEach((s) => REQ.push({ s, d: -1, kind: 'w', bounce: true }));
+  let i = 0;
+  for (let t = T.some - 0.2; t < T.l2 + 0.8; t += 0.24) REQ.push({ s: t, d: i++ % 4, kind: i % 3 ? 'r' : 'w', ret: true });
+  REQ.push({ s: T.straight - 0.35, d: 2, kind: 'r', ret: true, key: '42' });
+  for (let t = T.l5 + 0.2; t < T.l6 - 0.3; t += 0.085) REQ.push({ s: t, d: i++ % 4, kind: i % 4 ? 'r' : 'w', ret: true });
+  for (let s = 0; s < 4; s++) REQ.push({ s: T.ask - 0.25, d: s, kind: 'q', ret: true });
+  for (let t = T.bad + 0.3; t < T.l8 - 0.1; t += 0.05) { const hot = i++ % 9 !== 0; REQ.push({ s: t, d: hot ? 0 : 1 + (i % 3), kind: 'r', ret: !hot || i % 2 === 0, flood: hot }); }
+  for (let t = T.last + 0.2; t < DURATION; t += 0.16) REQ.push({ s: t, d: i++ % 5, kind: 'r', ret: true });
+})();
+
+/* ---------------- load per server, for the meter */
+function loads(t) {
+  if (t < SPLIT[0].s0 - 0.2) return [{ k: 'DB', v: lerp(0.55, 1, ep(t, 0.3, T.hold)), c: t > T.hold - 0.2 ? RED : O }];
+  const n = t > T.add2 + 0.2 ? 5 : 4, out = [];
+  for (let s = 0; s < n; s++) {
+    let v = 0.22 + 0.05 * Math.sin(t * 3 + s * 2), c = SC[s];
+    if (t > T.l5 && t < T.l6) v = 0.3 + 0.06 * Math.sin(t * 7 + s * 2);
+    if (t > T.ask && t < T.answers + 0.3) v = 0.62 + 0.05 * Math.sin(t * 9 + s);
+    if (t > T.bad + 0.4 && t < T.l8) { const hot = s === 0; v = lerp(v, hot ? 0.97 : 0.05, ep(t, T.bad + 0.4, T.bad + 1.2)); c = hot ? RED : DIM; }
+    if (t > T.add2 && t < T.last) { v = s === 4 ? ep(t, T.add2, T.add2 + 1.6) * 0.8 : 0.85 + 0.1 * Math.sin(t * 11 + s); c = AMB; }
+    if (t >= T.last) v = 0.2 + 0.04 * Math.sin(t * 3 + s * 2);
+    out.push({ k: 'S' + s, v, c, ghost: false });
+  }
+  if (n === 4 && t > T.add - 0.1 && t < T.l6 - 0.1) out.push({ k: '+', v: 0, c: OK, ghost: true });
+  return out;
+}
+
+/* ---------------- camera */
+const pcam = new TH.PerspectiveCamera(44, 540 / 960, 5, 20000); pcam.up.set(0, 0, 1);
+const WIDE = { p: [0, -1250, 1250], l: [0, 60, 0], f: 44 };
+const SHOTS = [
+  { t: 0, p: [70, -1000, 960], l: [0, 70, 0], f: 44 },
+  { t: 0.01, d: 6, p: [0, -1100, 1000], l: [0, 60, 0], f: 44, e: ease.out },
+  { t: T.split - 0.2, d: 1.4, ...WIDE },
+  { t: T.key - 0.7, d: 1.0, p: [0, -1350, 1150], l: [0, 130, 0], f: 44 },
+  { t: T.l5 - 0.2, d: 1.0, ...WIDE },
+  { t: T.l7 - 0.2, d: 1.0, p: [-60, -1230, 1230], l: [-30, 70, 0], f: 44 },
+  { t: T.l8 - 0.1, d: 1.0, ...WIDE },
+];
+const KICKS = [[T.hold, 0.04], [T.split, 0.05], [T.shard, 0.03], [T.u42, 0.03], [T.add, 0.03], [T.combine, 0.03], [T.hot, 0.04], [T.add2, 0.03], [T.last, 0.03]];
+const SHAKES = [[T.hold, 4, 0.3], [T.split + 0.3, 5, 0.4], [T.hot, 4, 0.3]];
+const _rv = new TH.Vector3();
+function shoot(t) {
+  let p = SHOTS[0].p.slice(), l = SHOTS[0].l.slice(), f = SHOTS[0].f;
+  for (let i = 1; i < SHOTS.length; i++) {
+    const k = SHOTS[i]; if (t < k.t) break;
+    const q = k.d ? (k.e || ease.inOut)(prog(t, k.t, k.t + k.d)) : 1;
+    p = p.map((v, j) => lerp(v, k.p[j], q)); l = l.map((v, j) => lerp(v, k.l[j], q)); f = lerp(f, k.f, q);
+  }
+  let kick = 0;
+  for (const [t0, amp] of KICKS) { const dt = t - t0; if (dt > 0 && dt < 1.2) kick += amp * (dt < 0.05 ? dt / 0.05 : Math.exp(-(dt - 0.05) * 6)); }
+  let sx = 0, sy = 0;
+  for (const [t0, amp, dur] of SHAKES) { const dt = t - t0; if (dt > 0 && dt < dur) { const k = amp * (1 - dt / dur); sx += k * Math.sin(t * 91); sy += k * Math.cos(t * 67); } }
+  pcam.position.set(p[0] + 6 * Math.sin(t * 0.37), p[1] + 6 * Math.cos(t * 0.29), p[2] + 4 * Math.sin(t * 0.23));
+  pcam.lookAt(l[0] + sx, l[1], l[2] + sy);
+  pcam.fov = f * (1 - kick); pcam.updateProjectionMatrix(); pcam.updateMatrixWorld();
+  cam.f = l;
+  _rv.setFromMatrixColumn(pcam.matrixWorld, 0); const n = Math.hypot(_rv.x, _rv.y) || 1; camRight = [_rv.x / n, _rv.y / n, 0];
+  const d = Math.hypot(p[0] - l[0], p[1] - l[1], p[2] - l[2]);
+  scene.fog.near = d * 0.9; scene.fog.far = d * 3.4;
+}
+const _pv = new TH.Vector3();
+P = function (x, y, z) { _pv.set(x, y, z).project(pcam); return [(_pv.x + 1) * 270, (1 - _pv.y) * 480, _pv.z]; };
+
+/* ---------------- the stage */
+floor.scale.set(2.2, 2.2, 1); floor.position.set(0, 1500, -0.5);
+const APP = emberBox(APX, APY, APW, APD, APH, O2);
+const PLM = emberBox(MAIN[0], MAIN[1], 200, 200, PH, O);
+const PLS = SH.map(([x, y], s) => emberBox(x, y, PW, PD, PH, SC[s]));
+const POOLM = pool(MAIN[0], MAIN[1], 240, O);
+const POOLS = SH.map(([x, y], s) => pool(x, y, 190, SC[s]));
+const POOLA = pool(APX, APY, 190, O2);
+const GH = GHOSTS.map(([x, y]) => emberBox(x, y, 4 * PITCH, 4 * PITCH, 4 * PITCH, RD, { lw: 1.6, z: PH }));
+
+/* ---------------- user cubes: one instanced mesh, the edges glow through a bordered texture */
+const CUBES = (() => {
+  const c = document.createElement('canvas'); c.width = c.height = 64; const g = c.getContext('2d');
+  g.fillStyle = 'rgb(48,48,48)'; g.fillRect(0, 0, 64, 64);
+  g.strokeStyle = '#fff'; g.lineWidth = 6; g.strokeRect(3, 3, 58, 58);
+  g.strokeStyle = 'rgba(255,255,255,0.35)'; g.lineWidth = 2; g.strokeRect(13, 13, 38, 38);
+  const tx = new TH.CanvasTexture(c); tx.colorSpace = TH.SRGBColorSpace; tx.anisotropy = 8;
+  const m = new TH.InstancedMesh(new TH.BoxGeometry(CS, CS, CS), new TH.MeshBasicMaterial({ map: tx, toneMapped: false, fog: true }), N);
+  m.instanceMatrix.setUsage(TH.DynamicDrawUsage); m.setColorAt(0, new TH.Color()); m.instanceColor.setUsage(TH.DynamicDrawUsage); m.frustumCulled = false; scene.add(m);
+  return m;
+})();
+const _o = new TH.Object3D(), _c = new TH.Color();
+
+/* ---------------- the world, frame by frame */
+const shUp = (s, t) => (s === 4 ? ep(t, T.add2 - 0.1, T.add2 + 0.5, ease.out) : ep(t, T.split - 0.3 + s * 0.08, T.split + 0.3 + s * 0.08, ease.out));
+function hotK(t) { return ep(t, T.bad + 0.5, T.bad + 1.3) * (1 - ep(t, T.l8 - 0.4, T.l8 + 0.2)); }
+function world(t) {
+  const fadeIn = ep(t, 0, 0.5), full = ep(t, T.hold - 0.2, T.hold + 0.3), gone = ep(t, T.split, T.split + 0.6);
+  APP.setLook(O2, 1, fadeIn); POOLA.set(O2, 0.4 * fadeIn);
+  // the one server
+  const mainCol = full > 0.5 && t < T.split ? mixHex(O, RED, 0.6 + 0.4 * Math.sin(t * 9) ** 2) : O;
+  PLM.setLook(mainCol, 1 + full, fadeIn * (1 - gone)); POOLM.set(full > 0.5 ? RED : O, 0.5 * fadeIn * (1 - gone));
+  // ghost copies: they get every write too
+  const ga = ep(t, T.copies - 0.2, T.copies + 0.3) * (1 - ep(t, T.machine + 0.1, T.l1 + 0.1));
+  GH.forEach((g) => g.setLook(mixHex(RD, RED, full * 0.5), 1.2, ga * 0.55));
+  // shard platforms
+  const hk = hotK(t);
+  SH.forEach((_, s) => {
+    let a = shUp(s, t), col = SC[s], gl = 1.2;
+    if (s === 4 && t > T.add - 0.1 && t < T.l6 - 0.1) { a = Math.max(a, 0.35 * ep(t, T.add - 0.1, T.add + 0.2) * (1 - ep(t, T.l6 - 0.4, T.l6 - 0.1)) * (0.7 + 0.3 * Math.sin(t * 8))); }
+    if (hk > 0) { col = s === 0 ? mixHex(SC[0], RED, hk * (0.6 + 0.4 * Math.sin(t * 10) ** 2)) : mixHex(SC[s], DIM, hk * 0.8); gl = s === 0 ? 1.2 + hk : 1.2 - hk * 0.8; }
+    if (t > T.add2 && t < T.last) col = mixHex(col, AMB, 0.5 * Math.sin(Math.PI * prog(t, T.add2, T.last)));
+    PLS[s].setLook(col, gl, a); PLS[s].g.position.z = -PH * 1.2 * (1 - a);
+    POOLS[s].set(col, 0.42 * a);
+  });
+
+  // cubes
+  for (let id = 0; id < N; id++) {
+    let [x, y, z, col, spin] = cubeAt(id, t);
+    let on = appearT(id) < 0 || t > appearT(id) - 0.2;
+    let k = 0.75;
+    if (id === U42) {   // user 42 lifts out of shard 2
+      const lift = ep(t, T.u42 - 0.1, T.u42 + 0.35, ease.out) * (1 - ep(t, T.l4 - 0.5, T.l4 - 0.1));
+      z += lift * 46; if (lift > 0.01) { col = mixHex(col, WH, 0.45 * lift); k = 0.75 + 0.9 * lift; }
+    }
+    const sh = shardOf(id, t);
+    if (hk > 0 && t < T.l8 + 0.2) { if (sh === 0) { col = mixHex(col, RED, hk * (0.5 + 0.5 * Math.sin(t * 12 + id) ** 2)); k = 0.75 + 0.5 * hk; } else k = 0.75 - 0.4 * hk; }
+    if (t > T.ask + 0.2 && t < T.combine + 0.2) k += 0.6 * pulse(t, T.ask + 0.25, 4);
+    if (t > T.l3 - 0.2 && t < T.l4 - 0.1 && id !== U42) k *= sh === 2 ? 1 : 1 - 0.45 * ep(t, T.straight - 0.3, T.straight + 0.2) * (1 - ep(t, T.l4 - 0.5, T.l4 - 0.1));
+    _o.position.set(on ? x : 0, on ? y : 0, on ? z : -999);
+    _o.rotation.set(spin * 2.4 * (rnd(id, 3) - 0.5) * Math.PI, spin * 2.4 * (rnd(id, 4) - 0.5) * Math.PI, spin * 1.6 * (rnd(id, 5) - 0.5) * Math.PI);
+    _o.scale.setScalar(1); _o.updateMatrix(); CUBES.setMatrixAt(id, _o.matrix);
+    _c.set(col).multiplyScalar(k * 1.6); CUBES.setColorAt(id, _c);
+  }
+  CUBES.instanceMatrix.needsUpdate = true; CUBES.instanceColor.needsUpdate = true;
+  if (t > T.split - 0.1 && t < T.split + 0.6) for (let s = 0; s < 6; s++) sparks(t, T.split + s * 0.05, MAIN[0], MAIN[1], PH + 80, mixHex(O, RED, 0.5), 10, 40 + s, 220, 0.9, 200);
+
+  // requests: out along the path, a smaller pulse comes back
+  for (const r of REQ) {
+    const path = r.d < 0 ? PATHM : PATH[r.d], q = prog(t, r.s, r.s + FLY);
+    const col = r.kind === 'w' ? WR : r.kind === 'q' ? WH : RD;
+    if (q > 0 && q < 1) orb(path, ease.inOut(q), r.bounce && q > 0.85 ? RED : r.key && q > 0.85 ? OK : r.flood && hk > 0.5 ? mixHex(RD, RED, 0.5) : col, 1, r.key || r.kind === 'q' ? 1.15 : r.flood ? 0.65 : 0.75);
+    const e = r.s + FLY;
+    if (r.bounce && t > e && t < e + 0.5) { sparks(t, e, MAIN[0], MAIN[1], PH + 4 * PITCH + 6, RED, 14, Math.round(r.s * 10), 170, 0.5, 260); ripple(t, e, MAIN[0], MAIN[1], PH + 4 * PITCH + 4, RED, 120, 0.5); }
+    if (r.d < 0 && !r.bounce && t > e && t < e + 0.5) ripple(t, e, MAIN[0], MAIN[1], PH + 4 * PITCH + 4, WR, 110, 0.5);
+    if (r.key || r.kind === 'q') ripple(t, e, SH[r.d][0], SH[r.d][1], PH + 2 * PITCH + 8, r.kind === 'q' ? WH : OK, 120, 0.6);
+    if (r.ret) {
+      const qr = prog(t, e + (r.kind === 'q' ? 0.25 : 0), e + (r.kind === 'q' ? 0.25 : 0) + FLY * 0.85);
+      if (qr > 0 && qr < 1) orb(PATHR[r.d], ease.inOut(qr), r.kind === 'q' ? OK : mixHex(RD, WH, 0.35), 0.8, r.kind === 'q' ? 0.85 : 0.5);
+    }
+    // the copies get every write too
+    if (r.d < 0 && ga > 0.2 && r.s > T.copies - 0.3) GHOSTS.forEach((_, g) => { const qq = prog(t, e + 0.05, e + 0.5); if (qq > 0 && qq < 1) orb(PATHG[g], qq, WR, ga, 0.55); });
+  }
+  if (t > T.combine) ripple(t, T.ask - 0.25 + FLY + 0.25 + FLY * 0.85, APX, APY, APH + 4, OK, 160, 0.8);
+  if (t > T.hot - 0.1 && t < T.hot + 0.8) sparks(t, T.hot, SH[0][0], SH[0][1], PH + 2 * PITCH + 10, RED, 22, 77, 200, 0.8, 220);
+  if (t > T.add2) ripple(t, T.add2 + 0.1, SH[4][0], SH[4][1], 1, OK, 170, 0.8);
+}
+
+/* ---------------- world tags */
+const tg = (key, html, style, wp, t, a, b, dy = 0) => { const e = tag(key, html, style, wp, t, a, b, dy); if (P(...wp)[2] > 1) e.style.display = 'none'; return e; };
+function tags(t) {
+  const big = (c) => `font-size:15px;padding:9px 13px;letter-spacing:1px;border-color:${c}`;
+  const sm = (c) => `font-size:13px;padding:7px 11px;letter-spacing:1px;border-color:${c}`;
+  const sp = (c, s) => `<span style="color:${c}">${s}</span>`;
+  const appW = [APX, APY - APD / 2, 0], top = (s, e = 0) => [SH[s][0], SH[s][1], PH + 2 * PITCH + 20 + e], mainTop = [MAIN[0], MAIN[1], PH + 4 * PITCH + 30];
+  // hook
+  tg('db', sp(O2, 'ONE DATABASE SERVER'), big(O2), mainTop, t, 0.3, T.hold - 0.2, -34);
+  tg('full', sp(RED, '✕ FULL · CAN\'T KEEP UP'), big(RED), mainTop, t, T.hold - 0.1, T.copies - 0.15, -34);
+  tg('cp', sp(RD, 'COPIES GET EVERY WRITE TOO'), big(RD), mainTop, t, T.copies - 0.05, T.write2 - 0.15, -34);
+  tg('one', sp(RED, 'EVERY WRITE → ONE MACHINE'), big(RED), appW, t, T.write2 - 0.1, T.l1 - 0.2, 30);
+  // split
+  tg('sp', sp(WH, 'SPLIT THE USERS'), big(WH), appW, t, T.split - 0.05, T.shard - 0.2, 30);
+  for (let s = 0; s < 4; s++) tg('sh' + s, sp(SC[s], 'SHARD ' + s), sm(SC[s]), top(s), t, T.shard - 0.05 + s * 0.06, T.l2 + 0.4, -24);
+  tg('some', sp(WH, 'EACH SHARD = SOME USERS'), big(WH), appW, t, T.some - 0.1, T.l2 + 0.4, 30);
+  // the rule
+  tg('key', sp(AMB, 'SHARD KEY = USER ID'), big(AMB), appW, t, T.key - 0.1, T.l3 - 0.2, 30);
+  tg('u42', sp(WH, 'USER 42'), big(WH), [...slotSh(2, 10).slice(0, 2), slotSh(2, 10)[2] + 70], t, T.u42 - 0.05, T.l4 - 0.2, -20);
+  tg('s2', sp(RD, 'SHARD 2'), sm(RD), [SH[2][0], SH[2][1] - PD / 2, 0], t, T.s2 - 0.05, T.l4 - 0.2, 26);
+  tg('only', sp(OK, '→ ONLY SHARD 2, NOT ALL 4'), big(OK), appW, t, T.straight - 0.1, T.l4 - 0.2, 30);
+  // spread, more shards
+  tg('slice', sp(WH, 'EACH SHARD: A SLICE OF THE TRAFFIC'), big(WH), appW, t, T.slice - 0.1, T.room - 0.1, 30);
+  tg('add', sp(OK, '+ ADD A SHARD'), big(OK), [SH[4][0], SH[4][1], PH + 30], t, T.add - 0.05, T.l6 - 0.15, -30);
+  // scatter-gather
+  tg('cost', sp(RED, 'THE COST'), big(RED), appW, t, T.cost - 0.1, T.question - 0.1, 30);
+  tg('q', sp(WH, '“WHO SIGNED UP TODAY?”'), big(WH), appW, t, T.question - 0.05, T.combine - 0.1, 30);
+  const CNT = [3, 5, 2, 4];
+  for (let s = 0; s < 4; s++) tg('c' + s, sp(OK, CNT[s]), sm(OK), top(s), t, T.ask - 0.25 + FLY, T.l7 - 0.2, -24);
+  tg('sum', sp(OK, '3 + 5 + 2 + 4 = 14'), big(OK), appW, t, T.combine, T.l7 - 0.2, 30);
+  // hot shard
+  tg('bad', sp(RED, 'BAD KEY: COUNTRY'), big(RED), appW, t, T.bad - 0.1, T.idle - 0.3, 30);
+  tg('most', sp(RED, '90% → SHARD 0'), sm(RED), top(0), t, T.traffic - 0.3, T.hot - 0.1, -24);
+  for (let s = 1; s < 4; s++) tg('idle' + s, sp(GR, 'IDLE'), sm(GR), top(s), t, T.idle - 0.25 + s * 0.05, T.l8 - 0.2, -24);
+  tg('hot', sp(RED, 'HOT SHARD'), big(RED), top(0), t, T.hot - 0.05, T.l8 - 0.2, -24);
+  tg('hot2', sp(RED, 'ONE SHARD DOES ALL THE WORK'), big(RED), appW, t, T.idle - 0.2, T.l8 - 0.2, 30);
+  // moving data
+  tg('new', sp(OK, 'SHARD 4'), sm(OK), [SH[4][0], SH[4][1], PH + 2 * PITCH + 20], t, T.add2 + 0.1, T.last - 0.1, -24);
+  tg('mv', sp(AMB, `% 4 → % 5: ${MOVERS} OF 64 USERS MOVE`), big(AMB), appW, t, T.add2 + 0.2, T.last - 0.15, 30);
+  tg('last', sp(OK, 'SHARD LAST'), big(OK), appW, t, T.last - 0.1, T.ifv - 0.2, 30);
+  tg('first', sp(WH, 'FIRST: CACHING · REPLICAS'), big(WH), [0, 200, 0], t, T.caching - 0.2, T.ifv - 0.2, 200);
+}
+
+/* ---------------- reel config */
+const REEL = {
+  shots: [], world, tags,
+  code: [
+    [T.key - 0.45, T.l4 - 0.15, 'router.js', 'pick a shard', [[0, 'SHARD KEY', AMB], [T.straight - 0.1, 'ONE SHARD', OK]],
+      [['// shard key: the user ID'], ['const shard = userId % 4'], ['db[shard].query(…)']],
+      [[T.rule, 2, '42 % 4 = 2', 'amb'], [T.straight - 0.1, 3, '→ shard 2', 'good']]],
+  ],
+  hl: /\b(const|query)\b/g,
+  tools: [], slams: [],
+  bad: ['outgrows', 'hold', 'it', 'all', 'write', 'machine', 'cost', 'every', 'bad', 'idle', 'hot', 'hard'],
+  good: ['split', 'some', 'shard', 'shards', 'user', 'id', 'number', '42', '2', 'one', 'slice', 'walk', 'last', 'caching', 'replicas', 'add', 'more'],
+  tiles: [['▦', 'SHARDING'], ['⧉', 'READ<br>REPLICAS'], ['⇄', 'CONNECTION<br>POOLING']],
+  end: T.ifv - 0.15, follow: T.follow,
+  cover: { t: 'SHARDING', at: T.split + 1.35, zoom: 1, dy: 60 },
+  flash: (t) => 0.05 * pulse(t, T.hold, 7) + 0.04 * pulse(t, T.split + 0.1, 6) + 0.05 * pulse(t, T.hot, 6),
+};
+</script>
+<script src="../_ember/overlay.js"></script>
+<script>
+/* ---------------- bloom: scene → half-float target, bright pass, three blur levels, composite to the canvas */
+const RT = (w, h, s = 0) => new TH.WebGLRenderTarget(w, h, { type: TH.HalfFloatType, samples: s, depthBuffer: s > 0 });
+const rtMain = RT(1080, 1920, 4), BL = [[RT(540, 960), RT(540, 960)], [RT(270, 480), RT(270, 480)], [RT(135, 240), RT(135, 240)]];
+const fsCam = new TH.OrthographicCamera(-1, 1, 1, -1, 0, 1), fsScene = new TH.Scene(), fsQuad = new TH.Mesh(new TH.PlaneGeometry(2, 2));
+fsQuad.frustumCulled = false; fsScene.add(fsQuad);
+const VS = 'varying vec2 vUv; void main() { vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }';
+const shm = (fs, u) => new TH.ShaderMaterial({ uniforms: u, vertexShader: VS, fragmentShader: fs, depthTest: false, depthWrite: false });
+const mBright = shm(`uniform sampler2D tex; uniform float th; varying vec2 vUv;
+void main() { vec3 c = texture2D(tex, vUv).rgb; float l = max(c.r, max(c.g, c.b)); gl_FragColor = vec4(c * smoothstep(th, th + 0.4, l), 1.0); }`,
+  { tex: { value: null }, th: { value: 0.8 } });
+const mBlur = shm(`uniform sampler2D tex; uniform vec2 dir; varying vec2 vUv;
+void main() {
+  vec3 c = texture2D(tex, vUv).rgb * 0.2270270270;
+  c += (texture2D(tex, vUv + dir * 1.3846153846).rgb + texture2D(tex, vUv - dir * 1.3846153846).rgb) * 0.3162162162;
+  c += (texture2D(tex, vUv + dir * 3.2307692308).rgb + texture2D(tex, vUv - dir * 3.2307692308).rgb) * 0.0702702703;
+  gl_FragColor = vec4(c, 1.0);
+}`, { tex: { value: null }, dir: { value: new TH.Vector2() } });
+const mComp = shm(`uniform sampler2D base, b1, b2, b3; uniform float k1, k2, k3; varying vec2 vUv;
+void main() {
+  vec3 c = texture2D(base, vUv).rgb + texture2D(b1, vUv).rgb * k1 + texture2D(b2, vUv).rgb * k2 + texture2D(b3, vUv).rgb * k3;
+  c = c / (1.0 + max(c - 1.0, 0.0) * 0.6);
+  gl_FragColor = vec4(c, 1.0);
+  #include <colorspace_fragment>
+}`, { base: { value: rtMain.texture }, b1: { value: BL[0][0].texture }, b2: { value: BL[1][1].texture }, b3: { value: BL[2][1].texture }, k1: { value: 0.5 }, k2: { value: 0.65 }, k3: { value: 0.8 } });
+function pass(mat, dst) { fsQuad.material = mat; renderer.setRenderTarget(dst); renderer.render(fsScene, fsCam); }
+function blur(src, dst, dx, dy) { mBlur.uniforms.tex.value = src.texture; mBlur.uniforms.dir.value.set(dx / src.width, dy / src.height); pass(mBlur, dst); }
+function bloom() {
+  mBright.uniforms.tex.value = rtMain.texture; pass(mBright, BL[0][0]);
+  blur(BL[0][0], BL[0][1], 1, 0); blur(BL[0][1], BL[0][0], 0, 1);
+  blur(BL[0][0], BL[1][0], 1, 0); blur(BL[1][0], BL[1][1], 0, 1);
+  blur(BL[1][1], BL[2][0], 1, 0); blur(BL[2][0], BL[2][1], 0, 1);
+  pass(mComp, null);
+}
+
+/* ---------------- load meter, library card */
+const stg = $('stage'), before = $('prof');
+const mk = (html) => { const w = document.createElement('div'); w.innerHTML = html.trim(); const n = w.firstChild; stg.insertBefore(n, before); return n; };
+const MT = mk(`<div id="mt"><div class="h" id="mtH">LOAD PER SERVER</div><div class="bars">${[0, 1, 2, 3, 4, 5].map((i) => `<div class="c" id="mc${i}"><div class="b"><div class="f" id="mf${i}"></div></div><div class="k" id="mk${i}"></div></div>`).join('')}</div></div>`);
+const LIB = mk(`<div id="lib" class="cd2"><div class="h">A library, two buildings</div><svg id="libS" viewBox="0 0 460 230"></svg><div id="libL"></div></div>`);
+if (/cover/.test(location.hash)) { const s = document.createElement('style'); s.textContent = '#mt, .cd2 { display: none !important; }'; document.head.appendChild(s); }
+(() => {
+  const bld = (x, id, col) => `<g transform="translate(${x},0)"><path d="M0 70 L65 30 L130 70 Z" fill="none" stroke="${col}" stroke-width="3" stroke-linejoin="round"/>
+    <rect x="8" y="70" width="114" height="112" rx="3" fill="#15130f" stroke="${col}" stroke-width="3"/>
+    ${[0, 1, 2, 3].map((i) => `<line x1="${24 + i * 26}" y1="84" x2="${24 + i * 26}" y2="150" stroke="${col}" stroke-width="5" stroke-linecap="round" opacity="0.35"/>`).join('')}
+    <rect x="50" y="150" width="30" height="32" rx="2" fill="none" stroke="${col}" stroke-width="2.5"/>
+    <text id="${id}" x="65" y="122" text-anchor="middle" font-family="Inter" font-size="30" font-weight="900" fill="${col}" opacity="0"></text></g>`;
+  $('libS').innerHTML = `<line x1="10" y1="196" x2="450" y2="196" stroke="#3a332d" stroke-width="2"/>${bld(20, 'bA', '#FFC34D')}${bld(310, 'bN', '#C792FF')}
+<g id="rd"><circle cx="0" cy="-44" r="9" fill="none" stroke="#F2EEE8" stroke-width="3"/><path d="M0 -34 L0 -10 M0 -10 L-9 8 M0 -10 L9 8 M0 -28 L-10 -16 M0 -28 L12 -22" id="rdL" fill="none" stroke="#F2EEE8" stroke-width="3" stroke-linecap="round"/>
+<g id="bk"><rect x="10" y="-30" width="44" height="16" rx="2" fill="#F2EEE8"/><text x="32" y="-18.5" text-anchor="middle" font-family="Mono" font-size="9" font-weight="800" fill="#15130f">ORWELL</text></g></g>`;
+})();
+function libDom(t) {
+  const p = popIn(t, T.l4 - 0.1, T.l5 - 0.1); vis(LIB, p.a, `translateY(${p.y}px) scale(${p.s})`);
+  if (p.a <= 0.001) return;
+  $('bA').textContent = 'A–M'; $('bN').textContent = 'N–Z';
+  $('bA').setAttribute('opacity', ep(t, T.authors - 0.05, T.authors + 0.2)); $('bN').setAttribute('opacity', ep(t, T.z - 0.5, T.z - 0.2));
+  // the reader walks from the middle to the N–Z door once both signs are up
+  const w = ep(t, T.z + 0.1, T.walk + 0.1, ease.inOut), x = lerp(212, 352, w), y = 190 - Math.abs(Math.sin(w * Math.PI * 6)) * 3 * (w > 0 && w < 1);
+  $('rd').setAttribute('transform', `translate(${x},${y})`);
+  const st = Math.sin(w * Math.PI * 6) * 9 * (w > 0 && w < 1);
+  $('rdL').setAttribute('d', `M0 -34 L0 -10 M0 -10 L${-9 + st} 8 M0 -10 L${9 - st} 8 M0 -28 L-10 -16 M0 -28 L12 -22`);
+  const ok = t > T.walk - 0.1;
+  setH('libL', ok ? '✓ BUILDING = SHARD · FIRST LETTER = SHARD KEY' : t > T.z - 0.2 ? '“ORWELL” STARTS WITH O → N–Z' : 'ONE LIBRARY, SPLIT IN TWO');
+  $('libL').style.color = ok ? OK : t > T.z - 0.2 ? PU : AMB;
+}
+function meterDom(t) {
+  const p = popIn(t, 0.15, T.ifv - 0.15); vis(MT, p.a, `translateY(${p.y}px) scale(${p.s})`);
+  if (p.a <= 0.001) return;
+  const L = loads(t);
+  setH('mtH', t > T.add2 && t < T.last ? 'MOVING DATA' : 'LOAD PER SERVER');
+  $('mtH').style.color = t > T.add2 && t < T.last ? AMB : GR;
+  for (let i = 0; i < 6; i++) {
+    const c = $('mc' + i), l = L[i];
+    c.style.display = l ? 'flex' : 'none'; if (!l) continue;
+    $('mf' + i).style.height = (100 * clamp(l.v)) + '%'; $('mf' + i).style.color = l.c;
+    setH('mk' + i, l.k); $('mk' + i).style.color = l.ghost ? OK : l.c === DIM ? GR : l.c;
+    c.style.opacity = l.ghost ? 0.5 + 0.5 * Math.sin(t * 8) ** 2 : 1;
+    c.firstChild.style.outline = l.ghost ? '1px dashed ' + OK : 'none';
+  }
+}
+function clampTags() {
+  for (const k in LB) {
+    const e = LB[k]; if (e.style.display === 'none') continue;
+    const w = e.offsetWidth, x = parseFloat(e.style.left), y = clamp(parseFloat(e.style.top), 196, 668);
+    const right = y > 450 ? 540 - 70 : 540 - 14;
+    e.style.left = clamp(x, 14 + w / 2, right - w / 2) + 'px'; e.style.top = y + 'px';
+  }
+}
+
+window.render = (t) => {
+  shoot(t);
+  orbsReset(); sparksReset(); ringsReset();
+  REEL.world(t);
+  sparksFlush(); updateEmbers(t);
+  renderer.setRenderTarget(rtMain); renderer.render(scene, pcam);
+  bloom();
+  REEL.tags(t); clampTags();
+  card(t); tools(t);
+  meterDom(t); libDom(t);
+  $('dim').style.opacity = Math.max(0.55 * ep(t, REEL.end, REEL.end + 0.6), 0.6 * window01(t, T.l4 - 0.1, T.l5 - 0.05, 0.3));
+  $('flash').style.opacity = REEL.flash(t);
+  caps(t);
+  profile(t);
+};
+</script>
+<script src="../_ember/play.js"></script>
+</body>
+</html>

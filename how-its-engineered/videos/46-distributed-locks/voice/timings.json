@@ -1,0 +1,82 @@
+[
+ {
+  "li": 0,
+  "pi": 0,
+  "say": "Your billing job ran at midnight. On all three of your servers. Every customer got three invoices.",
+  "show": "Your billing job ran at midnight. On all *three* of your servers. Every customer got [three invoices.]",
+  "start": 0.0,
+  "end": 5.6
+ },
+ {
+  "li": 1,
+  "pi": 0,
+  "say": "A regular lock in your code lives inside one server's memory. It can't stop the other two.",
+  "show": "A regular lock in your code lives inside *one server's* memory. It [can't stop the other two.]",
+  "start": 6.3,
+  "end": 10.1
+ },
+ {
+  "li": 2,
+  "pi": 0,
+  "say": "A distributed lock lives in one shared place that every server can reach, like Redis.",
+  "show": "A *distributed lock* lives in one *shared place* that every server can reach, like *Redis.*",
+  "start": 10.66,
+  "end": 14.72
+ },
+ {
+  "li": 3,
+  "pi": 0,
+  "say": "At midnight, all three race to grab that lock. Only the first one gets it.",
+  "show": "At midnight, all three *race* to grab that lock. Only the [first one] gets it.",
+  "start": 15.42,
+  "end": 18.9
+ },
+ {
+  "li": 4,
+  "pi": 0,
+  "say": "Server two wins and sends the invoices. Servers one and three see the lock is taken, and skip the job.",
+  "show": "Server two *wins* and sends the invoices. Servers one and three see the lock is taken, and *skip the job.*",
+  "start": 19.36,
+  "end": 23.68
+ },
+ {
+  "li": 5,
+  "pi": 0,
+  "say": "Like a talking stick: only the one holding it gets to speak.",
+  "show": "Like a *talking stick:* only the one holding it [gets to speak.]",
+  "start": 24.32,
+  "end": 26.6
+ },
+ {
+  "li": 6,
+  "pi": 0,
+  "say": "But what if server two crashes while holding it? So the lock gets a thirty-second timer. When time's up, it frees itself.",
+  "show": "But what if server two [crashes] while holding it? So the lock gets a *thirty-second timer.* When time's up, it *frees itself.*",
+  "start": 27.12,
+  "end": 32.3
+ },
+ {
+  "li": 7,
+  "pi": 0,
+  "say": "In Redis, one SET command grabs the lock only if it's free, and starts the timer. Et-see-dee and ZooKeeper offer locks too.",
+  "show": "In Redis, one *SET command* grabs the lock only if it's free, and starts the timer. *etcd* and *ZooKeeper* offer locks too.",
+  "start": 32.86,
+  "end": 38.86
+ },
+ {
+  "li": 8,
+  "pi": 0,
+  "say": "One catch: a frozen server can wake up after its timer ran out, still thinking it's in charge. The fix is a fencing token: each new lock gets a higher number, and storage rejects writes with an older one.",
+  "show": "One catch: a frozen server can wake up after its timer [ran out,] still thinking it's in charge. The fix is a *fencing token:* each new lock gets a higher number, and storage [rejects writes with an older one.]",
+  "start": 39.48,
+  "end": 48.82
+ },
+ {
+  "li": 9,
+  "pi": 0,
+  "say": "If you're a vibe coder, follow for the system design your AI skipped.",
+  "show": "If you're a vibe coder, follow for the system design your AI [skipped.]",
+  "start": 49.3,
+  "end": 52.06
+ }
+]

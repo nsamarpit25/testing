@@ -1,0 +1,73 @@
+{
+ "prompt": "AUDIO PROFILE\nCleo: a young woman software developer in her mid twenties. Soft, natural, conversational voice. Real and understated, never cartoonish.\nClaude: a young man's voice. Calm, warm and gently dry-witted, never theatrical. Few words.\n\nTHE SCENE, END TO END\nNight at her desk. Cleo has spent two hours trying to center a box on her web page. Claude, a small companion on her desk, fixes it in two lines with flexbox. Then the designer asks for it slightly to the left.\n\nLINE BY LINE\n1. Cleo, exhausted.\n2. Claude, calm.\n3. Cleo, flat.\n4. Claude, curious.\n5. Cleo, listing, deadpan.\n6. Claude, gentle.\n7. Cleo, proud, serious.\n8. Claude, dry.\n9. Cleo, baffled.\n10. Claude, neutral.\n11. Cleo, tired, a little sad.\n12. Claude, clear, simple.\n13. Cleo, typing, then amazed.\n14. Claude, dry.\n15. Cleo, flat.\n16. Cleo, reading a message, dread.\n17. Claude, completely straight.\n\nDIRECTOR'S NOTES\nA natural, conversational pace, like two friends at a desk; not rushed, not slow. Let the jokes land with a short beat before the dry lines. Leave a short beat at every \"...\"; never read bracketed tags aloud. Finish every line fully, including its last word; never clip a word. Speak every word of the dialogue exactly as written, nothing added.",
+ "turns": [
+  [
+   "Cleo",
+   "Claude, I've been centering this box for two hours."
+  ],
+  [
+   "Claude",
+   "Where is it now?"
+  ],
+  [
+   "Cleo",
+   "Top left. Exactly where it started."
+  ],
+  [
+   "Claude",
+   "What have you tried?"
+  ],
+  [
+   "Cleo",
+   "Margin auto. Text align center. Praying."
+  ],
+  [
+   "Claude",
+   "Anything work?"
+  ],
+  [
+   "Cleo",
+   "Praying moved it three pixels."
+  ],
+  [
+   "Claude",
+   "Impressive."
+  ],
+  [
+   "Cleo",
+   "Then I tried position absolute. It left the screen."
+  ],
+  [
+   "Claude",
+   "Where did it go?"
+  ],
+  [
+   "Cleo",
+   "I don't know. It's just gone. Like my evening."
+  ],
+  [
+   "Claude",
+   "Make the parent a grid. Place items center."
+  ],
+  [
+   "Cleo",
+   "Okay... grid... place items center... it's centered."
+  ],
+  [
+   "Claude",
+   "Two lines."
+  ],
+  [
+   "Cleo",
+   "Two hours. Two lines. Great."
+  ],
+  [
+   "Cleo",
+   "Oh no. The designer wants it slightly to the left."
+  ],
+  [
+   "Claude",
+   "I'll start praying."
+  ]
+ ]
+}

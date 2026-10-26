@@ -1,0 +1,431 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- 32 Noise cancelling, solid low-poly dioramas (kit.js + scenes.js + anc.js). Story: on a plane, the headphones make it
+     quieter by playing more sound. Sound is air pushing and pulling on the eardrum; tiny mics on the cup hear the roar,
+     a chip flips the wave, the speaker plays the opposite even with music paused; at the ear the two meet and the roar
+     mostly cancels. Steady rumble cancels, voices are too quick. 1978: Amar Bose on a flight to Boston sketches the
+     maths. Twist: the quiet is two waves cancelling. Beats come from voice/words.js. -->
+<link rel="stylesheet" href="../_ember/fonts.css">
+<link rel="stylesheet" href="lib/reel.css">
+<style>
+#stage { background: #0b0a09; }
+#vig { background: radial-gradient(120% 82% at 50% 44%, rgba(8,6,4,0) 52%, rgba(8,6,4,0.72) 100%); }
+#hud { pointer-events: none; }
+.hc { position: absolute; left: 0; top: 0; display: none; padding: 9px 15px 10px 17px; border-radius: 10px; background: linear-gradient(180deg, rgba(36,33,31,0.93), rgba(19,17,16,0.93)); border: 1px solid rgba(255,255,255,0.075); box-shadow: 0 12px 30px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06); white-space: nowrap; transform-origin: 0 0; }
+.hc::before { content: ''; position: absolute; left: 7px; top: 10px; bottom: 10px; width: 3px; border-radius: 2px; background: var(--c); box-shadow: 0 0 8px var(--cg); }
+.hc .k { font: 650 9.5px/1 Inter; letter-spacing: 1.5px; color: var(--c); text-transform: uppercase; }
+.hc .v { font: 750 19px/1.05 Inter; letter-spacing: -0.3px; margin-top: 6px; color: #f5f4f3; }
+.hc.big .v { font-size: 24px; }
+.hp { position: absolute; left: 0; top: 0; display: none; font: 600 11px/1 Inter; padding: 6px 10px 6px 9px; border-radius: 20px; background: rgba(24,22,20,0.9); border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 6px 16px rgba(0,0,0,0.4); color: #e6e3e0; white-space: nowrap; transform-origin: 0 0; }
+.hp::before { content: ''; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--c); margin-right: 6px; vertical-align: 1px; }
+.hp.hot { border-color: var(--cg); }
+#cap .box { left: 50%; right: auto; transform: translateX(-50%); padding: 0 10px; background: none; }
+#cap .box::before, #cap .box::after { content: ''; position: absolute; width: 8px; height: 8px; border: 1.6px solid #ff6a1f; }
+#cap .box::before { left: -2px; top: -4px; border-width: 1.6px 0 0 1.6px; }
+#cap .box::after { right: -2px; bottom: -4px; border-width: 0 1.6px 1.6px 0; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="world">
+    <canvas id="cv" width="1080" height="1920"></canvas>
+    <div class="layer" id="lbls"></div>
+  </div>
+</div>
+<script src="../../tools/lib.js"></script>
+<script src="voice/words.js"></script>
+<script src="lib/three.js"></script>
+<script src="../_ember/world.js"></script>
+<script src="lib/base.js"></script>
+<script src="kit.js"></script>
+<script src="scenes.js"></script>
+<script src="anc.js"></script>
+<script>
+for (let i = 0; i < 18; i++) { const m = new TH.Mesh(new TH.RingGeometry(0.9, 1, 96), new TH.MeshBasicMaterial({ color: 0xffffff, transparent: true, blending: TH.AdditiveBlending, depthWrite: false, toneMapped: false, side: TH.DoubleSide })); m.visible = false; scene.add(m); RINGS.push(m); }
+// signals: crisp thin rings that open out from a source (o.cam: the ring faces the camera instead of lying flat)
+const RING_TX = ctex(512, 512, (g, w, h) => {
+  const gr = g.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, w / 2);
+  gr.addColorStop(0, 'rgba(255,255,255,0)'); gr.addColorStop(0.8, 'rgba(255,255,255,0.025)'); gr.addColorStop(0.985, 'rgba(255,255,255,0.06)'); gr.addColorStop(1, 'rgba(255,255,255,0)');
+  g.fillStyle = gr; g.fillRect(0, 0, w, h);
+  g.strokeStyle = '#ffffff'; g.lineWidth = 3.2; g.beginPath(); g.arc(w / 2, h / 2, w / 2 - 6, 0, 7); g.stroke();
+});
+const RING_G = new TH.PlaneGeometry(2, 2);
+for (const m of RINGS) { m.geometry = RING_G; m.material.map = RING_TX; m.material.needsUpdate = true; }
+function ripple(t, t0, x, y, z, col, maxR, dur = 0.9, o = {}) {
+  const p = prog(t, t0, t0 + dur); if (p <= 0 || p >= 1 || ringI >= RINGS.length) return;
+  const m = RINGS[ringI++], r = maxR * (0.1 + 0.9 * ease.out(p));
+  m.visible = true; m.position.set(x, y, z); m.scale.set(r, r, 1); m.material.color.set(col); m.material.opacity = 0.85 * Math.pow(1 - p, 1.3) * Math.min(1, p * 12);
+  if (o.cam) m.quaternion.copy(camera.quaternion); else if (o.ax === 'x') m.rotation.set(0, Math.PI / 2, 0); else m.rotation.set(0, 0, 0);
+}
+const PING_P = 1.5;
+const glowAt = (t, s) => Math.exp(-Math.pow((t - s - 0.1) / 0.2, 2));
+function pings(t, t0, t1, p, col, R, dur = 1.8, period = PING_P, o = {}) {
+  if (t < t0 || t > t1 + dur) return 0;
+  let hit = 0;
+  for (let s = t0 + Math.floor((t - t0) / period) * period; s >= t0 && s > t - dur; s -= period) { if (s <= t1) { ripple(t, s, p[0], p[1], p[2], col, R, dur, o); hit = Math.max(hit, glowAt(t, s)); } }
+  return hit;
+}
+// wave lines: a pool of pixel-width lines (core + faint halo), rewritten in place each frame. wave(A, B, up, fn, amp, col,
+// a, o): a line from A to B (or along o.pts) displaced along `up` by amp·fn(u, x) where u runs 0..1 and x is the local
+// x of the point; o.q draws it on (0..1), o.w its width
+const WN = 140, WAVES = [];
+for (let i = 0; i < 14; i++) {
+  const geo = new TH.LineGeometry(); geo.setPositions(new Array(WN * 3).fill(0).map((_, k) => k));
+  const core = new TH.Line2(geo, lineMat(O, 3.4)), halo = new TH.Line2(geo, lineMat(O, 12, { add: true, op: 0.16 }));
+  core.renderOrder = 9; halo.renderOrder = 8;
+  for (const l of [core, halo]) { l.frustumCulled = false; l.visible = false; l.material.depthTest = false; scene.add(l); }
+  WAVES.push({ geo, core, halo });
+}
+let waveI = 0;
+function wavesReset() { waveI = 0; for (const W of WAVES) W.core.visible = W.halo.visible = false; }
+function wave(A, B, up, fn, amp, col, a, o = {}) {
+  if (a <= 0.01 || waveI >= WAVES.length) return;
+  const q = clamp(o.q ?? 1); if (q < 0.01) return;
+  const W = WAVES[waveI++], n = Math.max(2, Math.round(WN * q)), arr = W.geo.attributes.instanceStart.data.array, x0 = o.x0 ?? 0;
+  let prev = null;
+  for (let i = 0; i < n; i++) {
+    const u = (i / (n - 1)) * q, b = o.pts ? along(o.pts, u) : [lerp(A[0], B[0], u), lerp(A[1], B[1], u), lerp(A[2], B[2], u)];
+    const d = amp * fn(u, b[0] - x0), p = [b[0] + up[0] * d, b[1] + up[1] * d, b[2] + up[2] * d];
+    if (prev) arr.set([...prev, ...p], (i - 1) * 6); prev = p;
+  }
+  W.geo.attributes.instanceStart.data.needsUpdate = true; W.geo.instanceCount = n - 1;
+  W.core.material.linewidth = o.w ?? 3.4; W.halo.material.linewidth = (o.w ?? 3.4) * 3.4;
+  for (const [l, k] of [[W.core, 1], [W.halo, 0.18]]) { l.visible = true; l.material.color.set(col); l.material.opacity = a * k; }
+}
+// signal lines: draw on along pts with a bright head (from 29)
+const LMAX = 8, LINKS = [];
+const dotSprite = () => { const sp = new TH.Sprite(new TH.SpriteMaterial({ map: TX_ORB, transparent: true, blending: TH.AdditiveBlending, depthWrite: false, depthTest: false, toneMapped: false })); sp.visible = false; sp.renderOrder = 6; scene.add(sp); return sp; };
+for (let i = 0; i < 8; i++) {
+  const geo = new TH.LineGeometry(); geo.setPositions(new Array(LMAX * 3).fill(0).map((_, k) => k));
+  const core = new TH.Line2(geo, lineMat(O, 3.4)), halo = new TH.Line2(geo, lineMat(O, 11, { add: true, op: 0.16 }));
+  core.renderOrder = 5; halo.renderOrder = 4;
+  for (const l of [core, halo]) { l.frustumCulled = false; l.visible = false; l.material.depthTest = false; scene.add(l); }
+  LINKS.push({ geo, core, halo, head: dotSprite(), end: dotSprite() });
+}
+let linkI = 0;
+function linksReset() { linkI = 0; for (const L of LINKS) L.core.visible = L.halo.visible = L.head.visible = L.end.visible = false; }
+function subLine(pts, q0, q1) {
+  const d = [0]; for (let i = 1; i < pts.length; i++) d.push(d[i - 1] + Math.hypot(...[0, 1, 2].map((j) => pts[i][j] - pts[i - 1][j])));
+  const L = d[d.length - 1], at_ = (u) => { let i = 1; while (i < pts.length - 1 && d[i] < u) i++; const k = (u - d[i - 1]) / Math.max(1e-6, d[i] - d[i - 1]); return [0, 1, 2].map((j) => lerp(pts[i - 1][j], pts[i][j], clamp(k))); };
+  const u0 = q0 * L, u1 = q1 * L, out = [at_(u0)];
+  for (let i = 1; i < pts.length - 1; i++) if (d[i] > u0 && d[i] < u1) out.push(pts[i]);
+  out.push(at_(u1)); return out;
+}
+function link(t, pts, t0, dur, t1, col, o = {}) {
+  if (t < t0 || t > t1 || linkI >= LINKS.length) return null;
+  const L = LINKS[linkI++], q = ease.inOut(prog(t, t0, t0 + dur)), q0 = o.travel ? ease.inOut(prog(t, t0 + dur * 0.35, t0 + dur * 1.25)) : 0;
+  const a = (o.a ?? 1) * (1 - ep(t, t1 - 0.25, t1)) * (o.travel ? 1 - ep(t, t0 + dur * 1.05, t0 + dur * 1.25) : 1);
+  if (q <= 0.001 || a <= 0.01) return null;
+  const part = subLine(pts, q0, q).slice(0, LMAX), arr = L.geo.attributes.instanceStart.data.array;
+  for (let i = 0; i < part.length - 1; i++) arr.set([...part[i], ...part[i + 1]], i * 6);
+  L.geo.attributes.instanceStart.data.needsUpdate = true; L.geo.instanceCount = part.length - 1;
+  for (const [l, k] of [[L.core, 1], [L.halo, 0.16]]) { l.visible = true; l.material.color.set(col); l.material.opacity = a * k; }
+  const tip = part[part.length - 1], px = 1 / cam.s;
+  if (q < 0.999 || o.travel) { L.head.visible = true; L.head.position.set(...tip); L.head.material.color.set(mixHex(col, '#ffffff', 0.5)); L.head.material.opacity = a; L.head.scale.set(16 * px, 16 * px, 1); }
+  return tip;
+}
+
+/* ---------------- beats */
+const T = {
+  quieter: at('quieter'), playing: at('playing'), more: at('more'), sound2: at('sound', 2),
+  pushing: at('pushing'), pulling: at('pulling'), eardrum: at('eardrum'), waves: at('waves'),
+  tiny: at('tiny'), microphones: at('microphones'), listen: at('listen'), engine: at('engine'), roar: at('roar'),
+  chip: at('chip'), flips: at('flips'), upside: at('upside'), down: at('down'), where: at('where'), pushes: at('pushes'), pull: at('pull'),
+  speaker: at('speaker'), opposite: at('opposite'), even: at('even'), music: at('music'),
+  at: at('at'), meet: at('meet'), much: at('much'), cancels: at('cancels'),
+  works: at('works'), low: at('low'), rumble: at('rumble'), voices: at('voices'), quickly: at('quickly'), match: at('match'),
+  in78: at('1978') - 0.44, amar: at('bose') - 0.35, tried: at('tried'), flight: at('flight'), boston: at('boston'), but: at('but'), drowned: at('drowned'),
+  he: at('he'), sketching: at('sketching'), maths: at('maths'), before: at('before'), landed: at('landed'),
+  so: at('so'), quiet: at('quiet'), absence: at('absence'), its: at("it's"), two: at('two', 2), meeting: at('meeting'), canceling: at('canceling', 2), follow: at('follow'),
+};
+const CUT = { HOOK: 0, HEAD: T.quieter - 0.16, SOUND: T.sound2 - 0.2, MIC: T.tiny - 0.16, FLIP: T.chip - 0.12, SPK: T.speaker - 0.14, PHONE: T.even - 0.12,
+  MEET: T.at - 0.12, CMP: T.works - 0.12, FLY: T.in78 - 0.06, C78: T.but - 0.1, PAD: T.he - 0.12, TWIST: T.so - 0.12, END: T.follow - 0.15 };
+
+/* ---------------- build */
+const CB = buildCabin('CAB'), EA = buildEar(), SU = buildStu2(), FL = buildFly(), OLD = buildCabin('C78', { old: true });
+const ez = (x, y, z) => wz('EAR', x, y, z);
+const HOLO = { notes: [0, 1, 2].map(() => holo(ICO.note, 26, O)), mic: holo(ICO.wave, 60, O) };
+// a person who talks beside the engine in the "voices" beat
+const TALK = person(EA.g, -520, 230, -0.3, { seed: 9, shirt: '#57534f' }); TALK.root.visible = false;
+
+/* ---------------- the waves */
+// pressure along the column: a slow steady rumble, or a quick jagged voice. The headphones' copy runs a little late,
+// which is nothing for the rumble but leaves most of a voice behind.
+const LAM = 360, NU = 0.85, LAG = 0.11;
+const rum = (x, t) => Math.sin(2 * Math.PI * (x / LAM - NU * t));
+const vox = (x, t) => (0.55 * Math.sin(2 * Math.PI * (x / 120 - 2.3 * t)) + 0.35 * Math.sin(2 * Math.PI * (x / 64 - 4.1 * t) + 1.1) + 0.25 * Math.sin(2 * Math.PI * (x / 37 - 6.7 * t) + 2.0)) * (0.65 + 0.35 * Math.sin(2 * Math.PI * (x / 520 - 0.7 * t)));
+const mv = (t) => ep(t, T.voices - 0.2, T.voices + 0.35, ease.inOut) * (1 - ep(t, CUT.FLY - 0.1, CUT.FLY));
+const sig = (x, t) => lerp(rum(x, t), vox(x, t), mv(t));
+const anti = (x, t) => -lerp(rum(x, t), vox(x, t - LAG), mv(t));
+// how much of the anti-noise reaches the ear (it builds over "the two waves meet and much of the roar cancels out")
+const kc = (t) => t < CUT.MIC ? 0 : t < CUT.MEET ? 0.92 * ep(t, CUT.SPK + 0.4, CUT.SPK + 1.4) : t < CUT.MEET + 0.3 ? 0 : 0.92 * ep(t, T.meet - 0.1, T.cancels + 0.3, ease.inOut);
+const atEar = (x, t) => sig(x, t) + kc(t) * anti(x, t);
+
+/* ---------------- phone screen */
+const UI = { card: '#1f1d1c', tile: '#2c2a28', tx: '#f5f4f3', tx2: '#a39e99', tx3: '#6f6a66' };
+const uiSpace = (g, W, H) => { const k = W / 600; g.scale(k, k); return H / k; };
+function rr(g, x, y, w, h, r, fill, stroke, lw = 2) { g.beginPath(); g.roundRect(x, y, w, h, r); if (fill) { g.fillStyle = fill; g.fill(); } if (stroke) { g.strokeStyle = stroke; g.lineWidth = lw; g.stroke(); } }
+function dot(g, x, y, r, fill) { g.beginPath(); g.arc(x, y, r, 0, 7); g.fillStyle = fill; g.fill(); }
+function tx(g, s, x, y, font, col, al = 'left', bl = 'alphabetic') { g.font = font; g.fillStyle = col; g.textAlign = al; g.textBaseline = bl; g.fillText(s, x, y); }
+function statusBar(g, W, col = UI.tx) {
+  tx(g, '9:41', 104, 68, '650 31px Inter', col, 'center');
+  for (let k = 0; k < 4; k++) rr(g, W - 198 + k * 10, 70 - 10 - k * 5, 7, 10 + k * 5, 2, col);
+  rr(g, W - 104, 47, 48, 24, 8, null, 'rgba(245,244,243,0.5)', 2.5); rr(g, W - 100, 51, 34, 16, 4, col);
+  // airplane mode glyph
+  g.save(); g.translate(W - 140, 59); g.rotate(Math.PI / 4); g.fillStyle = col; g.fillRect(-2.5, -13, 5, 26); g.fillRect(-12, -2, 24, 6); g.fillRect(-6, 9, 12, 3); g.restore();
+}
+function phoneScreen(g, W0, H0, t) {
+  const H = uiSpace(g, W0, H0), W = 600;
+  const gr = g.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, '#2a2421'); gr.addColorStop(0.55, '#151312'); gr.addColorStop(1, '#0c0b0a'); g.fillStyle = gr; g.fillRect(0, 0, W, H);
+  statusBar(g, W);
+  // now playing: nothing (paused)
+  rr(g, 70, 130, 460, 300, 30, '#24211f'); tx(g, '♪', W / 2, 300, '700 120px Inter', '#46413d', 'center', 'middle');
+  tx(g, 'Not Playing', 70, 500, '750 40px Inter', UI.tx); tx(g, 'Music paused', 70, 540, '550 26px Inter', UI.tx2);
+  rr(g, 70, 578, 460, 8, 4, '#3a3633'); dot(g, 74, 582, 9, UI.tx2);
+  tx(g, '0:00', 70, 618, '550 21px Inter', UI.tx3); tx(g, '−3:42', 530, 618, '550 21px Inter', UI.tx3, 'right');
+  // the play button (it is paused)
+  dot(g, W / 2, 696, 52, '#f5f4f3'); g.fillStyle = '#151312'; g.beginPath(); g.moveTo(W / 2 - 14, 670); g.lineTo(W / 2 + 26, 696); g.lineTo(W / 2 - 14, 722); g.closePath(); g.fill();
+  for (const s of [-1, 1]) { g.fillStyle = UI.tx2; g.beginPath(); g.moveTo(W / 2 + s * 130, 682); g.lineTo(W / 2 + s * 158, 696); g.lineTo(W / 2 + s * 130, 710); g.closePath(); g.fill(); }
+  // noise control
+  const y = 790; rr(g, 30, y, W - 60, 300, 32, '#1f1d1c');
+  tx(g, 'NOISE CONTROL', 62, y + 52, '650 21px Inter', UI.tx2);
+  rr(g, 56, y + 74, W - 112, 64, 32, '#2c2a28'); rr(g, 56 + (W - 112) * 0.5, y + 78, (W - 112) * 0.5 - 4, 56, 28, O);
+  tx(g, 'Off', 56 + (W - 112) * 0.25, y + 116, '600 24px Inter', UI.tx2, 'center'); tx(g, 'Noise Cancelling', 56 + (W - 112) * 0.75, y + 116, '700 24px Inter', '#fff', 'center');
+  // live: the mics' roar (red) and the speaker's opposite (orange), mirror images
+  const sy = y + 222, x0 = 62, x1 = W - 62;
+  tx(g, 'Mic in', x0, y + 178, '600 19px Inter', RED); tx(g, 'Speaker out', x1, y + 178, '600 19px Inter', O, 'right');
+  for (const [col, s] of [[RED, 1], [O, -1]]) { g.strokeStyle = col; g.lineWidth = 4; g.beginPath(); for (let i = 0; i <= 60; i++) { const xx = lerp(x0, x1, i / 60), v = s * 34 * rum(i * 14, t); i ? g.lineTo(xx, sy + v) : g.moveTo(xx, sy + v); } g.stroke(); }
+  rr(g, W / 2 - 110, H - 34, 220, 10, 5, UI.tx);
+}
+// Bose's notepad: ink sketches that draw on — a wave, its mirror, and the sum going flat
+function padArt(g, W, H, p) {
+  g.fillStyle = '#f1ead9'; g.fillRect(0, 0, W, H);
+  g.strokeStyle = 'rgba(80,110,160,0.25)'; g.lineWidth = 2; for (let y = 60; y < H; y += 38) { g.beginPath(); g.moveTo(0, y); g.lineTo(W, y); g.stroke(); }
+  g.strokeStyle = 'rgba(200,70,70,0.35)'; g.beginPath(); g.moveTo(70, 0); g.lineTo(70, H); g.stroke();
+  const ink = '#1d2a4a', seg = (k) => clamp(p * 4 - k);
+  const wav = (y0, s, q, amp = 34) => { if (q <= 0) return; g.beginPath(); for (let i = 0; i <= 80 * q; i++) { const x = 100 + i * 7.6, v = s * amp * Math.sin(i * 0.26); i ? g.lineTo(x, y0 + v) : g.moveTo(x, y0 + v); } g.stroke(); };
+  g.strokeStyle = ink; g.lineWidth = 5; g.lineCap = 'round'; g.lineJoin = 'round';
+  wav(140, 1, seg(0)); if (seg(0) > 0.6) tx(g, 'p(t)', 110, 92, 'italic 600 34px Instrument, serif', ink);
+  g.strokeStyle = '#a1381f'; wav(300, -1, seg(1)); if (seg(1) > 0.6) tx(g, '− p(t)', 110, 250, 'italic 600 34px Instrument, serif', '#a1381f');
+  g.strokeStyle = ink; if (seg(2) > 0.2) tx(g, '+', 100, 392, '600 46px Inter', ink);
+  if (seg(2) > 0) { g.beginPath(); g.moveTo(150, 452); g.lineTo(150 + 560 * seg(2), 452); g.stroke(); }
+  if (seg(3) > 0.3) tx(g, '= 0 ?', 330, 560, 'italic 600 50px Instrument, serif', ink);
+  if (seg(3) > 0.7) { g.beginPath(); g.ellipse(410, 545, 120, 52, -0.05, 0, 7); g.stroke(); }
+}
+
+/* ---------------- camera */
+const CUTS = [];
+const cut = (t, f, s, o = {}) => CUTS.push({ t, f, s, ...o });
+const hh = () => wpos(CB.hero.head), oh = () => wpos(OLD.hero.head);
+const H0 = hh(), O0 = oh(), PH = SU.ph.top, ENGC = CB.eng.intake();
+cut(0, wz('CAB', 160, 420, 40), 0.36, { a: -0.55, e: 0.5, push: 1.12, sy: 470 });
+cut(CUT.HEAD, [H0[0] + 4, H0[1], H0[2] + 2], 3.2, { a: -0.95, e: 0.32, push: 1.06, sy: 430 });
+cut(CUT.SOUND, ez(-260, 0, HC + 90), 0.33, { a: -0.08, e: 0.2, to: { f: ez(120, 0, HC + 60), s: 0.62, a: -0.14, e: 0.22 }, dur: CUT.MIC - CUT.SOUND, ez: ease.inOut, sy: 460 });
+cut(CUT.MIC, ez(30, 0, HC + 30), 1.35, { a: -0.42, e: 0.3, push: 1.06, pan: [-30, 0, 0], sy: 470 });
+cut(CUT.FLIP, ez(-60, 0, HC + 250), 0.82, { a: -0.1, e: 0.2, push: 1.05, sy: 470 });
+cut(CUT.SPK, ez(200, 0, HC + 60), 1.05, { a: -0.3, e: 0.24, push: 1.06, sy: 460 });
+cut(CUT.PHONE, [PH[0], PH[1], PH[2] + 4], 2.9, { e: 0.3, a: -0.7, sy: 440, to: { f: wz('STU2', -10, 20, 120), s: 1.15, a: -0.62, e: 0.42 }, dur: CUT.MEET - CUT.PHONE, ez: (x) => ease.inOut(clamp((x - 0.35) / 0.65)) });
+cut(CUT.MEET, ez(230, 0, HC + 110), 1.1, { a: -0.12, e: 0.18, push: 1.05, sy: 470 });
+cut(CUT.CMP, ez(-140, 0, HC + 150), 0.56, { a: -0.06, e: 0.16, push: 1.05, sy: 450 });
+cut(CUT.FLY, wz('FLY', 200, 600, 0), 0.052, { a: -0.25, e: 0.95, push: 1.06, sy: 520 });
+cut(CUT.C78, [O0[0] + 30, O0[1] + 60, O0[2] - 10], 1.25, { a: -0.85, e: 0.42, push: 1.06, sy: 470 });
+cut(CUT.PAD, wpos(OLD.pad.m), 8, { a: -1.25, e: 1.05, push: 1.06, sy: 470 });
+cut(CUT.TWIST, ez(DRUM_X - 40, 0, HC + 20), 1.6, { a: -0.3, e: 0.2, to: { f: ez(-250, 0, HC + 120), s: 0.36, a: -0.08, e: 0.22 }, dur: CUT.END - CUT.TWIST + 1.5, ez: ease.inOut, sy: 470 });
+// t2 remake: every cut re-angled (azimuth, elevation, zoom) so no frame matches the original
+const REANGLE = [[0.15, 0.05, 1.05], [-0.13, -0.04, 1.04], [0.14, 0.04, 1.06], [-0.15, 0.05, 1.05], [0.12, -0.04, 1.04], [-0.14, 0.04, 1.06]];
+CUTS.forEach((c, i) => { const r = REANGLE[i % REANGLE.length]; c.a = (c.a ?? -0.7) + r[0]; c.e = Math.min(1.05, Math.max(0.12, (c.e ?? 0.6) + r[1])); c.s *= r[2];
+  if (c.to) { c.to.a = (c.to.a ?? c.a) + r[0]; if (c.to.s) c.to.s *= r[2]; } });
+const SHOTS = [];
+CUTS.forEach((c, i) => {
+  const nx = CUTS[i + 1] ? CUTS[i + 1].t : DURATION + 1, k = { t: c.t, d: 0, f: c.f, s: c.s, a: c.a ?? -0.7, e: c.e ?? 0.6, sy: c.sy ?? 450 };
+  const pv = CUTS[i - 1], near = pv && Math.hypot(c.f[0] - pv.f[0], c.f[1] - pv.f[1]) < 1500 && !c.cut;
+  if (near) { k.d = Math.min(0.55, (nx - c.t) * 0.4); k.ez = ease.inOut; k.g = true; }
+  SHOTS.push(k);
+  if (c.to) SHOTS.push({ t: c.t + 0.001, d: c.dur, ez: c.ez, ...c.to });
+  else SHOTS.push({ t: c.t + 0.001, d: nx - c.t, ez: (x) => x, f: c.pan ? c.f.map((v, j) => v + c.pan[j]) : c.f, s: c.s * (c.push || 1), a: k.a, e: k.e, sy: k.sy });
+});
+const inShot = (t, a, b) => t >= a && t < b;
+
+/* ---------------- the world, frame by frame */
+const dbAt = (t) => t < CUT.SOUND ? lerp(84, 63, ep(t, T.quieter, T.quieter + 0.9, ease.inOut)) : lerp(84, 63, kc(t) / 0.92);
+function world(t) {
+  linksReset(); wavesReset();
+  cam3(t, SHOTS);
+  for (const f of E_FANS) f.rotation.x = t * 16;
+  const up = [0, 0, 1];
+  // ---- cabin: the engine roars at the window seat; the headphones answer with more sound
+  const inCab = t < CUT.SOUND;
+  if (inCab) {
+    const cupW = CB.hp.out(0), cupE = CB.hp.out(1), eng = ENGC, r = 1 - 0.55 * ep(t, T.quieter, T.quieter + 0.8);
+    [[0, 0], [60, 0.33], [-60, 0.66]].forEach(([dz, ph], k) => wave([eng[0] + 40, eng[1] - 40 * k, eng[2] + dz], [cupW[0], cupW[1] + 2, cupW[2]], up, (u) => Math.sin(2 * Math.PI * (u * 7 - t * 1.6 + ph)) * Math.sin(Math.PI * u), 14 * (t < CUT.HEAD ? 1 : 0.35), RED, 0.9 * r, { q: ep(t, 0.15 + 0.15 * k, 1.1 + 0.15 * k), w: 3 }));
+    CB.eng.glow.material.opacity = 0.4 + 0.15 * Math.sin(t * 9);
+    // the cups glow and send orange rings ("more sound") on "playing more sound"
+    const on = ep(t, T.playing - 0.1, T.playing + 0.3);
+    for (const c of CB.hp.cups) { c.micM.emissiveIntensity = 3 * on; c.rimM.emissiveIntensity = 2.5 * on; }
+    if (t > T.playing) { pings(t, T.playing, CUT.SOUND, cupW, O, 22, 1.1, 0.5, { cam: true }); pings(t, T.playing + 0.25, CUT.SOUND, cupE, O, 22, 1.1, 0.5, { cam: true }); }
+    CB.binL.emissiveIntensity = 0.9;
+  }
+  // ---- the ear: air column, eardrum, the cup (lowers in for the mic beat), the waves above
+  const inEar = inShot(t, CUT.SOUND, CUT.PHONE) || inShot(t, CUT.MEET, CUT.FLY) || t >= CUT.TWIST;
+  const cupIn = t >= CUT.MIC ? ep(t, CUT.MIC - 0.1, CUT.MIC + 0.55, ease.out) : 0;
+  EA.cupG.position.z = HC + 700 * (1 - cupIn); EA.cupG.visible = cupIn > 0.01;
+  const twist = t >= CUT.TWIST;
+  if (inEar) {
+    const Dm = (x) => x > CUP_X - 20 && cupIn > 0.5 ? atEar(x, t) : sig(x, t);
+    const dens = (x) => -(Dm(x + 6) - Dm(x - 6)) / 12 * LAM / (2 * Math.PI) * 1.2;
+    EA.updAir(Dm, dens, 1, 24);
+    const dd = Dm(DRUM_X); EA.drum.position.x = DRUM_X + 9 * dd; EA.drumRing.emissiveIntensity = 0.6 + 2.2 * Math.abs(dd);
+    EA.eng.glow.material.opacity = 0.5 * (1 - mv(t));
+    const LN = HC + 270, xs = -1000;
+    // the roar along the top lane (red) — in the meet/compare beats it runs on to the eardrum
+    const noiseA = t < CUT.SOUND + 0.2 ? 0 : 1;
+    const qN = ep(t, CUT.SOUND + 0.3, T.waves + 0.4, ease.inOut);
+    wave(ez(xs, -10, LN), ez(DRUM_X, -10, LN), up, (u, x) => sig(x, t), 44, RED, noiseA * (t < CUT.MIC ? qN > 0 ? 1 : 0 : 1), { q: t < CUT.MIC ? qN : 1, x0: Z.EAR[0] });
+    // the mic beat: the roar reaches the outer mics; lines run from the mics to the chip
+    if (inShot(t, CUT.MIC, CUT.SPK)) {
+      const mA = 1 - ep(t, CUT.FLIP - 0.1, CUT.FLIP + 0.3);
+      for (let k = 0; k < 2; k++) {
+        const m = EA.mic(k), on = ep(t, T.microphones - 0.05 + 0.15 * k, T.microphones + 0.25 + 0.15 * k);
+        EA.cup.micM.emissiveIntensity = 4 * on;
+        wave(ez(-700, -30, HC + 40 - 60 * k), m, up, (u, x) => sig(x, t) * Math.min(1, u * 3), 22, RED, on * mA, { x0: Z.EAR[0], w: 2.6, q: ep(t, T.listen - 0.2, T.listen + 0.4) * 0.999 + 0.001 });
+        if (t > T.listen) pings(t, T.listen + 0.1 * k, CUT.SPK, m, O, 30, 0.8, 0.6, { cam: true });
+        link(t, [m, [m[0] + 22, m[1], m[2]], EA.chip()], T.engine - 0.2 + 0.12 * k, 0.4, CUT.SPK, O);
+      }
+    } else EA.cup.micM.emissiveIntensity = cupIn * 1.5;
+    // the chip flips a copy of the wave above the cup: the copy turns upside down
+    const chipOn = ep(t, T.chip - 0.1, T.chip + 0.2);
+    EA.cup.chipM.emissiveIntensity = t >= CUT.MIC ? 0.5 + 4 * chipOn * (0.75 + 0.25 * Math.sin(t * 14)) : 0;
+    if (inShot(t, CUT.FLIP, CUT.SPK)) {
+      const fl = Math.cos(Math.PI * ep(t, T.upside - 0.05, T.down + 0.25, ease.inOut)), L2 = HC + 150;
+      wave(ez(-560, -12, L2), ez(260, -12, L2), up, (u, x) => sig(x, t), 44, RED, 0.45 + 0.55 * (1 - ep(t, T.flips, T.flips + 0.3)) , { x0: Z.EAR[0] });
+      wave(ez(-560, -14, L2), ez(260, -14, L2), up, (u, x) => fl * sig(x, t), 44, O, ep(t, T.flips - 0.1, T.flips + 0.2), { x0: Z.EAR[0], w: 4 });
+      link(t, [EA.chip(), ez(-60, -14, L2 - 50)], T.flips - 0.15, 0.3, CUT.SPK, O);
+    }
+    // the speaker plays the opposite: an orange wave from the driver to the eardrum; then at the ear what is left (white)
+    const drv = EA.drv();
+    EA.cup.drvGlow.emissiveIntensity = t >= CUT.SPK ? 2.5 + 1.5 * Math.sin(t * 10) : 0;
+    EA.cup.drv.position.z = 2.2 + 0.35 * (t >= CUT.SPK ? anti(CUP_X, t) : 0);
+    const antiA = t >= CUT.SPK && !inShot(t, CUT.SOUND, CUT.MIC) ? (t < CUT.PHONE ? ep(t, T.plays - 0.1, T.plays + 0.4) : 1) : 0;
+    if (antiA > 0) wave(ez(CUP_X - 30, -14, LN), ez(DRUM_X, -14, LN), up, (u, x) => anti(x, t), 44, O, antiA, { x0: Z.EAR[0], w: 4, q: t < CUT.PHONE ? ep(t, T.plays - 0.1, T.opposite + 0.4) : 1 });
+    if (antiA > 0) link(t, [drv, [drv[0] + 30, drv[1], drv[2]], ez(CUP_X - 30, -14, LN - 30)], T.plays - 0.1, 0.35, CUT.PHONE, O);
+    if (t >= CUT.MEET && antiA > 0) {
+      wave(ez(CUP_X + 4, -40, HC), ez(DRUM_X - 6, -40, HC), up, (u, x) => atEar(x, t), 44, WH, 1, { x0: Z.EAR[0], w: 3.4 });
+      if (!twist) for (const xx of [CUP_X + 60, DRUM_X - 50]) link(t, [ez(xx, -14, LN - 40), ez(xx, -40, HC + 50)], T.meet - 0.1 + (xx > 250 ? 0.15 : 0), 0.5, CUT.CMP, WH, { a: 0.7, travel: true });
+    }
+    if (t >= CUT.MEET && kc(t) > 0.5 && !inShot(t, CUT.CMP, CUT.FLY)) pings(t, T.cancels, twist ? DURATION : CUT.CMP, ez(DRUM_X, 0, HC), O, 60, 1.4, 1.2, { ax: 'x' });
+    TALK.root.visible = mv(t) > 0.05; TALK.pose('talk', t * 9); TALK.head.rotation.y = 0.05 * Math.sin(t * 6);
+    if (TALK.root.visible) pings(t, T.voices, CUT.FLY, wpos(TALK.head), RED, 70, 0.7, 0.35, { cam: true });
+  } else EA.air.visible = false;
+  // ---- the phone: music paused, noise cancelling on; the hero headphones ring out orange
+  if (inShot(t, CUT.PHONE, CUT.MEET)) {
+    SU.ph.s.draw('ph' + Math.floor(t * 15), (g, W, H) => phoneScreen(g, W, H, t));
+    for (const c of SU.hp.cups) { c.micM.emissiveIntensity = 3; c.rimM.emissiveIntensity = 2.5 + Math.sin(t * 8); }
+    const cw = SU.hp.out(0), ce = SU.hp.out(1);
+    pings(t, CUT.PHONE + 0.1, CUT.MEET, cw, O, 70, 1.1, 0.55, { cam: true }); pings(t, CUT.PHONE + 0.35, CUT.MEET, ce, O, 70, 1.1, 0.55, { cam: true });
+    SU.hd.rotation.z = 0.9 + 0.15 * Math.sin(t * 0.6);
+  }
+  // ---- the flight: Zurich → Boston, the route draws on and the airliner flies along it
+  if (inShot(t, CUT.FLY, CUT.C78)) {
+    const q = ep(t, CUT.FLY + 0.2, CUT.C78 - 0.2, (x) => x), u = 0.05 + 0.8 * q, p = FL.at(u), p2 = FL.at(Math.min(1, u + 0.01));
+    FL.plane.position.set(p[0], p[1], 900); FL.plane.rotation.set(0, 0, Math.atan2(p2[1] - p[1], p2[0] - p[0]));
+    wave(null, null, up, () => 0, 0, O, 1, { pts: FL.route, q: u, w: 3 });
+    wave(null, null, up, () => 0, 0, O, 0.35, { pts: FL.route, q: 1, w: 1.6 });
+    pings(t, CUT.FLY + 0.3, CUT.C78, [p[0], p[1], 900], RED, 700, 1.2, 0.5);
+    ripple(t, CUT.FLY + 0.1, ...wz('FLY', FL.zrh[0], FL.zrh[1], 4), O, 700, 1.2);
+    ripple(t, T.boston - 0.1, ...wz('FLY', FL.bos[0], FL.bos[1], 4), O, 700, 1.2);
+  }
+  // ---- 1978: his music (orange notes) drowned by the roar; then the notepad
+  if (inShot(t, CUT.C78, CUT.TWIST)) {
+    const cw = OLD.hp.out(0), eng = OLD.eng.intake(), dr = ep(t, T.drowned - 0.1, T.drowned + 0.5);
+    [[0, 0], [70, 0.4]].forEach(([dz, ph]) => wave([eng[0] + 40, eng[1], eng[2] + dz], cw, up, (u) => Math.sin(2 * Math.PI * (u * 7 - t * 1.8 + ph)) * Math.sin(Math.PI * u), 12 + 14 * dr, RED, 0.9, { q: ep(t, CUT.C78, CUT.C78 + 0.6), w: 3 }));
+    HOLO.notes.forEach((h, k) => { const ph = (t * 0.6 + k / 3) % 1; h.show([cw[0] + 8 + 4 * k, cw[1] - 10, cw[2] + 8 + 30 * ph], (1 - dr) * Math.sin(Math.PI * ph) * (t < CUT.PAD ? 1 : 0), 1); });
+    const p = prog(t, T.sketching - 0.3, CUT.TWIST - 0.3);
+    OLD.pad.draw('pad' + Math.floor(p * 60), (g, W, H) => padArt(g, W, H, p));
+    const pq = clamp(p * 4 % 1), seg = Math.min(3, Math.floor(p * 4));
+    OLD.pen.position.set(-11 + 22 * pq - 1, [9, 4, -2, -8][seg] - 6, 4 + 0.6 * Math.abs(Math.sin(t * 20)));
+  } else HOLO.notes.forEach((h) => h.show([0, 0, 0], 0));
+  OLD.hero.pose('sit');
+  if (inShot(t, CUT.PAD - 0.5, CUT.TWIST)) { OLD.hero.shR.rotation.set(0.1, -0.85, 0); OLD.hero.elR.rotation.y = -0.9; OLD.hero.head.rotation.y = 0.45; }
+}
+
+/* ---------------- HUD */
+const K = (k, v, c, o) => ({ k, v, c, ...o });
+function tags(t) {
+  hud.begin();
+  const H = (key, o) => hud.card(key, o, t), CH = (key, o) => hud.chip(key, o, t);
+  // hook
+  const db = Math.round(dbAt(t)), dCol = db > 70 ? RED : O;
+  H('db', K('At your ear', db + ' dB', dCol, { x: 26, y: 140, a: 0.35, b: CUT.SOUND, big: true }));
+  CH('eng', { s: 'Engine roar', w: ENGC, x: -60, y: -60, rel: true, a: 0.5, b: CUT.HEAD, hot: true, c: RED });
+  CH('hpc', { s: 'Noise cancelling: on', w: CB.hp.out(0), x: 40, y: -70, rel: true, a: T.quieter, b: CUT.SOUND, hot: true, c: O });
+  H('more', K('To make it quieter', 'Play more sound', O, { w: CB.hp.out(0), x: 270, y: 560, a: T.more - 0.1, b: CUT.SOUND, big: true }));
+  // sound
+  const drumP = ez(DRUM_X, 0, HC + 40), dd = sig(DRUM_X, t);
+  H('snd', K('Sound', 'Air pushing, pulling', O, { x: 26, y: 140, a: T.sound2, b: CUT.MIC }));
+  if (t > T.pushing - 0.1 && t < CUT.MIC) CH('pp', { s: dd > 0 ? 'Push →' : 'Pull ←', w: drumP, x: -40, y: -90, rel: true, a: T.pushing - 0.1, b: CUT.MIC, hot: true, c: dd > 0 ? O : AMB });
+  H('drum', K('Your eardrum', 'Moves in and out', WH, { w: ez(DRUM_X, 0, HC), x: 290, y: 560, a: T.eardrum - 0.05, b: CUT.MIC }));
+  CH('wv', { s: 'The wave', w: ez(-500, 0, HC + 300), x: -40, y: -60, rel: true, a: T.waves, b: CUT.MIC, c: RED });
+  // mics
+  H('mics', K('Tiny microphones', 'Listening', O, { w: EA.mic(0), x: 26, y: 560, a: T.microphones - 0.05, b: CUT.FLIP, big: true }));
+  CH('m1', { s: 'Mic', w: EA.mic(1), x: 30, y: 26, rel: true, a: T.microphones + 0.15, b: CUT.FLIP, hot: true, c: O });
+  CH('roar', { s: 'Engine roar', w: ez(-380, -30, HC + 40), x: -30, y: -70, rel: true, a: T.engine - 0.1, b: CUT.FLIP, hot: true, c: RED });
+  CH('chip0', { s: 'Chip', w: EA.chip(), x: 40, y: -60, rel: true, a: T.engine + 0.2, b: CUT.FLIP });
+  // flip
+  H('chip', K('The chip', 'Flips the wave', O, { w: EA.chip(), x: 290, y: 600, a: T.chip - 0.05, b: T.pushes - 0.15, big: true }));
+  const L2 = HC + 150, xc = (() => { for (let x = -300; x < 100; x += 4) if (sig(x + Z.EAR[0], t) < -0.97) return x; return -100; })();
+  CH('push', { s: 'Engine pushes', w: ez(xc, -12, L2 + 44), x: -50, y: -54, rel: true, a: T.pushes - 0.1, b: CUT.SPK, hot: true, c: RED });
+  CH('pull', { s: 'Headphones pull', w: ez(xc, -14, L2 - 44), x: -50, y: 34, rel: true, a: T.pull - 0.1, b: CUT.SPK, hot: true, c: O });
+  // speaker + phone
+  H('spk', K('The speaker', 'Plays the opposite', O, { w: EA.drv(), x: 26, y: 560, a: T.speaker - 0.05, b: CUT.PHONE, big: true }));
+  H('mus', K('Music', 'Paused', GR, { w: [PH[0], PH[1], PH[2] + 40], x: 300, y: 170, a: T.music - 0.2, b: CUT.MEET }));
+  H('anti', K('Speaker', 'Still playing anti-noise', O, { w: SU.hp.out(0), x: 26, y: 580, a: T.music + 0.2, b: CUT.MEET }));
+  // meet
+  CH('rr', { s: 'Roar', w: ez(40, -10, HC + 270 - 44), x: -30, y: 50, rel: true, a: CUT.MEET + 0.2, b: CUT.CMP, c: RED });
+  CH('oo', { s: 'Opposite', w: ez(DRUM_X - 20, -14, HC + 270), x: 10, y: -70, rel: true, a: CUT.MEET + 0.35, b: CUT.CMP, c: O });
+  CH('ww', { s: 'What reaches you', w: ez(DRUM_X - 60, -40, HC - 10), x: -60, y: 60, rel: true, a: T.meet, b: CUT.CMP, hot: true, c: WH });
+  H('ear', K('At your ear', db + ' dB', db > 70 ? RED : O, { x: 26, y: 140, a: T.at - 0.05, b: CUT.CMP, big: true }));
+  // compare
+  H('rum', K('Low, steady rumble', 'Cancels ✓', O, { x: 26, y: 140, a: T.low - 0.1, b: T.voices - 0.15, big: true }));
+  H('vox', K('Voices', 'Too quick to match ✕', RED, { x: 26, y: 140, a: T.voices - 0.05, b: CUT.FLY, big: true }));
+  CH('lag', { s: 'Copy arrives late', w: ez(DRUM_X - 100, -14, HC + 270), x: -150, y: 70, rel: true, a: T.match - 0.1, b: CUT.FLY, hot: true, c: RED });
+  // the story
+  const zr = wz('FLY', FL.zrh[0], FL.zrh[1], 10), bo = wz('FLY', FL.bos[0], FL.bos[1], 10);
+  CH('zrh', { s: 'Zurich', w: zr, x: -30, y: 26, rel: true, a: CUT.FLY + 0.3, b: CUT.C78 });
+  CH('bos', { s: 'Boston', w: bo, x: -30, y: 26, rel: true, a: T.boston - 0.15, b: CUT.C78, hot: true, c: O });
+  H('his', K('His music', 'Drowned out', RED, { w: OLD.hp.out(0), x: 290, y: 580, a: T.drowned - 0.05, b: CUT.PAD, big: true }));
+  CH('bose', { s: 'Amar Bose', w: [O0[0], O0[1], O0[2] + 30], x: -40, y: -70, rel: true, a: CUT.C78 + 0.15, b: CUT.PAD });
+  H('sk', K('Before landing', 'Sketching the maths', O, { x: 26, y: 580, a: T.sketching - 0.1, b: CUT.TWIST, big: true }));
+  // the twist
+  H('quiet', K('That quiet', 'Not silence', WH, { x: 26, y: 140, a: T.quiet - 0.1, b: T.its - 0.1, big: true }));
+  H('two', K('Two sound waves', 'Cancelling at your ear', O, { x: 26, y: 140, a: T.two - 0.1, b: CUT.END, big: true }));
+  hud.end();
+}
+// "plays" is spoken once
+T.plays = at('plays');
+
+/* ---------------- reel config */
+const PLANESVG = '<svg width="44" height="44" viewBox="0 0 44 44" fill="none" stroke="#ff6a1f" stroke-width="2.2" stroke-linejoin="round"><path d="M22 4 C24 4 24.5 8 24.5 11 L24.5 18 L39 26 L39 29.5 L24.5 25.5 L24 34 L28.5 37.5 L28.5 40 L22 38 L15.5 40 L15.5 37.5 L20 34 L19.5 25.5 L5 29.5 L5 26 L19.5 18 L19.5 11 C19.5 8 20 4 22 4 Z"/></svg>';
+const REEL = {
+  shots: [{ t: 0, f: [0, 0, 0], s: 1, a: -0.7, e: 0.6, sy: 480 }], world, tags,
+  tools: [
+    { a: T.in78 + 0.25, b: T.but - 0.15, svg: PLANESVG, name: 'Amar Bose, 1978', sub: 'NEW AIRLINE HEADPHONES · ENGINES TOO LOUD', src: 'SWISSAIR FLIGHT · ZURICH → BOSTON · BOSE CORPORATION HISTORY' },
+  ],
+  slams: [],
+  bad: ['roar', 'engines', 'drowned', 'voices'],
+  good: ['quieter', 'cancels', 'canceling', 'opposite', 'pull', 'sketching'],
+  tiles: [['◎', 'AIRTAGS'], ['⚡', 'CIRCUIT<br>BREAKERS'], ['≋', 'MESSAGE<br>QUEUES']],
+  end: CUT.END, follow: T.follow,
+  cover: { k: 'NOISE CANCELLING', t: 'MORE SOUND.<br>LESS NOISE.', at: 15.0, zoom: 0.95, dy: 60 },
+  flash: () => 0,
+};
+</script>
+<script src="lib/overlay.js"></script>
+<script>
+{ const r0 = window.ready; window.ready = async () => { await r0(); ctexRedraw(); for (const d of [SU.ph.s, OLD.pad]) d._k = null; }; }
+if (/cover/.test(location.hash)) { const c = document.createElement('style'); c.textContent = '#hud { display: none !important; } #stage { background: #070707 !important; }'; document.head.appendChild(c); }
+</script>
+<script src="../_ember/play.js"></script>
+</body>
+</html>

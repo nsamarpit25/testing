@@ -1,0 +1,53 @@
+{
+ "topic": "N+1 queries",
+ "lines": [
+  [
+   {
+    "say": "Your database queries are fast. Your orders page is slow. The bug lives between them.",
+    "show": "Your database queries are fast. Your orders page is slow. The bug lives between them."
+   }
+  ],
+  [
+   {
+    "say": "First, your code asks for the last hundred orders. One trip to the database.",
+    "show": "First, your code asks for the last hundred orders. One trip to the database."
+   }
+  ],
+  [
+   {
+    "say": "Then for each order, it goes back to fetch the customer. One trip per order. A hundred more.",
+    "show": "Then for each order, it goes back to fetch the customer. One trip per order. A hundred more."
+   }
+  ],
+  [
+   {
+    "say": "Every trip waits on the network and the database. Those small waits add up. That is the slow part.",
+    "show": "Every trip waits on the network and the database. Those small waits add up. That is the slow part."
+   }
+  ],
+  [
+   {
+    "say": "This is the N plus one problem. One query for the list, then one query for each of the hundred orders. A hundred and one queries.",
+    "show": "This is the N plus one problem. One query for the list, then one query for each of the hundred orders. A hundred and one queries."
+   }
+  ],
+  [
+   {
+    "say": "The fix: get the orders, then ask for all their customers together in one query. Two trips total.",
+    "show": "The fix: get the orders, then ask for all their customers together in one query. Two trips total."
+   }
+  ],
+  [
+   {
+    "say": "Your ORM can often batch this for you with eager loading. Check which queries it actually generates.",
+    "show": "Your ORM can often batch this for you with eager loading. Check which queries it actually generates."
+   }
+  ],
+  [
+   {
+    "say": "Log the queries for one page load. If the count grows with every row on screen, that is your clue. A few queries can replace hundreds.",
+    "show": "Log the queries for one page load. If the count grows with every row on screen, that is your clue. A few queries can replace hundreds."
+   }
+  ]
+ ]
+}

@@ -1,0 +1,74 @@
+[
+ {
+  "li": 0,
+  "pi": 0,
+  "say": "At 8 PM, your app starts showing errors. The database is running fine. It just can't take any more connections.",
+  "show": "At [8 PM,] your app starts showing *errors.* The database is running *fine.* It just can't take any more [connections.]",
+  "start": 0.0,
+  "end": 4.84
+ },
+ {
+  "li": 1,
+  "pi": 0,
+  "say": "A connection is the open line between your app and its database, where your data lives. Every question travels over one. And opening a new one is slow, because the app has to say hello and log in first.",
+  "show": "A *connection* is the open line between your app and its database, where your data lives. Every question travels over one. And opening a new one is [slow,] because the app has to say hello and log in first.",
+  "start": 5.3,
+  "end": 13.32
+ },
+ {
+  "li": 2,
+  "pi": 0,
+  "say": "If every visitor's request opens its own connection, a busy evening means hundreds at once. But a database only allows so many. Postgres allows a hundred by default.",
+  "show": "If every visitor's request opens its *own connection,* a busy evening means [hundreds at once.] But a database only allows so many. *Postgres* allows [a hundred] by default.",
+  "start": 13.74,
+  "end": 21.26
+ },
+ {
+  "li": 3,
+  "pi": 0,
+  "say": "Go over the limit, and new connections get refused. Your users see errors.",
+  "show": "Go over the limit, and new connections get [refused.] Your users see *errors.*",
+  "start": 21.52,
+  "end": 24.36
+ },
+ {
+  "li": 4,
+  "pi": 0,
+  "say": "The fix is a connection pool. Your app opens a few connections, and keeps them open to reuse.",
+  "show": "The fix is a [connection pool.] Your app opens a *few* connections, and keeps them open to *reuse.*",
+  "start": 24.76,
+  "end": 28.32
+ },
+ {
+  "li": 5,
+  "pi": 0,
+  "say": "Each request borrows one, asks its question, and hands it back. If they're all busy, it waits its turn in line.",
+  "show": "Each request [borrows one,] asks its question, and *hands it back.* If they're all busy, it waits its turn in line.",
+  "start": 28.32,
+  "end": 33.1
+ },
+ {
+  "li": 6,
+  "pi": 0,
+  "say": "Like a taxi rank. The cabs are already waiting, so you just hop in, instead of waiting for a new one to drive over every time.",
+  "show": "Like a [taxi rank.] The cabs are *already waiting,* so you just hop in, instead of waiting for a new one to drive over every time.",
+  "start": 33.54,
+  "end": 38.44
+ },
+ {
+  "li": 7,
+  "pi": 0,
+  "say": "Most database libraries come with a pool. Use it, and keep the total across all your servers under the database's limit, with room to spare.",
+  "show": "Most database libraries come with a [pool.] Use it, and keep the total across *all your servers* under the database's limit, with *room to spare.*",
+  "start": 38.96,
+  "end": 44.38
+ },
+ {
+  "li": 8,
+  "pi": 0,
+  "say": "If you're a vibe coder, follow for the system design your AI skipped.",
+  "show": "If you're a vibe coder, follow for the system design your AI [skipped.]",
+  "start": 44.66,
+  "end": 47.18
+ }
+]

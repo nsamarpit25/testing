@@ -1,0 +1,65 @@
+{
+ "topic": "Rate limiting",
+ "lines": [
+  [
+   {
+    "say": "Your app can get healthier by refusing requests. Sounds backwards.",
+    "show": "Your app can get healthier by refusing requests. Sounds backwards."
+   }
+  ],
+  [
+   {
+    "say": "Imagine one bot guessing passwords on your login page. Fifty thousand attempts in a minute.",
+    "show": "Imagine one bot guessing passwords on your login page. Fifty thousand attempts in a minute."
+   }
+  ],
+  [
+   {
+    "say": "After five tries, the gate closes. The next guess gets an error, not another chance.",
+    "show": "After five tries, the gate closes. The next guess gets an error, not another chance."
+   }
+  ],
+  [
+   {
+    "say": "That is rate limiting: a cap per user in a set time window.",
+    "show": "That is rate limiting: a cap per user in a set time window."
+   }
+  ],
+  [
+   {
+    "say": "Your server counts each user's requests separately. One noisy sender hits the limit while everyone else keeps using the app.",
+    "show": "Your server counts each user's requests separately. One noisy sender hits the limit while everyone else keeps using the app."
+   }
+  ],
+  [
+   {
+    "say": "Think of a bouncer with a clicker. Each guest gets five entries an hour. The sixth time, the door stays shut.",
+    "show": "Think of a bouncer with a clicker. Each guest gets five entries an hour. The sixth time, the door stays shut."
+   }
+  ],
+  [
+   {
+    "say": "Over the limit, the server answers with four twenty-nine: too many requests.",
+    "show": "Over the limit, the server answers with four twenty-nine: too many requests."
+   }
+  ],
+  [
+   {
+    "say": "Once that window passes, the count resets and they can try again.",
+    "show": "Once that window passes, the count resets and they can try again."
+   }
+  ],
+  [
+   {
+    "say": "So a runaway script cannot hog the app. Thousands of requests can be rejected to protect everyone else's work.",
+    "show": "So a runaway script cannot hog the app. Thousands of requests can be rejected to protect everyone else's work."
+   }
+  ],
+  [
+   {
+    "say": "The point is not to make every request succeed. It is to keep one sender from breaking the service for everyone.",
+    "show": "The point is not to make every request succeed. It is to keep one sender from breaking the service for everyone."
+   }
+  ]
+ ]
+}

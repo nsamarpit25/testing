@@ -1,0 +1,414 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- 28 Connection pooling. A perspective three.js world with bloom (own camera + post pass).
+     World: YOUR APP (a box, front left) and the DATABASE as a standing wall of 100 sockets (its connection limit). Every
+     connection is a cable from the app plugged into a socket; a capacity bar at the top counts them. Hook: at 8 PM the
+     cables flood in, the wall fills, and new ones bounce off red. One connection: a cable, questions riding it, and a
+     second one that has to say hello and log in before it works. One connection per request: the wall fills again and
+     connections get refused (Postgres' "too many clients" card). Pool: all cables gone, five green ones opened once;
+     requests queue at the app, borrow a cable, ride it, hand it back. Taxi rank card. Last: a pool in code, three servers
+     with five each = 15 of 100, room to spare. Beats come from voice/words.json via at(). -->
+<link rel="stylesheet" href="../_ember/fonts.css">
+<link rel="stylesheet" href="../_ember/reel.css">
+<style>
+#cap { top: 728px !important; }
+#cap .box { background: linear-gradient(90deg, transparent, rgba(8,7,6,0.82) 16%, rgba(8,7,6,0.82) 84%, transparent); }
+#ed { top: 192px !important; }
+.lbl { background: rgba(12,11,10,0.95); }
+#hud { position: absolute; left: 40px; right: 40px; top: 120px; height: 58px; opacity: 0; display: flex; align-items: center; gap: 12px; padding: 0 14px; box-sizing: border-box;
+  background: rgba(14,12,11,0.95); border: 1px solid rgba(255,176,112,0.35); border-radius: 12px; box-shadow: 0 14px 34px rgba(0,0,0,0.6); }
+#hud .k { font: 800 10px/1.25 Mono; letter-spacing: 1.3px; color: #9c948c; }
+#hb { flex: 1; height: 16px; border-radius: 4px; position: relative; overflow: hidden; background: repeating-linear-gradient(90deg, #2a2521 0 2px, #1a1714 2px 4px); }
+#hbF { position: absolute; left: 0; top: 0; bottom: 0; width: 0; background: repeating-linear-gradient(90deg, currentColor 0 2px, transparent 2px 4px); }
+#hn { font: 900 26px/1 Mono; letter-spacing: -1px; font-variant-numeric: tabular-nums; min-width: 96px; text-align: right; }
+#hn span { font-size: 14px; color: #77706A; letter-spacing: 0; }
+.cd2 { position: absolute; left: 40px; right: 40px; top: 192px; opacity: 0; background: rgba(16,14,12,0.96); border: 1px solid rgba(255,176,112,0.35); border-radius: 14px; box-shadow: 0 20px 50px rgba(0,0,0,0.7); overflow: hidden; }
+#er .tb { height: 26px; display: flex; align-items: center; gap: 5px; padding: 0 10px; border-bottom: 1px solid rgba(255,255,255,0.06); font: 600 10px/1 Mono; color: #9c948c; }
+#er .tb i { width: 7px; height: 7px; border-radius: 50%; background: #2c2925; display: inline-block; }
+#er .tb b { color: #FF4632; font-weight: 600; margin-left: 6px; }
+#er .m { padding: 12px 14px; font: 700 13.5px/1.5 Mono; color: #FF6A50; }
+#er .u { margin: 0 14px 14px; padding: 12px; border-radius: 10px; background: #1c1916; border: 1px solid rgba(255,70,50,0.4); display: flex; align-items: center; gap: 12px; font: 700 14px/1.2 Inter; }
+#er .u b { font: 900 22px/1 Mono; color: #FF4632; }
+#tx { padding: 14px 16px 12px; }
+#tx .h { font: italic 400 30px/1 Instrument; color: #efe6d8; margin-bottom: 6px; }
+#txS { display: block; width: 100%; height: 150px; }
+#txL { margin-top: 4px; font: 800 12px/1 Mono; letter-spacing: 1.2px; text-align: center; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="world">
+    <canvas id="cv" width="1080" height="1920"></canvas>
+    <div class="layer" id="lbls"></div>
+  </div>
+</div>
+<script src="../../tools/lib.js"></script>
+<script src="voice/words.js"></script>
+<script src="../_ember/three.js"></script>
+<script src="../_ember/world.js"></script>
+<script src="../_ember/base.js"></script>
+<script>
+for (let i = 0; i < 14; i++) ORBS.push({ core: orbSprite(9), glow: orbSprite(34), trail: [0, 1, 2, 3, 4].map(() => orbSprite(10)) });
+
+/* ---------------- beats */
+const T = {
+  pm: at('8pm'), errors1: at('errors'), fine: at('fine'), more1: at('more'), conns1: at('connections'),
+  l1: line(1).start, connection1: at('connection'), question: at('question'), travels: at('travels'), opening: at('opening'), slow: at('slow'), hello: at('hello'), log: at('log'), first: at('first'),
+  l2: line(2).start, every: at('every', 2), own: at('own'), busy: at('busy'), hundreds: at('hundreds'), allows: at('allows'), many: at('many'), postgres: at('postgres'), hundred: at('hundred'),
+  l3: line(3).start, limit: at('limit'), refused: at('refused'), users: at('users'), errors2: at('errors', 2),
+  l4: line(4).start, pool: at('pool'), few: at('few'), keeps: at('keeps'), reuse: at('reuse'),
+  l5: line(5).start, borrows: at('borrows'), asks: at('asks'), hands: at('hands'), busy2: at('busy', 2), waits: at('waits'), inline: at('line', 2),
+  l6: line(6).start, taxi: at('taxi'), cabs: at('cabs'), already: at('already'), hop: at('hop'), instead: at('instead'), drive: at('drive'),
+  l7: line(7).start, libraries: at('libraries'), pool2: at('pool', 2), total: at('total'), servers: at('servers'), limit2: at('limit', 2), room: at('room'),
+  ifv: line(8).start, follow: at('follow'),
+};
+
+/* ---------------- layout: Z up */
+const APX = -250, APY = -130, APW = 150, APD = 110, APH = 70;   // your app
+const WX = 170, WY = 260, WW = 360, WD = 40, WH_ = 350;           // the database: a wall of sockets
+const NS = 100, sockXZ = (k) => [WX - 153 + (k % 10) * 34, 30 + Math.floor(k / 10) * 32];
+const FRONT = WY - WD / 2 - 2;
+const SRV = [[APX, APY], [APX - 40, APY + 190], [APX - 80, APY + 380]];   // app servers (2 and 3 come in at the end)
+const PORT = (s) => [SRV[s][0] + APW / 2, SRV[s][1], 45];
+function cablePts(a, k, n = 24) {
+  const [sx, sz] = sockXZ(k), b = [sx, FRONT, sz];
+  return [...Array(n + 1)].map((_, i) => { const q = i / n, p = [lerp(a[0], b[0], q), lerp(a[1], b[1], q), lerp(a[2], b[2], q)]; p[2] -= 34 * 4 * q * (1 - q); return p; });
+}
+const BOUNCE = (() => { const a = PORT(0), b = [WX - 40, FRONT - 6, 170]; return [...Array(25)].map((_, i) => { const q = i / 24; return [lerp(a[0], b[0], q), lerp(a[1], b[1], q), lerp(a[2], b[2], q) + 60 * 4 * q * (1 - q)]; }); })();
+
+/* ---------------- schedules */
+// hook: 100 cables in 1.6 s, then refusals; one-per-request: 98 more after the two from line 1
+const HOOK_OPEN = [...Array(NS)].map((_, k) => 0.25 + 1.35 * Math.pow(k / NS, 0.85));
+const L2_OPEN = [...Array(NS)].map((_, k) => (k < 2 ? -1 : T.every + (T.many - T.every) * Math.pow((k - 2) / 98, 0.75)));
+const REF_HOOK = [...Array(9)].map((_, i) => 1.65 + i * 0.42);
+const REF_L3 = [...Array(8)].map((_, i) => T.limit + 0.2 + i * 0.36);
+const POOL_N = 5, POOL_OPEN = [...Array(POOL_N)].map((_, k) => T.few - 0.2 + k * 0.12);
+// pool requests: arrive at the app, wait for a free cable, ride it (out + back), hand it back
+const REQ = (() => {
+  const arr = [T.borrows - 0.25];
+  for (let i = 0; i < 26; i++) arr.push(T.busy2 - 1.0 + i * 0.085);
+  for (let i = 0; i < 20; i++) arr.push(T.inline + 0.5 + i * 0.25);
+  const free = Array(POOL_N).fill(0), out = [];
+  arr.forEach((a, r) => {
+    let c = 0; for (let j = 1; j < POOL_N; j++) if (free[j] < free[c]) c = j;
+    const s = Math.max(a, free[c]), d = r === 0 ? T.hands + 0.25 - s : 0.75; free[c] = s + d;
+    out.push({ a, s, e: s + d, c });
+  });
+  return out;
+})();
+
+/* ---------------- camera */
+const pcam = new TH.PerspectiveCamera(44, 540 / 960, 5, 20000); pcam.up.set(0, 0, 1);
+const WIDE = { p: [-560, -1450, 760], l: [-20, 120, 140], f: 44 };
+const SHOTS = [
+  { t: 0, p: [-650, -1700, 900], l: [-20, 120, 140], f: 44 },
+  { t: 0.01, d: 4.5, ...WIDE, e: ease.out },
+  { t: T.l1 - 0.3, d: 1.1, p: [-470, -1080, 460], l: [-60, 80, 90], f: 44 },
+  { t: T.l2 - 0.3, d: 1.2, ...WIDE },
+  { t: T.refused - 0.4, d: 1.0, p: [-520, -1300, 640], l: [-120, 40, 120], f: 44 },
+  { t: T.l4 - 0.3, d: 1.1, p: [-560, -1250, 600], l: [-110, 60, 90], f: 44 },
+  { t: T.l7 - 0.3, d: 1.3, p: [-780, -1500, 900], l: [-80, 150, 120], f: 44 },
+];
+const KICKS = [[T.errors1, 0.04], [T.conns1, 0.04], [T.slow, 0.03], [T.hundreds, 0.04], [T.refused, 0.05], [T.pool, 0.04], [T.borrows, 0.03], [T.servers, 0.03], [T.room, 0.03]];
+const SHAKES = [[T.refused, 6, 0.35], [T.errors1, 4, 0.3]];
+const _rv = new TH.Vector3();
+function shoot(t) {
+  let p = SHOTS[0].p.slice(), l = SHOTS[0].l.slice(), f = SHOTS[0].f;
+  for (let i = 1; i < SHOTS.length; i++) {
+    const k = SHOTS[i]; if (t < k.t) break;
+    const q = k.d ? (k.e || ease.inOut)(prog(t, k.t, k.t + k.d)) : 1;
+    p = p.map((v, j) => lerp(v, k.p[j], q)); l = l.map((v, j) => lerp(v, k.l[j], q)); f = lerp(f, k.f, q);
+  }
+  let kick = 0;
+  for (const [t0, amp] of KICKS) { const dt = t - t0; if (dt > 0 && dt < 1.2) kick += amp * (dt < 0.05 ? dt / 0.05 : Math.exp(-(dt - 0.05) * 6)); }
+  let sx = 0, sy = 0;
+  for (const [t0, amp, dur] of SHAKES) { const dt = t - t0; if (dt > 0 && dt < dur) { const k = amp * (1 - dt / dur); sx += k * Math.sin(t * 91); sy += k * Math.cos(t * 67); } }
+  pcam.position.set(p[0] + 6 * Math.sin(t * 0.37), p[1] + 6 * Math.cos(t * 0.29), p[2] + 4 * Math.sin(t * 0.23));
+  pcam.lookAt(l[0] + sx, l[1], l[2] + sy);
+  pcam.fov = f * (1 - kick); pcam.updateProjectionMatrix(); pcam.updateMatrixWorld();
+  cam.f = l;
+  _rv.setFromMatrixColumn(pcam.matrixWorld, 0); const n = Math.hypot(_rv.x, _rv.y) || 1; camRight = [_rv.x / n, _rv.y / n, 0];
+  const d = Math.hypot(p[0] - l[0], p[1] - l[1], p[2] - l[2]);
+  scene.fog.near = d * 0.9; scene.fog.far = d * 3.4;
+}
+const _pv = new TH.Vector3();
+P = function (x, y, z) { _pv.set(x, y, z).project(pcam); return [(_pv.x + 1) * 270, (1 - _pv.y) * 480, _pv.z]; };
+
+/* ---------------- the stage */
+floor.scale.set(2.2, 2.2, 1); floor.position.set(0, 1500, -0.5);
+scene.children.filter((o) => o.type === 'LineSegments').forEach((o) => scene.remove(o));
+(() => {
+  const pts = [], S = 56;
+  for (let x = -3000; x <= 3000; x += S) pts.push(x, -2400, 0, x, 5000, 0);
+  for (let y = -2400; y <= 5000; y += S) pts.push(-3000, y, 0, 3000, y, 0);
+  const geo = new TH.BufferGeometry(); geo.setAttribute('position', new TH.Float32BufferAttribute(pts, 3));
+  const m = new TH.LineSegments(geo, new TH.LineBasicMaterial({ color: 0x2a221c, transparent: true, opacity: 0.5, fog: true }));
+  m.position.z = 0.05; scene.add(m);
+})();
+const APPS = SRV.map(([x, y]) => emberBox(x, y, APW, APD, APH, O));
+const WALL = emberBox(WX, WY, WW, WD, WH_, O);
+pool(APX, APY, 230, O); pool(WX, WY - 40, 300, O);
+
+/* ---------------- sockets: instanced squares on the wall's face */
+function rimTex() {
+  const c = document.createElement('canvas'); c.width = 64; c.height = 64; const g = c.getContext('2d');
+  g.fillStyle = 'rgb(40,40,40)'; g.fillRect(0, 0, 64, 64); g.strokeStyle = '#fff'; g.lineWidth = 7; g.strokeRect(4, 4, 56, 56);
+  g.fillStyle = 'rgb(140,140,140)'; g.beginPath(); g.arc(32, 32, 9, 0, Math.PI * 2); g.fill();
+  const tx = new TH.CanvasTexture(c); tx.colorSpace = TH.SRGBColorSpace; tx.anisotropy = 8; return tx;
+}
+const SOCK = (() => {
+  const geo = new TH.PlaneGeometry(22, 22); geo.rotateX(Math.PI / 2);
+  const m = new TH.InstancedMesh(geo, new TH.MeshBasicMaterial({ map: rimTex(), toneMapped: false, fog: true, side: TH.DoubleSide }), NS);
+  m.instanceMatrix.setUsage(TH.DynamicDrawUsage); m.setColorAt(0, new TH.Color()); m.instanceColor.setUsage(TH.DynamicDrawUsage); m.frustumCulled = false; scene.add(m);
+  const o = new TH.Object3D(); for (let k = 0; k < NS; k++) { const [x, z] = sockXZ(k); o.position.set(x, FRONT - 0.5, z); o.updateMatrix(); m.setMatrixAt(k, o.matrix); }
+  return m;
+})();
+const CO = { O: C(O), O2: C(O2), OK: C(OK), RED: C(RED), AMB: C(AMB) };
+const _c = new TH.Color();
+const tint = (a, k) => _c.copy(a).multiplyScalar(k);
+
+/* ---------------- cables: one static Line2 per socket (server 1), plus pool cables for servers 2 and 3 */
+function cable(pts) {
+  const l = new TH.Line2(new TH.LineGeometry(), lineMat(O, 2.2, { op: 1 })); l.geometry.setPositions(pts.flat()); l.renderOrder = 3; l.visible = false; scene.add(l);
+  const g = new TH.Line2(new TH.LineGeometry(), lineMat(O, 9, { add: true, op: 0.2 })); g.geometry.setPositions(pts.flat()); g.renderOrder = 2; g.visible = false; scene.add(g);
+  return { pts, l, g, set(col, a, glow = 1) { const on = a > 0.01; l.visible = g.visible = on; if (!on) return; l.material.color.set(col); g.material.color.set(col); l.material.opacity = a; g.material.opacity = 0.2 * a * glow; } };
+}
+const CAB = [...Array(NS)].map((_, k) => cable(cablePts(PORT(0), k)));
+const CAB2 = [1, 2].map((s) => [...Array(POOL_N)].map((_, k) => cable(cablePts(PORT(s), 10 * s + k + 3))));
+
+/* ---------------- the world, frame by frame */
+const phaseOf = (t) => (t < T.l1 - 0.3 ? 'hook' : t < T.l2 - 0.3 ? 'one' : t < T.pool - 0.45 ? 'many' : 'pool');
+function openAt(k, t) {     // when cable k (server 1) opened in the current phase, or null
+  const ph = phaseOf(t);
+  if (ph === 'hook') return HOOK_OPEN[k];
+  if (ph === 'one') return k === 0 ? T.connection1 - 0.1 : k === 1 ? T.first + 0.05 : null;
+  if (ph === 'many') return k === 0 ? T.l2 - 0.3 : k === 1 ? T.l2 - 0.3 : L2_OPEN[k];
+  return k < POOL_N ? POOL_OPEN[k] : null;
+}
+function connCount(t) {
+  let n = 0; for (let k = 0; k < NS; k++) { const o = openAt(k, t); if (o !== null && t >= o + 0.3) n++; }
+  if (t > T.servers) n += 2 * POOL_N * (t > T.servers + 0.6 ? 1 : 0);
+  return n;
+}
+function world(t) {
+  const fadeIn = ep(t, 0, 0.5), ph = phaseOf(t);
+  const n = connCount(t), full = n >= NS;
+  // the wall glows red when full
+  const red = (ph === 'hook' && t > 1.6) || (ph === 'many' && t > T.limit - 0.1);
+  WALL.setLook(red ? mixHex(O, RED, 0.6 + 0.4 * Math.sin(t * 9) ** 2) : O, 1 + (red ? 1 : 0), fadeIn);
+  const appRed = (ph === 'hook' && t > T.errors1 - 0.2) || (ph === 'many' && t > T.refused - 0.1);
+  APPS[0].setLook(appRed ? RED : ph === 'pool' ? mixHex(O, OK, ep(t, T.keeps, T.keeps + 0.5)) : O, 1 + (appRed ? 0.8 : 0), fadeIn);
+  [1, 2].forEach((s) => { const a = ep(t, T.servers - 0.3 + s * 0.15, T.servers + 0.1 + s * 0.15); APPS[s].g.position.z = -80 * (1 - ease.back(a)); APPS[s].setLook(mixHex(O, OK, 0.7), 1.2, a); });
+
+  // server 1 cables
+  const busyC = new Set(REQ.filter((r) => t > r.s && t < r.e).map((r) => r.c));
+  for (let k = 0; k < NS; k++) {
+    const o = openAt(k, t);
+    if (o === null || t < o) { CAB[k].set(O, 0); continue; }
+    const q = prog(t, o, o + 0.3);
+    if (q < 1) { CAB[k].set(AMB, 0); orb(CAB[k].pts, ease.inOut(q), AMB, 1, 0.7); continue; }
+    let col = O, a = 0.75, glow = 1;
+    if (ph === 'hook' || ph === 'many') col = red ? mixHex(O, RED, 0.5) : O;
+    if (ph === 'one') { col = O2; a = 1; glow = 2; }
+    if (ph === 'pool') { col = busyC.has(k) ? '#C8FFD6' : OK; a = 1; glow = busyC.has(k) ? 3 : 1.4; }
+    CAB[k].set(col, a * fadeIn, glow);
+  }
+  CAB2.forEach((cs, s) => cs.forEach((c, k) => {
+    const o = T.servers + 0.2 + (s + 1) * 0.15 + k * 0.08, q = prog(t, o, o + 0.3);
+    if (t < o) { c.set(OK, 0); return; }
+    if (q < 1) { c.set(OK, 0); orb(c.pts, ease.inOut(q), OK, 1, 0.6); return; }
+    const busy = Math.sin(t * 3 + k * 1.7 + s) > 0.4; c.set(busy ? '#C8FFD6' : OK, 1, busy ? 3 : 1.4);
+  }));
+
+  // sockets: lit when a cable is plugged in
+  for (let k = 0; k < NS; k++) {
+    let on = false, col = CO.O;
+    const o = openAt(k, t); if (o !== null && t >= o + 0.3) on = true;
+    if (t > T.servers) for (let s = 1; s <= 2; s++) for (let j = 0; j < POOL_N; j++) if (k === 10 * s + j + 3 && t > T.servers + 0.5 + s * 0.15 + j * 0.08) on = true;
+    const c = on ? (ph === 'pool' ? tint(CO.OK, 1.6) : red ? tint(CO.RED, 1.8) : ph === 'one' ? tint(CO.O2, 2) : tint(CO.O, 1.6)) : tint(CO.O, 0.35 * fadeIn);
+    SOCK.setColorAt(k, c);
+  }
+  SOCK.instanceColor.needsUpdate = true;
+
+  // refusals: a new connection flies at the full wall and bounces off red
+  for (const r of ph === 'hook' ? REF_HOOK : ph === 'many' ? REF_L3 : []) {
+    const q = prog(t, r, r + 0.6); if (q <= 0 || q >= 1) continue;
+    if (q < 0.5) orb(BOUNCE, ease.in(q * 2), AMB, 1, 0.9);
+    else orb(BOUNCE, 1 - ease.out((q - 0.5) * 2), RED, 1, 1.1);
+    if (q > 0.5) { ripple(t, r + 0.3, WX - 40, FRONT - 4, 170, RED, 70, 0.5); sparks(t, r + 0.3, WX - 40, FRONT - 8, 170, RED, 14, 3 + Math.round(r * 10), 120, 0.6); }
+  }
+  // line 1: questions ride the first cable; the second one says hello and logs in first
+  if (ph === 'one') {
+    for (let i = 0; i < 6; i++) { const s = T.question - 0.1 + i * 0.32, q = prog(t, s, s + 0.7); if (q > 0 && q < 1) orb(CAB[0].pts, q < 0.5 ? q * 2 : 2 - q * 2, OK, 1, 0.6); }
+    [[T.opening, 0.5], [T.hello - 0.1, 0.6], [T.log - 0.05, 0.6]].forEach(([s, d], i) => {
+      const q = prog(t, s, s + d); if (q <= 0 || q >= 1) return;
+      orb(CAB[1].pts, q < 0.5 ? q * 2 : 2 - q * 2, AMB, 1, 0.8);
+    });
+    const hs = t > T.opening && t < T.first + 0.05;
+    if (hs) { CAB[1].set(AMB, 0.35 + 0.2 * Math.sin(t * 14), 1); }
+  }
+  // the pool: requests queue at the app, ride a cable out and back
+  if (ph === 'pool') {
+    let qi = 0;
+    REQ.forEach((r, i) => {
+      if (t < r.a - 0.4 || t > r.e) return;
+      if (t < r.s) {                                       // walking in / waiting in line
+        const slot = qi++, x = APX - APW / 2 - 26 - slot * 22, w = ep(t, r.a - 0.4, r.a, ease.out);
+        orb([[x - 300, APY - 20, 30], [x, APY - 20, 30]], w, AMB, 1, 0.75);
+        return;
+      }
+      const q = prog(t, r.s, r.e), pts = CAB[r.c].pts;
+      orb(q < 0.5 ? pts : pts.slice().reverse(), ease.inOut(q < 0.5 ? q * 2 : (q - 0.5) * 2), q < 0.5 ? AMB : OK, 1, i === 0 ? 1.1 : 0.7);
+    });
+  }
+  if (ph === 'pool' && t > T.few) ripple(t, T.few + 0.3, APX, APY, APH + 1, OK, 120, 0.7);
+}
+
+/* ---------------- world tags */
+const tg = (key, html, style, wp, t, a, b, dy = 0) => { const e = tag(key, html, style, wp, t, a, b, dy); if (P(...wp)[2] > 1) e.style.display = 'none'; return e; };
+function tags(t) {
+  const big = (c) => `font-size:15px;padding:9px 13px;letter-spacing:1px;border-color:${c}`;
+  const sp = (c, s) => `<span style="color:${c}">${s}</span>`;
+  const appW = [APX, APY - APD / 2, 0], wallTop = [WX, WY, WH_ + 10], hitW = [WX - 40, FRONT, 170];
+  // hook
+  tg('pm', sp(AMB, 'YOUR APP · 8 PM'), big(AMB), appW, t, 0.3, T.l1 - 0.2, 28);
+  tg('wall0', sp(O2, 'DATABASE · 100 CONNECTION SLOTS'), big(O2), [WX - 40, WY, WH_ + 10], t, 0.3, T.fine - 0.15, -22);
+  tg('fine', sp(OK, 'DATABASE · RUNNING ✓'), big(OK), [WX - 40, WY, WH_ + 10], t, T.fine - 0.1, T.l1 - 0.2, -22);
+  tg('rf0', sp(RED, '✕ NO FREE CONNECTIONS'), big(RED), hitW, t, T.more1 - 0.1, T.l1 - 0.2, -40);
+  // one connection
+  tg('c1', sp(O2, '1 CONNECTION'), big(O2), along(CAB[0].pts, 0.5), t, T.connection1 + 0.2, T.question - 0.1, -26);
+  tg('qq', sp(OK, 'EVERY QUESTION TRAVELS OVER IT'), big(OK), along(CAB[0].pts, 0.5), t, T.question, T.opening - 0.1, -26);
+  const hsT = t < T.hello - 0.15 ? 'OPENING A NEW ONE…' : t < T.log - 0.1 ? '1 · SAY HELLO' : '2 · LOG IN';
+  tg('hs', sp(AMB, hsT), big(AMB), along(CAB[1].pts, 0.5), t, T.opening, T.first + 0.1, -62);
+  tg('slow', sp(RED, 'SLOW TO OPEN'), big(RED), appW, t, T.slow, T.l2 - 0.2, 28);
+  // many
+  tg('own', sp(AMB, '1 NEW CONNECTION PER REQUEST'), big(AMB), appW, t, T.own, T.postgres - 0.1, 28);
+  tg('pg', sp(O2, 'POSTGRES · DEFAULT LIMIT: <b>100</b>'), big(O2), [WX - 60, WY, WH_ + 10], t, T.postgres - 0.1, T.users - 0.3, -22);
+  tg('rf', sp(RED, '✕ REFUSED'), big(RED), hitW, t, T.refused - 0.1, T.users - 0.25, -40);
+  // pool
+  tg('pool', sp(OK, 'POOL · 5 CONNECTIONS, REUSED'), big(OK), appW, t, T.few, T.borrows - 0.2, 28);
+  const r0 = REQ[0], q0 = prog(t, r0.s, r0.e), p0 = along(q0 < 0.5 ? CAB[r0.c].pts : CAB[r0.c].pts.slice().reverse(), ease.inOut(q0 < 0.5 ? q0 * 2 : (q0 - 0.5) * 2));
+  tg('br', sp(q0 < 0.5 ? AMB : OK, t < T.asks ? 'BORROWS ONE' : t < T.hands - 0.1 ? 'ASKS ITS QUESTION' : '← HANDS IT BACK'), big(q0 < 0.5 ? AMB : OK), p0, t, T.borrows - 0.1, T.hands + 0.35, -30);
+  tg('wl', sp(AMB, 'ALL BUSY → WAIT IN LINE'), big(AMB), [APX - APW / 2 - 90, APY - 20, 30], t, T.waits - 0.1, T.l6 - 0.2, -34);
+  // servers
+  tg('srv', sp(OK, '3 SERVERS × 5 = <b style="color:inherit">15</b> OF 100'), big(OK), [SRV[2][0], SRV[2][1], APH], t, T.total, T.ifv - 0.2, -40);
+  tg('room', sp(OK, '✓ ROOM TO SPARE'), big(OK), [WX + 40, FRONT, 200], t, T.room, T.ifv - 0.2, 0);
+}
+
+/* ---------------- reel config */
+const REEL = {
+  shots: [], world, tags,
+  code: [
+    [T.libraries - 0.15, T.total - 0.1, 'db.js', 'node + Postgres', [[0, 'POOL', OK]],
+      [["import { Pool } from 'pg'"], ['const pool = new Pool({ max: 5 })'], [''], ["await pool.query('SELECT …')"], ['// borrows a connection, then returns it']],
+      [[T.pool2, 2, 'up to 5, reused', 'good'], [T.pool2 + 0.5, 4, 'borrow → return', 'good']]],
+  ],
+  hl: /\b(import|from|const|new|await|max)\b/g,
+  tools: [], slams: [],
+  bad: ['pm', 'errors', 'slow', 'hundreds', 'refused', 'connections', 'hundred'],
+  good: ['pool', 'borrows', 'taxi', 'rank', 'reuse', 'spare', 'already', 'waiting', 'few'],
+  tiles: [['⇄', 'CONNECTION<br>POOLING'], ['N+1', 'N+1<br>QUERIES'], ['⚡', 'QUERY<br>OPTIMIZATION']],
+  end: T.ifv - 0.15, follow: T.follow,
+  cover: { t: 'CONNECTION<br>POOLING', at: T.refused + 0.45, zoom: 1, dy: 60 },
+  flash: (t) => 0.05 * pulse(t, T.errors1, 7) + 0.06 * pulse(t, T.refused, 6),
+};
+</script>
+<script src="../_ember/overlay.js"></script>
+<script>
+/* ---------------- bloom: scene → half-float target, bright pass, three blur levels, composite to the canvas */
+const RT = (w, h, s = 0) => new TH.WebGLRenderTarget(w, h, { type: TH.HalfFloatType, samples: s, depthBuffer: s > 0 });
+const rtMain = RT(1080, 1920, 4), BL = [[RT(540, 960), RT(540, 960)], [RT(270, 480), RT(270, 480)], [RT(135, 240), RT(135, 240)]];
+const fsCam = new TH.OrthographicCamera(-1, 1, 1, -1, 0, 1), fsScene = new TH.Scene(), fsQuad = new TH.Mesh(new TH.PlaneGeometry(2, 2));
+fsQuad.frustumCulled = false; fsScene.add(fsQuad);
+const VS = 'varying vec2 vUv; void main() { vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }';
+const shm = (fs, u) => new TH.ShaderMaterial({ uniforms: u, vertexShader: VS, fragmentShader: fs, depthTest: false, depthWrite: false });
+const mBright = shm(`uniform sampler2D tex; uniform float th; varying vec2 vUv;
+void main() { vec3 c = texture2D(tex, vUv).rgb; float l = max(c.r, max(c.g, c.b)); gl_FragColor = vec4(c * smoothstep(th, th + 0.4, l), 1.0); }`,
+  { tex: { value: null }, th: { value: 0.8 } });
+const mBlur = shm(`uniform sampler2D tex; uniform vec2 dir; varying vec2 vUv;
+void main() {
+  vec3 c = texture2D(tex, vUv).rgb * 0.2270270270;
+  c += (texture2D(tex, vUv + dir * 1.3846153846).rgb + texture2D(tex, vUv - dir * 1.3846153846).rgb) * 0.3162162162;
+  c += (texture2D(tex, vUv + dir * 3.2307692308).rgb + texture2D(tex, vUv - dir * 3.2307692308).rgb) * 0.0702702703;
+  gl_FragColor = vec4(c, 1.0);
+}`, { tex: { value: null }, dir: { value: new TH.Vector2() } });
+const mComp = shm(`uniform sampler2D base, b1, b2, b3; uniform float k1, k2, k3; varying vec2 vUv;
+void main() {
+  vec3 c = texture2D(base, vUv).rgb + texture2D(b1, vUv).rgb * k1 + texture2D(b2, vUv).rgb * k2 + texture2D(b3, vUv).rgb * k3;
+  c = c / (1.0 + max(c - 1.0, 0.0) * 0.6);
+  gl_FragColor = vec4(c, 1.0);
+  #include <colorspace_fragment>
+}`, { base: { value: rtMain.texture }, b1: { value: BL[0][0].texture }, b2: { value: BL[1][1].texture }, b3: { value: BL[2][1].texture }, k1: { value: 0.5 }, k2: { value: 0.65 }, k3: { value: 0.8 } });
+function pass(mat, dst) { fsQuad.material = mat; renderer.setRenderTarget(dst); renderer.render(fsScene, fsCam); }
+function blur(src, dst, dx, dy) { mBlur.uniforms.tex.value = src.texture; mBlur.uniforms.dir.value.set(dx / src.width, dy / src.height); pass(mBlur, dst); }
+function bloom() {
+  mBright.uniforms.tex.value = rtMain.texture; pass(mBright, BL[0][0]);
+  blur(BL[0][0], BL[0][1], 1, 0); blur(BL[0][1], BL[0][0], 0, 1);
+  blur(BL[0][0], BL[1][0], 1, 0); blur(BL[1][0], BL[1][1], 0, 1);
+  blur(BL[1][1], BL[2][0], 1, 0); blur(BL[2][0], BL[2][1], 0, 1);
+  pass(mComp, null);
+}
+
+/* ---------------- capacity bar, error card, taxi rank */
+const stg = $('stage'), before = $('prof');
+const mk = (html) => { const w = document.createElement('div'); w.innerHTML = html.trim(); const n = w.firstChild; stg.insertBefore(n, before); return n; };
+const HUD = mk(`<div id="hud"><div class="k">DATABASE<br>CONNECTIONS</div><div id="hb"><div id="hbF"></div></div><div id="hn">0<span>/100</span></div></div>`);
+const ER = mk(`<div id="er" class="cd2"><div class="tb"><i></i><i></i><i></i><b>server log</b></div><div class="m">FATAL: sorry, too many clients already</div><div class="u"><b>500</b>Something went wrong. Please try again.</div></div>`);
+const TX = mk(`<div id="tx" class="cd2"><div class="h">Taxi rank</div><svg id="txS" viewBox="0 0 460 150"></svg><div id="txL"></div></div>`);
+if (/cover/.test(location.hash)) { const s = document.createElement('style'); s.textContent = '#hud, .cd2 { display: none !important; }'; document.head.appendChild(s); }
+const cabSvg = (id, col) => `<g id="${id}"><rect x="-26" y="-12" width="52" height="22" rx="7" fill="none" stroke="${col}" stroke-width="3"/><rect x="-14" y="-22" width="28" height="12" rx="4" fill="none" stroke="${col}" stroke-width="3"/><circle cx="-14" cy="12" r="5" fill="${col}"/><circle cx="14" cy="12" r="5" fill="${col}"/></g>`;
+$('txS').innerHTML = `<line x1="10" y1="118" x2="450" y2="118" stroke="#3a342e" stroke-width="2"/><text x="120" y="140" text-anchor="middle" font-family="Mono" font-size="11" font-weight="800" fill="#9c948c" letter-spacing="1.5">RANK · ALREADY WAITING</text>
+${cabSvg('cb0', '#7CF29A')}${cabSvg('cb1', '#7CF29A')}${cabSvg('cb2', '#7CF29A')}${cabSvg('cbF', '#FF4632')}<text id="cbT" x="345" y="18" text-anchor="middle" font-family="Mono" font-size="11" font-weight="800" fill="#FF4632" letter-spacing="1" opacity="0">NEW CAB, STILL COMING…</text><circle id="pax" r="8" fill="#F2EEE8"/>`;
+function taxiDom(t) {
+  const p = popIn(t, T.l6 - 0.1, T.l7 - 0.15); vis(TX, p.a, `translateY(${p.y}px) scale(${p.s})`);
+  if (p.a <= 0.001) return;
+  const go = ep(t, T.hop + 0.15, T.hop + 0.9, ease.inOut);
+  $('cb0').setAttribute('transform', `translate(${190 + 230 * go},100)`); $('cb1').setAttribute('transform', `translate(120,100)`); $('cb2').setAttribute('transform', `translate(50,100)`);
+  const hop = ep(t, T.hop - 0.3, T.hop + 0.1, ease.inOut);
+  $('pax').setAttribute('cx', lerp(300, 190, hop) + 230 * go); $('pax').setAttribute('cy', lerp(60, 92, hop)); $('pax').setAttribute('opacity', t > T.hop + 0.15 ? 0 : 1);
+  const far = ep(t, T.instead - 0.1, T.drive + 0.5, (x) => x);
+  $('cbF').setAttribute('transform', `translate(${lerp(420, 360, far)},44) scale(0.75)`); $('cbF').setAttribute('opacity', t > T.instead - 0.1 ? 0.9 : 0);
+  $('cbT').setAttribute('opacity', t > T.instead - 0.1 ? 1 : 0);
+  setH('txL', t > T.instead - 0.1 ? '✕ NOT A NEW CAB DRIVING OVER EACH TIME' : t > T.hop - 0.3 ? '✓ HOP IN, GO' : 'CABS ALREADY WAITING');
+  $('txL').style.color = t > T.instead - 0.1 ? RED : OK;
+}
+function errDom(t) {
+  const p = popIn(t, T.users - 0.2, T.pool - 0.5); vis(ER, p.a, `translateY(${p.y}px) scale(${p.s})`);
+}
+function hudDom(t) {
+  const p = popIn(t, 0.1, T.ifv - 0.1); vis(HUD, p.a, `translateY(${p.y}px) scale(${p.s})`);
+  if (p.a <= 0.001) return;
+  const n = Math.min(100, connCount(t)), col = n >= 100 ? RED : n > 60 ? AMB : phaseOf(t) === 'pool' ? OK : O2;
+  setH('hn', `${n}<span>/100</span>`); $('hn').style.color = col;
+  $('hbF').style.width = n + '%'; $('hbF').style.color = col;
+}
+function clampTags() {
+  for (const k in LB) {
+    const e = LB[k]; if (e.style.display === 'none') continue;
+    const w = e.offsetWidth, x = parseFloat(e.style.left), y = clamp(parseFloat(e.style.top), 196, 668);
+    const right = y > 450 ? 540 - 70 : 540 - 14;
+    e.style.left = clamp(x, 14 + w / 2, right - w / 2) + 'px'; e.style.top = y + 'px';
+  }
+}
+
+window.render = (t) => {
+  shoot(t);
+  orbsReset(); sparksReset(); ringsReset();
+  REEL.world(t);
+  sparksFlush(); updateEmbers(t);
+  renderer.setRenderTarget(rtMain); renderer.render(scene, pcam);
+  bloom();
+  REEL.tags(t); clampTags();
+  card(t); tools(t);
+  hudDom(t); errDom(t); taxiDom(t);
+  $('dim').style.opacity = Math.max(0.55 * ep(t, REEL.end, REEL.end + 0.6), 0.6 * window01(t, T.l6 - 0.1, T.l7 - 0.05, 0.3));
+  $('flash').style.opacity = REEL.flash(t);
+  caps(t);
+  profile(t);
+};
+</script>
+<script src="../_ember/play.js"></script>
+</body>
+</html>

@@ -1,0 +1,33 @@
+{
+ "topic": "Reverse proxies (trial remake t2)",
+ "lines": [
+  [
+   {"say": "Hackers would love to hit your servers directly. Your app runs on ten of them, and bots can't reach a single one.", "show": "Hackers would love to hit your servers directly. Your app runs on *10* of them, and bots [can't reach a single one.]"},
+   {"say": "They scan the internet all night,", "show": "They scan the internet all night,"},
+   {"say": "and all they ever find is one machine. Not your servers.", "show": "and all they ever find is *one machine.* Not your servers."}
+  ],
+  [
+   {"say": "That machine is called a reverse proxy: a middleman every request has to hit first.", "show": "That machine is called a [reverse proxy:] a middleman every request has to hit first."}
+  ],
+  [
+   {"say": "Think of a restaurant. Customers never walk into the kitchen. A waiter takes your order and brings the food back.", "show": "Think of a *restaurant.* Customers never walk into the kitchen. A *waiter* takes your order and brings the food back."}
+  ],
+  [
+   {"say": "Your servers stay private, no public address at all. Only the proxy faces the internet.", "show": "Your servers stay *private,* no public address at all. Only the proxy [faces the internet.]"}
+  ],
+  [
+   {"say": "But this waiter does more than carry plates.", "show": "But this waiter does more than carry plates."},
+   {"say": "It keeps popular pages ready to serve, so many requests never even reach your servers.", "show": "It keeps popular pages ready to serve, so many requests [never even reach your servers.]"},
+   {"say": "It also reads every address: slash API is sent to these servers, images to those.", "show": "It also reads every address: */api* is sent to these servers, *images* to those."}
+  ],
+  [
+   {"say": "Engine X and Cloudflare run this job for millions of sites.", "show": "*NGINX* and *Cloudflare* run this job for millions of sites."}
+  ],
+  [
+   {"say": "Quick check: a forward proxy hides you from the website. A reverse proxy hides the website's servers from you.", "show": "Quick check: a forward proxy hides *you* from the website. A reverse proxy hides [the website's servers] from you."}
+  ],
+  [
+   {"say": "If you build with AI, follow for the system design it quietly skips.", "show": "If you build with AI, follow for the system design it quietly [skips.]"}
+  ]
+ ]
+}

@@ -1,0 +1,419 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- 42 CAP theorem. A perspective three.js world with bloom (own camera + post pass), same build as 41.
+     World: two bank branches (A left, B right) joined by a glowing network link, one shared account ($500), a customer
+     in front of each branch. The link is cut (red wall) → a customer at B asks to withdraw. CAP card (C, A, P light up
+     one by one). The link heals, the branches become servers in two cities syncing in milliseconds, then it breaks again.
+     Pick consistency: B tries to check with A, the check dies at the cut, B refuses (error), both balances stay right.
+     Pick availability: both branches say yes, B's balance is out of date, $500 is paid out twice. A code card at the top
+     shows the one line that changes. Triangle card: not "any two of three"; P is forced, choose C or A. Examples card:
+     a view count a few seconds behind is fine, a wrong balance isn't. etcd and Cassandra tool cards, then the end card.
+     Beats from voice/words.json. -->
+<link rel="stylesheet" href="../_ember/fonts.css">
+<link rel="stylesheet" href="../_ember/reel.css">
+<style>
+#cap { top: 728px !important; }
+#cap .box { background: linear-gradient(90deg, transparent, rgba(8,7,6,0.82) 16%, rgba(8,7,6,0.82) 84%, transparent); }
+#ed { top: 150px !important; }
+.lbl { background: rgba(12,11,10,0.95); }
+.cd2 { position: absolute; left: 34px; right: 34px; top: 170px; opacity: 0; background: rgba(16,14,12,0.96); border: 1px solid rgba(255,176,112,0.4); border-radius: 14px; box-shadow: 0 20px 50px rgba(0,0,0,0.7); overflow: hidden; padding: 16px 18px 14px; }
+.cd2 .h { font: italic 400 32px/1 Instrument; color: #efe6d8; margin-bottom: 10px; }
+.cd2 .f { margin-top: 8px; font: 800 12px/1.3 Mono; letter-spacing: 1.2px; text-align: center; min-height: 16px; }
+.cr { display: flex; align-items: center; gap: 14px; padding: 10px 6px; border-radius: 10px; opacity: 0.25; }
+.cr .L { width: 54px; height: 54px; flex: none; border-radius: 50%; border: 3px solid #4a433d; display: flex; align-items: center; justify-content: center; font: 900 28px/1 Inter; color: #4a433d; }
+.cr .nm { font: 800 19px/1 Inter; letter-spacing: -0.3px; }
+.cr .df { font: 600 12px/1.35 Mono; color: #b7aea5; margin-top: 6px; letter-spacing: 0.3px; }
+.ex { display: flex; align-items: center; gap: 12px; padding: 12px 8px; border-radius: 10px; opacity: 0.2; border: 1px solid transparent; }
+.ex .ic { width: 46px; height: 46px; flex: none; border-radius: 12px; display: flex; align-items: center; justify-content: center; font: 900 22px/1 Inter; background: #1c1916; }
+.ex .nm { font: 800 17px/1 Inter; }
+.ex .sb { font: 600 11.5px/1.3 Mono; color: #b7aea5; margin-top: 6px; letter-spacing: 0.3px; }
+.ex .vd { margin-left: auto; font: 900 13px/1 Mono; letter-spacing: 1px; padding: 8px 10px; border-radius: 8px; border: 1px solid; white-space: nowrap; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="world">
+    <canvas id="cv" width="1080" height="1920"></canvas>
+    <div class="layer" id="lbls"></div>
+  </div>
+</div>
+<script src="../../tools/lib.js"></script>
+<script src="voice/words.js"></script>
+<script src="../_ember/three.js"></script>
+<script src="../_ember/world.js"></script>
+<script src="../_ember/base.js"></script>
+<script>
+for (let i = 0; i < 20; i++) ORBS.push({ core: orbSprite(9), glow: orbSprite(34), trail: [0, 1, 2, 3, 4].map(() => orbSprite(10)) });
+const RD = '#6FC3FF';
+
+/* ---------------- beats */
+const T = {
+  cut: at('cut'), withdraw: at('withdraw'), yes1: at('yes'),
+  l1: line(1).start, cap: at('cap'), c: at('consistency'), latest: at('latest'), a: at('availability'), answer: at('answer'), p: at('partition'), splits1: at('splits'),
+  l2: line(2).start, different: at('different'), sync: at('sync'), ms: at('milliseconds'), brk: at('break'), split: at('split'),
+  l3: line(3).start, c2: at('consistency', 2), check: at('check'), refuses: at('refuses'), sorry: at('sorry'), wrong1: at('wrong'), error: at('error', 2),
+  l4: line(4).start, a2: at('availability', 2), saying: at('saying'), yes2: at('yes', 2), everyone: at('everyone'), date: at('date'), twice: at('twice'),
+  l5: line(5).start, any: at('any'), three: at('three'), splits2: at('splits', 2), choose: at('choose'), correct: at('correct'), answering: at('answering'),
+  l6: line(6).start, view: at('view'), fine: at('fine'), wrong2: at('wrong', 2), isnt: at('isnt'), engineers: at('engineers'),
+  l7: line(7).start, etcd: at('etcd'), smaller: at('smaller'), cass: at('cassandra'), query: at('query'),
+  ifv: line(8).start, follow: at('follow'),
+};
+
+/* ---------------- layout: Z up */
+const AX = -228, BX = 228, BY = 200, CY = -40;          // branches and their customers
+const brW = 156, brD = 104, brH = 62;
+const roofTop = (x) => [x, BY, 132];
+const cust = (x) => [x, CY, 46];
+function arc(a, b, h, n = 24) { return [...Array(n + 1)].map((_, i) => { const q = i / n; return [lerp(a[0], b[0], q), lerp(a[1], b[1], q), lerp(a[2], b[2], q) + h * 4 * q * (1 - q)]; }); }
+// is the link down at t? cut at "cut", heals as line 2 starts, breaks again at "break", heals as line 6 starts
+const cutK = (t) => ep(t, T.cut - 0.05, T.cut + 0.3) * (1 - ep(t, T.l2 - 0.1, T.l2 + 0.4)) + ep(t, T.brk - 0.05, T.brk + 0.3) * (1 - ep(t, T.l6 - 0.2, T.l6 + 0.3));
+const modeC = (t) => t > T.l3 - 0.3 && t < T.l4 - 0.3;
+const modeA = (t) => t > T.l4 - 0.3 && t < T.l5 - 0.3;
+
+/* ---------------- traffic: [start, from, to, colour, size, kind, dur]  points: 'A','B' roofs, 'a','b' customers */
+const PT = { A: roofTop(AX), B: roofTop(BX), a: cust(AX), b: cust(BX) };
+const TR = [];
+(() => {
+  // healthy sync before the first cut, and again on line 2 (fast: "milliseconds")
+  for (let t = 0.2; t < T.cut - 0.4; t += 0.5) TR.push([t, (t * 2) % 2 < 1 ? 'A' : 'B', (t * 2) % 2 < 1 ? 'B' : 'A', RD, 0.7, '', 0.45]);
+  for (let t = T.l2 + 0.4; t < T.brk - 0.3; t += 0.3) TR.push([t, Math.round(t * 10) % 2 ? 'A' : 'B', Math.round(t * 10) % 2 ? 'B' : 'A', RD, 0.6, '', 0.3]);
+  // first cut: a sync orb dies at the wall
+  TR.push([T.cut - 0.25, 'A', 'B', RD, 0.8, 'block', 0.55]);
+  // the customer at B asks to withdraw
+  TR.push([T.withdraw - 0.3, 'b', 'B', AMB, 0.9, '', 0.5]);
+  // pick consistency: ask, B tries to check with A (dies at the cut), refusal goes back
+  TR.push([T.c2 + 0.2, 'b', 'B', AMB, 0.9, '', 0.5], [T.check - 0.45, 'B', 'A', AMB, 0.9, 'block', 0.6], [T.refuses + 0.05, 'B', 'b', RED, 0.9, '', 0.5]);
+  // pick availability: both customers ask, both branches pay out
+  TR.push([T.a2 + 0.25, 'a', 'A', AMB, 0.9, '', 0.5], [T.a2 + 0.35, 'b', 'B', AMB, 0.9, '', 0.5]);
+  TR.push([T.yes2 - 0.1, 'A', 'a', OK, 1, '', 0.5]);
+  TR.push([T.twice - 0.6, 'B', 'b', RED, 1.1, '', 0.5]);
+  // healed: syncing again from line 6
+  for (let t = T.l6 + 0.4; t < T.l7 - 0.4; t += 0.55) TR.push([t, Math.round(t * 2) % 2 ? 'A' : 'B', Math.round(t * 2) % 2 ? 'B' : 'A', RD, 0.6, '', 0.45]);
+})();
+
+/* ---------------- camera */
+const pcam = new TH.PerspectiveCamera(44, 540 / 960, 5, 20000); pcam.up.set(0, 0, 1);
+const SHOTS = [
+  { t: 0, p: [90, -1120, 860], l: [0, 130, 40], f: 44 },
+  { t: 0.01, d: 5.2, p: [40, -1330, 1060], l: [0, 120, 30], f: 44, e: ease.out },
+  { t: T.l2 - 0.2, d: 1.2, p: [-60, -1450, 1250], l: [0, 150, 20], f: 44 },
+  { t: T.l3 - 0.3, d: 1.1, p: [220, -1200, 1000], l: [110, 120, 30], f: 44 },
+  { t: T.l4 - 0.3, d: 1.1, p: [0, -1380, 1120], l: [0, 120, 30], f: 44 },
+  { t: T.l7 - 0.3, d: 1.4, p: [-40, -1500, 1300], l: [0, 150, 10], f: 44 },
+];
+const KICKS = [[T.cut, 0.04], [T.brk, 0.04], [T.refuses, 0.03], [T.yes2, 0.03], [T.twice, 0.05]];
+const SHAKES = [[T.cut, 4, 0.35], [T.brk, 4, 0.35], [T.twice, 3, 0.3]];
+const _rv = new TH.Vector3();
+function shoot(t) {
+  let p = SHOTS[0].p.slice(), l = SHOTS[0].l.slice(), f = SHOTS[0].f;
+  for (let i = 1; i < SHOTS.length; i++) {
+    const k = SHOTS[i]; if (t < k.t) break;
+    const q = k.d ? (k.e || ease.inOut)(prog(t, k.t, k.t + k.d)) : 1;
+    p = p.map((v, j) => lerp(v, k.p[j], q)); l = l.map((v, j) => lerp(v, k.l[j], q)); f = lerp(f, k.f, q);
+  }
+  let kick = 0;
+  for (const [t0, amp] of KICKS) { const dt = t - t0; if (dt > 0 && dt < 1.2) kick += amp * (dt < 0.05 ? dt / 0.05 : Math.exp(-(dt - 0.05) * 6)); }
+  let sx = 0, sy = 0;
+  for (const [t0, amp, dur] of SHAKES) { const dt = t - t0; if (dt > 0 && dt < dur) { const k = amp * (1 - dt / dur); sx += k * Math.sin(t * 91); sy += k * Math.cos(t * 67); } }
+  pcam.position.set(p[0] + 6 * Math.sin(t * 0.37), p[1] + 6 * Math.cos(t * 0.29), p[2] + 4 * Math.sin(t * 0.23));
+  pcam.lookAt(l[0] + sx, l[1], l[2] + sy);
+  pcam.fov = f * (1 - kick); pcam.updateProjectionMatrix(); pcam.updateMatrixWorld();
+  cam.f = l;
+  _rv.setFromMatrixColumn(pcam.matrixWorld, 0); const n = Math.hypot(_rv.x, _rv.y) || 1; camRight = [_rv.x / n, _rv.y / n, 0];
+  const d = Math.hypot(p[0] - l[0], p[1] - l[1], p[2] - l[2]);
+  scene.fog.near = d * 0.9; scene.fog.far = d * 3.4;
+}
+const _pv = new TH.Vector3();
+P = function (x, y, z) { _pv.set(x, y, z).project(pcam); return [(_pv.x + 1) * 270, (1 - _pv.y) * 480, _pv.z]; };
+
+/* ---------------- the stage: two bank branches */
+floor.scale.set(2.2, 2.2, 1); floor.position.set(0, 1500, -0.5);
+function pediment(w, h, d) {
+  const s = new TH.Shape(); s.moveTo(-w / 2, 0); s.lineTo(w / 2, 0); s.lineTo(0, h); s.lineTo(-w / 2, 0);
+  const g = new TH.ExtrudeGeometry(s, { depth: d, bevelEnabled: false }); g.rotateX(Math.PI / 2); g.translate(0, d / 2, 0); return g;
+}
+function bank(x, col) {
+  const parts = [];
+  parts.push(emberBox(x, BY, brW + 34, brD + 34, 12, col));                                       // steps
+  parts.push(emberBox(x, BY + 6, brW, brD - 12, brH, col, { z: 12 }));                             // hall
+  for (let i = 0; i < 4; i++) parts.push(emberBox(x - 57 + i * 38, BY - brD / 2 + 4, 13, 13, brH, col, { z: 12, lw: 2 })); // columns
+  parts.push(emberBox(x, BY, brW + 22, brD + 18, 11, col, { z: 12 + brH }));                       // roof slab
+  const pd = ember(pediment(brW + 22, 34, brD + 6), col); pd.g.position.set(x, BY, 12 + brH + 11); parts.push(pd);
+  return { parts, set(c, g, a) { for (const p of parts) p.setLook(c, g, a); } };
+}
+const BA = bank(AX, RD), BB = bank(BX, RD);
+const PA = pool(AX, BY, 240, RD), PB = pool(BX, BY, 240, RD);
+const LINK = road([[AX + 110, BY, 0], [BX - 110, BY, 0]], RD);
+const WALL = emberBox(0, BY, 10, 330, 90, RED);
+const CU = [AX, BX].map((x) => ({ c: emberCyl(x, CY, 15, 30, O2), h: emberCyl(x, CY, 11, 14, O2, { z: 36 }) }));
+const PC = [AX, BX].map((x) => pool(x, CY, 110, O2));
+const cash = ([x, y]) => [x, y, 4];
+
+/* ---------------- etcd (line 7): three nodes split 2 vs 1, the majority keeps writing */
+const EN = [[-250, 150], [-60, 330], [250, 170]];
+const NODES = EN.map(([x, y]) => emberBox(x, y, 110, 110, 54, OK));
+const NPOOL = EN.map(([x, y]) => pool(x, y, 170, OK));
+const WALL2 = emberBox(110, 230, 10, 420, 80, RED); WALL2.g.rotation.z = -0.25;
+const nTop = (i) => [EN[i][0], EN[i][1], 64];
+function etcdWorld(t) {
+  const on = ep(t, T.l7 - 0.1, T.l7 + 0.4), cut = ep(t, T.l7 + 0.3, T.l7 + 0.6);
+  NODES.forEach((n, i) => { const cs = t > T.cass - 0.15, c = i === 2 && cut > 0.5 ? (cs ? AMB : t > T.smaller - 0.1 ? RED : AMB) : cs ? RD : OK; n.setLook(c, 1.1, on); NPOOL[i].set(c, 0.38 * on); });
+  WALL2.g.scale.z = Math.max(0.01, cut * on); WALL2.setLook(RED, 1.3, Math.min(1, cut * 1.5) * on);
+  if (on < 0.05) return;
+  // writes keep flowing between the two on the majority side
+  for (let s0 = T.l7 + 0.2; s0 < DURATION; s0 += 0.6) { const q = prog(t, s0, s0 + 0.45); if (q > 0 && q < 1) orb(arc(nTop(0), nTop(1), 70), ease.inOut(q), t > T.cass - 0.15 ? RD : OK, on, 0.8); }
+  // the lone node's write attempts die at the wall
+  for (let s0 = T.smaller - 0.3; s0 < T.cass - 0.6; s0 += 1.2) { const q = prog(t, s0, s0 + 0.55); if (q > 0 && q < 1) { const qq = Math.min(q, 0.5); orb(arc(nTop(2), nTop(1), 80), ease.inOut(qq), q > 0.4 ? RED : AMB, on * (1 - prog(q, 0.5, 1)), 0.8); }
+    if (t > s0 + 0.27 && t < s0 + 0.9) { const p = arc(nTop(2), nTop(1), 80)[12]; sparks(t, s0 + 0.27, p[0], p[1], p[2], RED, 10, 50 + Math.round(s0), 150, 0.6, 200); } }
+}
+function etcdTags(t, tg, sp, sm, big) {
+  const e = T.ifv - 0.2;
+  const cs = t > T.cass - 0.15;
+  for (let i = 0; i < 3; i++) tg('en' + i, sp(GR, (cs ? 'REPLICA ' : 'ETCD NODE ') + (i + 1)), `font-size:11px;padding:5px 8px;border-color:#3a332d`, [EN[i][0], EN[i][1] - 70, 0], t, T.l7, e, 14);
+  tg('maj', cs ? sp(RD, 'QUORUM = 2 OF 3 AGREE ✓') : sp(OK, '✓ 2 OF 3 · STILL TAKES WRITES'), sm(cs ? RD : OK), [-150, 240, 90], t, T.l7 + 0.5, e, -50);
+  tg('min', cs ? sp(AMB, 'ONE = ANSWERS ALONE, MAYBE STALE') : sp(RED, '✕ 1 OF 3 · STOPS TAKING WRITES'), sm(cs ? AMB : RED), [EN[2][0], EN[2][1] - 70, 0], t, T.smaller - 0.1, e, 46);
+}
+
+/* ---------------- the world, frame by frame */
+function world(t) {
+  const cut = cutK(t), a0 = ep(t, 0, 0.5);
+  const flashB = t > T.refuses - 0.1 && t < T.error + 0.6 ? 0.45 * (0.5 + 0.5 * Math.sin(t * 9)) : 0;
+  let cA = RD, cB = RD;
+  if (modeC(t) && t > T.refuses - 0.1) cB = mixHex(RD, RED, 0.5 + flashB);
+  if (modeA(t) && t > T.yes2 - 0.15) { cA = OK; cB = mixHex(RD, OK, 0.5); }
+  if (modeA(t) && t > T.date - 0.15) cB = AMB;
+  if (modeA(t) && t > T.twice - 0.15) { cA = RED; cB = RED; }
+  const gA = 1.1 + 0.6 * pulse(t, T.yes2, 4) + 0.7 * pulse(t, T.twice, 4), gB = gA + 0.6 * pulse(t, T.refuses, 4);
+  const bOff = 1 - ep(t, T.l7 - 0.3, T.l7 + 0.1);
+  BA.set(cA, gA, a0 * bOff); BB.set(cB, gB, ep(t, 0.1, 0.6) * bOff);
+  PA.set(cA, 0.42 * a0 * bOff); PB.set(cB, 0.42 * ep(t, 0.1, 0.6) * bOff);
+  etcdWorld(t);
+  // customers: B's from "withdraw" on, A's only for availability
+  const cuOn = [modeA(t) ? ep(t, T.l4 - 0.3, T.l4 + 0.1) * (1 - ep(t, T.l5 - 0.4, T.l5)) : 0,
+    Math.max(ep(t, T.withdraw - 0.6, T.withdraw - 0.2) * (1 - ep(t, T.l1 - 0.2, T.l1 + 0.2)), ep(t, T.l3 - 0.4, T.l3) * (1 - ep(t, T.l5 - 0.4, T.l5)))];
+  CU.forEach((u, i) => {
+    let c = O2;
+    if (i === 1 && modeC(t) && t > T.error - 0.15) c = RED;
+    if (modeA(t) && t > T.yes2 + 0.4 && (i === 0 || t > T.twice - 0.1)) c = i === 1 ? RED : OK;
+    u.c.update(); u.h.update(); u.c.setLook(c, 1, cuOn[i]); u.h.setLook(c, 1, cuOn[i]); PC[i].set(c, 0.35 * cuOn[i]);
+  });
+  // the link and the cut
+  const la = ep(t, 0.3, 0.9) * 0.85 * (1 - ep(t, T.l7 - 0.3, T.l7 + 0.1));
+  LINK.set(1, cut > 0.05 ? RED : RD, la * (1 - 0.8 * cut * (0.5 + 0.5 * Math.sin(t * 25) ** 2)), t);
+  WALL.g.scale.z = Math.max(0.01, cut);
+  WALL.setLook(RED, 1.3, Math.min(1, cut * 1.5));
+  // traffic
+  for (const [s0, f, d, col, size, kind, du] of TR) {
+    const q = prog(t, s0, s0 + du);
+    if (q <= 0 || q >= 1) continue;
+    const roof = f.length + d.length && /[AB]/.test(f) && /[AB]/.test(d);
+    const path = arc(PT[f], PT[d], roof ? 120 : 70);
+    if (kind === 'block') { const qq = Math.min(q, 0.5); orb(path, ease.inOut(qq), q > 0.4 ? RED : col, 1 - prog(q, 0.5, 1), size); continue; }
+    orb(path, ease.inOut(q), col, 1, size);
+  }
+  for (const [s0, f, d, col, size, kind, du] of TR) {
+    const e = s0 + du;
+    if (kind === 'block' && t > s0 + du * 0.5 && t < s0 + du * 0.5 + 0.8) { const p = arc(PT[f], PT[d], 120)[12]; sparks(t, s0 + du * 0.5, p[0], p[1], p[2], RED, 14, 23 + Math.round(s0), 160, 0.7, 200); }
+    if (!kind && /[ab]/.test(d) && t > e && t < e + 0.6) ripple(t, e, PT[d][0], PT[d][1], 1, col, 110, 0.6);
+  }
+  for (const tc of [T.cut, T.brk]) if (t > tc && t < tc + 1) for (let k = 0; k < 4; k++) sparks(t, tc, 0, BY - 150 + k * 100, 70, RED, 9, 31 + k + Math.round(tc), 170, 0.8, 220);
+  if (t > T.twice - 0.05 && t < T.twice + 0.9) for (const x of [BX]) sparks(t, T.twice - 0.05, x, CY, 40, RED, 16, 41 + x, 170, 0.8, 220);
+  if (t > T.refuses && t < T.refuses + 0.8) ripple(t, T.refuses, BX, BY, 1, RED, 220, 0.8);
+}
+
+/* ---------------- world tags */
+const tg = (key, html, style, wp, t, a, b, dy = 0) => { const e = tag(key, html, style, wp, t, a, b, dy); if (P(...wp)[2] > 1) e.style.display = 'none'; return e; };
+function tags(t) {
+  const big = (c) => `font-size:15px;padding:9px 13px;letter-spacing:1px;border-color:${c}`;
+  const sm = (c) => `font-size:13px;padding:7px 11px;letter-spacing:1px;border-color:${c}`;
+  const sp = (c, s) => `<span style="color:${c}">${s}</span>`;
+  const hd = (x) => [x, BY, 150], ft = (x) => [x, BY - brD / 2 - 30, 0], cu = (x) => [x, CY - 20, 0];
+  const mid = [0, -150, 0];
+  // names: branches, then servers in two cities on line 2
+  const srv = t > T.different - 0.15 && t < T.l3 - 0.3;
+  for (const [k, x, nm, city] of [['nA', AX, 'BRANCH A', 'SERVER · MUMBAI'], ['nB', BX, 'BRANCH B', 'SERVER · LONDON']])
+    tg(k, srv ? sp(RD, city) : sp(GR, nm), `font-size:11px;padding:5px 8px;border-color:${srv ? RD : '#3a332d'}`, ft(x), t, 0.4, T.l7 - 0.3, 14);
+  // balances above each branch: one shared account
+  const balOn = (t > 0.5 && t < T.l1 - 0.1) || (t > T.l3 - 0.2 && t < T.l5 - 0.2);
+  let bA = sp(WH, '$500'), bB = sp(WH, '$500'), cA = '#3a332d', cB = '#3a332d';
+  if (modeC(t) && t > T.wrong1 - 0.15) { bA = sp(OK, '$500 ✓'); bB = sp(OK, '$500 ✓'); cA = cB = OK; }
+  if (modeA(t) && t > T.yes2 + 0.4) { bA = sp(WH, '$0'); cA = WH; }
+  if (modeA(t) && t > T.date - 0.15) { bB = sp(AMB, '$500 · OUT OF DATE'); cB = AMB; }
+  if (modeA(t) && t > T.twice - 0.1) { bB = sp(RED, '$0'); cB = RED; }
+  tg('bA', `<span style="color:${GR}">BALANCE</span> ` + bA, sm(cA), hd(AX), t, 0.6, balOn ? DURATION : 0, -10);
+  tg('bB', `<span style="color:${GR}">BALANCE</span> ` + bB, sm(cB), hd(BX), t, 0.7, balOn ? DURATION : 0, -10);
+  // line 0
+  tg('cut', sp(RED, '⚡ LINE CUT'), big(RED), [0, BY, 120], t, T.cut - 0.05, T.l1 - 0.1, -40);
+  tg('wd', sp(AMB, 'WITHDRAW $500'), sm(AMB), cu(BX), t, T.withdraw - 0.1, T.l1 - 0.1, 26);
+  tg('one', sp(WH, 'ONE SHARED ACCOUNT · $500 · KEPT IN SYNC'), big(WH), mid, t, 0.45, T.withdraw - 0.2, 30);
+  tg('sy', sp(WH, 'SAY YES?'), big(WH), mid, t, T.yes1 - 0.1, T.l1 - 0.1, 30);
+  // line 2
+  tg('ms', sp(RD, 'IN SYNC · A FEW MILLISECONDS'), big(RD), mid, t, T.sync - 0.1, T.brk - 0.1, 30);
+  tg('nb', sp(RED, '✕ NETWORK SPLIT'), big(RED), mid, t, T.brk - 0.05, T.l3 - 0.3, 30);
+  // line 3: consistency
+  tg('ask1', sp(AMB, 'WITHDRAW $500'), sm(AMB), cu(BX), t, T.c2 + 0.1, T.check - 0.2, 26);
+  tg('chk', sp(AMB, 'CHECK WITH A?'), sm(AMB), [BX, BY, 150], t, T.check - 0.45, T.refuses - 0.1, -54);
+  tg('ref', sp(RED, '✕ SORRY, TRY AGAIN LATER'), sm(RED), [BX, BY, 150], t, T.refuses - 0.05, T.l4 - 0.3, -54);
+  tg('err', sp(RED, '✕ ERROR'), sm(RED), cu(BX), t, T.error - 0.15, T.l4 - 0.3, 26);
+  tg('nw', sp(OK, '✓ NO WRONG BALANCE'), big(OK), mid, t, T.wrong1 - 0.1, T.l4 - 0.3, 30);
+  // line 4: availability
+  tg('askA', sp(AMB, 'WITHDRAW $500'), sm(AMB), cu(AX), t, T.a2 + 0.2, T.yes2 + 0.3, 26);
+  tg('askB', sp(AMB, 'WITHDRAW $500'), sm(AMB), cu(BX), t, T.a2 + 0.3, T.yes2 + 0.3, 26);
+  tg('yA', sp(OK, '✓ YES · PAID'), sm(OK), cu(AX), t, T.yes2 + 0.3, T.l5 - 0.3, 26);
+  tg('yB', t < T.twice - 0.1 ? sp(OK, '✓ YES') : sp(RED, '✓ PAID $500 TOO'), sm(t < T.twice - 0.1 ? OK : RED), cu(BX), t, T.yes2 + 0.35, T.l5 - 0.3, 26);
+  tg('st', sp(AMB, "B DOESN'T KNOW A ALREADY PAID"), sm(AMB), [BX, BY, 150], t, T.date + 0.1, T.twice - 0.15, -54);
+  etcdTags(t, tg, sp, sm, big);
+  tg('ev', sp(OK, '✓ EVERYONE GETS AN ANSWER'), big(OK), mid, t, T.everyone - 0.1, T.twice - 0.15, 30);
+  tg('tw', sp(RED, '✕ $1,000 PAID FROM A $500 ACCOUNT'), big(RED), mid, t, T.twice - 0.15, T.l5 - 0.3, 30);
+  // line 7: healed
+}
+
+/* ---------------- reel config */
+const svgEtcd = `<svg width="46" height="46" viewBox="0 0 100 100" fill="none" stroke="#7CF29A" stroke-width="7" stroke-linejoin="round" stroke-linecap="round"><circle cx="50" cy="22" r="11"/><circle cx="20" cy="74" r="11"/><circle cx="80" cy="74" r="11"/><path d="M44 32 L26 64 M56 32 L74 64 M31 74 H69"/></svg>`;
+const svgCass = `<svg width="46" height="46" viewBox="0 0 100 100" fill="none" stroke="#6FC3FF" stroke-width="7" stroke-linejoin="round" stroke-linecap="round"><circle cx="50" cy="50" r="30"/><circle cx="50" cy="20" r="7" fill="#6FC3FF"/><circle cx="76" cy="65" r="7" fill="#6FC3FF"/><circle cx="24" cy="65" r="7" fill="#6FC3FF"/></svg>`;
+let NOW = 0;   // line 3 of the code card changes between the two picks
+const REEL = {
+  shots: [], world, tags,
+  code: [[T.l3 - 0.1, T.l5 - 0.25, 'withdraw.js', 'network split', [[0, 'PICK CONSISTENCY', AMB], [T.refuses - 0.1, 'PICK CONSISTENCY · REFUSED', RED], [T.l4 - 0.3, 'PICK AVAILABILITY', AMB], [T.yes2 - 0.1, 'PICK AVAILABILITY · PAID', OK], [T.twice - 0.15, 'PICK AVAILABILITY · PAID TWICE', RED]],
+    [['// branch A can\'t be reached'], ['if (!reach(branchA)) {'], { get 0() { return NOW < T.l4 - 0.3 ? "  return error('try again later')" : '  return pay(localBalance)'; } }, ['}']],
+    [[T.check - 0.3, 2, '✕ NO ANSWER', 'bad'], [T.refuses - 0.05, 3, '✕ REFUSED', 'bad'], [T.l4 - 0.3, 2, '✕ NO ANSWER', 'bad'], [T.l4 - 0.25, 3, '…', 'amb'], [T.yes2 - 0.1, 3, '✓ PAID', 'good'], [T.date - 0.15, 3, '⚠ OLD BALANCE', 'amb'], [T.twice - 0.15, 3, '✕ PAID TWICE', 'bad']]]],
+  tools: [
+    { a: T.etcd - 0.25, b: T.cass - 0.15, svg: svgEtcd, name: 'etcd', sub: 'PICKS CONSISTENCY', src: 'IN A SPLIT, THE <span style="color:#7CF29A">SMALLER SIDE</span> STOPS TAKING WRITES', top: 160 },
+    { a: T.cass - 0.15, b: T.ifv - 0.15, svg: svgCass, name: 'Cassandra', sub: 'YOU CHOOSE, QUERY BY QUERY', src: 'PER QUERY, 3 REPLICAS: <span style="color:#FFC34D">ONE</span> = ANY 1 · <span style="color:#6FC3FF">QUORUM</span> = 2 OF 3', top: 160 },
+  ],
+  slams: [],
+  bad: ['cut', 'splits', 'split', 'break', 'refuses', 'sorry', 'error', 'twice', 'wrong', 'isnt', 'date'],
+  good: ['consistency', 'availability', 'partition', 'tolerance', 'yes', 'answer', 'correct', 'answering', 'fine', 'query', 'skipped'],
+  tiles: [['⚖', 'CAP<br>THEOREM'], ['★', 'LEADER<br>ELECTION'], ['⧉', 'REPLICATION']],
+  end: T.ifv - 0.15, follow: T.follow,
+  cover: { t: 'CAP THEOREM', at: T.twice + 0.5, zoom: 1, dy: 70 },
+  flash: (t) => 0.05 * pulse(t, T.cut, 7) + 0.05 * pulse(t, T.brk, 7) + 0.05 * pulse(t, T.twice, 6),
+};
+</script>
+<script src="../_ember/overlay.js"></script>
+<script>
+/* ---------------- bloom: scene → half-float target, bright pass, three blur levels, composite to the canvas */
+const RT = (w, h, s = 0) => new TH.WebGLRenderTarget(w, h, { type: TH.HalfFloatType, samples: s, depthBuffer: s > 0 });
+const rtMain = RT(1080, 1920, 4), BL = [[RT(540, 960), RT(540, 960)], [RT(270, 480), RT(270, 480)], [RT(135, 240), RT(135, 240)]];
+const fsCam = new TH.OrthographicCamera(-1, 1, 1, -1, 0, 1), fsScene = new TH.Scene(), fsQuad = new TH.Mesh(new TH.PlaneGeometry(2, 2));
+fsQuad.frustumCulled = false; fsScene.add(fsQuad);
+const VS = 'varying vec2 vUv; void main() { vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }';
+const shm = (fs, u) => new TH.ShaderMaterial({ uniforms: u, vertexShader: VS, fragmentShader: fs, depthTest: false, depthWrite: false });
+const mBright = shm(`uniform sampler2D tex; uniform float th; varying vec2 vUv;
+void main() { vec3 c = texture2D(tex, vUv).rgb; float l = max(c.r, max(c.g, c.b)); gl_FragColor = vec4(c * smoothstep(th, th + 0.4, l), 1.0); }`,
+  { tex: { value: null }, th: { value: 0.8 } });
+const mBlur = shm(`uniform sampler2D tex; uniform vec2 dir; varying vec2 vUv;
+void main() {
+  vec3 c = texture2D(tex, vUv).rgb * 0.2270270270;
+  c += (texture2D(tex, vUv + dir * 1.3846153846).rgb + texture2D(tex, vUv - dir * 1.3846153846).rgb) * 0.3162162162;
+  c += (texture2D(tex, vUv + dir * 3.2307692308).rgb + texture2D(tex, vUv - dir * 3.2307692308).rgb) * 0.0702702703;
+  gl_FragColor = vec4(c, 1.0);
+}`, { tex: { value: null }, dir: { value: new TH.Vector2() } });
+const mComp = shm(`uniform sampler2D base, b1, b2, b3; uniform float k1, k2, k3; varying vec2 vUv;
+void main() {
+  vec3 c = texture2D(base, vUv).rgb + texture2D(b1, vUv).rgb * k1 + texture2D(b2, vUv).rgb * k2 + texture2D(b3, vUv).rgb * k3;
+  c = c / (1.0 + max(c - 1.0, 0.0) * 0.6);
+  gl_FragColor = vec4(c, 1.0);
+  #include <colorspace_fragment>
+}`, { base: { value: rtMain.texture }, b1: { value: BL[0][0].texture }, b2: { value: BL[1][1].texture }, b3: { value: BL[2][1].texture }, k1: { value: 0.5 }, k2: { value: 0.65 }, k3: { value: 0.8 } });
+function pass(mat, dst) { fsQuad.material = mat; renderer.setRenderTarget(dst); renderer.render(fsScene, fsCam); }
+function blur(src, dst, dx, dy) { mBlur.uniforms.tex.value = src.texture; mBlur.uniforms.dir.value.set(dx / src.width, dy / src.height); pass(mBlur, dst); }
+function bloom() {
+  mBright.uniforms.tex.value = rtMain.texture; pass(mBright, BL[0][0]);
+  blur(BL[0][0], BL[0][1], 1, 0); blur(BL[0][1], BL[0][0], 0, 1);
+  blur(BL[0][0], BL[1][0], 1, 0); blur(BL[1][0], BL[1][1], 0, 1);
+  blur(BL[1][1], BL[2][0], 1, 0); blur(BL[2][0], BL[2][1], 0, 1);
+  pass(mComp, null);
+}
+
+/* ---------------- cards: CAP (line 1), not-two-of-three (line 5), examples (line 6) */
+const stg = $('stage'), before = $('prof');
+const mk = (html) => { const w = document.createElement('div'); w.innerHTML = html.trim(); const n = w.firstChild; stg.insertBefore(n, before); return n; };
+const row = (id, L, nm, df) => `<div class="cr" id="${id}"><div class="L">${L}</div><div><div class="nm">${nm}</div><div class="df">${df}</div></div></div>`;
+const CAPC = mk(`<div id="capc" class="cd2"><div class="h">The CAP theorem</div>
+  ${row('rC', 'C', 'Consistency', 'every read sees the latest write')}
+  ${row('rA', 'A', 'Availability', 'every request gets a real answer, never an error')}
+  ${row('rP', 'P', 'Partition tolerance', 'keeps working when the network splits')}<div class="f" id="capF"></div></div>`);
+const TRI = mk(`<div id="tri" class="cd2"><div class="h">Not “pick any two”</div><svg id="trS" viewBox="0 0 460 272" style="display:block;width:100%;height:272px"></svg><div class="f" id="trF"></div></div>`);
+const EXC = mk(`<div id="exc" class="cd2"><div class="h">How engineers pick</div>
+  <div class="ex" id="e1"><div class="ic" style="color:#6FC3FF">👁</div><div><div class="nm">View count</div><div class="sb" id="e1s">1,204 views · a few seconds behind</div></div><div class="vd" id="e1v"></div></div>
+  <div class="ex" id="e2" style="margin-top:8px"><div class="ic" style="color:#FFC34D">$</div><div><div class="nm">Account balance</div><div class="sb">must never be wrong</div></div><div class="vd" id="e2v"></div></div>
+  <div class="f" id="exF"></div></div>`);
+if (/cover/.test(location.hash)) { const s = document.createElement('style'); s.textContent = '.cd2 { display: none !important; }'; document.head.appendChild(s); }
+(() => {
+  const V = { C: [230, 40], A: [80, 205], P: [380, 205] };
+  const node = (k, nm) => `<g id="tn${k}"><circle cx="${V[k][0]}" cy="${V[k][1]}" r="30" fill="#15130f" stroke-width="4"/><text x="${V[k][0]}" y="${V[k][1] + 11}" text-anchor="middle" font-family="Inter" font-size="30" font-weight="900">${k}</text>
+    <text id="tl${k}" x="${V[k][0] + (k === 'C' ? 44 : 0)}" y="${V[k][1] + (k === 'C' ? 6 : 52)}" text-anchor="${k === 'C' ? 'start' : 'middle'}" font-family="Mono" font-size="12" font-weight="800" letter-spacing="1">${nm}</text></g>`;
+  const ln = (a, b, id) => `<line id="${id}" x1="${V[a][0]}" y1="${V[a][1]}" x2="${V[b][0]}" y2="${V[b][1]}" stroke-width="3"/>`;
+  $('trS').innerHTML = ln('C', 'A', 'eCA') + ln('A', 'P', 'eAP') + ln('P', 'C', 'ePC')
+    + `<text id="any" x="230" y="160" text-anchor="middle" font-family="Mono" font-size="15" font-weight="800" letter-spacing="1.5" fill="#9c948c">PICK ANY 2 OF 3</text><line id="anyX" x1="128" y1="155" x2="332" y2="155" stroke="#FF4632" stroke-width="4"/>`
+    + node('C', 'CORRECT') + node('A', 'ALWAYS ANSWERS') + node('P', 'SPLITS HAPPEN');
+})();
+function capDom(t) {
+  const p = popIn(t, T.l1 - 0.1, T.l2 - 0.1); vis(CAPC, p.a, `translateY(${p.y}px) scale(${p.s})`);
+  if (p.a <= 0.001) return;
+  [['rC', T.c, OK], ['rA', T.a, OK], ['rP', T.p, AMB]].forEach(([id, a, col]) => {
+    const k = ep(t, a - 0.15, a + 0.1), e = $(id), L = e.querySelector('.L');
+    e.style.opacity = 0.25 + 0.75 * k; e.style.background = k > 0.5 && t < a + 1.6 ? 'rgba(255,255,255,0.04)' : '';
+    L.style.borderColor = k > 0.5 ? col : ''; L.style.color = k > 0.5 ? col : '';
+  });
+  setH('capF', t > T.splits1 - 0.1 ? '⚡ THE NETWORK SPLITS: P IS NOT OPTIONAL' : t > T.cap - 0.1 ? 'THREE PROMISES A DISTRIBUTED SYSTEM WOULD LIKE TO MAKE' : '');
+  $('capF').style.color = t > T.splits1 - 0.1 ? AMB : O2;
+}
+function triDom(t) {
+  const p = popIn(t, T.l5 - 0.1, T.l6 - 0.1); vis(TRI, p.a, `translateY(${p.y}px) scale(${p.s})`);
+  if (p.a <= 0.001) return;
+  const x = ep(t, T.three - 0.1, T.three + 0.2), pOn = t > T.splits2 - 0.1, ch = t > T.choose - 0.1;
+  $('anyX').setAttribute('x2', lerp(128, 332, x)); $('anyX').setAttribute('opacity', x > 0 ? 1 : 0);
+  $('any').setAttribute('fill', x > 0.9 ? '#5a534c' : '#9c948c');
+  const cOn = t > T.correct - 0.1, aOn = t > T.answering - 0.1;
+  const look = (k, col, on) => { const g = $('tn' + k); g.querySelector('circle').setAttribute('stroke', on ? col : '#4a433d'); g.querySelectorAll('text')[0].setAttribute('fill', on ? col : '#9c948c'); $('tl' + k).setAttribute('fill', on ? col : '#5a534c'); };
+  look('P', AMB, pOn); look('C', OK, cOn || (ch && Math.sin(t * 8) > 0 && !cOn)); look('A', RD, aOn || (ch && Math.sin(t * 8) <= 0 && !aOn));
+  for (const [id, on, col] of [['eCA', ch, WH], ['eAP', aOn, RD], ['ePC', cOn, OK]]) { $(id).setAttribute('stroke', on ? col : '#2a2521'); }
+  setH('trF', aOn ? 'P IS GIVEN · YOU CHOOSE: <span style="color:#7CF29A">CORRECT</span> OR <span style="color:#6FC3FF">ALWAYS ANSWERING</span>' : ch ? 'WHEN IT SPLITS, YOU CHOOSE…' : pOn ? '⚡ THE NETWORK WILL SPLIT SOMETIMES' : x > 0.5 ? '✕ THAT’S NOT HOW IT WORKS' : '');
+  $('trF').style.color = pOn ? AMB : RED;
+}
+function exDom(t) {
+  const p = popIn(t, T.l6 - 0.1, T.l7 - 0.15); vis(EXC, p.a, `translateY(${p.y}px) scale(${p.s})`);
+  if (p.a <= 0.001) return;
+  const k1 = ep(t, T.view - 0.15, T.view + 0.1), k2 = ep(t, T.wrong2 - 0.2, T.wrong2 + 0.05), en = t > T.engineers - 0.1;
+  $('e1').style.opacity = 0.2 + 0.8 * k1; $('e2').style.opacity = 0.2 + 0.8 * k2;
+  setH('e1s', (1204 + Math.floor(Math.max(0, t - T.view) * 3)).toLocaleString('en-US') + ' views · a few seconds behind');
+  const v1 = t > T.fine - 0.1, v2 = t > T.isnt - 0.15;
+  setH('e1v', en ? 'PICK A' : v1 ? '✓ FINE' : ''); $('e1v').style.color = en ? RD : OK; $('e1v').style.borderColor = en ? RD : OK; $('e1v').style.opacity = v1 ? 1 : 0;
+  setH('e2v', en ? 'PICK C' : v2 ? '✕ NOT OK' : ''); $('e2v').style.color = en ? OK : RED; $('e2v').style.borderColor = en ? OK : RED; $('e2v').style.opacity = v2 ? 1 : 0;
+  $('e1').style.borderColor = v1 ? 'rgba(124,242,154,0.35)' : 'transparent'; $('e2').style.borderColor = v2 ? 'rgba(255,70,50,0.4)' : 'transparent';
+  setH('exF', en ? 'ALWAYS ANSWER WHERE STALE IS FINE · BE CORRECT WHERE IT ISN’T' : '');
+  $('exF').style.color = O2;
+}
+function clampTags() {
+  for (const k in LB) {
+    const e = LB[k]; if (e.style.display === 'none') continue;
+    const w = e.offsetWidth, x = parseFloat(e.style.left), y = clamp(parseFloat(e.style.top), 200, 690);
+    const right = y > 450 ? 540 - 70 : 540 - 14;
+    e.style.left = clamp(x, 14 + w / 2, right - w / 2) + 'px'; e.style.top = y + 'px';
+  }
+}
+
+window.render = (t) => {
+  NOW = t; shoot(t);
+  orbsReset(); sparksReset(); ringsReset();
+  REEL.world(t);
+  sparksFlush(); updateEmbers(t);
+  renderer.setRenderTarget(rtMain); renderer.render(scene, pcam);
+  bloom();
+  REEL.tags(t); clampTags();
+  card(t); tools(t);
+  capDom(t); triDom(t); exDom(t);
+  const cardDim = Math.max(window01(t, T.l1 - 0.1, T.l2 - 0.05, 0.3), window01(t, T.l5 - 0.1, T.l6 - 0.05, 0.3), window01(t, T.l6 - 0.05, T.l7 - 0.1, 0.3));
+  $('dim').style.opacity = Math.max(0.55 * ep(t, REEL.end, REEL.end + 0.6), 0.6 * cardDim);
+  $('flash').style.opacity = REEL.flash(t);
+  caps(t);
+  profile(t);
+};
+</script>
+<script src="../_ember/play.js"></script>
+</body>
+</html>

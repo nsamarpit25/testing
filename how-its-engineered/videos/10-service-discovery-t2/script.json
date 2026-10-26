@@ -1,0 +1,47 @@
+{
+  "topic": "Service discovery",
+  "lines": [
+    [
+      {
+        "say": "At 2 PM, checkout broke. Every payment failed, and nobody had touched a single line of code.",
+        "show": "At 2 PM, checkout [broke.] Every payment [failed,] and nobody had touched a single line of code."
+      }
+    ],
+    [
+      {
+        "say": "The payment program had restarted on another server, with a new address. Your app was still calling the old one.",
+        "show": "The payment program had *restarted on another server,* with a new address. Your app was still calling [the old one.]"
+      }
+    ],
+    [
+      {
+        "say": "Server addresses change all the time. Your app needs a way to find the current one.",
+        "show": "Server *addresses change* all the time. Your app needs a way to *find the current one.*"
+      }
+    ],
+    [
+      {
+        "say": "Imagine contacts on your phone that update themselves whenever a friend's number changes. That's service discovery, for programs.",
+        "show": "Imagine *contacts* on your phone that update themselves whenever a friend's *number changes.* That's *service discovery,* for programs."
+      }
+    ],
+    [
+      {
+        "say": "One way is a directory that matches program names to their current addresses.",
+        "show": "One way is a *directory* that matches program *names* to their current addresses."
+      }
+    ],
+    [
+      {
+        "say": "When payments restart somewhere else, its entry updates. Your app looks payments up by name and gets the new address.",
+        "show": "When payments *restart* somewhere else, its *entry updates.* Your app looks payments up *by name* and gets the *new address.*"
+      }
+    ],
+    [
+      {
+        "say": "If AI writes your code, follow for the system design it leaves out.",
+        "show": "If AI writes your code, *follow* for the system design it [leaves out.]"
+      }
+    ]
+  ]
+}

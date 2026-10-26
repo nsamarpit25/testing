@@ -1,0 +1,4 @@
+You are reviewing the voiceover script for a ~35-second Instagram reel on @how.its.engineered (system design for beginners and "vibe coders" who build with AI and never learned the fundamentals). The "say" text is spoken; the "show" text is the on-screen caption.
+Judge ONLY this: will a complete beginner (knows what an app and a server are, nothing else) understand the topic clearly after one watch?
+Check: (1) any jargon used before it is explained, (2) any logical jump or confusing sentence, (3) any factual error, (4) whether the opening hook makes them want to keep watching, (5) whether the analogy actually maps to the concept.
+Do not rewrite the whole script. Reply with: VERDICT: PASS or FIX, then at most 5 numbered issues, each with the exact line and a concrete replacement sentence. Keep the script length about the same (aim 30-40 seconds spoken). If it passes, say what single change would most improve it.

@@ -1,0 +1,21 @@
+{
+ "title": "How a calculator becomes a gaming PC",
+ "lines": [
+  "Your calculator does math. Congratulations, you've built a computer.",
+  "But it adds two numbers at a time, and you want to play games.",
+  "So you pack billions of tiny switches onto one chip that does math billions of times a second. This is the CPU.",
+  "But a chip alone does nothing, so you plug it into a board covered in tiny copper roads. This is the motherboard.",
+  "But the CPU keeps waiting on your slow files.",
+  "So you give it a desk right next to it, for whatever it's working on. This is the RAM.",
+  "But the second you switch it off, the desk is wiped clean.",
+  "So you add a drive that remembers everything, even with the power off. This is the SSD.",
+  "But now the CPU is hot enough to fry an egg.",
+  "So you bolt on metal fins and a fan. This is the cooler.",
+  "But a game is millions of pixels, sixty times a second, and your CPU is drawing a slideshow.",
+  "So you add a card with thousands of tiny cores, each drawing a few pixels at once. This is the GPU.",
+  "Now it's so hungry, your lights flicker every time you open a game.",
+  "So you add a box that turns wall power into something it can eat. This is the power supply.",
+  "Put it in a glass case, with rainbow lights that do absolutely nothing. Congratulations, you've built a gaming PC.",
+  "To play Minecraft."
+ ]
+}

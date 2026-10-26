@@ -1,0 +1,214 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- 02 Caching (v2), in the ember style. World: YOUR phone (a shop page showing a price), a SERVER box, a DATABASE
+     cylinder (slow: a timer counts to 2.0 s) and a CACHE box in front of the server whose face is a sticky note with the
+     saved copy. Hook: first load takes 2 s through the database, second load is a cache hit. Then the first load again,
+     slowly, with the copy saved; the hit skips the database. Catch: the price changes in the database, the note still says
+     $20 (stale), it expires / is cleared, and the next load fetches $25. Beats come from voice/words.json via at(). -->
+<link rel="stylesheet" href="../_ember/fonts.css">
+<link rel="stylesheet" href="../_ember/reel.css">
+</head>
+<body>
+<div id="stage">
+  <div id="world">
+    <canvas id="cv" width="1080" height="1920"></canvas>
+    <div class="layer" id="lbls"></div>
+  </div>
+</div>
+<script src="../../tools/lib.js"></script>
+<script src="voice/words.js"></script>
+<script src="../_ember/three.js"></script>
+<script src="../_ember/world.js"></script>
+<script src="../_ember/base.js"></script>
+<script>
+for (let i = 0; i < 12; i++) ORBS.push({ core: orbSprite(9), glow: orbSprite(34), trail: [0, 1, 2, 3, 4].map(() => orbSprite(10)) });
+
+/* ---------------- beats */
+const T = {
+  two: at('two'), seconds: at('seconds'), second: at('second'), open: at('open'), instant: at('instant'), what: at('what'),
+  first: at('first'), database: at('database'), stored: at('stored'), waits: at('waits'), saves: at('saves'), copy: at('copy'), cache1: at('cache'),
+  next: at('next'), checks: at('checks'), found: at('found'), hit: at('hit'), no: at('no'), trip: at('trip'),
+  like: at('like'), sticky: at('sticky'), desk: at('desk'), filing: at('filing'), room: at('room'),
+  one: at('one'), catch_: at('cache', 4) /* whisper hears "catch" as "cache" */, price1: at('price'), date: at('date'), developers: at('developers'),
+  expire: at('expire'), clear: at('clear'), changes: at('changes'), redis: at('redis'), browser: at('browser'), ifv: at('if'), follow: at('follow'),
+};
+const CUT = { FIRST: T.first - 0.3, HIT: T.next - 0.25, NOTE: T.like - 0.25, CATCH: T.one - 0.3, TOOLS: T.redis - 0.3, END: T.ifv - 0.15 };
+
+/* ---------------- layout */
+const YOU = [-205, 20], SRV = [-15, 40], DB = [185, 45], CACHE = [-15, -125];
+const P_YS = [[YOU[0] + 42, YOU[1], 85], [SRV[0] - 55, SRV[1], 90]], P_SY = [...P_YS].reverse();
+const P_SD = [[SRV[0] + 55, SRV[1], 90], [DB[0] - 55, DB[1], 75]], P_DS = [...P_SD].reverse();
+const P_SC = [[SRV[0], SRV[1] - 33, 60], [CACHE[0], CACHE[1] + 25, 50]], P_CS = [...P_SC].reverse();
+const TRIP = 0.4;
+// each load: [ask, via 'db' | 'cache', how long the database takes]
+const LOADS = [
+  { a: 0.25, via: 'db', slow: [0.25 + TRIP, T.seconds + 0.3], show: 'hook' },
+  { a: T.second - 0.1, via: 'cache', show: 'hook' },
+  { a: T.first + 0.1, via: 'db', slow: [T.database, T.waits + 0.2], show: 'first' },
+  { a: T.next, via: 'cache', show: 'hit' },
+  { a: T.clear + 0.2, via: 'db', slow: [T.clear + 0.2 + TRIP, T.changes + 0.3], show: 'fresh' },
+];
+LOADS.forEach((l) => {
+  if (l.via === 'db') { l.atDb = l.a + TRIP; l.back = l.slow[1]; l.done = l.back + 2 * TRIP; }
+  else { l.atC = l.a + TRIP; l.done = l.atC + 2 * TRIP; }
+});
+const SAVE1 = T.saves, PRICE_UP = T.price1 - 0.1, EXPIRE = T.expire + 0.2, SAVE2 = LOADS[4].back + 0.1;
+const loadAt = (t) => LOADS.filter((l) => t >= l.a).pop();
+
+/* ---------------- camera */
+const SHOTS = [
+  { t: 0, d: 0, f: [5, -20, 60], s: 0.9, a: -0.38, e: 0.58, sy: 480 },
+  { t: CUT.FIRST, d: 1.0, f: [10, -10, 60], s: 0.94, a: -0.42, e: 0.58, sy: 480 },
+  { t: CUT.HIT, d: 1.0, f: [-80, -40, 60], s: 1.2, a: -0.42, e: 0.6, sy: 480 },
+  { t: CUT.NOTE, d: 1.0, f: [60, -40, 60], s: 1.08, a: -0.42, e: 0.6, sy: 480 },
+  { t: CUT.CATCH, d: 1.0, f: [10, -30, 60], s: 0.9, a: -0.42, e: 0.6, sy: 480 },
+  { t: CUT.TOOLS, d: 1.0, f: [0, -30, 60], s: 0.92, a: -0.42, e: 0.6, sy: 590 },
+  { t: CUT.END, d: 2.0, f: [0, -30, 60], s: 0.88, a: -0.42, e: 0.6, sy: 580 },
+];
+const KICKS = [[T.seconds, 0.03], [T.instant, 0.05], [T.what, 0.03], [T.waits, 0.03], [T.cache1, 0.05], [T.found, 0.03], [T.hit, 0.05],
+  [T.sticky, 0.03], [T.filing, 0.03], [T.price1, 0.04], [T.date, 0.04], [T.expire, 0.04], [T.clear, 0.04], [T.redis, 0.03], [T.browser, 0.03]];
+const SHAKES = [[T.date, 2, 0.25]];
+
+/* ---------------- build the world */
+const label = (g, W_, H_, txt, col, size, y = H_ / 2) => { g.fillStyle = col; g.font = `800 ${size}px Mono`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.shadowColor = col; g.shadowBlur = 12; g.fillText(txt, W_ / 2, y); g.shadowBlur = 0; g.textAlign = 'left'; };
+const mk = (p, w, d, h, col, k = 5) => { const b = emberBox(p[0], p[1], w, d, h, col); const f = decal(w, h, 'front', k, b.g); f.m.position.set(0, -d / 2 - 0.3, h / 2); return { b, f, pl: pool(p[0], p[1], w * 1.3, col), p }; };
+const you = mk(YOU, 84, 18, 140, O, 5), srv = mk(SRV, 110, 66, 150, O, 4), cache = mk(CACHE, 90, 40, 70, AMB, 5);
+const db = emberCyl(DB[0], DB[1], 55, 130, O, { bands: [0, 45, 90, 130] });
+const dbF = decal(96, 110, 'front', 4, db.g); dbF.m.position.set(0, -56, 65);
+const dbPool = pool(DB[0], DB[1], 80, O);
+const rYS = road(P_YS, O2), rSD = road(P_SD, O2), rSC = road(P_SC, AMB);
+
+function phoneDraw(g, W_, H_, col, price, pCol, status, stCol) {
+  g.strokeStyle = col + 'aa'; g.lineWidth = 6; rrect(g, 14, 14, W_ - 28, H_ - 28, 34); g.stroke();
+  label(g, W_, H_, 'SHOP', col, 50, 80);
+  g.strokeStyle = col + '77'; g.lineWidth = 4; rrect(g, 60, 140, W_ - 120, 170, 18); g.stroke();
+  label(g, W_, H_, 'sneakers', col + 'cc', 40, 345);
+  label(g, W_, H_, price, pCol, 84, 440);
+  if (status) label(g, W_, H_, status, stCol || col, 46, H_ - 90);
+}
+function srvDraw(g, W_, H_, col, st, stCol) {
+  label(g, W_, H_, 'SERVER', col, 50, H_ * 0.12);
+  for (let k = 0; k < 3; k++) { const y = H_ * 0.23 + k * H_ * 0.12; g.strokeStyle = col + '88'; g.lineWidth = 4; rrect(g, 26, y, W_ - 52, H_ * 0.08, 6); g.stroke(); }
+  if (st) label(g, W_, H_, st, stCol || col, 40, H_ * 0.82);
+}
+function noteDraw(g, W_, H_, col, txt, sub, subCol) {
+  label(g, W_, H_, 'CACHE', col, 44, 46);
+  if (txt) { g.save(); g.translate(W_ / 2, H_ * 0.58); g.rotate(-0.04); g.fillStyle = col + '26'; g.strokeStyle = col; g.lineWidth = 5; rrect(g, -150, -70, 300, 140, 10); g.fill(); g.stroke(); g.restore(); label(g, W_, H_, txt, col, 56, H_ * 0.56); }
+  else label(g, W_, H_, 'empty', GR, 44, H_ * 0.58);
+  if (sub) label(g, W_, H_, sub, subCol || col, 30, H_ * 0.88);
+}
+
+/* ---------------- the world, frame by frame */
+function world(t) {
+  const thru = (pts, t0, dur, col, size = 1) => { const q = (t - t0) / dur; if (q > -0.02 && q < 1.1) orb(pts, clamp(q), col, clamp(q / 0.08) * (1 - clamp((q - 1) / 0.1)), size); };
+  const q0 = ease.back(prog(t, 0.05, 0.4));
+  const L = loadAt(t);
+  // what the cache holds
+  const held = t < CUT.FIRST ? (t > LOADS[0].back + TRIP ? '$20' : null) : t < SAVE1 + TRIP ? null : t < EXPIRE ? '$20' : t < SAVE2 + TRIP ? null : '$25';
+  const stale = t > PRICE_UP && t < EXPIRE;
+  const dbPrice = t > PRICE_UP ? '$25' : '$20';
+  // the database: slow, timer on its face while a load waits on it
+  const slowL = LOADS.find((l) => l.via === 'db' && t > l.slow[0] && t < l.slow[1]);
+  const skipped = L && L.via === 'cache' && t > L.atC - 0.2 && t < L.done + 0.6;
+  const dCol = skipped ? DIM : slowL ? mixHex(O, AMB, 0.5 + 0.4 * Math.sin(t * 8)) : t > PRICE_UP && t < PRICE_UP + 0.8 ? AMB : O;
+  db.update(); db.setLook(dCol, 1.2 + 1.5 * (slowL ? 0.6 : 0) + 2 * pulse(t, PRICE_UP), skipped ? 0.5 : 1); dbPool.set(dCol, 0.4 * q0);
+  db.g.scale.set(1, 1, Math.max(0.01, q0));
+  dbF.draw((g, W_, H_) => {
+    label(g, W_, H_, 'DATABASE', dCol, 40, 40);
+    label(g, W_, H_, 'price ' + dbPrice, t > PRICE_UP ? AMB : dCol + 'cc', 44, 140);
+    if (slowL) { const s = 2 * prog(t, slowL.slow[0], slowL.slow[1]); label(g, W_, H_, `⏳ ${s.toFixed(1)} s`, AMB, 60, 300); }
+    else if (skipped) label(g, W_, H_, 'SKIPPED', GR, 48, 300);
+  });
+  // the server
+  const sCol = slowL ? mixHex(O, AMB, 0.3) : O;
+  srv.b.g.visible = q0 > 0.01; srv.b.g.scale.set(1, 1, Math.max(0.01, q0)); srv.b.setLook(sCol, 1.2 + 1.5 * Math.max(...LOADS.map((l) => pulse(t, l.a + TRIP))), 1);
+  const sSt = slowL ? 'WAITING…' : L && L.via === 'cache' && t < L.done ? 'CACHE HIT' : '';
+  srv.f.m.visible = srv.b.g.visible; srv.f.draw((g, W_, H_) => srvDraw(g, W_, H_, sCol, sSt, sSt === 'CACHE HIT' ? OK : AMB)); srv.pl.set(sCol, 0.5 * q0);
+  // the cache: a sticky note with the saved copy
+  const qc = ease.back(prog(t, 0.1, 0.5));
+  const hitNow = L && L.via === 'cache' && t > L.atC - 0.05 && t < L.atC + 0.9;
+  const cCol = stale ? RED : hitNow ? OK : held ? AMB : DIM;
+  cache.b.g.visible = qc > 0.01; cache.b.g.scale.set(1, 1, Math.max(0.01, qc)); cache.b.setLook(cCol, 1.2 + 2 * Math.max(pulse(t, SAVE1 + TRIP), pulse(t, SAVE2 + TRIP), ...LOADS.map((l) => (l.atC ? pulse(t, l.atC) : 0))), 1);
+  const cSub = stale ? 'STALE' : t > T.expire - 0.4 && t < EXPIRE + 0.6 ? 'EXPIRED' : held ? (t > T.developers ? 'expires in 60 s' : 'saved copy') : '';
+  cache.f.m.visible = cache.b.g.visible; cache.f.draw((g, W_, H_) => noteDraw(g, W_, H_, cCol, held, cSub, stale ? RED : cCol)); cache.pl.set(cCol, 0.45 * qc);
+  // your phone
+  let price = '…', pCol = GR, st = '', stCol = OK;
+  if (L) {
+    if (t >= L.done) { price = L.show === 'fresh' ? '$25' : t > PRICE_UP && L.show === 'hit' ? '$20' : '$20'; pCol = OK; st = L.via === 'cache' ? '⚡ 0.01 s' : '2.0 s'; stCol = L.via === 'cache' ? OK : AMB; }
+    else { st = 'LOADING…'; stCol = GR; }
+  }
+  if (stale) { price = '$20'; pCol = RED; st = 'OLD PRICE'; stCol = RED; }
+  if (t > T.expire - 0.3 && t < LOADS[4].a) { price = '$20'; pCol = GR; st = ''; }
+  const yCol = L && t > L.done && t < L.done + 0.8 ? mixHex(O, OK, 0.4) : stale ? mixHex(O, RED, 0.4) : O;
+  you.b.g.visible = q0 > 0.01; you.b.g.scale.set(1, 1, Math.max(0.01, q0)); you.b.setLook(yCol, 1.2 + 2 * Math.max(...LOADS.map((l) => pulse(t, l.done))), 1);
+  you.f.m.visible = you.b.g.visible; you.f.draw((g, W_, H_) => phoneDraw(g, W_, H_, yCol, price, pCol, st, stCol)); you.pl.set(yCol, 0.5 * q0);
+  // the trips
+  const on = (a, b) => window01(t, a - 0.1, b + 0.15, 0.1);
+  rYS.set(1, O2, 0.75 * Math.max(...LOADS.map((l) => on(l.a, l.done))), t);
+  rSD.set(1, slowL ? AMB : O2, 0.75 * Math.max(...LOADS.filter((l) => l.via === 'db').map((l) => on(l.atDb - 0.1, l.back + TRIP))), t);
+  rSC.set(1, stale ? RED : AMB, 0.8 * Math.max(on(SAVE1, SAVE1 + TRIP), on(SAVE2, SAVE2 + TRIP), on(LOADS[0].back + TRIP, LOADS[0].back + 2 * TRIP), ...LOADS.filter((l) => l.atC).map((l) => on(l.atC - TRIP, l.atC + TRIP))), t);
+  LOADS.forEach((l) => {
+    thru(P_YS, l.a, TRIP, O2, 0.8);
+    if (l.via === 'db') { thru(P_SD, l.atDb, TRIP, O2, 0.8); thru(P_DS, l.back - TRIP, TRIP, OK, 0.8); thru(P_SY, l.back, TRIP, OK); }
+    else { thru(P_SC, l.atC - TRIP, TRIP, O2, 0.8); thru(P_CS, l.atC, TRIP * 0.6, OK, 0.8); thru(P_SY, l.atC + TRIP * 0.6, TRIP, OK); }
+  });
+  thru(P_SC, SAVE1, TRIP, AMB, 0.9); thru(P_SC, SAVE2, TRIP, OK, 0.9); thru(P_SC, LOADS[0].back + TRIP, TRIP, AMB, 0.7);
+  LOADS.filter((l) => l.atC).forEach((l) => { ripple(t, l.atC, CACHE[0], CACHE[1], 2, OK, 80, 0.6); sparks(t, l.atC, CACHE[0], CACHE[1], 70, OK, 10, 5, 90, 0.5); });
+  ripple(t, PRICE_UP, DB[0], DB[1], 2, AMB, 90, 0.7);
+  ripple(t, EXPIRE, CACHE[0], CACHE[1], 2, RED, 80, 0.6);
+}
+
+/* ---------------- world tags */
+function tags(t) {
+  const Y_T = [YOU[0], YOU[1], 175], S_T = [SRV[0], SRV[1], 190], D_T = [DB[0] - 45, DB[1], 170], C_T = [CACHE[0], CACHE[1], 105];
+  const big = (c) => `font-size:15px;padding:9px 13px;letter-spacing:1px;border-color:${c}`;
+  tag('slow', `<span style="color:${AMB}">FIRST LOAD · 2 s</span>`, big(AMB), D_T, t, T.two, T.second - 0.1);
+  tag('inst', `<span style="color:${OK}">SECOND LOAD · INSTANT</span>`, big(OK), C_T, t, T.instant - 0.15, CUT.FIRST + 0.1, 30);
+  tag('what', `<span style="color:${AMB}">WHAT CHANGED?</span>`, big(AMB), Y_T, t, T.what, CUT.FIRST + 0.2);
+  tag('store', `<span style="color:${WH}">WHERE YOUR DATA LIVES</span>`, '', D_T, t, T.stored - 0.2, T.saves - 0.1);
+  tag('save', `<span style="color:${AMB}">COPY SAVED</span>`, big(AMB), C_T, t, SAVE1 + TRIP, CUT.HIT + 0.2, 30);
+  tag('hit', `<span style="color:${OK}">✓ CACHE HIT</span>`, big(OK), C_T, t, T.hit - 0.1, CUT.NOTE + 0.2, 30);
+  tag('skip', `<span style="color:${GR}">NO DATABASE TRIP</span>`, '', D_T, t, T.no, CUT.NOTE + 0.2);
+  tag('note', `<span style="color:${AMB}">STICKY NOTE = CACHE</span>`, big(AMB), C_T, t, T.sticky - 0.1, CUT.CATCH + 0.1, 30);
+  tag('room', `<span style="color:${O2}">FILING ROOM = DATABASE</span>`, `border-color:${O2}88`, D_T, t, T.filing - 0.1, CUT.CATCH + 0.1);
+  tag('chg', `<span style="color:${AMB}">PRICE CHANGED → $25</span>`, big(AMB), D_T, t, PRICE_UP + 0.1, T.expire - 0.2);
+  tag('stale', `<span style="color:${RED}">CACHE STILL SAYS $20</span>`, big(RED), C_T, t, T.date - 0.2, T.expire - 0.2, 30);
+  tag('exp', `<span style="color:${AMB}">⏱ EXPIRES · OR CLEARED ON CHANGE</span>`, big(AMB), C_T, t, T.expire, SAVE2 + TRIP, 30);
+  tag('fresh', `<span style="color:${OK}">✓ FRESH $25</span>`, big(OK), Y_T, t, LOADS[4].done, CUT.END + 0.2);
+}
+
+/* ---------------- reel config */
+const svgRedis = `<svg width="46" height="46" viewBox="0 0 100 100" fill="none" stroke="#E0533F" stroke-width="7" stroke-linejoin="round"><path d="M12 34 L50 18 L88 34 L50 50 Z M12 50 L50 66 L88 50 M12 66 L50 82 L88 66"/></svg>`;
+const svgBrowser = `<svg width="46" height="46" viewBox="0 0 100 100" fill="none" stroke="#7CF29A" stroke-width="7" stroke-linejoin="round"><rect x="10" y="18" width="80" height="64" rx="8"/><path d="M10 36 H90"/><circle cx="22" cy="27" r="2"/><circle cx="32" cy="27" r="2"/></svg>`;
+const REEL = {
+  shots: SHOTS, kicks: KICKS, shakes: SHAKES, world, tags,
+  code: [
+    [T.first - 0.2, CUT.NOTE - 0.1, 'server.js', 'read the price', [[0, 'MISS', RED], [T.saves, 'SAVED', AMB], [T.checks, 'HIT', OK]],
+      [["p = cache.get('price')"], ["if (!p) p = db.get('price')", T.database - 0.2], ["cache.set('price', p, 60)", T.saves - 0.1]],
+      [[T.first, 1, 'empty', 'bad'], [T.waits - 0.3, 2, '⏳ 2 s', 'amb'], [T.saves, 3, '✓ saved', 'good'], [LOADS[3].atC, 1, '⚡ $20', 'good'], [LOADS[3].atC, 2, 'skipped', 'run']], 'type'],
+    [T.one - 0.2, CUT.TOOLS - 0.1, 'server.js', 'keep it fresh', [[0, 'STALE', RED], [T.expire, 'EXPIRED', AMB], [SAVE2 + TRIP, 'FRESH', OK]],
+      [["cache.set('price', p, 60)"], ['// 60 = expires in 60 s', T.developers], ["on change: cache.del('price')", T.clear - 0.1]],
+      [[T.date - 0.2, 1, 'stale $20', 'bad'], [T.expire, 2, '⏱ expired', 'amb'], [T.clear, 3, '✓ cleared', 'good'], [SAVE2 + TRIP, 1, '✓ $25', 'good']]],
+  ],
+  hl: /\b(cache|db|get|set|del|price)\b/g,
+  tools: [
+    { a: T.redis - 0.1, b: CUT.END, svg: svgRedis, name: 'Redis', sub: 'IN-MEMORY CACHE · SET WITH AN EXPIRY', top: 150 },
+    { a: T.browser - 0.1, b: CUT.END, svg: svgBrowser, name: 'Your browser', sub: 'KEEPS ITS OWN CACHE TOO', top: 262 },
+  ],
+  slams: [
+    { a: T.cache1 - 0.15, b: T.next - 0.05, text: 'cache', sub: 'A FAST, SAVED COPY', size: 72 },
+  ],
+  bad: ['waits', 'date'],
+  good: ['instant', 'hit', 'cache'],
+  tiles: [['⚡', 'CACHING'], ['⌕', 'DATABASE<br>INDEXING'], ['≋', 'SERVER-SENT<br>EVENTS']],
+  end: CUT.END, follow: T.follow,
+  cover: { t: 'CACHING', at: LOADS[3].atC + 0.3, zoom: 0.95, dy: 40 },
+  flash: (t) => 0.06 * pulse(t, T.instant, 7) + 0.07 * pulse(t, T.hit, 7),
+};
+</script>
+<script src="../_ember/overlay.js"></script>
+<script src="../_ember/play.js"></script>
+</body>
+</html>

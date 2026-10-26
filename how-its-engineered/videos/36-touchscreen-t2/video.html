@@ -1,0 +1,293 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- 36 Touchscreen, premium look (warm graphite, one orange accent, calm moves). A phone lying on a plinth with its
+     passcode keypad. Hook: a wool glove presses and nothing happens; snow; what is the screen feeling for. The display
+     stack lifts apart: cover glass above a see-through grid of rows and columns. Pulses run along the rows and every
+     crossing is measured. A ceramic finger comes close: the signal at the crossings under it drops (the bars). From
+     above, the phone finds the centre of the touch between the wires. A glove and a fingernail barely change it; a drop
+     of water does, and the keypad taps by itself. Story: Feb 2010, South Koreans reported tapping iPhones with snack
+     sausages in the cold. Twist: finger and sausage side by side make the same change. Beats come from voice/words.js. -->
+<link rel="stylesheet" href="../_ember/fonts.css">
+<link rel="stylesheet" href="lib/reel.css">
+<style>
+#stage { background: #0a0a0a; }
+#hud { pointer-events: none; }
+.tool { border-color: rgba(255,255,255,0.09) !important; box-shadow: 0 14px 34px rgba(8,6,4,0.6) !important; background: rgba(22,20,19,0.94) !important; padding: 14px 16px !important; }
+.tool > div:first-child > div > div:first-child { font: 600 19px/1.15 Inter !important; letter-spacing: -0.3px !important; color: #f4f3f2; }
+.tool > div:first-child > div > div:nth-child(2) { font: 500 10px/1.3 Mono !important; letter-spacing: 1.1px !important; color: #ffb070 !important; }
+#stw { min-width: 0; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="world">
+    <canvas id="cv" width="1080" height="1920"></canvas>
+    <div class="layer" id="lbls"></div>
+  </div>
+</div>
+<script src="../../tools/lib.js"></script>
+<script src="voice/words.js"></script>
+<script src="lib/three.js"></script>
+<script src="../_ember/world.js"></script>
+<script src="lib/base.js"></script>
+<script src="kit.js"></script>
+<script src="touch.js"></script>
+<script>
+/* ---------------- beats */
+const T = {
+  because: at('because'), glove: at('glove'), press: at('press'), so: at('so'), feeling: at('feeling'),
+  under: at('under'), glass: at('glass'), grid: at('grid'), see: at('see'), rows: at('rows'), columns: at('columns'),
+  sends: at('sends'), pulses: at('pulses'), measures: at('measures'), column: at('column'), many: at('many'),
+  finger: at('finger'), salty: at('salty'), charge: at('charge'), bring: at('bring'), close: at('close'), draws: at('draws'), crossings: at('crossings'),
+  comparing: at('comparing'), finds: at('finds'), center: at('center'), between: at('between'),
+  wool2: at('wool', 2), fingernail: at('fingernail'), barely: at('barely'), water2: at('water', 2), wet: at('wet'), taps: at('taps'),
+  fix: 0.12, february: at('february'), koreans: at('koreans'), tapping: at('tapping'), sausages: at('sausages'), gloves: at('gloves'), gloves2: at('gloves'), salty2: at('gloves') + 0.75, meat: at('gloves') + 1.4, sausage1: at('sausage'), salty3: at('salty', 2), meat3: at('meat'),
+  never: at('never'), finger2: at('finger', 2), feels: at('feels'), change: at('change'), sausage: at('sausage', 2), fake: at('fake'),
+};
+T.last = WORDS[WORDS.length - 1][2];
+// t2: the sausage story opens the reel (STORY 0 → HOOK), then the glove hook and the mechanism
+const CUT = { STORY: 0, HOOK: T.because - 0.12, GRID: line(2).start - 0.12, PULSE: line(3).start - 0.12, FING: line(4).start - 0.12, CEN: line(5).start - 0.12,
+  OTH: line(6).start - 0.12, TWIST: line(7).start - 0.12, END: T.last + 0.35 };
+
+/* ---------------- build */
+const ground = mesh(new TH.PlaneGeometry(9000, 9000), mat('#0f0f0f', { r: 0.95 }), null, 0, 0, 0, { cast: false });
+const R = buildRig(0, 0);
+const S = buildStack(R);
+S.glass.geometry.computeBoundingBox();
+const GT = S.glass.geometry.boundingBox.max.z;
+const Z0 = R.top + 0.2;
+const TIP = { f: [0, 0, 0], s: [0, 0, 0] };
+const glassTop = (k) => Z0 + 0.6 + 40 * k + GT;
+const gridZ = (k) => Z0 + 16 * k;
+const KP = (key) => { const [fx, fy] = KEYS[key]; return [(fx - 0.5) * R.sw, (0.5 - fy) * R.sh]; };
+const FINGER = buildToucher('finger'), NAIL = buildToucher('nail'), GLOVE = buildToucher('glove'), SAUS = buildToucher('sausage');
+const DROP = buildDrop();
+const SNOW = buildSnow(900, [0, 0, 20, 700, 700, 380]);
+const HEMI = scene.children.find((o) => o.isHemisphereLight);
+// a soft glow where something conductive meets the glass
+const ORB = (() => { const c = document.createElement('canvas'); c.width = c.height = 128; const g = c.getContext('2d'); const gr = g.createRadialGradient(64, 64, 0, 64, 64, 64);
+  gr.addColorStop(0, 'rgba(255,255,255,1)'); gr.addColorStop(0.25, 'rgba(255,255,255,0.4)'); gr.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = gr; g.fillRect(0, 0, 128, 128);
+  const t = new TH.CanvasTexture(c); return t; })();
+const glow = () => { const s = new TH.Sprite(new TH.SpriteMaterial({ map: ORB, color: C(O), transparent: true, blending: TH.AdditiveBlending, depthWrite: false, depthTest: false, toneMapped: false })); s.visible = false; s.renderOrder = 9; scene.add(s); return s; };
+const GLOWS = [glow(), glow()];
+const showGlow = (s, p, a, size) => { s.visible = a > 0.01; if (!s.visible) return; s.position.set(...p); s.material.opacity = a; s.scale.set(size, size, 1); };
+// the touch centre marker: a thin ring and cross, drawn on top of the grid
+const XH = new TH.Group(); S.grid.add(XH); XH.visible = false;
+const xhM = new TH.MeshBasicMaterial({ color: C(O), transparent: true, opacity: 0, depthTest: false, depthWrite: false, toneMapped: false });
+[new TH.RingGeometry(3.1, 3.7, 48), new TH.PlaneGeometry(9, 0.45), new TH.PlaneGeometry(0.45, 9)].forEach((g, k) => {
+  if (k === 1) { [-1, 1].forEach((s) => { const m = new TH.Mesh(g, xhM); m.position.set(s * 8.6, 0, 0); m.renderOrder = 9; XH.add(m); }); return; }
+  if (k === 2) { [-1, 1].forEach((s) => { const m = new TH.Mesh(g, xhM); m.position.set(0, s * 8.6, 0); m.renderOrder = 9; XH.add(m); }); return; }
+  const m = new TH.Mesh(g, xhM); m.renderOrder = 9; XH.add(m);
+});
+
+/* ---------------- the keypad screen */
+let padKey = null;
+function pad(o) {
+  const k = `${o.n}|${Object.entries(o.hi || {}).map(([a, b]) => a + ':' + b.toFixed(2)).join(',')}|${(o.rip || []).map((r) => r.map((v) => v.toFixed(2)).join(':')).join(',')}`;
+  if (k === padKey) return; padKey = k; R.s._k = null;
+  R.s.draw(k, (g, W, H) => keypad(g, W, H, o));
+}
+pad({ n: 0 });
+
+/* ---------------- camera: hard cuts between scenes, slow eased moves inside them */
+const SHOTS = [];
+const shot = (t, f, s, a, e, sy = 470) => SHOTS.push({ t, d: 0, f, s, a, e, sy });
+const move = (t, d, o) => SHOTS.push({ t, d, ez: ease.inOut, ...o });
+const K5 = KP(5);
+shot(CUT.STORY, [0, -14, R.top], 2.9, -0.62, 0.6, 500); move(CUT.STORY + 0.01, CUT.HOOK - CUT.STORY, { s: 3.4, a: -0.4, f: [0, -18, R.top] });
+shot(CUT.HOOK, [0, -14, R.top], 3.0, -0.42, 0.66, 470); move(CUT.HOOK + 0.01, T.so - 0.1 - CUT.HOOK, { s: 3.25, a: -0.34 }); move(T.so - 0.05, CUT.GRID - T.so, { s: 4.1, f: [0, -20, R.top], a: -0.3, e: 0.78 });
+shot(CUT.GRID, [0, 2, Z0 + 22], 2.75, -0.62, 0.5, 450); move(CUT.GRID + 0.01, CUT.PULSE - CUT.GRID, { s: 3.0, a: -0.44 });
+shot(CUT.PULSE, [0, -4, Z0 + 16], 3.3, -0.2, 0.98, 470); move(CUT.PULSE + 0.01, CUT.FING - CUT.PULSE, { s: 3.55, a: -0.12 });
+shot(CUT.FING, [K5[0], K5[1] + 6, Z0 + 26], 4.6, -0.5, 0.46, 500); move(CUT.FING + 0.01, CUT.CEN - CUT.FING, { s: 5.0, a: -0.4 });
+shot(CUT.CEN, [K5[0], K5[1] + 4, Z0 + 16], 6.4, 0, 1.5, 470); move(CUT.CEN + 0.01, CUT.OTH - CUT.CEN, { s: 7.2 });
+shot(CUT.OTH, [8, -10, Z0 + 24], 3.9, -0.42, 0.52, 480); move(CUT.OTH + 0.01, CUT.TWIST - CUT.OTH, { s: 4.2, a: -0.32 });
+shot(CUT.TWIST, [0, -14, Z0 + 26], 3.7, -0.3, 0.5, 480); move(CUT.TWIST + 0.01, CUT.END - CUT.TWIST, { s: 4.0, a: -0.22 });
+const inShot = (t, a, b) => t >= a && t < b;
+
+/* ---------------- the world, frame by frame */
+const fadeIO = (t, a, b, d = 0.5) => ep(t, a, a + d, ease.inOut) * (1 - ep(t, b - d, b, ease.inOut));
+// a press: down over d1 ending at t0, holds, back up; returns the height above the glass
+const press = (t, t0, H = 26, d1 = 0.32, hold = 0.22, d2 = 0.42) => H * (1 - ease.inOut(prog(t, t0 - d1, t0))) + H * ease.inOut(prog(t, t0 + hold, t0 + hold + d2));
+const DIR = (sx = 0) => { const v = [0.18 * sx, -0.62, 0.78], n = Math.hypot(...v); return v.map((c) => c / n); };
+const gauss = (x, y, p) => Math.exp(-((x - p.x) ** 2 + (y - p.y) ** 2) / (2 * p.r * p.r));
+function world(t) {
+  cam3(t, SHOTS);
+  const inHook = inShot(t, CUT.HOOK, CUT.GRID), inStory = inShot(t, CUT.STORY, CUT.HOOK), inTwist = t >= CUT.TWIST;
+  const inPulse = inShot(t, CUT.PULSE, CUT.FING), inFing = inShot(t, CUT.FING, CUT.CEN), inCen = inShot(t, CUT.CEN, CUT.OTH), inOth = inShot(t, CUT.OTH, CUT.TWIST);
+  /* the stack: assembled in the hook and the story, lifted apart for the mechanism */
+  const lift = inHook || inStory ? 0 : t < CUT.PULSE ? ep(t, T.under - 0.1, T.glass + 0.9, ease.inOut) : inTwist ? 0.8 : inOth ? 0.3 : 1;
+  S.lift(lift);
+  S.glassM.opacity = lift > 0.01 ? 0.07 + 0.04 * lift : 0;
+  S.glass.visible = lift > 0.01;
+  R.s.mat.color.setScalar(1.25 * (1 - 0.5 * lift));
+  // grid lines: faint, then rows, then columns
+  const gIn = inHook ? 0 : inStory ? 0.12 * ep(t, T.salty2 - 0.1, T.salty2 + 0.6, ease.inOut) : t < CUT.PULSE ? ep(t, T.grid - 0.1, T.grid + 0.6, ease.inOut) : 1;
+  S.film.material.opacity = 0.05 * gIn * (inStory ? 0 : 1);
+  const rowsOn = t < CUT.PULSE ? ep(t, T.rows - 0.15, T.rows + 0.5, ease.inOut) : 1, colsOn = t < CUT.PULSE ? ep(t, T.columns - 0.15, T.columns + 0.5, ease.inOut) : 1;
+  // the pulse sweep: one row at a time, slowly while it is explained, then fast ("many times a second")
+  let ph = -9;
+  if (inPulse) {
+    if (t < T.measures - 0.1) ph = prog(t, T.sends - 0.05, T.measures - 0.3) * (NR + 2) - 1;
+    else if (t > T.many - 0.1) ph = ((t - T.many) * 40) % (NR + 4) - 1;
+  } else if (inFing || inOth || inTwist) ph = ((t * 22) % (NR + 6)) - 1;
+  const sweepA = inPulse ? 1 : 0.35;
+  const rowHot = (j) => (ph > -5 ? Math.exp(-(((ph - j) / 0.9) ** 2)) * sweepA : 0);
+  S.rows.forEach((m, j) => { const h = rowHot(j); m.material.opacity = (0.16 + 0.34 * rowsOn) * gIn + 0.5 * h * gIn; m.material.color.set(h > 0.05 ? O : '#cfc8c1').lerp(C('#cfc8c1'), 1 - Math.min(1, h * 1.4)); });
+  const colHot = inPulse ? window01(t, T.measures - 0.05, T.many + 0.2, 0.3) : 0;
+  S.cols.forEach((m) => { m.material.opacity = (0.12 + 0.3 * colsOn) * gIn + 0.35 * colHot * gIn; m.material.color.set(colHot > 0.05 ? O2 : '#a59d96'); });
+  /* who is touching: finger, glove, nail, sausage, drop */
+  [FINGER, NAIL, GLOVE, SAUS].forEach((Tc) => (Tc.g.visible = false));
+  const touches = [];
+  const K = (key) => KP(key), gtop = glassTop(lift);
+  let padN = 0, padHi = {}, rip = [];
+  if (inHook) {
+    GLOVE.g.visible = t > CUT.HOOK + 0.1;
+    const h = Math.min(press(t, T.glove + 0.15, 30), press(t, T.press + 0.05, 30)) + 34 * ep(t, T.so, T.feeling + 0.5, ease.inOut);
+    placeToucher(GLOVE, [K5[0], K5[1], gtop + 1.2 + h], DIR());
+  }
+  if (inFing) {
+    FINGER.g.visible = true;
+    const h = 64 * (1 - ep(t, T.bring - 0.1, T.close + 0.45, ease.inOut)) + 4;
+    const hh = h - 4 * ep(t, T.close, T.close + 0.5, ease.inOut);
+    placeToucher(FINGER, [K5[0], K5[1], gtop + hh], DIR()); TIP.f = [K5[0], K5[1], gtop + hh];
+    const s = ep(t, T.close - 0.2, T.draws + 0.5, ease.inOut);
+    touches.push({ x: K5[0], y: K5[1], r: 6.2, s });
+    showGlow(GLOWS[0], [K5[0], K5[1], gtop + 0.4], 0.5 * s, 16);
+    if (t > T.close + 0.2) rip.push([0.5, 0.625, prog(t, T.close + 0.2, T.close + 1.2)]);
+    padHi[5] = 0.6 * s;
+  } else GLOWS[0].visible = false;
+  if (inCen) { touches.push({ x: K5[0], y: K5[1], r: 6.2, s: 1 }); padHi[5] = 0.6; }
+  if (inOth) {
+    const tg = T.wool2 + 0.15, tn = T.fingernail + 0.35;
+    if (t < tn - 0.6) { GLOVE.g.visible = true; const h = press(t, tg, 28, 0.3, 0.35, 0.35); placeToucher(GLOVE, [K5[0], K5[1], gtop + 1.2 + h], DIR()); touches.push({ x: K5[0], y: K5[1], r: 6.5, s: 0.07 * (1 - h / 28) }); }
+    else if (t < T.water2 - 0.2) { NAIL.g.visible = true; const h = press(t, tn, 28, 0.3, 0.4, 0.4); const d = [0, -0.25, 0.97]; placeToucher(NAIL, [K5[0], K5[1] + 1.5, gtop + 0.3 + h], d); touches.push({ x: K5[0], y: K5[1], r: 4.5, s: 0.06 * (1 - h / 28) }); }
+    // the water drop lands on key 3
+    const [dx, dy] = K(3), dq = ep(t, T.water2 - 0.25, T.water2 + 0.15, ease.out);
+    DROP.d.visible = t > T.water2 - 0.3;
+    if (DROP.d.visible) { DROP.d.position.set(dx, dy, gtop + 28 * (1 - dq)); DROP.d.scale.set(0.6 + 0.4 * dq, 0.6 + 0.4 * dq, 1.4 - 0.4 * dq); DROP.m.opacity = 0.7; }
+    touches.push({ x: dx, y: dy, r: 4.6, s: 0.75 * ep(t, T.water2, T.water2 + 0.6, ease.inOut) });
+    // the ghost tap
+    if (t > T.taps - 0.1) { padN = 1; padHi[3] = 0.8 * (1 - prog(t, T.taps + 0.3, T.taps + 1.2)); rip.push([0.75, 0.5, prog(t, T.taps - 0.1, T.taps + 0.9)]); }
+  } else DROP.d.visible = false;
+  if (inStory) {
+    SAUS.g.visible = t > T.fix - 0.2;
+    const taps = [[T.tapping + 0.1, 5], [T.sausages + 0.25, 2], [T.gloves + 0.1, 8]];
+    let h = 30 * (1 - ep(t, 0, T.koreans, ease.inOut)) + 30, key = 5;
+    for (const [t0, k] of taps) if (t > t0 - 1.0) key = k;
+    const kp = K(key);
+    for (const [t0] of taps) if (t > t0 - 0.6 && t < t0 + 1.0) h = Math.min(h, press(t, t0, 30, 0.3, 0.25, 0.4));
+    if (t > T.salty2 - 0.6) h = 30 * (1 - ep(t, T.salty2 - 0.6, T.salty2, ease.inOut));
+    // slide between keys while lifted
+    const prev = SAUS.userData || (SAUS.userData = { x: kp[0], y: kp[1] });
+    prev.x = lerp(prev.x, kp[0], 0.18); prev.y = lerp(prev.y, kp[1], 0.18);
+    placeToucher(SAUS, [prev.x, prev.y, gtop + h], DIR(0.6)); TIP.s = [prev.x, prev.y, gtop + h];
+    padN = taps.filter(([t0]) => t > t0).length;
+    for (const [t0, k] of taps) if (t > t0) { const [fx, fy] = KEYS[k]; rip.push([fx, fy, prog(t, t0, t0 + 0.9)]); padHi[k] = Math.max(padHi[k] || 0, 0.8 * (1 - prog(t, t0 + 0.2, t0 + 0.9))); }
+    if (t > T.salty2 - 0.2) touches.push({ x: prev.x, y: prev.y, r: 5.2, s: ep(t, T.salty2 - 0.2, T.meat + 0.3, ease.inOut) });
+    showGlow(GLOWS[1], [prev.x, prev.y, gtop + 0.4], 0.25 * ep(t, T.salty2 - 0.2, T.meat + 0.3, ease.inOut), 15);
+  } else if (!inTwist) GLOWS[1].visible = false;
+  if (inTwist) {
+    const [ax, ay] = K(4), [bx, by] = K(6);
+    FINGER.g.visible = SAUS.g.visible = true;
+    const hf = 40 * (1 - ep(t, T.never - 0.5, T.finger2 + 0.2, ease.inOut)), hs = 40 * (1 - ep(t, T.salty3 - 0.4, T.meat3 + 0.3, ease.inOut));
+    placeToucher(FINGER, [ax, ay, gtop + hf], DIR(-0.6)); placeToucher(SAUS, [bx, by, gtop + hs], DIR(0.6));
+    const sf = 1 - prog(hf, 0, 8), ss = 1 - prog(hs, 0, 8);
+    touches.push({ x: ax, y: ay, r: 6.2, s: sf }, { x: bx, y: by, r: 6.2, s: ss });
+    showGlow(GLOWS[0], [ax, ay, gtop + 0.4], 0.4 * sf, 15); showGlow(GLOWS[1], [bx, by, gtop + 0.4], 0.4 * ss, 15);
+  }
+  /* nodes and bars from the touches */
+  const showBars = !inHook && !inStory, nodeBase = inHook ? 0 : inStory ? 0 : t < CUT.PULSE ? 0.45 * ep(t, T.see - 0.1, T.see + 0.6) : 0.5;
+  S.nm.uniforms.uA.value = inHook ? 0 : 1;
+  S.setNodes((i, j) => {
+    const [x, y] = S.node(i, j); let g = 0; for (const p of touches) g += p.s * gauss(x, y, p);
+    if (inStory) return Math.min(1, 1.2 * g);
+    return clamp(nodeBase * (1 - 0.8 * Math.min(1, g)) + 0.75 * rowHot(j) * (inPulse ? 1 : 0.4) * gIn);
+  });
+  S.setBars((i, j) => { if (!showBars) return 0; const [x, y] = S.node(i, j); let g = 0; for (const p of touches) g += p.s * gauss(x, y, p); return 24 * g; });
+  S.bars.visible = showBars;
+  /* the centre marker */
+  const xa = inCen ? ep(t, T.finds - 0.1, T.center + 0.4, ease.inOut) : 0;
+  XH.visible = xa > 0.01; xhM.opacity = 0.95 * xa; XH.position.set(K5[0], K5[1], 30); XH.scale.setScalar(1 + 0.6 * (1 - ease.out(prog(t, T.finds - 0.1, T.center + 0.3))));
+  /* snow: the hook's winter and the story */
+  const sa = inStory ? 1 : inHook ? 1 - ep(t, T.so - 0.3, T.feeling, ease.inOut) : 0;
+  SNOW.pts.visible = sa > 0.01; SNOW.m.uniforms.uA.value = sa; SNOW.m.uniforms.uT.value = t;
+  /* the screen */
+  pad({ n: padN, hi: padHi, rip });
+}
+
+/* ---------------- HUD: few, small labels */
+const Kd = (k, v, c, o) => ({ k, v, c, ...o });
+function tags(t) {
+  hud.begin();
+  const H = (key, o) => hud.card(key, o, t), CH = (key, o) => hud.chip(key, o, t);
+  const lift = t < CUT.PULSE ? ep(t, T.under - 0.1, T.glass + 0.9, ease.inOut) : 1;
+  // hook
+  CH('glove', { s: 'Wool glove', w: [K5[0] - 4, K5[1] - 22, glassTop(0) + 30], x: -118, y: -36, rel: true, a: T.glove - 0.1, b: T.so, c: '#d9d5d1' });
+  // the grid
+  CH('cg', { s: 'Cover glass', w: [R.sw / 2 + 3, R.sh / 2 - 14, glassTop(lift)], x: -22, y: -46, rel: true, a: T.glass - 0.05, b: CUT.PULSE, c: '#d9d5d1' });
+  CH('rows', { s: 'Rows', w: [-R.sw / 2 - 2, S.node(0, 3)[1], gridZ(lift)], x: -64, y: 10, rel: true, a: T.rows - 0.1, b: CUT.PULSE, c: '#d9d5d1' });
+  CH('cols', { s: 'Columns', w: [S.node(5, 0)[0], R.sh / 2 + 2, gridZ(lift) + 0.15], x: 14, y: -44, rel: true, a: T.columns - 0.1, b: CUT.PULSE, c: '#d9d5d1' });
+  // the pulse
+  H('pulse', Kd('Rows', 'Tiny electric pulses', O, { x: 22, y: 172, a: T.sends - 0.1, b: T.measures - 0.15 }));
+  H('meas', Kd('Every crossing', 'Signal measured', O2, { x: 22, y: 172, a: T.measures - 0.1, b: T.many - 0.1 }));
+  H('many', Kd('The whole grid', 'Many times a second', O, { x: 22, y: 172, a: T.many - 0.1, b: CUT.FING }));
+  // the finger
+  const dv = DIR(); CH('salt', { s: 'Mostly salty water', w: [TIP.f[0] + dv[0] * 40, TIP.f[1] + dv[1] * 40, TIP.f[2] + dv[2] * 40], x: 300, y: 250, a: T.salty - 0.1, b: T.draws - 0.2, c: '#d9d5d1' });
+  H('drop', Kd('Bar height = signal lost', 'Signal drops', O, { x: 22, y: 172, a: T.draws - 0.1, b: CUT.CEN }));
+  // the centre
+  H('cen', Kd('Centre of the touch', 'Between the wires', O, { x: 22, y: 172, a: T.finds - 0.1, b: CUT.OTH }));
+  // the others
+  CH('wg', { s: 'Wool glove', w: [K5[0] - 6, K5[1] - 24, glassTop(0.3) + 26], x: -112, y: -40, rel: true, a: T.wool2 - 0.1, b: T.fingernail, c: '#d9d5d1' });
+  CH('fn', { s: 'Fingernail', w: [K5[0] - 2, K5[1] - 18, glassTop(0.3) + 22], x: -104, y: -40, rel: true, a: T.fingernail - 0.05, b: T.water2 - 0.2, c: '#d9d5d1' });
+  H('bar', Kd('Signal change', 'Barely any', '#9e9995', { x: 22, y: 172, a: T.barely - 0.1, b: T.water2 - 0.1 }));
+  const [dx, dy] = KP(3);
+  CH('wd', { s: 'Water drop', w: [dx, dy, glassTop(0.3) + 2], x: 18, y: -46, rel: true, a: T.water2 - 0.05, b: CUT.TWIST, c: O, hot: true });
+  H('ghost', Kd('Wet screen', 'Taps by itself', AMB, { x: 22, y: 172, a: T.taps - 0.1, b: CUT.TWIST }));
+  // the story
+  CH('ss0', { s: 'Snack sausage', w: ((d) => [TIP.s[0] + d[0] * 30, TIP.s[1] + d[1] * 30, TIP.s[2] + d[2] * 30])(DIR(0.6)), x: 50, y: -125, rel: true, a: T.sausages - 0.1, b: CUT.HOOK, c: O, hot: true });
+  // the twist
+  const [ax, ay] = KP(4), [bx, by] = KP(6);
+  CH('yf', { s: 'Your finger', w: [ax - 4, ay - 26, glassTop(0.8) + 30], x: -110, y: -36, rel: true, a: T.never - 0.1, b: CUT.END + 0.4, c: '#d9d5d1' });
+  CH('ss', { s: 'Salty, moist meat', w: [bx + 8, by - 22, glassTop(0.8) + 26], x: 26, y: -74, rel: true, a: T.salty3 - 0.1, b: CUT.END + 0.4, c: '#d9d5d1', hot: t > T.fake - 0.1 });
+  H('same', Kd('Bar height = signal lost', 'A change in the signal', O, { x: 22, y: 172, a: T.feels - 0.1, b: CUT.END + 0.3 }));
+  hud.end();
+}
+
+/* ---------------- reel config */
+const FLAKE = '<svg width="38" height="38" viewBox="0 0 40 40" fill="none" stroke="#ff6a1f" stroke-width="2" stroke-linecap="round"><path d="M20 5v30M7 12.5l26 15M7 27.5l26-15M16 7l4 4 4-4M16 33l4-4 4 4M6.5 17.5l5.5-1.5-1.5-5.5M33.5 22.5l-5.5 1.5 1.5 5.5M6.5 22.5l5.5 1.5-1.5 5.5M33.5 17.5l-5.5-1.5 1.5-5.5"/></svg>';
+const REEL = {
+  shots: [{ t: 0, f: [0, 0, 0], s: 1, a: -0.7, e: 0.6, sy: 480 }], world, tags,
+  tools: [{ a: -0.4, b: CUT.HOOK - 0.1, top: 174, svg: FLAKE, name: 'South Korea · Feb 2010', sub: 'SNACK SAUSAGES USED AS A STYLUS', src: 'REPORTED BY THE REGISTER, ABC NEWS' }],
+  state: {
+    a: 0.25, b: CUT.END + 0.3,
+    at(t) {
+      const G = '#9e9995';
+      if (t < CUT.HOOK) return t < T.tapping + 0.1 ? ['Locked', G] : ['Touch', O];
+      if (t < T.glove + 0.4) return ['Locked', G];
+      if (t < CUT.GRID) return ['No touch', G];
+      if (t < T.draws) return ['Touch sensor', G];
+      if (t < CUT.OTH) return ['Touch', O];
+      if (t < T.water2) return ['No touch', G];
+      if (t < CUT.TWIST) return [t < T.taps ? 'Water' : 'Ghost tap', AMB];
+      return ['Same signal', O];
+    },
+  },
+  bad: [],
+  good: [],
+  tiles: [['◉', 'FACE ID'], ['♪', 'SHAZAM'], ['⌖', 'GPS']],
+  end: CUT.END, follow: CUT.END + 0.9,
+  cover: { k: 'SNACK SAUSAGE', t: 'TOUCHSCREEN', at: T.sausages + 0.6, zoom: 0.95, dy: 60 },
+};
+</script>
+<script src="lib/overlay.js"></script>
+<script>
+{ const r0 = window.ready; window.ready = async () => { await r0(); ctexRedraw(); padKey = null; R.s._k = null; }; }
+// the state badge hides while the story card is up (they share the top-left)
+{ const r = window.render; window.render = (t) => { r(t); if (REEL.state.el && t > REEL.tools[0].a && t < REEL.tools[0].b) REEL.state.el.style.opacity = Math.min(+REEL.state.el.style.opacity, 1 - window01(t, REEL.tools[0].a - 0.2, REEL.tools[0].b + 0.3, 0.3)); }; }
+if (/cover/.test(location.hash)) { const c = document.createElement('style'); c.textContent = '#hud, #state { display: none !important; } #stage { background: #070707 !important; } #ct .t { font-weight: 700 !important; font-size: 54px !important; letter-spacing: -1.6px !important; background: none !important; color: #f4f3f2 !important; -webkit-text-fill-color: #f4f3f2 !important; filter: none !important; } #ct .k { color: #ff6a1f !important; font-weight: 600 !important; }'; document.head.appendChild(c); }
+</script>
+<script src="../_ember/play.js"></script>
+</body>
+</html>

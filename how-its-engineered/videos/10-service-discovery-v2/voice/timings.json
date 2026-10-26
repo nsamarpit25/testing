@@ -1,0 +1,66 @@
+[
+ {
+  "li": 0,
+  "pi": 0,
+  "say": "Every payment in your app failed at 2:05 PM. Nobody changed a single line of code.",
+  "show": "Every payment in your app [failed at 2:05 PM.] Nobody changed a *single line* of code.",
+  "start": 0.0,
+  "end": 4.54
+ },
+ {
+  "li": 0,
+  "pi": 1,
+  "say": "So what broke?",
+  "show": "So what *broke?*",
+  "start": 4.66,
+  "end": 5.26
+ },
+ {
+  "li": 1,
+  "pi": 0,
+  "say": "Your payment program restarted on another server. Your app still uses its old address.",
+  "show": "Your payment program restarted on *another server.* Your app still uses its [old address.]",
+  "start": 6.02,
+  "end": 9.9
+ },
+ {
+  "li": 2,
+  "pi": 0,
+  "say": "Server addresses can change. Your app needs a way to find the current one.",
+  "show": "Server addresses can *change.* Your app needs a way to [find the current one.]",
+  "start": 10.84,
+  "end": 13.96
+ },
+ {
+  "li": 3,
+  "pi": 0,
+  "say": "Imagine phone contacts that update by themselves when a number changes. Service discovery does that for programs.",
+  "show": "Imagine *phone contacts* that update by themselves when a number changes. [Service discovery] does that for programs.",
+  "start": 14.5,
+  "end": 19.58
+ },
+ {
+  "li": 4,
+  "pi": 0,
+  "say": "One way uses a directory that matches program names to their current addresses.",
+  "show": "One way uses a [directory] that matches program *names* to their *current addresses.*",
+  "start": 20.52,
+  "end": 23.7
+ },
+ {
+  "li": 5,
+  "pi": 0,
+  "say": "When payments restarts somewhere else, its entry updates. Your app looks up payments by name and gets the new address.",
+  "show": "When payments restarts somewhere else, its entry *updates.* Your app looks up payments *by name* and gets [the new address.]",
+  "start": 24.2,
+  "end": 29.54
+ },
+ {
+  "li": 6,
+  "pi": 0,
+  "say": "If you're a vibe coder, follow for the system design your AI skipped.",
+  "show": "If you're a vibe coder, follow for the system design your AI [skipped.]",
+  "start": 30.18,
+  "end": 33.1
+ }
+]

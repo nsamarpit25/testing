@@ -1,0 +1,6 @@
+{"lines": [
+ {"say": "Twenty minutes of code.", "shot": "WIDE", "caps": ["Twenty minutes", "of code."]},
+ {"say": "Every single day.", "shot": "HANDS", "caps": ["Every single", "day."]},
+ {"say": "For a whole year.", "shot": "LAPSE", "caps": ["For a", "whole year."], "gap": 1.6},
+ {"say": "And now she's shipped her own app.", "shot": "CU", "caps": ["And now", "she's shipped", "her own app."]}
+]}

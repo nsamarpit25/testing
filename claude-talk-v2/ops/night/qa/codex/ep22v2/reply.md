@@ -1,0 +1,6 @@
+- **Minor, 30–31.5s:** Captions split “someone else’s computer” across separate chunks. Keep the phrase together so the reveal reads cleanly.
+- **Check, 15–16s and 21.5–22.5s:** “Them” and “stranger’s” aren’t visible in the sampled captions. Verify between samples; restore either word if missing.
+
+The opening establishes the problem, the screens support the dialogue, and both punchlines land. No clear visual glitches, obstructive captions, or flash cuts are evident.
+
+VERDICT: PASS

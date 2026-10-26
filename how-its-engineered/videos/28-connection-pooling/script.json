@@ -1,0 +1,37 @@
+{
+ "topic": "Connection pooling",
+ "lines": [
+  [
+   {"say": "Your app went down at 8 PM. The database was fine. It just ran out of connections.",
+    "show": "Your app went down at [8 PM.] The database was *fine.* It just ran out of [connections.]"}
+  ],
+  [
+   {"say": "A connection is the line your app opens to its database before it can ask for anything. Opening one takes time.",
+    "show": "A *connection* is the line your app opens to its database before it can ask for anything. Opening one [takes time.]"}
+  ],
+  [
+   {"say": "If every visitor opens a new one, a busy evening means thousands at once. And the database only allows so many, often around a hundred.",
+    "show": "If every visitor opens a *new one,* a busy evening means [thousands at once.] And the database only allows so many, often around [a hundred.]"}
+  ],
+  [
+   {"say": "The fix is a connection pool. Your app opens a few connections once, and keeps them open.",
+    "show": "The fix is a [connection pool.] Your app opens a *few* connections once, and keeps them open."}
+  ],
+  [
+   {"say": "Each request borrows one, asks its question, and hands it back. If they're all busy, it waits a moment in line.",
+    "show": "Each request [borrows one,] asks its question, and *hands it back.* If they're all busy, it waits a moment in line."}
+  ],
+  [
+   {"say": "Like a taxi rank. You hop into a cab that's already waiting, instead of calling a new one every trip.",
+    "show": "Like a [taxi rank.] You hop into a cab that's *already waiting,* instead of calling a new one every trip."}
+  ],
+  [
+   {"say": "Most database libraries come with a pool. Keep its size under your database's limit.",
+    "show": "Most database libraries come with a [pool.] Keep its size *under* your database's limit."}
+  ],
+  [
+   {"say": "If you're a vibe coder, follow for the system design your AI skipped.",
+    "show": "If you're a vibe coder, follow for the system design your AI [skipped.]"}
+  ]
+ ]
+}

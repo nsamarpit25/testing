@@ -12,3 +12,24 @@ __pycache__/
 .env
 .env.*
 !.env.example
+
+# local reel review page (videos are symlinks into claude-talk-v2/output)
+insights/review/
+
+# render scratch: frame sequences, QC stills, build outputs (regenerable, too big for git)
+**/frames/
+**/build/
+**/qc/
+**/qc[0-9]*/
+claude-talk-v2/ops/night/**/*.png
+claude-talk-v2/ops/night/**/*.jpg
+claude-talk-v2/ops/night/**/*.wav
+how-it-becomes/*/macframes/
+how-its-engineered/videos/3d-*/r/
+how-its-engineered/videos/3d-*/src/fi_*/
+how-its-engineered/videos/3d-*/src/k_*/
+how-its-engineered/videos/3d-*/src/sheet_*.png
+*.bak
+
+# audio takes/mixes: regenerable and already inside the final mp4s on the media branch
+*.wav

@@ -1,0 +1,14 @@
+0.5-3.9s Cleo: Claude, why does my grocery list say water?
+4.2-5.7s Claude: You asked to eat like an adult.
+6.0-9.4s Cleo: Adults eat food! Eggs, spinach, chicken!
+9.7-11.7s Claude: I checked your last nine Tuesdays.
+12.0-13.9s Cleo: You made a spinach log?
+14.3-16.6s Claude: Nine bags bought. Zero eaten.
+16.9-19.4s Cleo: I'm cooking tonight. For real this time.
+19.9-22.2s Claude: Buying spinach is a donation to your trash can.
+22.5-25.2s Cleo: So put chicken on the list! I'm starving.
+25.6-28.4s Claude: It's Tuesday. Eight o'clock. Check your phone.
+28.7-30.6s Cleo: You ordered my Pad Thai?
+31.1-32.7s Claude: The water is for the spice.
+33.0-35.1s Cleo: Did you at least get spring rolls?
+35.7-37.1s Claude: Two. I'm not an amateur.

@@ -1,0 +1,69 @@
+{
+ "prompt": "AUDIO PROFILE\nCleo: a young woman software developer in her mid twenties. Natural, expressive, conversational voice. Real, never cartoonish.\nClaude: a young man's voice. Calm, warm, perfectly deadpan and dry. Few words. He never raises his voice.\n\nTHE SCENE, END TO END\nMorning at her desk. Cleo's phone storage is full and the cloud is charging her monthly. Claude explains the cloud like she is five, using a little whiteboard, with a rule: no computer words, first one to say one loses. Cleo slips and says computer. Then it turns out her cloud is full of twelve thousand screenshots of money-saving tips. A fast, funny comedy.\n\nLINE BY LINE\n1. Cleo, outraged, holding up her phone, fast.\n2. Claude, calm, helpful, mildly amused.\n3. Cleo, competitive, setting the rules.\n4. Claude, calm, a gentle storyteller tone.\n5. Cleo, stubborn, quick.\n6. Claude, calm, simple, explaining.\n7. Cleo, suspicious, curious.\n8. Claude, calm, dry, matter-of-fact, the first joke.\n9. Cleo, slowly realising, a little indignant.\n10. Claude, calm, simple.\n11. Cleo, triumphant, she thinks she cracked it.\n12. Claude, calm, instant, deadpan referee.\n13. Cleo, grumpy, conceding.\n14. Claude, calm, plainly reading the facts.\n15. Cleo, defensive, confident.\n16. Claude, warm, dry, deadpan, the punchline, short.\n\nDIRECTOR'S NOTES\nSnappy comedy timing: short natural pauses between lines, never long. Cleo's energy builds line by line; Claude stays calm the whole time, and that contrast is the joke. The last line is dry and simple, no dramatic pause inside it. Never read bracketed tags aloud. Finish every line fully, including its last word; never clip a word. Speak every word of the dialogue exactly as written, nothing added.",
+ "turns": [
+  [
+   "Cleo",
+   "Claude, my photos are charging me rent."
+  ],
+  [
+   "Claude",
+   "Want the five-year-old explanation?"
+  ],
+  [
+   "Cleo",
+   "Yes. No computer words. First one loses."
+  ],
+  [
+   "Claude",
+   "You have too many toys for your room."
+  ],
+  [
+   "Cleo",
+   "And I'm not throwing any away."
+  ],
+  [
+   "Claude",
+   "So a big company keeps them in its giant basement."
+  ],
+  [
+   "Cleo",
+   "Then why is it called a cloud?"
+  ],
+  [
+   "Claude",
+   "Nobody pays monthly for a stranger's basement."
+  ],
+  [
+   "Cleo",
+   "So I'm paying for a box?"
+  ],
+  [
+   "Claude",
+   "Yes. Your phone is the window."
+  ],
+  [
+   "Cleo",
+   "So the cloud is just someone else's computer!"
+  ],
+  [
+   "Claude",
+   "You said computer. You lose."
+  ],
+  [
+   "Cleo",
+   "Fine. What's even in my box?"
+  ],
+  [
+   "Claude",
+   "Twelve thousand screenshots of money-saving tips."
+  ],
+  [
+   "Cleo",
+   "Those are going to make me rich."
+  ],
+  [
+   "Claude",
+   "So far, they've made the basement rich."
+  ]
+ ]
+}

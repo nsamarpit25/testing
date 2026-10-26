@@ -1,0 +1,247 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- 05 Reverse proxies, remade in the 21 ember style. World: ten servers in a private zone at the back; a wall in front
+     of them with one gap, where the proxy sits; the public internet in front (bots, then you with your phone).
+     The restaurant analogy is mapped onto the same world (you = customer, proxy = waiter, private zone = kitchen).
+     Beats come from voice/words.json via at(). Shared pieces live in ../_ember/. -->
+<link rel="stylesheet" href="../_ember/fonts.css">
+<link rel="stylesheet" href="../_ember/reel.css">
+</head>
+<body>
+<div id="stage">
+  <div id="world">
+    <canvas id="cv" width="1080" height="1920"></canvas>
+    <div class="layer" id="lbls"></div>
+  </div>
+</div>
+<script src="../../tools/lib.js"></script>
+<script src="voice/words.js"></script>
+<script src="../_ember/three.js"></script>
+<script src="../_ember/world.js"></script>
+<script src="../_ember/base.js"></script>
+<script>
+const ICE = '#BFE9FF', BLUE = '#8FD3FF';
+const addIcon = (k, d) => { ICON[k] = d; P2[k] = new Path2D(d); };
+addIcon('bot', 'M26 34 H74 V76 H26 Z M50 34 V20 M44 16 h12 M38 52 h1 M62 52 h1 M38 66 H62');
+addIcon('page', 'M28 12 H62 L76 26 V88 H28 Z M62 12 V26 H76 M38 44 H66 M38 58 H66 M38 72 H56');
+addIcon('img', 'M16 22 H84 V78 H16 Z M16 66 L38 46 L56 62 L66 52 L84 68 M64 36 a5 5 0 1 0 0.1 0');
+
+/* ---------------- beats */
+const T = {
+  ten: at('10'), last: at('bots'), bots: at('bots'), scanned: at('scan'), looking: at('internet'), all: at('all', 2), one: at('one', 2), machine: at('machine'), wasnt: at('not'),
+  that: at('that'), reverse: at('reverse'), middleman: at('middleman'), request: at('request'), first: at('first'),
+  restaurant: at('restaurant'), kitchen: at('kitchen'), waiter: at('waiter'), order: at('order'), brings: at('brings'), back: at('back'),
+  private_: at('private'), public_: at('public'), only: at('only'), faces: at('faces'), internet2: at('internet', 2),
+  does: at('does'), plates: at('plates'), keeps: at('keeps'), popular: at('popular'), ready: at('ready'), never2: at('never', 2),
+  reads: at('reads'), slash: at('slash'), api: at('api'), these: at('these'), images: at('images'), those: at('those'),
+  nginx: at('nginx'), cloudflare: at('cloudflare'), millions: at('millions'), normal: at('forward'), hides: at('hides'), hides2: at('hides', 2),
+  ifv: at('if'), follow: at('follow'),
+};
+const CUT = { SCAN: T.last - 0.3, WALL: T.all - 0.2, RP: T.that - 0.15, REST: T.restaurant - 0.35, PRIV: T.private_ - 0.6, MORE: T.does - 0.25, CACHE: T.keeps - 0.2, ROUTE: T.reads - 0.25, TOOLS: T.nginx - 0.3, NORM: T.normal - 0.3, END: T.ifv - 0.15 };
+
+/* ---------------- layout */
+const SRV = []; [-200, -100, 0, 100, 200].forEach((x) => [100, 200].forEach((y) => SRV.push([x, y])));
+const GROUP = (p) => (p[0] < -50 ? 'api' : p[0] > 50 ? 'img' : 'app');
+const PX = [0, -40], WALL_Y = -40, CACHE = [100, -110], YOU = [0, -300], FWD = [-95, -300], WEB = [-215, -300];
+const BOTS = [[-185, -250], [220, -230], [-90, -390], [130, -400]];
+
+/* ---------------- camera */
+const WIDE = { f: [10, -40, 30], s: 0.72, a: -0.42, e: 0.62, sy: 560 };
+const SHOTS = [
+  { t: 0, d: 0, f: [10, 150, 40], s: 0.95, a: -0.36, e: 0.5, sy: 560 },
+  { t: CUT.SCAN, d: 1.3, ...WIDE },
+  { t: CUT.RP, d: 1.0, f: [30, -60, 30], s: 0.8, a: -0.42, e: 0.58, sy: 570 },
+  { t: CUT.REST, d: 1.0, ...WIDE, s: 0.8 },
+  { t: CUT.PRIV, d: 1.0, f: [40, 40, 30], s: 0.88, a: -0.42, e: 0.62, sy: 600 },
+  { t: CUT.MORE, d: 1.0, f: [30, -60, 30], s: 1.3, a: -0.42, e: 0.55, sy: 600 },
+  { t: CUT.ROUTE, d: 1.0, f: [0, 40, 30], s: 0.84, a: -0.42, e: 0.62, sy: 620 },
+  { t: CUT.TOOLS, d: 1.0, ...WIDE, s: 0.8, sy: 640 },
+  { t: CUT.NORM, d: 1.0, f: [-100, -290, 30], s: 1.1, a: -0.42, e: 0.6, sy: 600 },
+  { t: T.hides2 - 0.6, d: 0.9, f: [5, -150, 30], s: 0.7, a: -0.42, e: 0.6, sy: 600 },
+  { t: CUT.END, d: 2.0, ...WIDE, s: 0.78, sy: 640 },
+];
+// t2 remake: every shot re-angled (azimuth, elevation, zoom) so no frame matches the original
+const REANGLE = [[0.1, 0.06, 0.88], [-0.2, -0.05, 1.06], [0.18, 0.08, 0.94], [-0.22, 0.05, 1.04], [0.2, -0.06, 0.94], [-0.16, 0.08, 0.95],
+  [0.2, -0.04, 0.96], [-0.2, 0.06, 1.05], [0.16, 0.06, 0.95], [-0.18, -0.05, 1.05], [0.2, 0.1, 0.92]];
+SHOTS.forEach((s, i) => { const r = REANGLE[i % REANGLE.length]; s.a += r[0]; s.e = Math.min(1.0, Math.max(0.3, s.e + r[1])); s.s *= r[2]; });
+const KICKS = [[T.ten, 0.03], [T.scanned, 0.03], [T.one, 0.05], [T.wasnt, 0.04], [T.reverse, 0.05], [T.waiter, 0.03], [T.private_, 0.04], [T.faces, 0.03],
+  [T.popular, 0.03], [T.never2, 0.04], [T.api, 0.03], [T.images, 0.03], [T.nginx, 0.03], [T.cloudflare, 0.03], [T.hides, 0.04], [T.hides2, 0.05]];
+const SHAKES = [[T.one, 3, 0.3]];
+
+/* ---------------- build the world */
+const SV = SRV.map((p, i) => {
+  const b = emberBox(p[0], p[1], 56, 46, 74, O);
+  const f = decal(56, 74, 'front', 5, b.g); f.m.position.set(0, -23.3, 37);
+  return { b, f, p, i, g: GROUP(p) };
+});
+const zone = road([[-260, 45], [260, 45], [260, 255], [-260, 255], [-260, 45]], ICE);
+const poolZ = [pool(-150, 150, 190, ICE), pool(150, 150, 190, ICE)];
+const wallL = emberBox(-170, WALL_Y, 260, 14, 44, O), wallR = emberBox(170, WALL_Y, 260, 14, 44, O);
+const px = emberBox(PX[0], PX[1], 78, 54, 62, O);
+const pxF = decal(78, 62, 'front', 6, px.g); pxF.m.position.set(0, -27.3, 31);
+const poolP = pool(PX[0], PX[1] - 30, 140, O);
+const cache = emberBox(CACHE[0], CACHE[1], 56, 40, 44, AMB);
+const cacheF = decal(56, 44, 'front', 6, cache.g); cacheF.m.position.set(0, -20.3, 22);
+const poolC = pool(CACHE[0], CACHE[1], 90, AMB);
+const you = emberBox(YOU[0], YOU[1], 40, 10, 72, O);
+const youF = decal(36, 66, 'front', 6, you.g); youF.m.position.set(0, -5.3, 36);
+const poolY = pool(YOU[0], YOU[1], 90, O);
+const fwd = emberBox(FWD[0], FWD[1], 50, 40, 46, AMB);
+const fwdF = decal(50, 46, 'front', 6, fwd.g); fwdF.m.position.set(0, -20.3, 23);
+const web = emberBox(WEB[0], WEB[1], 56, 40, 50, AMB);
+const webF = decal(56, 50, 'front', 6, web.g); webF.m.position.set(0, -20.3, 25);
+const rF1 = road([[YOU[0] - 22, YOU[1], 0], [FWD[0] + 27, FWD[1], 0]], AMB), rF2 = road([[FWD[0] - 27, FWD[1], 0], [WEB[0] + 30, WEB[1], 0]], AMB);
+const BT = BOTS.map((p, i) => { const b = emberBox(p[0], p[1], 34, 34, 34, RED); const f = decal(34, 34, 'front', 6, b.g); f.m.position.set(0, -17.3, 17); return { b, f, p, i }; });
+const rIn = road([[YOU[0], YOU[1] + 10, 0], [PX[0], PX[1] - 27, 0]], O);
+const rOut = SRV.map((p) => road([[PX[0], PX[1] + 27, 0], [p[0], p[1] - 23, 0]], O));
+
+/* ---------------- canvas faces */
+const label = (g, W_, H_, txt, col, size, y = H_ / 2) => { g.fillStyle = col; g.font = `800 ${size}px Mono`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.shadowColor = col; g.shadowBlur = 12; g.fillText(txt, W_ / 2, y); g.shadowBlur = 0; g.textAlign = 'left'; };
+function srvDraw(g, W_, H_, col, t, i) {
+  for (let k = 0; k < 4; k++) {
+    const y = 40 + k * 82; g.strokeStyle = col + '88'; g.lineWidth = 4; rrect(g, 30, y, W_ - 60, 52, 8); g.stroke();
+    const on = (Math.floor(t * 4 + k * 1.7 + i) % 3) === 0;
+    g.beginPath(); g.arc(W_ - 62, y + 26, 8, 0, Math.PI * 2); g.fillStyle = on ? col : col + '44'; g.fill();
+  }
+}
+function phoneDraw(g, W_, H_, col) { g.strokeStyle = col; g.lineWidth = 6; rrect(g, 14, 14, W_ - 28, H_ - 28, 22); g.stroke(); label(g, W_, H_, 'YOU', col, 46); }
+
+/* ---------------- the world, frame by frame */
+function world(t) {
+  const thru = (pts, t0, dur, col, size = 1) => { const q = (t - t0) / dur; if (q > -0.02 && q < 1.1) orb(pts, clamp(q), col, clamp(q / 0.08) * (1 - clamp((q - 1) / 0.1)), size); };
+  // servers + private zone
+  const zoneA = ep(t, T.all - 0.1, T.all + 0.5);
+  const srvDim = 1 - 0.5 * window01(t, T.all, CUT.REST, 0.4) - 0.35 * window01(t, T.keeps + 0.3, T.reads - 0.1, 0.3);
+  SV.forEach((s) => {
+    const q = ease.back(prog(t, s.i * 0.07 - 0.1, s.i * 0.07 + 0.25));
+    const routed = (s.g === 'api' && t > T.slash && t < CUT.TOOLS) ? BLUE : (s.g === 'img' && t > T.images - 0.1 && t < CUT.TOOLS) ? AMB : O;
+    const col = t > T.private_ - 0.1 && t < T.faces + 0.6 ? ICE : routed;
+    s.b.g.visible = q > 0.01; s.b.g.scale.set(1, 1, Math.max(0.01, q));
+    s.b.setLook(col, 1 + 1.5 * pulse(t, s.i * 0.07 + 0.25) + 2 * pulse(t, T.private_), srvDim);
+    s.f.m.visible = s.b.g.visible; s.f.m.material.opacity = srvDim; s.f.draw((g, W_, H_) => srvDraw(g, W_, H_, col, t, s.i));
+  });
+  zone.set(zoneA, ICE, 0.6 + 0.4 * pulse(t, T.private_, 1.5), t);
+  poolZ.forEach((p) => p.set(ICE, zoneA * (0.12 + 0.3 * window01(t, T.private_ - 0.1, T.faces + 0.6, 0.3))));
+  // the wall rises when "all they could reach…"
+  const wq = ease.out(prog(t, T.all - 0.2, T.all + 0.35));
+  [wallL, wallR].forEach((w) => { w.g.visible = wq > 0.01; w.g.scale.set(1, 1, Math.max(0.01, wq)); w.setLook(t > T.private_ - 0.1 && t < T.faces + 0.6 ? ICE : O, 1 + 2 * pulse(t, T.all + 0.35), 0.9); });
+  // proxy
+  const pq = ease.back(prog(t, T.one - 0.15, T.one + 0.25));
+  const pCol = t > T.normal - 0.1 && t < T.hides2 - 0.1 ? DIM : t > T.hides2 - 0.1 ? OK : O;
+  px.g.visible = pq > 0.01; px.g.scale.set(Math.max(0.01, pq), Math.max(0.01, pq), Math.max(0.01, pq));
+  px.setLook(pCol, 1.2 + 2.5 * pulse(t, T.one) + 2 * pulse(t, T.reverse) + 2 * pulse(t, T.hides2));
+  pxF.m.visible = px.g.visible; pxF.draw((g, W_, H_) => label(g, W_, H_, 'PROXY', pCol, 50));
+  poolP.set(pCol, 0.55 * pq);
+  // bots: hover in the front, probe for servers; probes stop at the wall, only the proxy answers
+  const botA = window01(t, T.bots - 0.3, CUT.RP + 0.3, 0.4);
+  BT.forEach((b) => {
+    const bq = ease.back(prog(t, T.bots - 0.25 + b.i * 0.08, T.bots + 0.15 + b.i * 0.08));
+    b.b.g.visible = botA * bq > 0.01; b.b.g.position.z = 26 + 6 * Math.sin(t * 3 + b.i); b.b.setLook(RED, 1.3, botA * clamp(bq));
+    b.f.m.visible = b.b.g.visible; b.f.m.material.opacity = botA; b.f.draw((g, W_, H_) => icon(g, 'bot', W_ / 2, H_ / 2, H_ * 0.9, RED, 8, 10));
+    ripple(t, T.scanned + b.i * 0.25, b.p[0], b.p[1], 1, RED, 120, 0.9);
+    const s = SV[(b.i * 3 + 1) % 10].p, t0 = T.looking - 0.2 + b.i * 0.35;
+    const hitWall = t > T.all + 0.35;     // before the wall: probes fly toward the servers; after: they stop at it
+    if (!hitWall) thru([[b.p[0], b.p[1], 30], [s[0], s[1], 40]], t0, 0.8, RED, 0.7);
+    else {
+      const k = b.i; const t1 = T.all + 0.4 + k * 0.32;
+      if (k < 3) { thru([[b.p[0], b.p[1], 30], [b.p[0] * 0.5, WALL_Y - 8, 30]], t1, 0.45, RED, 0.7); sparks(t, t1 + 0.45, b.p[0] * 0.5, WALL_Y - 8, 30, RED, 12, 70 + k, 100, 0.5); }
+      else { thru([[b.p[0], b.p[1], 30], [PX[0], PX[1] - 28, 30]], t1, 0.45, RED, 0.7); }
+    }
+  });
+  // you + requests
+  const yq = ease.back(prog(t, CUT.RP + 0.3, CUT.RP + 0.7));
+  const yCol = t > T.normal - 0.1 && t < T.hides2 - 0.1 ? DIM : O;
+  you.g.visible = yq > 0.01; you.g.scale.set(1, 1, Math.max(0.01, yq)); you.setLook(yCol, 1.2, 1);
+  youF.m.visible = you.g.visible; youF.draw((g, W_, H_) => phoneDraw(g, W_, H_, yCol)); poolY.set(yCol, 0.45 * yq);
+  rIn.set(ep(t, CUT.RP + 0.4, CUT.RP + 0.9), O, 1 - 0.85 * window01(t, T.normal - 0.1, T.hides2 - 0.1, 0.25), t);
+  const sp = (k) => [SV[k].p[0], SV[k].p[1] - 23, 30];
+  const P_IN = [[YOU[0], YOU[1] + 6, 40], [PX[0], PX[1] - 27, 30]], P_MID = [PX[0], PX[1] + 27, 30];
+  const req = (t0, k, col, back = false) => {   // you → proxy → server k (and back)
+    thru(P_IN, t0, 0.45, col); thru([P_MID, sp(k)], t0 + 0.45, 0.4, col);
+    if (back) { thru([sp(k), P_MID], t0 + 0.95, 0.4, OK); thru([P_IN[1], P_IN[0]], t0 + 1.35, 0.45, OK); }
+  };
+  rOut.forEach((r, k) => r.set(ep(t, T.request - 0.2, T.request + 0.3), SV[k].g === 'api' && t > T.slash && t < CUT.TOOLS ? BLUE : SV[k].g === 'img' && t > T.images - 0.1 && t < CUT.TOOLS ? AMB : O, 0.45 * srvDim, t));
+  req(T.request - 0.3, 4, O2); req(T.first - 0.1, 7, O2);
+  req(T.order - 0.2, 5, O2, true);                     // the order goes to the kitchen and the food comes back
+  // cache: popular pages answered straight from the proxy
+  const cq = ease.back(prog(t, T.keeps - 0.1, T.keeps + 0.3)), cA = window01(t, CUT.CACHE, CUT.ROUTE + 0.2, 0.3);
+  cache.g.visible = cA * cq > 0.01; cache.g.scale.set(1, 1, Math.max(0.01, cq)); cache.setLook(AMB, 1.2 + 2 * pulse(t, T.ready), cA);
+  cacheF.m.visible = cache.g.visible; cacheF.m.material.opacity = cA; cacheF.draw((g, W_, H_) => { icon(g, 'page', W_ * 0.34, H_ / 2, H_ * 0.8, AMB, 8, 10); icon(g, 'page', W_ * 0.66, H_ / 2, H_ * 0.8, AMB, 8, 10); });
+  poolC.set(AMB, 0.5 * cA * cq);
+  [T.popular, T.ready + 0.1, T.never2 - 0.1].forEach((t0, k) => {
+    thru(P_IN, t0 - 0.35, 0.4, O2);
+    thru([[PX[0] + 30, PX[1] - 20, 40], [CACHE[0], CACHE[1], 50], [PX[0] + 30, PX[1] - 20, 40]], t0 + 0.05, 0.35, AMB, 0.7);
+    thru([P_IN[1], P_IN[0]], t0 + 0.4, 0.4, OK);
+  });
+  // routing by path
+  thru(P_IN, T.slash - 0.4, 0.4, BLUE); thru([P_MID, sp(2)], T.api - 0.05, 0.4, BLUE); thru([P_MID, sp(1)], T.these - 0.1, 0.4, BLUE);
+  thru(P_IN, T.images - 0.45, 0.4, AMB); thru([P_MID, sp(7)], T.images - 0.05, 0.4, AMB); thru([P_MID, sp(9)], T.those - 0.2, 0.4, AMB);
+  // normal (forward) proxy: sits next to you and hides you
+  const fq = ease.back(prog(t, T.normal - 0.1, T.normal + 0.3)), fA = window01(t, CUT.NORM, CUT.END + 0.3, 0.3);
+  fwd.g.visible = fA * fq > 0.01; fwd.g.scale.set(1, 1, Math.max(0.01, fq)); fwd.setLook(t < T.hides2 - 0.1 ? AMB : DIM, 1.2 + 2 * pulse(t, T.hides), fA);
+  fwdF.m.visible = fwd.g.visible; fwdF.m.material.opacity = fA; fwdF.draw((g, W_, H_) => label(g, W_, H_, 'PROXY', t < T.hides2 - 0.1 ? AMB : DIM, 40));
+  // you → forward proxy → website, then you → reverse proxy → servers
+  const wq2 = ease.back(prog(t, T.normal + 0.15, T.normal + 0.45)), wCol = t < T.hides2 - 0.1 ? AMB : DIM;
+  web.g.visible = fA * wq2 > 0.01; web.g.scale.set(1, 1, Math.max(0.01, wq2)); web.setLook(wCol, 1.2 + 2 * pulse(t, T.hides + 0.6), fA);
+  webF.m.visible = web.g.visible; webF.m.material.opacity = fA; webF.draw((g, W_, H_) => label(g, W_, H_, 'SITE', wCol, 40));
+  rF1.set(ep(t, T.normal, T.normal + 0.4), wCol, fA, t); rF2.set(ep(t, T.normal + 0.2, T.normal + 0.6), wCol, fA, t);
+  thru([[YOU[0] - 22, YOU[1], 40], [FWD[0] + 27, FWD[1], 30]], T.hides - 0.15, 0.35, AMB); thru([[FWD[0] - 27, FWD[1], 30], [WEB[0] + 30, WEB[1], 30]], T.hides + 0.25, 0.35, AMB);
+  req(T.hides2 - 0.2, 4, OK);
+}
+
+/* ---------------- world tags */
+function tags(t) {
+  tag('ten', '<b>YOUR APP</b> · 10 SERVERS', '', [0, 150, 120], t, T.ten - 0.1, CUT.SCAN + 0.4);
+  tag('bots', `<span style="color:${RED}">BOTS · SCANNING</span>`, `border-color:${RED}88`, [(BOTS[0][0] + BOTS[1][0]) / 2, (BOTS[0][1] + BOTS[1][1]) / 2, 80], t, T.bots + 0.2, T.all + 0.1);
+  tag('notf', `<span style="color:${OK}">✓ SERVERS NOT FOUND</span>`, `border-color:${OK}88`, [0, 200, 150], t, T.wasnt, CUT.RP + 0.2);
+  tag('found', `<span style="color:${RED}">FOUND: 1 MACHINE</span>`, `border-color:${RED}88`, [PX[0], PX[1], 100], t, T.machine, CUT.RP + 0.2);
+  tag('pxl', '<b>REVERSE PROXY</b>', '', [PX[0], PX[1], 100], t, T.middleman, CUT.REST);
+  tag('cust', '<b>YOU</b> = CUSTOMER', '', [YOU[0], YOU[1], 110], t, T.restaurant + 0.1, CUT.PRIV + 0.3);
+  tag('wait', `<span style="color:${O2}">PROXY = WAITER</span>`, `border-color:${O}88`, [PX[0], PX[1], 100], t, T.waiter - 0.05, CUT.PRIV + 0.3);
+  tag('kit', `<span style="color:${ICE}">SERVERS = KITCHEN</span>`, `border-color:${ICE}88`, [0, 150, 120], t, T.kitchen - 0.05, CUT.PRIV + 0.3);
+  tag('priv', `<span style="color:${ICE}">PRIVATE · NO PUBLIC ADDRESS</span>`, `border-color:${ICE}88`, [0, 255, 40], t, T.private_, CUT.MORE, 20);
+  tag('pub', `<span style="color:${O2}">PUBLIC · FACES THE INTERNET</span>`, `border-color:${O}88`, [PX[0], PX[1], 100], t, T.only - 0.05, CUT.MORE);
+  tag('hit', `<span style="color:${OK}">✓ ANSWERED FROM CACHE</span>`, `border-color:${OK}88`, [CACHE[0], CACHE[1], 80], t, T.popular + 0.5, CUT.ROUTE);
+  tag('api', `<span style="color:${BLUE}">/api → API SERVERS</span>`, `border-color:${BLUE}88`, [-150, 150, 120], t, T.api, CUT.TOOLS);
+  tag('img', `<span style="color:${AMB}">/images → IMAGE SERVERS</span>`, `border-color:${AMB}88`, [150, 150, 120], t, T.images, CUT.TOOLS, 28);
+  tag('fwd', `<span style="color:${AMB}">FORWARD PROXY · HIDES YOUR IP</span>`, `border-color:${AMB}88`, [FWD[0], FWD[1], 90], t, T.normal + 0.1, CUT.END + 0.2, -16);
+  tag('web', `<span style="color:${AMB}">WEBSITE</span>`, `border-color:${AMB}88`, [WEB[0], WEB[1] - 20, 0], t, T.normal + 0.4, CUT.END + 0.2, 34);
+  tag('rev', `<span style="color:${OK}">REVERSE PROXY · HIDES THE SERVERS</span>`, `border-color:${OK}88`, [PX[0], PX[1], 100], t, T.hides2, CUT.END + 0.2, -44);
+}
+
+/* ---------------- reel config */
+const svgN = `<svg width="46" height="46" viewBox="0 0 100 100"><path d="M50 6 L88 28 V72 L50 94 L12 72 V28 Z" fill="none" stroke="#7CF29A" stroke-width="7"/><path d="M36 70 V32 L64 70 V32" fill="none" stroke="#7CF29A" stroke-width="8" stroke-linejoin="round"/></svg>`;
+const svgC = `<svg width="46" height="46" viewBox="0 0 100 100"><path d="${ICON.cloud || 'M28 74 H74 Q90 74 90 58 Q90 44 76 42 Q74 24 56 24 Q42 24 36 36 Q20 34 16 48 Q10 62 22 72 Z'}" fill="none" stroke="#FF6A1F" stroke-width="7" stroke-linejoin="round"/></svg>`;
+const REEL = {
+  shots: SHOTS, kicks: KICKS, shakes: SHAKES, world, tags,
+  code: [
+    [T.private_ - 0.2, CUT.MORE, 'network', 'addresses', [[0, 'CHECKING', AMB], [T.only, 'ONLY 1 PUBLIC', OK]],
+      [['proxy      203.0.113.7  public'], ['server-1   10.0.0.1     private', T.private_], ['server-2   10.0.0.2     private', T.private_ + 0.15], ['…          10 servers   private', T.public_]],
+      [[T.only, 1, '← internet', 'good'], [T.public_, 4, '✓ hidden', 'good']]],
+    [CUT.ROUTE + 0.2, CUT.TOOLS, 'nginx.conf', 'routing', [[0, 'ROUTING', AMB]],
+      [['location /api/ { proxy_pass http://api; }'], ['location /images/ { proxy_pass http://img; }']],
+      [[T.api, 1, '→ api', 'run'], [T.images, 2, '→ images', 'amb']], 'type'],
+  ],
+  hl: /\b(location|proxy_pass|proxy|public|private)\b/g,
+  tools: [
+    { a: T.nginx - 0.1, b: T.normal - 0.2, svg: svgN, name: 'NGINX', sub: 'REVERSE PROXY · WEB SERVER', top: 150 },
+    { a: T.cloudflare - 0.1, b: T.normal - 0.2, svg: svgC, name: 'Cloudflare', sub: 'REVERSE PROXY · IN FRONT OF MILLIONS OF SITES', top: 262 },
+  ],
+  slams: [
+    { a: T.reverse - 0.1, b: T.request + 0.1, text: 'reverse proxy', sub: 'THE MIDDLEMAN IN FRONT', size: 62 },
+  ],
+  bad: ['cant', 'bots'],
+  good: ['private', 'internet', 'servers', 'website', 'reach'],
+  tiles: [['⇄', 'REVERSE<br>PROXIES'], ['⚖', 'LOAD<br>BALANCING'], ['⌂', 'API<br>GATEWAYS']],
+  end: CUT.END, follow: T.follow,
+  wbw: true,
+  cover: { k: 'REVERSE PROXY', t: '10 SERVERS.<br>1 DOOR.', at: T.machine + 0.3, zoom: 1, dy: 0 },
+  flash: (t) => 0.1 * pulse(t, T.one, 7),
+};
+</script>
+<script src="../_ember/overlay.js"></script>
+<script src="../_ember/play.js"></script>
+</body>
+</html>

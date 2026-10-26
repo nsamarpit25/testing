@@ -1,0 +1,1 @@
+1e7c48f5a475c40c2c975d6d5a562db9  letsbuildsimply/01-fridge/final/fridge_v5_720p_1.3x.mp4  approved 2026-10-26 14:40:42 (Sam: upload fridge as 720p; cutcheck pass)

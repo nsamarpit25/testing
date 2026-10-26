@@ -1,0 +1,30 @@
+{
+ "look": {"base": "sunset", "colors": {"V3_Cleo_Top": "#34558b", "V3_Cleo_Trim": "#2b4774"}},
+ "lead": 0.5, "gap": 0.32, "hold": 2.8,
+ "beats": {"5": 0.15, "11": 0.2, "13": 0.25, "16": 0.25},
+ "open": ["CLEO", "t0 look monitor 1", "t0 brow 0.02 6"],
+ "lines": {
+  "1": {"shot": "CLEO", "cleo": ["1.w3 look claude 8", "1.w3 hands r_ask 8", "1.end+0.2 hands rest 12"]},
+  "2": {"shot": "CLAUDE", "claude": ["2-0.2 face her 6", "2.w4 tilt 0.06 12"]},
+  "3": {"shot": "CLEOCU", "cleo": ["3 look claude 6", "3 brow 0.025 6", "3 hands plead 8", "3.end+0.2 hands rest 12"]},
+  "4": {"shot": "CLAUDE", "claude": ["4 tilt 0 10"]},
+  "5": {"shot": "CLEO", "cleo": ["5 look up 10", "5 hands open 10", "5 smile 0.3 10", "5.end+0.2 hands rest 12", "5.end smile 0 10"]},
+  "6": {"shot": "CLAUDE", "claude": ["6 face her 6", "6.w2 nod"]},
+  "7": {"shot": "CLEOCU", "cleo": ["7 look claude 6", "7 hands r_ask 8", "7 brow 0.015 8", "7.end+0.2 hands rest 12"]},
+  "8": {"shot": "CLAUDE", "claude": ["8 face mon 8", "8.w2 face her 8"]},
+  "9": {"shot": "CLEO", "cleo": ["9 look claude 6", "9 hands push 8", "9.end+0.2 hands rest 14"]},
+  "10": {"shot": "CLAUDE", "claude": ["10 face her 6", "10.w3 face mon 8"], "cleo": ["10.w3 look monitor 8", "10.end-0.2 look claude 10"]},
+  "11": {"shot": "CLEOCU", "cleo": ["11 look claude 6", "11 hands plead 8", "11 brow 0.03 6", "11.end+0.3 hands rest 12"]},
+  "12": {"shot": "CLAUDE", "claude": ["12 face her 6", "12.w4 face mon 8"], "cleo": ["12.w5 look monitor 8"]},
+  "13": {"shot": "CLEOCU", "cleo": ["13 look monitor 6", "13 hands shock 6", "13 brow 0.03 6", "13.end+0.3 hands rest 12"]},
+  "14": {"shot": "MON", "claude": ["14 face her 6"], "cleo": ["14 look claude 8"]},
+  "15": {"shot": "CLEO", "cleo": ["15 look monitor 8", "15 brow 0.02 8", "15.w2 look claude 8", "15.w2 hands open 8", "15.end+0.3 hands rest 12"]},
+  "16": {"shot": "CLAUDE", "claude": ["16 face her 6", "16.w1 tilt 0.06 12", "16.end+0.3 hop 0.012"]}
+ },
+ "cuts": [["1.w4", "MON"], ["10.w4", "MON"], ["12.w5", "MON"], ["13.w2", "MON"], ["14.w6", "CLAUDE"], ["16.end+0.5", "TWO"]],
+ "mon": [["0", "m1"], ["10.w3", "m2"], ["11", "m1b"], ["13.w1", "m3"]],
+ "phone": [["0", "p1"]],
+ "sfx": [["t0.1", "softbuzz"], ["12.w5", "chime"]],
+ "tail_cleo": ["16.end+0.5 look monitor 10", "16.end+0.6 hands r_ask 10"],
+ "tail_claude": ["16.end+1.0 face mon 10"]
+}

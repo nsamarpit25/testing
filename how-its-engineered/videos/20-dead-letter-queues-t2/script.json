@@ -1,0 +1,47 @@
+{
+  "topic": "Dead letter queues",
+  "lines": [
+    [
+      {
+        "say": "Your checkout queue is stuck on one broken order. The app keeps retrying it, the orders behind it are piling up, and it won't move on.",
+        "show": "Your checkout queue is stuck on one [broken order.] The app keeps *retrying* it, the orders behind it are [piling up,] and it won't move on."
+      }
+    ],
+    [
+      {
+        "say": "Orders wait in line as messages with the order details, and a program handles them. This one has bad data, so it fails every time. That's a poison message.",
+        "show": "Orders wait in line as *messages* with the order details, and a program handles them. This one has bad data, so it *fails every time.* That's a [poison message.]"
+      }
+    ],
+    [
+      {
+        "say": "The fix is a dead letter queue. Set a limit, and after that many failures, the message is moved aside, so the rest keep flowing.",
+        "show": "The fix is a *dead letter queue.* Set a *limit,* and after that many failures, the message is *moved aside,* so the rest *keep flowing.*"
+      }
+    ],
+    [
+      {
+        "say": "Like a post office bin for undeliverable mail. The bad letter waits there, and everything else gets delivered.",
+        "show": "Like a *post office bin* for undeliverable mail. The bad letter waits there, and everything else gets *delivered.*"
+      }
+    ],
+    [
+      {
+        "say": "Later, you look at it, fix the cause, and send it back to be processed.",
+        "show": "Later, you *look at it,* fix the cause, and *send it back* to be processed."
+      }
+    ],
+    [
+      {
+        "say": "Amazon SQS and RabbitMQ both have this built in.",
+        "show": "*Amazon SQS* and *RabbitMQ* both have this built in."
+      }
+    ],
+    [
+      {
+        "say": "If AI writes your code, follow for the system design it leaves out.",
+        "show": "If AI writes your code, *follow* for the system design it [leaves out.]"
+      }
+    ]
+  ]
+}
