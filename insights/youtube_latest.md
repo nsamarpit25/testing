@@ -1,25 +1,26 @@
 # YouTube insights
 
-Updated 2026-10-27 16:34 IST. Change since previous fetch is in brackets.
+Updated 2026-10-27 20:09 IST. Change since previous fetch is in brackets.
 
 ## Simplified Things
 
-**13 subscribers (+6)** · 3 videos · 4391 (+342) total views
+**19 subscribers (+6)** · 4 videos (+1) · 9595 (+5204) total views
 
 | Posted | Video | Views | Likes | Comments |
 |---|---|--:|--:|--:|
-| 2026-10-26 | [What If You Drilled Straight Through the Earth? 🌍](https://www.youtube.com/watch?v=UTJiCWkIpOA) | 2745 (+72) | 136 (+70) | 5 (+1) |
-| 2026-10-26 | [How Do You Move a 100-Ton Rock With No Crane? 🪨](https://www.youtube.com/watch?v=uDK5La5zyos) | 1208 (+42) | 34 | 5 |
-| 2026-10-27 | [Can Square Wheels Give You a Smooth Ride? #shorts](https://www.youtube.com/watch?v=vOW5FcItVOw) | 438 (+228) | 15 (+5) | 1 (+1) |
+| 2026-10-26 | [What If You Drilled Straight Through the Earth? 🌍](https://www.youtube.com/watch?v=UTJiCWkIpOA) | 6937 (+4192) | 287 (+151) | 8 (+3) |
+| 2026-10-26 | [How Do You Move a 100-Ton Rock With No Crane? 🪨](https://www.youtube.com/watch?v=uDK5La5zyos) | 1302 (+94) | 39 (+5) | 5 |
+| 2026-10-27 | [Can Square Wheels Give You a Smooth Ride? #shorts](https://www.youtube.com/watch?v=vOW5FcItVOw) | 1190 (+752) | 36 (+21) | 1 |
+| 2026-10-27 | [How Does a Refrigerator Actually Work? #shorts](https://www.youtube.com/watch?v=jkoSt-AP6b8) | 166 | 7 | 0 |
 
 ## How Its Engineered
 
-**3 subscribers** · 5 videos · 707 (+175) total views
+**5 subscribers (+2)** · 5 videos · 1059 (+352) total views
 
 | Posted | Video | Views | Likes | Comments |
 |---|---|--:|--:|--:|
-| 2026-10-26 | [One Front Door for Every Service \| API Gateway Explained 🪪](https://www.youtube.com/watch?v=3HXaxMWnzno) | 0 | 0 | 0 |
-| 2026-10-26 | [Why Apps Say "Too Many Requests" \| Rate Limiting Explained 🚪](https://www.youtube.com/watch?v=XGKd1vJt14Q) | 488 (+102) | 12 | 0 |
-| 2026-10-27 | [Why Does a Page Load Instantly the Second Time? \| Caching Explained ⚡](https://www.youtube.com/watch?v=nejP-5KGzkI) | 178 (+32) | 5 (+1) | 0 |
-| 2026-10-27 | [How Do Apps Survive Going Viral? \| Load Balancing Explained 🛒](https://www.youtube.com/watch?v=2MHgPJQKZmU) | 9 (+9) | 0 | 0 |
-| 2026-10-27 | [Why Bots Can't Find Your Servers \| Reverse Proxy Explained 🛡️](https://www.youtube.com/watch?v=oCPYlfCXi24) | 32 (+32) | 0 | 0 |
+| 2026-10-26 | [Why Apps Say "Too Many Requests" \| Rate Limiting Explained 🚪](https://www.youtube.com/watch?v=XGKd1vJt14Q) | 640 (+152) | 12 | 0 |
+| 2026-10-27 | [Why Does a Page Load Instantly the Second Time? \| Caching Explained ⚡](https://www.youtube.com/watch?v=nejP-5KGzkI) | 213 (+35) | 6 (+1) | 0 |
+| 2026-10-27 | [How Do Apps Survive Going Viral? \| Load Balancing Explained 🛒](https://www.youtube.com/watch?v=2MHgPJQKZmU) | 13 (+4) | 0 | 0 |
+| 2026-10-27 | [Why Bots Can't Find Your Servers \| Reverse Proxy Explained 🛡️](https://www.youtube.com/watch?v=oCPYlfCXi24) | 191 (+159) | 3 (+3) | 0 |
+| 2026-10-27 | [One Front Door for Every Service \| API Gateway Explained 🪪](https://www.youtube.com/watch?v=SQWLp_XsnEE) | 2 | 1 | 0 |
